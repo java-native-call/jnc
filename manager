@@ -52,8 +52,7 @@ case "${OS}" in
           JAVA_HOME="/usr/lib/jvm/${JAVA_DIRNAME}"
           ;;
         *)
-          echo "unknown jdk version ${JDK}" 2>&1
-          exit 1
+          # use default jdk
           ;;
       esac
       echo 'cd /usr/lib/gcc/x86_64-linux-gnu/4.8 && cp -n crtbeginT.o crtbeginT.orig.o && cp -f crtbeginS.o crtbeginT.o' | sudo bash
@@ -113,5 +112,10 @@ case "$1" in
     ;;
   test|build|package)
     echo "JAVA_HOME: ${JAVA_HOME}"
-    chmod +x mvnw && ./mvnw -Pnative -Dmake=${MAKE} install $*;;
+    if [ x"$native" == xfalse ] &&  git config --get remote.origin.url 2>&1 | grep -F https://github.com/java-native-call/jnc-build -q && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+      chmod +x mvnw && ./mvnw -Duser.name=zhanhb -Dmake=${MAKE} deploy -s .travis/settings.xml $*
+    else
+      chmod +x mvnw && ./mvnw -Pnative -Dmake=${MAKE} install $*
+    fi
+    ;;
 esac

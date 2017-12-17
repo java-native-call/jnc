@@ -13,6 +13,8 @@ matrix:
       env: JDK=oraclejdk8
     - os: linux
       env: JDK=oraclejdk8 ARCH=i386
+    - os: linux
+      env: native=false
 sudo: required
 dist: trusty
 group: travis_lts
