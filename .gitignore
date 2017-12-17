@@ -1,0 +1,30 @@
+# IDEA
+.idea/
+*.iml
+
+# maven
+target/
+pom.xml.bak
+
+# mac
+.DS_Store
+
+# NetBeans cpp project
+**/nbproject/private/private.xml
+**/nbproject/project.properties
+**/nbproject/private/c_standard_headers_indexer.c
+**/nbproject/private/cpp_standard_headers_indexer.cpp
+**/nbproject/Makefile-*.mk
+**/nbproject/Package-*.bash
+**/nbproject/private/Makefile-variables.mk
+**/nbproject/private/timestamps*
+
+# NetBeans java project
+nb-configuration.xml
+
+# git
+*~
+
+# jvm crash
+hs_err_pid*.log
+replay_pid*.log

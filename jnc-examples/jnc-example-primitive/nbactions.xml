@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>run.single.main</actionName>
+        <packagings>
+            <packaging>*</packaging>
+        </packagings>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>exec:exec</goal>
+        </goals>
+        <properties>
+            <exec.args>-Dfile.encoding=UTF-8 -classpath %classpath ${packageClassName}</exec.args>
+            <exec.executable>java</exec.executable>
+            <exec.classpathScope>${classPathScope}</exec.classpathScope>
+        </properties>
+    </action>
+    <action>
+        <actionName>debug.single.main</actionName>
+        <packagings>
+            <packaging>*</packaging>
+        </packagings>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>exec:exec</goal>
+        </goals>
+        <properties>
+            <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Dfile.encoding=UTF-8 -classpath %classpath ${packageClassName}</exec.args>
+            <exec.executable>java</exec.executable>
+            <exec.classpathScope>${classPathScope}</exec.classpathScope>
+            <jpda.listen>true</jpda.listen>
+        </properties>
+    </action>
+    <action>
+        <actionName>profile.single.main</actionName>
+        <packagings>
+            <packaging>*</packaging>
+        </packagings>
+        <goals>
+            <goal>process-classes</goal>
+            <goal>exec:exec</goal>
+        </goals>
+        <properties>
+            <exec.args>-Dfile.encoding=UTF-8 -classpath %classpath ${packageClassName}</exec.args>
+            <exec.executable>java</exec.executable>
+            <exec.classpathScope>${classPathScope}</exec.classpathScope>
+        </properties>
+    </action>
+</actions>

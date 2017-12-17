@@ -1,0 +1,25 @@
+*.bat           text    eol=lf
+*.c             text    eol=lf
+*.cc            text    eol=lf
+*.cmd           text    eol=lf
+*.cpp           text    eol=lf
+*.h             text    eol=lf
+*.java          text    eol=lf
+*.properties    text    eol=lf
+*.py            text    eol=lf
+*.S             text    eol=lf
+*.sh            text    eol=lf
+*.txt           text    eol=lf
+*.xml           text    eol=lf
+*.yml           text    eol=lf
+.gitattributes  text    eol=lf
+.gitignore      text    eol=lf
+.gitmodules     text    eol=lf
+Makefile        text    eol=lf
+
+*.dll           binary
+*.dylib         binary
+*.jar           binary
+*.jnilib        binary
+*.so            binary
+*.zip           binary

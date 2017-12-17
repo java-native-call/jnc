@@ -1,0 +1,4 @@
+[submodule "jnc-runtime/src/main/native/libffi"]
+	path = jnc-runtime/src/main/native/libffi
+	url = https://github.com/libffi/libffi.git
+	branch = v3.2.1

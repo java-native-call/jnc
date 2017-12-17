@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.zhanhb</groupId>
+        <artifactId>jnc-build</artifactId>
+        <version>0.0.1.BUILD-SNAPSHOT</version>
+    </parent>
+    <artifactId>jnc-runtime</artifactId>
+
+    <properties>
+        <compiler.c.target>o</compiler.c.target>
+        <java.version>1.8</java.version>
+        <make>make</make>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.orfjackal.retrolambda</groupId>
+                <artifactId>retrolambda-maven-plugin</artifactId>
+                <version>2.5.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process-main</goal>
+                            <goal>process-test</goal>
+                        </goals>
+                        <configuration>
+                            <target>1.6</target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <condition property="build.arch" value="x86_64">
+                                            <matches pattern="^(x(86[_-])?64|amd64|em64t)$" string="${os.arch}"/>
+                                        </condition>
+                                        <condition property="build.arch" value="i386">
+                                            <matches pattern="^(?:i[3-6]86|x86|pentium)$" string="${os.arch}"/>
+                                        </condition>
+                                        <property name="jni.build.dir" value="${project.build.directory}/build" />
+                                        <property name="jni.dist.prefix" value="${project.basedir}/src/main/resources/jnc/foreign/internal/native"/>
+                                        <property name="jni.header.dir" value="${project.build.directory}/header" />
+                                        <exec executable="${JAVA_HOME}/bin/javah" failonerror="true">
+                                            <arg line="-classpath" />
+                                            <arg line='"${project.build.outputDirectory}"' />
+                                            <arg line="-d" />
+                                            <arg line='"${jni.header.dir}"' />
+                                            <arg line="-jni" />
+                                            <arg line="jnc.foreign.internal.NativeMethods" />
+                                        </exec>
+                                        <exec dir="${project.basedir}/src/main/native" executable="${make}" failonerror="true">
+                                            <arg line="ARCH=${build.arch}" />
+                                            <arg line='"JAVAH_INCLUDE_DIR=${jni.header.dir}"' />
+                                            <arg line='"BUILD_DIR=${jni.build.dir}"' />
+                                            <arg line='"DIST_PREFIX=${jni.dist.prefix}"' />
+                                            <arg line="OBJ_TYPE=${compiler.c.target}" />
+                                        </exec>
+                                        <copy todir="${project.build.outputDirectory}/jnc/foreign/internal/native">
+                                            <fileset dir="${project.basedir}/src/main/resources/jnc/foreign/internal/native"/>
+                                        </copy>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

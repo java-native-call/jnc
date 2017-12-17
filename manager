@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+
+PACKAGES="automake libtool texinfo"
+OS=`uname -s`
+PKG_ADD=
+MAKE=make
+if [ x"$ARCH" == "x" ]; then
+  ARCH=`uname -m`
+fi
+case "${OS}" in
+  CYGWIN*|MINGW*)
+    PKG_ADD=echo;;
+  Linux)
+    PACKAGES="${PACKAGES} gcc g++"
+    if which apt-get 2>/dev/null; then
+      case "$JDK" in
+        oraclejdk8)
+          case "$ARCH" in
+            i386|i486|i586|i686|x86)
+              PACKAGES="${PACKAGES} g++-multilib"
+              JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd3019491ca4f6ddbe78cdb6d0/jdk-8u152-linux-i586.tar.gz
+              ;;
+            x86_64|amd64)
+              JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd3019491ca4f6ddbe78cdb6d0/jdk-8u152-linux-x64.tar.gz
+              ;;
+            *)
+              echo "unknown arch ${ARCH}" 2>&1
+              exit 1
+              ;;
+          esac
+          JAVA_HOME="`pwd`/jdk1.8.0_152"
+          ;;
+        openjdk7|openjdk8)
+          JDK_VERSION=`echo "$JDK" | sed -e 's/^openjdk//g'`
+          JDK_INSTALLNAME=openjdk-${JDK_VERSION}-jdk
+          JAVA_DIRNAME=java-${JDK_VERSION}-openjdk
+          case "$ARCH" in
+            i386|i486|i586|i686|x86)
+              JDK_INSTALLNAME="${JDK_INSTALLNAME}:i386"
+              JAVA_DIRNAME="${JAVA_DIRNAME}-i386"
+              PACKAGES="${PACKAGES} g++-multilib"
+              ;;
+            x86_64|amd64)
+              JAVA_DIRNAME="${JAVA_DIRNAME}-amd64"
+              ;;
+            *)
+              echo "unknown arch ${ARCH}" 2>&1
+              exit 1
+              ;;
+          esac
+          PACKAGES="${PACKAGES} ${JDK_INSTALLNAME}"
+          JAVA_HOME="/usr/lib/jvm/${JAVA_DIRNAME}"
+          ;;
+        *)
+          echo "unknown jdk version ${JDK}" 2>&1
+          exit 1
+          ;;
+      esac
+      echo 'cd /usr/lib/gcc/x86_64-linux-gnu/4.8 && cp -n crtbeginT.o crtbeginT.orig.o && cp -f crtbeginS.o crtbeginT.o' | sudo bash
+      # -q quiet, double q implies -y
+      # -y assume yes
+      # -f fix-broken attempt to correct a system with broken dependencies in place
+      PKG_ADD="sudo apt-get -qqf install"
+      export JAVA_HOME
+    elif which yum 2>/dev/null; then
+      # -q Run without output
+      # -y assume yes
+      PACKAGES="${PACKAGES} g++ g++-multilib java-1.8.0-openjdk-devel"
+      PKG_ADD="sudo yum install -qy"
+    else
+      echo 'Package manager not found' 2>&1
+      exit 1
+    fi
+    ;;
+  Darwin)
+    PKG_ADD="brew install"
+    ;;
+  FreeBSD)
+    MAKE=gmake
+    PKG_ADD="sudo pkg install -q"
+    case "$JDK" in
+      openjdk7) PACKAGES="${PACKAGES} openjdk7";;
+      *) PACKAGES="${PACKAGES} openjdk8";;
+    esac
+    PACKAGES="${PACKAGES} ${MAKE}"
+    ;;
+  OpenBSD)
+    MAKE=gmake
+    case "$JDK" in
+      openjdk7) JDK_INSTALLNAME=jdk%1.7;;
+      *) JDK_INSTALLNAME=jdk%1.8;;
+    esac
+    PKG_ADD="sudo pkg_add -qv"
+    PACKAGES="automake%1.15 libtool gcc texinfo ${MAKE} ${JDK_INSTALLNAME}"
+    ;;
+  *)
+    echo 'Platform not support' 2>&1
+    exit 1
+    ;;
+esac
+
+case "$1" in
+  fetch)
+    git fetch;;
+  reset)
+    git fetch && rm -rf * && git reset --hard origin/master;;
+  install)
+    if [ x"${JDK_DOWNLOAD_URL}" != "x" ]; then
+      wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" "${JDK_DOWNLOAD_URL}"
+      tar -xf `echo "${JDK_DOWNLOAD_URL}" | sed -e 's/^.*\///g'`
+    fi
+    ${PKG_ADD} ${PACKAGES}
+    ;;
+  test|build|package)
+    echo "JAVA_HOME: ${JAVA_HOME}"
+    chmod +x mvnw && ./mvnw -Pnative -Dmake=${MAKE} install $*;;
+esac
