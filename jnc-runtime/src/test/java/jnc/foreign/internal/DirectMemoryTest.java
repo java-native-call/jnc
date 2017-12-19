@@ -13,35 +13,28 @@ public class DirectMemoryTest {
      */
     @Test
     public void testUnalignedGet() {
-        DirectMemory memory = AllocatedMemory.allocate(16);
-        int off = 3;
-        long MAGIC = 0x0102030405060708L;
-        memory.putLong(off, MAGIC);
-        assertEquals(MAGIC, memory.getLong(off));
-        long[] array = new long[2];
-        memory.getLongArray(off, array, 1, 1);
-        assertEquals(0, array[0]);
-        assertEquals(MAGIC, array[1]);
-        assertEquals(Double.longBitsToDouble(MAGIC), memory.getDouble(off), -1);
-        if (LITTLE_ENDIAN) {
-            assertEquals(Float.intBitsToFloat((int) MAGIC), memory.getFloat(off), -1);
-        } else {
-            assertEquals(Float.intBitsToFloat((int) (MAGIC >> 8)), memory.getFloat(off), -1);
+        int size = 64;
+        DirectMemory memory = AllocatedMemory.allocate(size);
+        for (int i = 0; i < size; ++i) {
+            memory.putByte(i, (byte) ((i & 7) + 1));
         }
-        for (int i = 0; i < off; ++i) {
-            assertEquals(0, memory.getByte(i));
-        }
-        if (LITTLE_ENDIAN) {
-            for (int i = off; i < off + 8; ++i) {
-                assertEquals(8 - (i - off), memory.getByte(i));
+        long MAGIC0 = LITTLE_ENDIAN ? 0x0807060504030201L : 0x0102030405060708L;
+        for (int off = 0; off < 8; ++off) {
+            long MAGIC = LITTLE_ENDIAN ? Long.rotateRight(MAGIC0, off * 8 & 63) : Long.rotateLeft(MAGIC0, off * 8 & 63);
+            assertEquals(MAGIC, memory.getLong(off));
+            for (int i = 0; i < 6; ++i) {
+                long[] array = new long[i];
+                memory.getLongArray(off, array, 0, i);
+                for (int j = 0; j < i; ++j) {
+                    assertEquals(MAGIC, array[j]);
+                }
             }
-        } else {
-            for (int i = off; i < off + 8; ++i) {
-                assertEquals(i - off + 1, memory.getByte(i));
+            assertEquals(Double.longBitsToDouble(MAGIC), memory.getDouble(off), -1);
+            if (LITTLE_ENDIAN) {
+                assertEquals(Float.intBitsToFloat((int) MAGIC), memory.getFloat(off), -1);
+            } else {
+                assertEquals(Float.intBitsToFloat((int) (MAGIC >> 8)), memory.getFloat(off), -1);
             }
-        }
-        for (int i = off + 8; i < 16; ++i) {
-            assertEquals(0, memory.getByte(i));
         }
     }
 

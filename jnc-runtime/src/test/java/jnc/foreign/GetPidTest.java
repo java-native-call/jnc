@@ -1,8 +1,7 @@
 package jnc.foreign;
 
 import jnc.foreign.typedef.pid_t;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeFalse;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,7 +9,7 @@ public class GetPidTest {
 
     @Before
     public void setUp() {
-        assumeThat(Platform.getNativePlatform().getOS(), not(OS.WINDOWS));
+        assumeFalse("os.name", Platform.getNativePlatform().getOS().isWindows());
     }
 
     @Test

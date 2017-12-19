@@ -29,6 +29,11 @@
         </developer>
     </developers>
 
+    <modules>
+        <module>jnc-runtime</module>
+        <module>jnc-examples</module>
+    </modules>
+
     <distributionManagement>
         <repository>
             <id>ossrh</id>
@@ -41,11 +46,6 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-
-    <modules>
-        <module>jnc-runtime</module>
-        <module>jnc-examples</module>
-    </modules>
 
     <properties>
         <argLine></argLine>

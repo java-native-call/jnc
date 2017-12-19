@@ -1,6 +1,7 @@
 package jnc.foreign;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 import jnc.foreign.abi.CallingMode;
 
 public class LoadOptionsBuilder {
@@ -12,10 +13,8 @@ public class LoadOptionsBuilder {
     }
 
     private static <T> T checkNotNull(T obj) {
-        if (obj == null) {
-            throw new NullPointerException();
-        }
-        return obj;
+        // Objects.requireNonNull will be retrolambda as Object.getClass
+        return Objects.requireNonNull(obj);
     }
 
     private CallingMode callingMode;

@@ -16,8 +16,12 @@ class NativeLibrary implements NativeObject, Closeable {
     static {
         nm.registUnload(() -> {
             for (Runnable dlclose : SET) {
-                dlclose.run();
-                SET.remove(dlclose);
+                try {
+                    dlclose.run();
+                } catch (Throwable t) {
+                } finally {
+                    SET.remove(dlclose);
+                }
             }
         });
     }

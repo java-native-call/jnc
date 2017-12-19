@@ -16,8 +16,8 @@ public enum OS {
     private static final int FLAG_NONE = 0;
     private static final int FLAG_WINDOWS = 1; // _WIN32
     private static final int FLAG_UNIX = 2; // __unix__
-    private static final int FLAG_BSD = 4;  // BSD
-    private static final int FLAG_ELF = 8; // __ELF__
+    private static final int FLAG_ELF = 4; // __ELF__
+    private static final int FLAG_BSD = 8;  // BSD
 
     private final int flag;
 

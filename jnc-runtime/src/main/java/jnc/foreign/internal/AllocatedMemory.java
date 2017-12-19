@@ -14,6 +14,7 @@ class AllocatedMemory extends SizedDirectMemory {
             for (Runnable runnable : SET) {
                 try {
                     runnable.run();
+                } catch (Throwable t) {
                 } finally {
                     SET.remove(runnable);
                 }

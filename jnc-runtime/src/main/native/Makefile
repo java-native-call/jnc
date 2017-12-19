@@ -129,18 +129,14 @@ STRIP = strip
 OS = $(strip $(shell uname -s | tr '[:upper:]' '[:lower:]' | sed \
     -e 's/^mingw.*$$/win32/g' \
     -e 's/^cygwin.*$$/win32/g'))
-ARCH ?= $(shell uname -m | sed --posix \
+ARCH ?= $(shell uname -m | sed \
     -e 's/^i[3-6]86$$/i386/g' \
     -e 's/^x86$$/i386/g' \
     -e 's/^pentium$$/i386/g' \
     -e 's/^x\(86[_-]\)\{0,1\}64$$/x86_64/g' \
     -e 's/^amd64$$/x86_64/g' \
     -e 's/^em64t$$/x86_64/g')
-MODEL = $(if $(findstring 64,$(ARCH)),64,32)
-
-ifneq (, $(findstring $(ARCH), sparcv9 s390x))
-    MODEL=64
-endif
+MODEL = $(if $(filter %,$(findstring 64,$(ARCH)) $(filter $(ARCH), sparcv9 s390x)),64,32)
 
 PLATFORM ?= $(OS)-$(ARCH)
 LIB_PREFIX = lib
@@ -153,7 +149,7 @@ ifneq (S, ${OBJ_TYPE})
 else
     CFLAGS += -S
 endif
-LDFLAGS = $(WARNING_FLAGS) -shared -static
+LDFLAGS = $(WARNING_FLAGS) -shared
 LIBFFI_BUILD_CFLAGS = -Wall -Wextra
 LIBFFI_BUILD_LDFLAGS = -Wall -Wextra
 PWD = $(shell pwd)
@@ -205,9 +201,6 @@ else ifeq (darwin, $(OS))
     LDFLAGS += -dynamiclib -install_name "$(@F)"
     #LIBFFI_LDFLAGS += -Wl,-syslibroot,$(SDK_HOME)
     ARCHS_FLAGS = $(foreach arch, $(ARCHES), -arch $(arch))
-else ifeq (, $(findstring $(OS), darwin win32))
-    LDFLAGS += -static -static-libgcc
-    LIBFFI_BUILD_LDFLAGS += -static -static-libgcc
 else ifneq (, $(findstring sunos, $(OS)))
     OS = solaris
 endif
@@ -225,6 +218,8 @@ ifeq (darwin, $(OS))
 else
     SHARE_FLAGS += -m$(MODEL)
     STRIP += -s
+    LDFLAGS += -static -static-libgcc
+    LIBFFI_BUILD_LDFLAGS += -static -static-libgcc
 endif
 
 ifeq (1, $(USE_SYSTEM_LIBFFI))

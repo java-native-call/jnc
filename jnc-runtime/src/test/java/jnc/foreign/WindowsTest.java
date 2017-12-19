@@ -8,11 +8,10 @@ import jnc.foreign.abi.Stdcall;
 import jnc.foreign.byref.IntByReference;
 import jnc.foreign.typedef.int32_t;
 import jnc.foreign.typedef.uintptr_t;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeThat;
+import static org.junit.Assume.assumeTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ public class WindowsTest {
 
     @BeforeClass
     public static void setupClass() {
-        assumeThat("os.name", Platform.getNativePlatform().getOS(), is(OS.WINDOWS));
+        assumeTrue("os.name", Platform.getNativePlatform().getOS().isWindows());
     }
 
     @Test

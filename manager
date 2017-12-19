@@ -8,7 +8,7 @@ if [ x"$ARCH" == "x" ]; then
   ARCH=`uname -m`
 fi
 case "${OS}" in
-  CYGWIN*|MINGW*)
+  CYGWIN*|MINGW*|MSYS*)
     PKG_ADD=echo;;
   Linux)
     PACKAGES="${PACKAGES} gcc g++"

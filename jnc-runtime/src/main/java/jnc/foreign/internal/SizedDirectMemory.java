@@ -202,6 +202,9 @@ class SizedDirectMemory extends DirectMemory {
 
     @Override
     public Pointer slice(int offset, int size) {
+        if (size < 0) {
+            throw new IllegalArgumentException();
+        }
         checkIndex(offset, size);
         return new Slice(this, offset, size);
     }

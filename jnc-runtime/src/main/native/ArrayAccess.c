@@ -20,19 +20,16 @@ Java_jnc_foreign_internal_NativeMethods_put##jni##sRaw##name            \
         jint offset, jtype value) {                                     \
     union atype##array_AND_##name v;                                    \
     int size = sizeof(native) / sizeof(atype);                          \
-    if (unlikely(checkNullAndRange(env, array, offset, size)))          \
-        return;                                                         \
+    if (unlikely(checkNullAndRange(env, array, offset, size))) return;  \
     v.value = j2n(value);                                               \
-    (*env)->Set##jni##ArrayRegion                                       \
-        (env, array, offset, size, v.array);                            \
+    (*env)->Set##jni##ArrayRegion(env, array, offset, size, v.array);   \
 }                                                                       \
 JNIEXPORT jtype JNICALL                                                 \
 Java_jnc_foreign_internal_NativeMethods_get##jni##sRaw##name            \
 (JNIEnv *env, jobject UNUSED(self), atype##Array array, jint offset) {  \
     union atype##array_AND_##name v;                                    \
     int size = sizeof(native) / sizeof(atype);                          \
-    if (unlikely(checkNullAndRange(env, array, offset, size)))          \
-        return 0;                                                       \
+    if (unlikely(checkNullAndRange(env, array, offset, size))) return 0;\
     (*env)->Get##jni##ArrayRegion(env, array, offset, size, v.array);   \
     return n2j(v.value);                                                \
 }

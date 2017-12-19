@@ -17,6 +17,7 @@
 .gitmodules     text    eol=lf
 Makefile        text    eol=lf
 
+*.a             binary
 *.dll           binary
 *.dylib         binary
 *.jar           binary

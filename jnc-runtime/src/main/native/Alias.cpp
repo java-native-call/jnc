@@ -32,18 +32,31 @@
 
 #include <limits>
 
-template<typename T> struct is_pointer {
-    static const bool value = false;
-};
+namespace jnc_type_traits {
 
-template<typename T> struct is_pointer<T*> {
-    static const bool value = true;
-};
+    template<typename T> struct is_pointer {
+        static const bool value = false;
+    };
 
-#define isSigned(type) (std::numeric_limits<type>::is_signed)
-#define isPointer(type) (is_pointer<type>::value)
+    template<typename T> struct is_pointer<T*> {
+        static const bool value = true;
+    };
+
+    template <typename T> struct is_pointer<const T> : is_pointer<T> {
+    };
+
+    template <typename T> struct is_pointer<volatile T> : is_pointer<T> {
+    };
+
+    template <typename T> struct is_pointer<const volatile T> : is_pointer<T> {
+    };
+
+}
+
+#define isSigned(type) (::std::numeric_limits<type>::is_signed)
+#define isPointer(type) (::jnc_type_traits::is_pointer<type>::value)
 /* for pointer types is_integer is false */
-#define isInteger(type) (std::numeric_limits<type>::is_integer)
+#define isInteger(type) (::std::numeric_limits<type>::is_integer)
 
 #else /* __cplusplus */
 
@@ -110,7 +123,7 @@ static void add(const char * name, int value) {
 static void init() {
     typedef void *pointer;
 
-    const struct {
+    static const struct {
         const char * name;
         int8_t v;
     } tuples[] = {
