@@ -234,13 +234,6 @@ public class Struct {
         return array;
     }
 
-    protected final wchar_t[] array(wchar_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new wchar_t();
-        }
-        return array;
-    }
-
     protected final Float32[] array(Float32[] array) {
         for (int i = 0, len = array.length; i < len; ++i) {
             array[i] = new Float32();
@@ -584,14 +577,6 @@ public class Struct {
 
         public clong() {
             super(getForeign().findType("long"));
-        }
-
-    }
-
-    protected class wchar_t extends LongField {
-
-        public wchar_t() {
-            super(getForeign().findType("wchar_t"));
         }
 
     }
