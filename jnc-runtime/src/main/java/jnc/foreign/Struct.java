@@ -57,16 +57,22 @@ public class Struct {
         return offset;
     }
 
+    int nextOffset(int alignment) {
+        return align(this.size, Math.min(pack, alignment));
+    }
+
     /**
      *
      * @return offset of the field
      */
-    int addField(int size, int alignment) {
-        return addField0(align(this.size, Math.min(pack, alignment)), size, alignment);
+    final int addField(int size, int alignment) {
+        return addField0(nextOffset(alignment), size, alignment);
     }
 
     private void finish(String reason) {
-        finish = reason;
+        if (finish == null) {
+            finish = reason;
+        }
     }
 
     private void checkFinish() {
@@ -78,6 +84,14 @@ public class Struct {
     public final int size() {
         finish("size()");
         return align(size, alignment);
+    }
+
+    final int sizeInternal() {
+        return size;
+    }
+
+    void setSize(int size) {
+        this.size = size;
     }
 
     public final int alignment() {
@@ -124,161 +138,277 @@ public class Struct {
         return name;
     }
 
+    void arrayBegin() {
+    }
+
+    void arrayEnd() {
+    }
+
     protected final <T extends Struct> T inner(T struct) {
         struct.setEnclosing(this, addField(struct.size(), struct.alignment()));
         return struct;
     }
 
     protected final int8_t[] array(int8_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new int8_t();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new int8_t();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final int16_t[] array(int16_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new int16_t();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new int16_t();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final int32_t[] array(int32_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new int32_t();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new int32_t();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final int64_t[] array(int64_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new int64_t();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new int64_t();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final uint8_t[] array(uint8_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new uint8_t();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new uint8_t();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final uint16_t[] array(uint16_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new uint16_t();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new uint16_t();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final uint32_t[] array(uint32_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new uint32_t();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new uint32_t();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final uint64_t[] array(uint64_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new uint64_t();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new uint64_t();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final bool[] array(bool[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new bool();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new bool();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final Pointer[] array(Pointer[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new Pointer();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new Pointer();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final Address[] array(Address[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new Address();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new Address();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final size_t[] array(size_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new size_t();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new size_t();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final uintptr_t[] array(uintptr_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new uintptr_t();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new uintptr_t();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final intptr_t[] array(intptr_t[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new intptr_t();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new intptr_t();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final clong[] array(clong[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new clong();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new clong();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final Float32[] array(Float32[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new Float32();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new Float32();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final Float64[] array(Float64[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new Float64();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new Float64();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final BYTE[] array(BYTE[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new BYTE();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new BYTE();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final WBOOL[] array(WBOOL[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new WBOOL();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new WBOOL();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final WORD[] array(WORD[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new WORD();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new WORD();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final DWORD[] array(DWORD[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new DWORD();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new DWORD();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }
 
     protected final DWORDLONG[] array(DWORDLONG[] array) {
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = new DWORDLONG();
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = new DWORDLONG();
+            }
+        } finally {
+            arrayEnd();
         }
         return array;
     }

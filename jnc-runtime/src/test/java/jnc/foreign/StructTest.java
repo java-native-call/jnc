@@ -29,8 +29,13 @@ public class StructTest {
             String simpleName = list.get(i).getSimpleName();
             out.println("protected final " + simpleName + "[] array("
                     + simpleName + "[] array) {");
-            out.println("    for (int i = 0, len = array.length; i < len; ++i) {");
-            out.println("        array[i] = new " + simpleName + "();");
+            out.println("    arrayBegin();");
+            out.println("    try {");
+            out.println("        for (int i = 0, len = array.length; i < len; ++i) {");
+            out.println("            array[i] = new " + simpleName + "();");
+            out.println("        }");
+            out.println("    } finally {");
+            out.println("        arrayEnd();");
             out.println("    }");
             out.println("    return array;");
             out.println("}");
@@ -94,6 +99,14 @@ public class StructTest {
         assertEquals(4, wrapper.getMemory().getByte(16));
     }
 
+    @Test
+    public void testUint64() {
+        Uint64Struct uint64Struct = new Uint64Struct();
+        uint64Struct.setValue(-1);
+        // double has only have 52 bit fraction, so the result is 2^64
+        assertEquals(0x1.0p64, uint64Struct.doubleValue(), -1);
+    }
+
     private static class Wrapper extends Struct {
 
         final int8_t x = new int8_t();
@@ -150,6 +163,24 @@ public class StructTest {
 
         private void setValue(long l) {
             value.set(l);
+        }
+
+    }
+
+    private static class Uint64Struct extends Struct {
+
+        private final uint64_t value = new uint64_t();
+
+        public long getValue() {
+            return value.get();
+        }
+
+        private void setValue(long l) {
+            value.set(l);
+        }
+
+        private double doubleValue() {
+            return value.doubleValue();
         }
 
     }
