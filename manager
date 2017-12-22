@@ -112,10 +112,10 @@ case "$1" in
     ;;
   test|build|package)
     echo "JAVA_HOME: ${JAVA_HOME}"
-    if [ x"$native" == xfalse ] &&  git config --get remote.origin.url 2>&1 | grep -F https://github.com/java-native-call/jnc-build -q && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    if [ x"$deploy" == xtrue ] &&  git config --get remote.origin.url 2>&1 | grep -F https://github.com/java-native-call/jnc-build -q && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
       chmod +x mvnw && ./mvnw -Duser.name=zhanhb -Dmake=${MAKE} deploy -s .travis/settings.xml $*
     else
-      chmod +x mvnw && ./mvnw -Pnative -Dmake=${MAKE} install $*
+      chmod +x mvnw && ./mvnw -Dmake=${MAKE} install $*
     fi
     ;;
 esac

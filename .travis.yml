@@ -10,11 +10,15 @@ matrix:
   include:
     - os: osx
     - os: linux
-      env: JDK=oraclejdk8
+      env: JDK=oraclejdk8 deploy=true
     - os: linux
       env: JDK=oraclejdk8 ARCH=i386
+    - os: osx
+      env: MAVEN_CONFIG=-Pnative
     - os: linux
-      env: native=false
+      env: MAVEN_CONFIG=-Pnative JDK=oraclejdk8
+    - os: linux
+      env: MAVEN_CONFIG=-Pnative JDK=oraclejdk8 ARCH=i386
 sudo: required
 dist: trusty
 group: travis_lts

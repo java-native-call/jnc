@@ -3,6 +3,10 @@ environment:
   APPVEYOR_SAVE_CACHE_ON_ERROR: true
   matrix:
     - OS_ARCH: x86
+      MAVEN_CONFIG: '-Pnative'
+    - OS_ARCH: x64
+      MAVEN_CONFIG: '-Pnative'
+    - OS_ARCH: x86
     - OS_ARCH: x64
 before_test:
   - 'IF "%OS_ARCH%"=="x86" SET JAVA_HOME=C:\Program Files (x86)\Java\jdk1.8.0'
@@ -13,6 +17,6 @@ before_test:
   - 'SET MINGW_HOME=C:\MinGW'
   - 'SET PATH=%MINGW64_HOME%\bin;%MINGW32_HOME%\bin;%MSYS_HOME%\bin;%MINGW_HOME%\bin;%PATH%'
 test_script:
-  - mvnw -Pnative install -B
+  - mvnw install -B
 cache:
   - '%USERPROFILE%\.m2'
