@@ -27,13 +27,15 @@ public class Struct {
         Pack pack = AnnotationUtil.getAnnotation(type, Pack.class);
         if (pack != null) {
             int value = pack.value();
-            if (value <= 0) {
+            if (value > 0) {
+                if ((value & (value - 1)) != 0 || value > MAX_ALIGN) {
+                    throw new IllegalArgumentException("expected pack parameter to be '1', '2', '4', '8', or '16'");
+                }
+                return value;
+            }
+            if (value != 0) {
                 throw new IllegalArgumentException("Illegal pack value " + value);
             }
-            if ((value & (value - 1)) != 0 || value > MAX_ALIGN) {
-                throw new IllegalArgumentException("expected pack parameter to be '1', '2', '4', '8', or '16'");
-            }
-            return value;
         }
         return MAX_ALIGN;
     }

@@ -25,6 +25,11 @@ public class AlignTest {
         assertSizeAndAlign(new my_packed_struct(), 13, 1);
     }
 
+    @Test
+    public void testAlign0() {
+        assertSizeAndAlign(new pack_zero(), 8, 4);
+    }
+
     private static class my_unpacked_struct extends Struct {
 
         private final uint8_t c = new uint8_t();
@@ -39,6 +44,10 @@ public class AlignTest {
         private final int32_t i = new int32_t();
         private final my_unpacked_struct s = inner(new my_unpacked_struct());
 
+    }
+
+    @Pack(0)
+    private static class pack_zero extends my_unpacked_struct {
     }
 
 }

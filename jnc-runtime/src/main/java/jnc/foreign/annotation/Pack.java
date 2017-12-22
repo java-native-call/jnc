@@ -19,6 +19,11 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.PACKAGE})
 public @interface Pack {
 
-    int value();
+    /**
+     * ignore if it's zero.
+     *
+     * @return the pack value of this structure
+     */
+    int value() default 0;
 
 }
