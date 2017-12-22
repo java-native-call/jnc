@@ -12,8 +12,8 @@ public class TypedefTest {
         /* maybe sizeof(long) = 4 or 8 */
         list.add("long");
         list.add("clock_t");
-        /* TODO enum */
-        // DEFINE(clockid_t)
+        /* enum on darwin */
+        list.add("clockid_t");
         list.add("dev_t");
         /* use int instead */
         // DEFINE(errno_t)
@@ -42,10 +42,12 @@ public class TypedefTest {
         list.add("uintptr_t");
         list.add("useconds_t");
         list.add("wchar_t");
-        /* linux: typedef int32_t *wctrans_t; */
-        /* aix: typedef wint_t (*wctrans_t)() */
-        /* solaris typedef unsigned int wctrans_t; */
-        /* mingw typedef wchar_t wctrans_t; */
+        /*
+         * linux: typedef int32_t *wctrans_t;
+         * aix: typedef wint_t (*wctrans_t)();
+         * solaris typedef unsigned int wctrans_t;
+         * mingw typedef wchar_t wctrans_t;
+         */
         list.add("wctrans_t");
         /* pointer type on OpenBSD */
         list.add("wctype_t");
@@ -57,8 +59,7 @@ public class TypedefTest {
                 className = "c" + className;
             }
             File file = new File("src/main/java/" + pkg.replace(".", "/") + "/" + className + ".java");
-            PrintWriter pw = new PrintWriter(file, "UTF-8");
-            try {
+            try (PrintWriter pw = new PrintWriter(file, "UTF-8")) {
                 pw.println("package " + pkg + ";");
                 pw.println();
                 pw.println("import java.lang.annotation.ElementType;");
@@ -71,8 +72,6 @@ public class TypedefTest {
                 pw.println("@" + Typedef.class.getSimpleName() + "(\"" + string + "\")");
                 pw.println("public @interface " + className + " {");
                 pw.println("}");
-            } finally {
-                pw.close();
             }
         }
     }

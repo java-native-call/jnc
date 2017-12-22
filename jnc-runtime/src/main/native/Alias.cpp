@@ -25,44 +25,121 @@
 #include <sys/socket.h>
 #endif /* _WIN32 */
 
-#ifndef NAN
-#define NAN (0.0 / 0.0)
-#endif
 #ifdef __cplusplus
 
 #include <limits>
 
 namespace jnc_type_traits {
 
-    template<typename T> struct is_pointer {
-        static const bool value = false;
+    template <class _Tp, _Tp v> struct integral_constant {
+        static const _Tp value = v;
     };
 
-    template<typename T> struct is_pointer<T*> {
-        static const bool value = true;
+#define TRUE_TYPE(x) x : integral_constant<bool, true> {}
+#define FALSE_TYPE(x) x : integral_constant<bool, false> {}
+
+    FALSE_TYPE(template<typename T> struct is_pointer);
+    TRUE_TYPE(template<typename T> struct is_pointer<T*>);
+
+    FALSE_TYPE(template<typename T> struct is_floating_point);
+    TRUE_TYPE(template<> struct is_floating_point<float>);
+    TRUE_TYPE(template<> struct is_floating_point<double>);
+    TRUE_TYPE(template<> struct is_floating_point<long double>);
+
+#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)
+#define JNC_HAS_FETURE_IS_ENUM 1
+#elif defined(__is_enum)
+#define JNC_HAS_FETURE_IS_ENUM 1
+#elif defined(__has_feature)
+#if __has_feature(is_enum)
+#define JNC_HAS_FETURE_IS_ENUM 1
+#else
+#define JNC_HAS_FETURE_IS_ENUM 0
+#endif
+#else
+#define JNC_HAS_FETURE_IS_ENUM 0
+#endif
+#if JNC_HAS_FETURE_IS_ENUM
+
+    template<typename T> struct is_enum : integral_constant<bool, __is_enum(T)> {
     };
 
-    template <typename T> struct is_pointer<const T> : is_pointer<T> {
+#else
+    FALSE_TYPE(template<typename T> struct is_enum);
+#endif
+#undef FALSE_TYPE
+#undef TRUE_TYPE
+
+    template<typename T,
+    bool _IsEnum = is_enum<T>::value,
+    bool _IsPointer = is_pointer<T>::value,
+    bool _IsInteger = ::std::numeric_limits<T>::is_integer,
+    bool _IsFloat = is_floating_point<T>::value>
+    struct get_ffi_type : integral_constant<int, -1 > {
     };
 
-    template <typename T> struct is_pointer<volatile T> : is_pointer<T> {
+    template<typename T> struct get_ffi_type<T, false, true, false, false> : integral_constant<FFI_TYPE, JNC_TYPE(POINTER)> {
     };
 
-    template <typename T> struct is_pointer<const volatile T> : is_pointer<T> {
+    /* we may got warning for unsigned types, such as size_t,
+     * here we use 1 to compare, it's also available */
+    template<typename T> struct is_signed : integral_constant<bool, T(-1) < T(1)> { };
+
+    template<typename T> struct size_helper {
+        static const size_t size = sizeof (T);
+        static const size_t align = alignof (T);
+        static const bool signed_ = is_signed<T>::value;
+    };
+
+    template<size_t, size_t, bool>
+    struct get_ffi_type_by_size : integral_constant<int, -1 > {
+    };
+
+#define DEF(type, value) \
+    template<> struct get_ffi_type_by_size< \
+    size_helper<type>::size, \
+    size_helper<type>::align, \
+    size_helper<type>::signed_ \
+    > : \
+    integral_constant<FFI_TYPE, JNC_TYPE(value)> {};
+
+    DEF(uint8_t, UINT8)
+    DEF(int8_t, SINT8)
+    DEF(uint16_t, UINT16)
+    DEF(int16_t, SINT16)
+    DEF(uint32_t, UINT32)
+    DEF(int32_t, SINT32)
+    DEF(uint64_t, UINT64)
+    DEF(int64_t, SINT64)
+#undef DEF
+
+    template<typename T> struct get_ffi_type_integral : get_ffi_type_by_size<
+    size_helper<T>::size,
+    size_helper<T>::align,
+    size_helper<T>::signed_> {
+    };
+
+    /* integer */
+    template<typename T> struct get_ffi_type<T, false, false, true, false> : get_ffi_type_integral<T> {
+    };
+
+    /* enum */
+    template<typename T> struct get_ffi_type<T, true, false, false, false> : get_ffi_type_integral<T> {
     };
 
 }
 
-#define isSigned(type) (::std::numeric_limits<type>::is_signed)
-#define isPointer(type) (::jnc_type_traits::is_pointer<type>::value)
-/* for pointer types is_integer is false */
-#define isInteger(type) (::std::numeric_limits<type>::is_integer)
+#define getFFITypeValue(type) (jnc_type_traits::get_ffi_type<type>::value)
 
 #else /* __cplusplus */
 
 static inline bool isNaN(double x) {
     return x != x;
 }
+
+#ifndef NAN
+#define NAN (0.0 / 0.0)
+#endif
 
 /* we may got warning for unsigned types, such as size_t,
  * here we use 1 to compare, it's also available */
@@ -71,12 +148,10 @@ static inline bool isNaN(double x) {
 #define isPointer(type) 0
 #define isInteger(type) !isNaN((type) NAN)
 
-#endif /* __cplusplus */
-
 #define F(type, name, jnc_type_name) \
 (sizeof(type) == sizeof(name) && alignof(type) == alignof(name) && \
 isSigned(type) == isSigned(name)) ? JNC_TYPE(jnc_type_name) :
-#define getValue(type) \
+#define getFFITypeValue(type) \
 isPointer(type) ? JNC_TYPE(POINTER) : \
 !isInteger(type) ? -1 : \
 F(type, uint8_t, UINT8) \
@@ -89,6 +164,8 @@ F(type, uint64_t, UINT64) \
 F(type, int64_t, SINT64) \
 -1
 
+#endif /* __cplusplus */
+
 #define MAX_N 128
 #define INDEX_MASK 127
 static const char* typeName[MAX_N]; /* 1024B/512B on 64/32 bit machine */
@@ -96,7 +173,7 @@ static uint8_t typeValue[MAX_N]; /* 128B */
 
 #define COMPILE_ERROR_ON_ZERO(x) (sizeof(char[1 - 2 * !(x)]) - 1)
 #define ASSERT_NOT_M1(x) (x + COMPILE_ERROR_ON_ZERO(~(x)))
-#define DEFINE(name) {#name, ASSERT_NOT_M1(getValue(name))},
+#define DEFINE(name) {#name, ASSERT_NOT_M1(getFFITypeValue(name))},
 #define ARRAY_SIZE(x) (int)(sizeof(x) / sizeof((x)[0]))
 
 static int32_t hashString(const char *name) {
@@ -132,8 +209,8 @@ static void init() {
         /* maybe sizeof(long) = 4 or 8 */
         DEFINE(long)
         DEFINE(clock_t)
-        /* TODO enum */
-        // DEFINE(clockid_t)
+        /* enum on darwin */
+        DEFINE(clockid_t)
         DEFINE(dev_t)
         /* use int instead */
         // DEFINE(errno_t)
@@ -163,10 +240,12 @@ static void init() {
         DEFINE(uintptr_t)
         DEFINE(useconds_t)
         DEFINE(wchar_t)
-        /* linux: typedef int32_t *wctrans_t; */
-        /* aix: typedef wint_t (*wctrans_t)() */
-        /* solaris typedef unsigned int wctrans_t; */
-        /* mingw typedef wchar_t wctrans_t; */
+        /*
+         * linux: typedef int32_t *wctrans_t;
+         * aix: typedef wint_t (*wctrans_t)();
+         * solaris typedef unsigned int wctrans_t;
+         * mingw typedef wchar_t wctrans_t;
+         */
         DEFINE(wctrans_t)
         /* pointer type on OpenBSD */
         DEFINE(wctype_t)
