@@ -11,8 +11,8 @@ case "${OS}" in
   CYGWIN*|MINGW*|MSYS*)
     PKG_ADD=echo;;
   Linux)
-    PACKAGES="${PACKAGES} gcc g++"
     if which apt-get 2>/dev/null; then
+      PACKAGES="${PACKAGES} gcc g++"
       case "$JDK" in
         oraclejdk8)
           case "$ARCH" in
@@ -64,7 +64,7 @@ case "${OS}" in
     elif which yum 2>/dev/null; then
       # -q Run without output
       # -y assume yes
-      PACKAGES="${PACKAGES} g++ g++-multilib java-1.8.0-openjdk-devel"
+      PACKAGES="${PACKAGES} gcc gcc-c++ libgcc.i686 java-1.8.0-openjdk-devel"
       PKG_ADD="sudo yum install -qy"
     else
       echo 'Package manager not found' 2>&1
@@ -76,7 +76,7 @@ case "${OS}" in
     ;;
   FreeBSD)
     MAKE=gmake
-    PKG_ADD="sudo pkg install -q"
+    PKG_ADD="sudo pkg install -fy"
     case "$JDK" in
       openjdk7) PACKAGES="${PACKAGES} openjdk7";;
       *) PACKAGES="${PACKAGES} openjdk8";;
@@ -89,7 +89,7 @@ case "${OS}" in
       openjdk7) JDK_INSTALLNAME=jdk%1.7;;
       *) JDK_INSTALLNAME=jdk%1.8;;
     esac
-    PKG_ADD="sudo pkg_add -qv"
+    PKG_ADD="sudo pkg_add -I"
     PACKAGES="automake%1.15 libtool gcc texinfo ${MAKE} ${JDK_INSTALLNAME}"
     ;;
   *)
