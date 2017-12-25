@@ -114,7 +114,7 @@ class NativeMethods {
             default:
                 throw new UnsupportedOperationException("unsupport operation system arch");
         }
-        return prefix + osPrefix + "-" + archName + "/" + System.mapLibraryName("jnc");
+        return prefix + osPrefix + "/" + System.mapLibraryName("jnc-" + archName);
     }
 
     // access by native method

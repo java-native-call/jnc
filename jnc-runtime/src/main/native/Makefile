@@ -139,6 +139,7 @@ ARCH ?= $(shell uname -m | sed \
 MODEL = $(if $(filter %,$(findstring 64,$(ARCH)) $(filter $(ARCH), sparcv9 s390x)),64,32)
 
 PLATFORM ?= $(OS)-$(ARCH)
+ARCH_SUFFIX = -$(ARCH)
 LIB_PREFIX = lib
 LIBNAME = jnc
 JNI_EXT = so
@@ -160,11 +161,12 @@ JAVAH_INCLUDE_DIR ?= $(PWD)/../../../target/header
 FixPath = $(shell echo '$(1)' | sed 's/\\/\//g')
 OBJECT_DIR = $(call FixPath,$(BUILD_DIR)/$(PLATFORM))
 DIST_PREFIX ?= $(call FixPath,$(BUILD_DIR))
-DIST_DIR = $(DIST_PREFIX)/$(PLATFORM)
+DIST_DIR = $(DIST_PREFIX)/$(OS)
 
 SRCS = $(wildcard $(SOURCE_DIR)/*.c $(SOURCE_DIR)/*.cpp)
 OBJS = $(patsubst %,$(OBJECT_DIR)/%.$(OBJ_TYPE),$(basename $(notdir $(SRCS))))
-LIBJNC = $(call FixPath,$(DIST_DIR)/$(LIB_PREFIX)$(LIBNAME).$(JNI_EXT))
+LIBJNC = $(call FixPath,$(DIST_DIR)/$(LIB_PREFIX)$(LIBNAME)$(ARCH_SUFFIX).$(JNI_EXT))
+SONAME = $(LIBNAME).$(JNI_EXT)
 
 #LINK.c = $(if $(filter %.cpp,$(SRCS)),$(CXX),$(CC))
 LINK.c = $(CC)
@@ -188,6 +190,7 @@ ifeq (win32, $(OS))
     JNI_EXT = dll
 else ifeq (darwin, $(OS))
     PLATFORM = darwin
+    ARCH_SUFFIX =
     JNI_EXT = jnilib
     ARCHES =
     ifneq (, $(findstring $(ARCH), i386 x86_64))
@@ -198,7 +201,7 @@ else ifeq (darwin, $(OS))
     #SDK_HOME = $(shell xcode-select -print-path)
     #CFLAGS += -isysroot "$(SDK_HOME)" -I"$(SDK_HOME)/usr/include"
     SHARE_FLAGS += -mmacosx-version-min=10.1
-    LDFLAGS += -dynamiclib -install_name "$(@F)"
+    LDFLAGS += -dynamiclib -install_name $(SONAME)
     #LIBFFI_LDFLAGS += -Wl,-syslibroot,$(SDK_HOME)
     ARCHS_FLAGS = $(foreach arch, $(ARCHES), -arch $(arch))
 else ifneq (, $(findstring sunos, $(OS)))
