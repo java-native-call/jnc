@@ -259,11 +259,11 @@ public class Struct {
         return array;
     }
 
-    protected final Pointer[] array(Pointer[] array) {
+    protected final Address[] array(Address[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
-                array[i] = new Pointer();
+                array[i] = new Address();
             }
         } finally {
             arrayEnd();
@@ -271,11 +271,11 @@ public class Struct {
         return array;
     }
 
-    protected final Address[] array(Address[] array) {
+    protected final Pointer[] array(Pointer[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
-                array[i] = new Address();
+                array[i] = new Pointer();
             }
         } finally {
             arrayEnd();
@@ -493,11 +493,11 @@ public class Struct {
             super(type);
         }
 
-        public boolean get() {
+        public final boolean get() {
             return booleanValue();
         }
 
-        public void set(boolean value) {
+        public final void set(boolean value) {
             putBoolean(value);
         }
 
@@ -509,11 +509,11 @@ public class Struct {
             super(NativeType.SINT8);
         }
 
-        public byte get() {
+        public final byte get() {
             return byteValue();
         }
 
-        public void set(byte value) {
+        public final void set(byte value) {
             putInt(value);
         }
 
@@ -525,11 +525,11 @@ public class Struct {
             super(NativeType.SINT16);
         }
 
-        public short get() {
+        public final short get() {
             return shortValue();
         }
 
-        public void set(short value) {
+        public final void set(short value) {
             putInt(value);
         }
 
@@ -541,114 +541,12 @@ public class Struct {
             super(NativeType.SINT32);
         }
 
-        public int get() {
+        public final int get() {
             return intValue();
         }
 
-        public void set(int value) {
+        public final void set(int value) {
             putInt(value);
-        }
-
-    }
-
-    protected class int64_t extends NumberField {
-
-        public int64_t() {
-            super(NativeType.SINT64);
-        }
-
-        public long get() {
-            return longValue();
-        }
-
-        public void set(long value) {
-            putLong(value);
-        }
-
-    }
-
-    protected class uint8_t extends NumberField {
-
-        public uint8_t() {
-            super(NativeType.UINT8);
-        }
-
-        public short get() {
-            return byteValue();
-        }
-
-        public void set(short value) {
-            putInt(value);
-        }
-
-    }
-
-    protected class uint16_t extends NumberField {
-
-        public uint16_t() {
-            super(NativeType.UINT16);
-        }
-
-        public char get() {
-            return (char) intValue();
-        }
-
-        public void set(char value) {
-            putInt(value);
-        }
-
-    }
-
-    protected class uint32_t extends NumberField {
-
-        public uint32_t() {
-            super(NativeType.UINT32);
-        }
-
-        public long get() {
-            return longValue();
-        }
-
-        public void set(long value) {
-            putLong(value);
-        }
-
-    }
-
-    protected class uint64_t extends NumberField {
-
-        public uint64_t() {
-            super(NativeType.UINT64);
-        }
-
-        public long get() {
-            return longValue();
-        }
-
-        public void set(long value) {
-            putLong(value);
-        }
-
-    }
-
-    protected class bool extends AbstraceBoolean {
-
-        protected bool() {
-            super(NativeType.UINT8);
-        }
-
-    }
-
-    protected class Pointer {
-
-        private final Address address = new Address();
-
-        public jnc.foreign.Pointer get() {
-            return address.getPointer();
-        }
-
-        public void set(jnc.foreign.Pointer value) {
-            address.setPointer(value);
         }
 
     }
@@ -663,12 +561,76 @@ public class Struct {
             this(getForeign().findType(nativeType));
         }
 
-        public long get() {
+        public final long get() {
             return longValue();
         }
 
-        public void set(long value) {
+        public final void set(long value) {
             putLong(value);
+        }
+
+    }
+
+    protected class int64_t extends LongField {
+
+        public int64_t() {
+            super(NativeType.SINT64);
+        }
+
+    }
+
+    protected class uint8_t extends NumberField {
+
+        public uint8_t() {
+            super(NativeType.UINT8);
+        }
+
+        public final short get() {
+            return byteValue();
+        }
+
+        public final void set(short value) {
+            putInt(value);
+        }
+
+    }
+
+    protected class uint16_t extends NumberField {
+
+        public uint16_t() {
+            super(NativeType.UINT16);
+        }
+
+        public final char get() {
+            return (char) intValue();
+        }
+
+        public final void set(char value) {
+            putInt(value);
+        }
+
+    }
+
+    protected class uint32_t extends LongField {
+
+        public uint32_t() {
+            super(NativeType.UINT32);
+        }
+
+    }
+
+    protected class uint64_t extends LongField {
+
+        public uint64_t() {
+            super(NativeType.UINT64);
+        }
+
+    }
+
+    protected class bool extends AbstraceBoolean {
+
+        protected bool() {
+            super(NativeType.UINT8);
         }
 
     }
@@ -677,6 +639,20 @@ public class Struct {
 
         public Address() {
             super(NativeType.ADDRESS);
+        }
+
+    }
+
+    protected class Pointer {
+
+        private final Address address = new Address();
+
+        public final jnc.foreign.Pointer get() {
+            return address.getPointer();
+        }
+
+        public final void set(jnc.foreign.Pointer value) {
+            address.setPointer(value);
         }
 
     }
@@ -719,11 +695,11 @@ public class Struct {
             super(NativeType.FLOAT);
         }
 
-        public float get() {
+        public final float get() {
             return floatValue();
         }
 
-        public void set(float value) {
+        public final void set(float value) {
             putFloat(value);
         }
 
@@ -735,11 +711,11 @@ public class Struct {
             super(NativeType.DOUBLE);
         }
 
-        public double get() {
+        public final double get() {
             return doubleValue();
         }
 
-        public void set(double value) {
+        public final void set(double value) {
             putDouble(value);
         }
 
