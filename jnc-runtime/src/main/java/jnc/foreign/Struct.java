@@ -647,6 +647,9 @@ public class Struct {
 
         private final Address address = new Address();
 
+        public Pointer() {
+        }
+
         public final jnc.foreign.Pointer get() {
             return address.getPointer();
         }
