@@ -18,17 +18,17 @@ case "${OS}" in
           case "$ARCH" in
             i386|i486|i586|i686|x86)
               PACKAGES="${PACKAGES} g++-multilib"
-              JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd3019491ca4f6ddbe78cdb6d0/jdk-8u152-linux-i586.tar.gz
+              JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u162-b12/0da788060d494f5095bf8624735fa2f1/jdk-8u162-linux-i586.tar.gz
               ;;
             x86_64|amd64)
-              JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd3019491ca4f6ddbe78cdb6d0/jdk-8u152-linux-x64.tar.gz
+              JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u162-b12/0da788060d494f5095bf8624735fa2f1/jdk-8u162-linux-x64.tar.gz
               ;;
             *)
               echo "unknown arch ${ARCH}" 2>&1
               exit 1
               ;;
           esac
-          JAVA_HOME="`pwd`/jdk1.8.0_152"
+          JAVA_HOME="`pwd`/jdk1.8.0_162"
           ;;
         openjdk7|openjdk8)
           JDK_VERSION=`echo "$JDK" | sed -e 's/^openjdk//g'`
