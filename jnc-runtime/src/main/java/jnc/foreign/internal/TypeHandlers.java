@@ -30,9 +30,6 @@ class TypeHandlers {
         if (Struct.class.isAssignableFrom(type) || Pointer.class.isAssignableFrom(type)) {
             return BuiltinType.POINTER;
         }
-        if (Struct[].class.isAssignableFrom(type)) {
-            return BuiltinType.POINTER;
-        }
         if (type.isArray() && type.getComponentType().isPrimitive()) {
             return BuiltinType.POINTER;
         }
@@ -67,9 +64,6 @@ class TypeHandlers {
                     context.onFinish(() -> obj.fromNative(foreign, memory)).putLong(index, memory.address());
                 }
             };
-        }
-        if (Struct[].class.isAssignableFrom(type)) {
-            return (ParameterHandler<T>) StructArrayHandler.getInstance();
         }
         throw new UnsupportedOperationException("unsupported type " + type);
     }
