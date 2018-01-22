@@ -51,12 +51,12 @@
             <pElem>../../../target/build/libffi-darwin/include</pElem>
             <pElem>../../../target/build/libffi-win32-x86_64/include</pElem>
             <pElem>../../../target/build/libffi-win32-i386/include</pElem>
-            <pElem>D:/Program Files/Java/jdk1.8.0_152/include</pElem>
-            <pElem>D:/Program Files/Java/jdk1.8.0_152/include/win32</pElem>
-            <pElem>/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/include</pElem>
-            <pElem>/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/include/darwin</pElem>
-            <pElem>C:/Program Files/Java/jdk1.8.0_152/include</pElem>
-            <pElem>C:/Program Files/Java/jdk1.8.0_152/include/win32</pElem>
+            <pElem>D:/Program Files/Java/jdk1.8.0_162/include</pElem>
+            <pElem>D:/Program Files/Java/jdk1.8.0_162/include/win32</pElem>
+            <pElem>/Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/include</pElem>
+            <pElem>/Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/include/darwin</pElem>
+            <pElem>C:/Program Files/Java/jdk1.8.0_162/include</pElem>
+            <pElem>C:/Program Files/Java/jdk1.8.0_162/include/win32</pElem>
           </incDir>
         </cTool>
         <ccTool>
@@ -66,12 +66,12 @@
             <pElem>../../../target/build/libffi-darwin/include</pElem>
             <pElem>../../../target/build/libffi-win32-x86_64/include</pElem>
             <pElem>../../../target/build/libffi-win32-i386/include</pElem>
-            <pElem>D:/Program Files/Java/jdk1.8.0_152/include</pElem>
-            <pElem>D:/Program Files/Java/jdk1.8.0_152/include/win32</pElem>
-            <pElem>/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/include</pElem>
-            <pElem>/Library/Java/JavaVirtualMachines/jdk1.8.0_152.jdk/Contents/Home/include/darwin</pElem>
-            <pElem>C:/Program Files/Java/jdk1.8.0_152/include</pElem>
-            <pElem>C:/Program Files/Java/jdk1.8.0_152/include/win32</pElem>
+            <pElem>D:/Program Files/Java/jdk1.8.0_162/include</pElem>
+            <pElem>D:/Program Files/Java/jdk1.8.0_162/include/win32</pElem>
+            <pElem>/Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/include</pElem>
+            <pElem>/Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/include/darwin</pElem>
+            <pElem>C:/Program Files/Java/jdk1.8.0_162/include</pElem>
+            <pElem>C:/Program Files/Java/jdk1.8.0_162/include/win32</pElem>
           </incDir>
         </ccTool>
       </compileType>
