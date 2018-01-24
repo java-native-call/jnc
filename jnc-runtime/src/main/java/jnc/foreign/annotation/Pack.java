@@ -24,6 +24,6 @@ public @interface Pack {
      *
      * @return the pack value of this structure
      */
-    int value() default 0;
+    int value();
 
 }
