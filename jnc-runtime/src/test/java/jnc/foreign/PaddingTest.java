@@ -15,20 +15,22 @@
  */
 package jnc.foreign;
 
-public class Padding extends Struct {
+import org.junit.Test;
 
-    public Padding(int size) {
-        this(size, 1);
+/**
+ *
+ * @author zhanhb
+ */
+public class PaddingTest {
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegal1() {
+        new Padding(0);
     }
 
-    public Padding(int size, int alignment) {
-        if ((alignment & alignment - 1) != 0) {
-            throw new IllegalArgumentException("Illegal alignment " + alignment);
-        }
-        if (size < alignment) {
-            throw new IllegalArgumentException("size is smaller than alignment: size=" + size + ",align=" + alignment);
-        }
-        addField(size, alignment);
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegal2() {
+        new Padding(3, 3);
     }
 
 }
