@@ -46,14 +46,14 @@ public class Struct {
     private jnc.foreign.Pointer memory;
     private Struct enclosing;
     private int offset;
-    private String finish;
+    private State state = State.INITIAL;
 
     public Struct() {
         this.pack = getPack(getClass());
     }
 
     private int addField0(int offset, int size, int alignment) {
-        checkFinish();
+        checkState(State.FIELD_ADDING, State.FIELD_ADDING);
         this.size = Math.max(this.size, offset + checkSize(size));
         this.alignment = Math.max(this.alignment, Math.min(alignment, pack));
         return offset;
@@ -71,20 +71,22 @@ public class Struct {
         return addField0(nextOffset(alignment), size, alignment);
     }
 
-    private void finish(String reason) {
-        if (finish == null) {
-            finish = reason;
+    private void advance(State to) {
+        if (state.ordinal() < to.ordinal()) {
+            state = to;
         }
     }
 
-    private void checkFinish() {
-        if (finish != null) {
-            throw new IllegalStateException("Add field after call method '" + finish + "' on '" + this + "', adding field is only allowed in the constructor and before calling size()");
+    private void checkState(State check, State advance) {
+        if (state.ordinal() <= check.ordinal()) {
+            advance(advance);
+            return;
         }
+        state.throwException(this, advance);
     }
 
     public final int size() {
-        finish("size()");
+        advance(State.FIELD_FINISH);
         return align(size, alignment);
     }
 
@@ -97,7 +99,7 @@ public class Struct {
     }
 
     public final int alignment() {
-        finish("alignment()");
+        advance(State.FIELD_FINISH);
         return alignment;
     }
 
@@ -106,7 +108,7 @@ public class Struct {
     }
 
     public final jnc.foreign.Pointer getMemory() {
-        finish("getMemory()");
+        advance(State.MEMORY_ALLOCATED);
         jnc.foreign.Pointer m = memory;
         if (m == null) {
             Struct enclose = enclosing;
@@ -121,12 +123,12 @@ public class Struct {
     }
 
     public final Struct getEnclosing() {
-        finish("getEnclosing()");
+        advance(State.FIELD_FINISH);
         return enclosing;
     }
 
     final void setEnclosing(Struct enclosing, int offset) {
-        finish("struct.inner(this)");
+        checkState(State.FIELD_FINISH, State.OUTTER_ASSIGNED);
         this.enclosing = enclosing;
         this.offset = offset;
     }
@@ -413,6 +415,20 @@ public class Struct {
             arrayEnd();
         }
         return array;
+    }
+
+    private static enum State {
+
+        INITIAL,
+        FIELD_ADDING,
+        FIELD_FINISH,
+        OUTTER_ASSIGNED,
+        MEMORY_ALLOCATED;
+
+        void throwException(Struct struct, State advance) {
+            throw new IllegalStateException("status of struct: " + this + ", can't advance to " + advance);
+        }
+
     }
 
     private abstract class NumberField {

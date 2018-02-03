@@ -8,6 +8,7 @@ import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uint32_t;
 import jnc.foreign.typedef.uintptr_t;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +106,18 @@ public class StructTest {
         uint64Struct.setValue(-1);
         // double has only have 52 bit fraction, so the result is 2^64
         assertEquals(0x1.0p64, uint64Struct.doubleValue(), -1);
+    }
+
+    @Test
+    public void testAdvance() {
+        Struct struct = new Struct();
+        struct.size();
+        try {
+            struct.new size_t();
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException ex) {
+            // ok
+        }
     }
 
     private static class Wrapper extends Struct {
