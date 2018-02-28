@@ -645,7 +645,7 @@ public class Struct {
 
     protected class bool extends AbstraceBoolean {
 
-        protected bool() {
+        public bool() {
             super(NativeType.UINT8);
         }
 
