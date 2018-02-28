@@ -108,7 +108,7 @@ case "$1" in
       wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" "${JDK_DOWNLOAD_URL}"
       tar -xf `echo "${JDK_DOWNLOAD_URL}" | sed -e 's/^.*\///g'`
     fi
-    ${PKG_ADD} ${PACKAGES}
+    ${PKG_ADD} ${PACKAGES} || true
     ;;
   test|build|package)
     echo "JAVA_HOME: ${JAVA_HOME}"
