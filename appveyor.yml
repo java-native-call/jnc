@@ -10,7 +10,7 @@ environment:
     - OS_ARCH: x64
 before_test:
   - 'IF "%OS_ARCH%"=="x86" SET JAVA_HOME=C:\Program Files (x86)\Java\jdk1.8.0'
-  - 'IF "%OS_ARCH%"=="x86" SET SET PATH=%JAVA_HOME%\bin;%PATH%'
+  - 'IF "%OS_ARCH%"=="x86" SET PATH=%JAVA_HOME%\bin;%PATH%'
   - 'SET MINGW32_HOME=C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32'
   - 'SET MINGW64_HOME=C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64'
   - 'SET MSYS_HOME=C:\MinGW\msys\1.0'

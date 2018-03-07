@@ -289,7 +289,7 @@ class NativeMethods {
 
     native double invokeDouble(long cif, long function, long params, Object obj, long methodId);
 
-    native void invokeStruct(long cif, long function, long params, long struct);
+    native void invokeStruct(long cif, long function, long params, long struct, Object obj, long methodId);
 
     native long getMethodId(Method method);
 

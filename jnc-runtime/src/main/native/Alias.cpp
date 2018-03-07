@@ -71,10 +71,10 @@ namespace jnc_type_traits {
 #undef TRUE_TYPE
 
     template<typename T,
-    bool _IsEnum = is_enum<T>::value,
-    bool _IsPointer = is_pointer<T>::value,
-    bool _IsInteger = ::std::numeric_limits<T>::is_integer,
-    bool _IsFloat = is_floating_point<T>::value>
+    bool = is_enum<T>::value,
+    bool = is_pointer<T>::value,
+    bool = ::std::numeric_limits<T>::is_integer,
+    bool = is_floating_point<T>::value>
     struct get_ffi_type : integral_constant<int, -1 > {
     };
 
