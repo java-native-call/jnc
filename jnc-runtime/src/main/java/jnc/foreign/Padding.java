@@ -17,11 +17,11 @@ package jnc.foreign;
 
 public class Padding extends Struct {
 
-    public Padding(int size) {
+    Padding(int size) {
         this(size, 1);
     }
 
-    public Padding(int size, int alignment) {
+    Padding(int size, int alignment) {
         if ((alignment & alignment - 1) != 0) {
             throw new IllegalArgumentException("Illegal alignment " + alignment);
         }

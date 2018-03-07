@@ -417,6 +417,14 @@ public class Struct {
         return array;
     }
 
+    public final Padding padding(int size) {
+        return inner(new Padding(size));
+    }
+
+    public final Padding padding(int size, int alignment) {
+        return inner(new Padding(size, alignment));
+    }
+
     private static enum State {
 
         INITIAL,
