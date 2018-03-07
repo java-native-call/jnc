@@ -24,7 +24,7 @@ case "${OS}" in
               JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u162-b12/0da788060d494f5095bf8624735fa2f1/jdk-8u162-linux-x64.tar.gz
               ;;
             *)
-              echo "unknown arch ${ARCH}" 2>&1
+              echo "unknown arch ${ARCH}" >&2
               exit 1
               ;;
           esac
@@ -44,7 +44,7 @@ case "${OS}" in
               JAVA_DIRNAME="${JAVA_DIRNAME}-amd64"
               ;;
             *)
-              echo "unknown arch ${ARCH}" 2>&1
+              echo "unknown arch ${ARCH}" >&2
               exit 1
               ;;
           esac
@@ -67,7 +67,7 @@ case "${OS}" in
       PACKAGES="${PACKAGES} gcc gcc-c++ libgcc.i686 java-1.8.0-openjdk-devel"
       PKG_ADD="sudo yum install -qy"
     else
-      echo 'Package manager not found' 2>&1
+      echo 'Package manager not found' >&2
       exit 1
     fi
     ;;
@@ -93,7 +93,7 @@ case "${OS}" in
     PACKAGES="automake%1.15 libtool gcc texinfo ${MAKE} ${JDK_INSTALLNAME}"
     ;;
   *)
-    echo 'Platform not support' 2>&1
+    echo 'Platform not support' >&2
     exit 1
     ;;
 esac
