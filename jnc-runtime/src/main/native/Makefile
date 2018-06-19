@@ -200,7 +200,7 @@ else ifeq (darwin, $(OS))
     endif
     #SDK_HOME = $(shell xcode-select -print-path)
     #CFLAGS += -isysroot "$(SDK_HOME)" -I"$(SDK_HOME)/usr/include"
-    SHARE_FLAGS += -mmacosx-version-min=10.1
+    SHARE_FLAGS += -mmacosx-version-min=10.0
     LDFLAGS += -dynamiclib -install_name $(SONAME)
     #LIBFFI_LDFLAGS += -Wl,-syslibroot,$(SDK_HOME)
     ARCHS_FLAGS = $(foreach arch, $(ARCHES), -arch $(arch))
