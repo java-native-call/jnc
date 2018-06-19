@@ -174,7 +174,8 @@ static uint8_t typeValue[MAX_N]; /* 128B */
 #define COMPILE_ERROR_ON_ZERO(x) (sizeof(char[1 - 2 * !(x)]) - 1)
 #define ASSERT_NOT_M1(x) (x + COMPILE_ERROR_ON_ZERO(~(x)))
 #define DEFINE(name) {#name, ASSERT_NOT_M1(getFFITypeValue(name))},
-#define ARRAY_SIZE(x) (int)(sizeof(x) / sizeof((x)[0]))
+template<class T, size_t N> char (&array_size_helper(T (&array)[N]))[N];
+#define array_size(array)  (sizeof(array_size_helper(array)))
 
 static int32_t hashString(const char *name) {
     int32_t ret = 0;
@@ -298,8 +299,8 @@ static void init() {
         // DEFINE(trace_attr_t)
     };
 
-    int i = 0;
-    for (; i < ARRAY_SIZE(tuples); ++i) {
+    size_t i = 0;
+    for (; i < array_size(tuples); ++i) {
         add(tuples[i].name, tuples[i].v);
     }
 }
