@@ -317,7 +317,7 @@ $(OBJECT_DIR)/%.$(OBJ_TYPE) : $(SOURCE_DIR)/%.c $(LIBFFI_LIBS)
 $(OBJECT_DIR)/%.$(OBJ_TYPE) : $(SOURCE_DIR)/%.cpp $(LIBFFI_LIBS)
 	${MKDIR} -p "$(@D)"
 	${RM} "$@.d"
-	$(CXX) $(CFLAGS) $(INCLUDES) -MMD -MP -MF "$@.d" -o "$@" -c "$<"
+	$(CXX) $(CFLAGS) $(INCLUDES) -std=gnu++11 -MMD -MP -MF "$@.d" -o "$@" -c "$<"
 
 ifneq (, $(MAKE_VERSION))
     DEPFILES = $(wildcard $(addsuffix .d, $(OBJS)))
