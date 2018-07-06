@@ -25,8 +25,6 @@
 #include <sys/socket.h>
 #endif /* _WIN32 */
 
-#ifdef __cplusplus
-
 #include <limits>
 
 namespace jnc_type_traits {
@@ -131,41 +129,6 @@ namespace jnc_type_traits {
 
 #define getFFITypeValue(type) (jnc_type_traits::get_ffi_type<type>::value)
 
-#else /* __cplusplus */
-
-static inline bool isNaN(double x) {
-    return x != x;
-}
-
-#ifndef NAN
-#define NAN (0.0 / 0.0)
-#endif
-
-/* we may got warning for unsigned types, such as size_t,
- * here we use 1 to compare, it's also available */
-#define isSigned(type) ((type)-1 < 1)
-/* we can't detect pointer type with C code */
-#define isPointer(type) 0
-#define isInteger(type) !isNaN((type) NAN)
-
-#define F(type, name, jnc_type_name) \
-(sizeof(type) == sizeof(name) && alignof(type) == alignof(name) && \
-isSigned(type) == isSigned(name)) ? JNC_TYPE(jnc_type_name) :
-#define getFFITypeValue(type) \
-isPointer(type) ? JNC_TYPE(POINTER) : \
-!isInteger(type) ? -1 : \
-F(type, uint8_t, UINT8) \
-F(type, int8_t, SINT8) \
-F(type, uint16_t, UINT16) \
-F(type, int16_t, SINT16) \
-F(type, uint32_t, UINT32) \
-F(type, int32_t, SINT32) \
-F(type, uint64_t, UINT64) \
-F(type, int64_t, SINT64) \
--1
-
-#endif /* __cplusplus */
-
 #define MAX_N 128
 #define INDEX_MASK 127
 static const char* typeName[MAX_N]; /* 1024B/512B on 64/32 bit machine */
@@ -174,8 +137,11 @@ static uint8_t typeValue[MAX_N]; /* 128B */
 #define COMPILE_ERROR_ON_ZERO(x) (sizeof(char[1 - 2 * !(x)]) - 1)
 #define ASSERT_NOT_M1(x) (x + COMPILE_ERROR_ON_ZERO(~(x)))
 #define DEFINE(name) {#name, ASSERT_NOT_M1(getFFITypeValue(name))},
-template<class T, size_t N> char (&array_size_helper(T (&array)[N]))[N];
-#define array_size(array)  (sizeof(array_size_helper(array)))
+
+template<class T, size_t N>
+static constexpr size_t array_size(T(&)[N]) {
+    return N;
+}
 
 static int32_t hashString(const char *name) {
     int32_t ret = 0;
