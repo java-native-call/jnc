@@ -91,7 +91,7 @@ class AllocatedMemory extends SizedDirectMemory {
     private static class Free implements Runnable {
 
         private final long address;
-        private boolean finalized;
+        private volatile boolean finalized;
 
         Free(long addr) {
             this.address = addr;

@@ -96,7 +96,7 @@ class NativeLibrary implements NativeObject, Closeable {
     private static class Dlclose implements Runnable {
 
         private final long address;
-        private boolean closed;
+        private volatile boolean closed;
 
         Dlclose(long addr) {
             this.address = addr;
