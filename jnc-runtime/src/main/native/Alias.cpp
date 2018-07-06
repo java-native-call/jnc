@@ -30,7 +30,11 @@
 namespace jnc_type_traits {
 
     template <class _Tp, _Tp v> struct integral_constant {
-        static const _Tp value = v;
+
+        static constexpr _Tp value() {
+            return v;
+        }
+
     };
 
 #define TRUE_TYPE(x) x : integral_constant<bool, true> {}
@@ -69,10 +73,10 @@ namespace jnc_type_traits {
 #undef TRUE_TYPE
 
     template<typename T,
-    bool = is_enum<T>::value,
-    bool = is_pointer<T>::value,
+    bool = is_enum<T>::value(),
+    bool = is_pointer<T>::value(),
     bool = ::std::numeric_limits<T>::is_integer,
-    bool = is_floating_point<T>::value>
+    bool = is_floating_point<T>::value()>
     struct get_ffi_type : integral_constant<int, -1 > {
     };
 
@@ -86,7 +90,7 @@ namespace jnc_type_traits {
     template<typename T> struct size_helper {
         static const size_t size = sizeof (T);
         static const size_t align = alignof (T);
-        static const bool signed_ = is_signed<T>::value;
+        static const bool signed_ = is_signed<T>::value();
     };
 
     template<size_t, size_t, bool>
@@ -127,7 +131,7 @@ namespace jnc_type_traits {
 
 }
 
-#define getFFITypeValue(type) (jnc_type_traits::get_ffi_type<type>::value)
+#define getFFITypeValue(type) (jnc_type_traits::get_ffi_type<type>::value())
 
 #define MAX_N 128
 #define INDEX_MASK 127
