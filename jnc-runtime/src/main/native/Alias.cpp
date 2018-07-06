@@ -94,8 +94,7 @@ namespace jnc_type_traits {
     };
 
     template<size_t, size_t, bool>
-    struct get_ffi_type_by_size : integral_constant<int, -1 > {
-    };
+    struct get_ffi_type_by_size;
 
 #define DEF(type, value) \
     template<> struct get_ffi_type_by_size< \
@@ -138,9 +137,7 @@ namespace jnc_type_traits {
 static const char* typeName[MAX_N]; /* 1024B/512B on 64/32 bit machine */
 static uint8_t typeValue[MAX_N]; /* 128B */
 
-#define COMPILE_ERROR_ON_ZERO(x) (sizeof(char[1 - 2 * !(x)]) - 1)
-#define ASSERT_NOT_M1(x) (x + COMPILE_ERROR_ON_ZERO(~(x)))
-#define DEFINE(name) {#name, ASSERT_NOT_M1(getFFITypeValue(name))},
+#define DEFINE(name) {#name, getFFITypeValue(name)},
 
 template<class T, size_t N>
 static constexpr size_t array_size(T(&)[N]) noexcept {
