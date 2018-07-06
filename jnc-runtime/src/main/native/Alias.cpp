@@ -31,7 +31,7 @@ namespace jnc_type_traits {
 
     template <class _Tp, _Tp v> struct integral_constant {
 
-        static constexpr _Tp value() {
+        static constexpr _Tp value() noexcept {
             return v;
         }
 
@@ -143,11 +143,11 @@ static uint8_t typeValue[MAX_N]; /* 128B */
 #define DEFINE(name) {#name, ASSERT_NOT_M1(getFFITypeValue(name))},
 
 template<class T, size_t N>
-static constexpr size_t array_size(T(&)[N]) {
+static constexpr size_t array_size(T(&)[N]) noexcept {
     return N;
 }
 
-static int32_t hashString(const char *name) {
+static int32_t hashString(const char *name) noexcept {
     int32_t ret = 0;
     uint8_t ch;
     for (; (ch = *name) != 0; ++name) {
@@ -156,7 +156,7 @@ static int32_t hashString(const char *name) {
     return ret ^ ((uint32_t) ret >> 16);
 }
 
-static void add(const char * name, int value) {
+static void add(const char * name, int value) noexcept {
     int index = hashString(name) & INDEX_MASK, origin = index;
     do {
         if (likely(NULL == typeName[index])) {
@@ -275,7 +275,7 @@ static void init() {
     }
 }
 
-static int find(const char * name) {
+static int find(const char * name) noexcept {
     int index = hashString(name) & INDEX_MASK, origin = index;
     do {
         if (unlikely(NULL == typeName[index])) break;
