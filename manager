@@ -18,10 +18,10 @@ case "${OS}" in
           case "$ARCH" in
             i386|i486|i586|i686|x86)
               PACKAGES="${PACKAGES} g++-multilib"
-              JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-i586.tar.gz
+              JDK_DOWNLOAD_URL=https://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-i586.tar.gz
               ;;
             x86_64|amd64)
-              JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.tar.gz
+              JDK_DOWNLOAD_URL=https://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.tar.gz
               ;;
             *)
               echo "unknown arch ${ARCH}" >&2
