@@ -23,10 +23,18 @@
 #define SIG_STRING              JAVA_LANG_STR(String)
 #define SIG_OBJECT              JAVA_LANG_STR(Object)
 
+#define PP_THIRD_ARG(a,b,c,...) c
+#define VA_OPT_SUPPORTED_I(...) PP_THIRD_ARG(__VA_OPT__(,),true,false,)
+#define VA_OPT_SUPPORTED VA_OPT_SUPPORTED_I(?)
+
 #ifdef __cplusplus
 #define CALLJNI(env, action, ...) env->action(__VA_ARGS__)
 #else
+#if VA_OPT_SUPPORTED
+#define CALLJNI(env, action, ...) (*env)->action(env __VA_OPT__(,) __VA_ARGS__)
+#else
 #define CALLJNI(env, action, ...) (*env)->action(env, ##__VA_ARGS__)
+#endif
 #endif
 
 #define throwByName(env, name, msg)             \
