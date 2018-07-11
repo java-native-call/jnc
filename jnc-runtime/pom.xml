@@ -9,9 +9,7 @@
     <artifactId>jnc-runtime</artifactId>
 
     <properties>
-        <compiler.c.target>o</compiler.c.target>
         <java.version>1.8</java.version>
-        <make>make</make>
     </properties>
 
     <dependencies>
@@ -83,9 +81,14 @@
                                         <condition property="build.arch" value="i386">
                                             <matches pattern="^(?:i[3-6]86|x86|pentium)$" string="${os.arch}"/>
                                         </condition>
-                                        <property name="jni.build.dir" value="${project.build.directory}/build" />
+                                        <property name="build.arch" value="${os.arch}" />
+                                        <condition property="cmake.build.dir.name" value="cmake-build-universal">
+                                            <os family="mac" />
+                                        </condition>
+                                        <property name="cmake.build.dir.name" value="cmake-build-${build.arch}" />
+                                        <property name="cmake.build.dir" value="${project.basedir}/src/main/native/${cmake.build.dir.name}" />
                                         <property name="jni.dist.prefix" value="${project.basedir}/src/main/resources/jnc/foreign/internal/native"/>
-                                        <property name="jni.header.dir" value="${project.build.directory}/header" />
+                                        <property name="jni.header.dir" value="${project.basedir}/src/main/native" />
                                         <exec executable="${JAVA_HOME}/bin/javah" failonerror="true">
                                             <arg line="-classpath" />
                                             <arg line='"${project.build.outputDirectory}"' />
@@ -94,14 +97,21 @@
                                             <arg line="-jni" />
                                             <arg line="jnc.foreign.internal.NativeMethods" />
                                         </exec>
-                                        <exec dir="${project.basedir}/src/main/native" executable="${make}" failonerror="true">
-                                            <arg line="ARCH=${build.arch}" />
-                                            <arg line='"JAVAH_INCLUDE_DIR=${jni.header.dir}"' />
-                                            <arg line='"BUILD_DIR=${jni.build.dir}"' />
-                                            <arg line='"DIST_PREFIX=${jni.dist.prefix}"' />
-                                            <arg line="OBJ_TYPE=${compiler.c.target}" />
+                                        <mkdir dir="${cmake.build.dir}"/>
+                                        <exec dir="${cmake.build.dir}" executable="cmake" failonerror="true">
+                                            <arg line="-G" />
+                                            <arg line='"Unix Makefiles"' />
+                                            <arg line="-DCMAKE_BUILD_TYPE=MinSizeRel"/>
+                                            <arg line="-DSYSTEM_PROCESSOR=${build.arch}" />
+                                            <arg line='"-DDIST_PREFIX=${jni.dist.prefix}"' />
+                                            <arg line=".."/>
                                         </exec>
-                                        <copy todir="${project.build.outputDirectory}/jnc/foreign/internal/native">
+                                        <exec executable="cmake" failonerror="true">
+                                            <arg line="--build" />
+                                            <arg line='"${cmake.build.dir}"' />
+                                            <arg line="--target all -- -j 2" />
+                                        </exec>
+                                        <copy todir="${project.build.outputDirectory}/jnc/foreign/internal/native" preservelastmodified="true">
                                             <fileset dir="${project.basedir}/src/main/resources/jnc/foreign/internal/native"/>
                                         </copy>
                                     </target>

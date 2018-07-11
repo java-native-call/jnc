@@ -20,8 +20,8 @@
 #define UnknownError            JAVA_LANG_STR(UnknownError)
 #define UnsatisfiedLink         JAVA_LANG_STR(UnsatisfiedLinkError)
 #define UnsupportedOperation    JAVA_LANG_STR(UnsupportedOperationException)
-#define SIG_STRING              JAVA_LANG_STR(String)
-#define SIG_OBJECT              JAVA_LANG_STR(Object)
+#define SIG_STRING              "L" JAVA_LANG_STR(String) ";"
+#define SIG_OBJECT              "L" JAVA_LANG_STR(Object) ";"
 
 #define PP_THIRD_ARG(a,b,c,...) c
 #define VA_OPT_SUPPORTED_I(...) PP_THIRD_ARG(__VA_OPT__(,),true,false,)
@@ -55,8 +55,8 @@ do {                                                                        \
     CALLJNI(env, DeleteLocalRef, _jc);                                      \
 } while(false)
 #define throwByNameI(...) throwByNameA(i, "I", __VA_ARGS__)
-#define throwByNameS(...) throwByNameA(l, "L" SIG_STRING ";", __VA_ARGS__)
-#define throwByNameO(...) throwByNameA(l, "L" SIG_OBJECT ";", __VA_ARGS__)
+#define throwByNameS(...) throwByNameA(l, SIG_STRING, __VA_ARGS__)
+#define throwByNameO(...) throwByNameA(l, SIG_OBJECT, __VA_ARGS__)
 #define checkError(type, env, name, ret)    \
 do {                                        \
     if (unlikely(NULL == name)) {           \

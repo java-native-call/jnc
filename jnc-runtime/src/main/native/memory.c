@@ -37,7 +37,7 @@ Java_jnc_foreign_internal_NativeMethods_copyMemory
     void * psrc = j2vp(lsrc);
     checkNullPointer(env, pdst, /*void*/);
     checkNullPointer(env, psrc, /*void*/);
-    memcpy(pdst, psrc, n);
+    memcpy(pdst, psrc, (size_t) n);
 }
 
 /*

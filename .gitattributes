@@ -16,6 +16,7 @@
 .gitignore      text    eol=lf
 .gitmodules     text    eol=lf
 Makefile        text    eol=lf
+manager         text    eol=lf
 
 *.a             binary
 *.dll           binary
