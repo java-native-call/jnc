@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PACKAGES="automake libtool texinfo"
+PACKAGES="automake cmake libtool texinfo"
 OS=`uname -s`
 PKG_ADD=
 if [ x"$ARCH" == "x" ]; then
@@ -10,65 +10,69 @@ case "${OS}" in
   CYGWIN*|MINGW*|MSYS*)
     PKG_ADD=echo;;
   Linux)
-    if which apt-get 2>/dev/null; then
-      PACKAGES="${PACKAGES} gcc g++"
-      case "$JDK" in
-        oraclejdk8)
-          case "$ARCH" in
-            i386|i486|i586|i686|x86)
-              PACKAGES="${PACKAGES} g++-multilib"
-              JDK_DOWNLOAD_URL=https://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-i586.tar.gz
-              ;;
-            x86_64|amd64)
-              JDK_DOWNLOAD_URL=https://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.tar.gz
-              ;;
-            *)
-              echo "unknown arch ${ARCH}" >&2
-              exit 1
-              ;;
-          esac
-          JAVA_HOME="`pwd`/jdk1.8.0_172"
-          ;;
-        openjdk7|openjdk8)
-          JDK_VERSION=`echo "$JDK" | sed -e 's/^openjdk//g'`
-          JDK_INSTALLNAME=openjdk-${JDK_VERSION}-jdk
-          JAVA_DIRNAME=java-${JDK_VERSION}-openjdk
-          case "$ARCH" in
-            i386|i486|i586|i686|x86)
-              JDK_INSTALLNAME="${JDK_INSTALLNAME}:i386"
-              JAVA_DIRNAME="${JAVA_DIRNAME}-i386"
-              PACKAGES="${PACKAGES} g++-multilib"
-              ;;
-            x86_64|amd64)
-              JAVA_DIRNAME="${JAVA_DIRNAME}-amd64"
-              ;;
-            *)
-              echo "unknown arch ${ARCH}" >&2
-              exit 1
-              ;;
-          esac
-          PACKAGES="${PACKAGES} ${JDK_INSTALLNAME}"
-          JAVA_HOME="/usr/lib/jvm/${JAVA_DIRNAME}"
-          ;;
-        *)
-          # use default jdk
-          ;;
-      esac
-      echo 'cd /usr/lib/gcc/x86_64-linux-gnu/4.8 && cp -n crtbeginT.o crtbeginT.orig.o && cp -f crtbeginS.o crtbeginT.o' | sudo bash
-      # -q quiet, double q implies -y
-      # -y assume yes
+    if command -v apt-get 2>/dev/null; then
+      PACKAGES="${PACKAGES} gcc g++ g++-multilib"
+      sudo apt-get update -y
       # -f fix-broken attempt to correct a system with broken dependencies in place
-      PKG_ADD="sudo apt-get -qqf install"
-      export JAVA_HOME
-    elif which yum 2>/dev/null; then
-      # -q Run without output
+      PKG_ADD="sudo apt-get -f -y install"
+    elif command -v yum 2>/dev/null; then
+      PACKAGES="${PACKAGES} gcc gcc-c++ glibc-devel.i686 libgcc.i686 libstdc++-devel.i686 ncurses-devel.i686"
       # -y assume yes
-      PACKAGES="${PACKAGES} gcc gcc-c++ libgcc.i686 java-1.8.0-openjdk-devel"
-      PKG_ADD="sudo yum install -qy"
+      PKG_ADD="sudo yum install -y"
     else
       echo 'Package manager not found' >&2
       exit 1
     fi
+    case "$JDK" in
+      oraclejdk8)
+        case "$ARCH" in
+          i386|i486|i586|i686|x86)
+            JDK_DOWNLOAD_URL=https://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-i586.tar.gz
+            ;;
+          x86_64|amd64)
+            JDK_DOWNLOAD_URL=https://download.oracle.com/otn-pub/java/jdk/8u172-b11/a58eab1ec242421181065cdc37240b08/jdk-8u172-linux-x64.tar.gz
+            ;;
+          *)
+            echo "unknown arch ${ARCH}" >&2
+            exit 1
+            ;;
+        esac
+        JAVA_HOME="`pwd`/jdk1.8.0_172"
+        ;;
+      openjdk7|openjdk8)
+        JDK_VERSION=`echo "$JDK" | sed -e 's/^openjdk//g'`
+        case "$ARCH" in
+          i386|i486|i586|i686|x86)
+            if command -v apt-get 2>/dev/null; then
+                JDK_INSTALLNAME="openjdk-${JDK_VERSION}-jdk:i386"
+                JAVA_HOME="/usr/lib/jvm/java-${JDK_VERSION}-openjdk-i386"
+            else
+                JDK_INSTALLNAME="java-1.${JDK_VERSION}.0-openjdk-devel.i686"
+                JAVA_HOME=`ls /usr/lib/jvm/java-1.${JDK_VERSION}.0-openjdk-1.${JDK_VERSION}*.i386 -rd1 | head -1`
+            fi
+            ;;
+          x86_64|amd64)
+            if command -v apt-get 2>/dev/null; then
+              JDK_INSTALLNAME="openjdk-${JDK_VERSION}-jdk-jdk:amd64"
+              JAVA_HOME="/usr/lib/jvm/java-${JDK_VERSION}-openjdk-amd64"
+            else
+              JDK_INSTALLNAME="java-1.${JDK_VERSION}.0-openjdkk-devel.x86_64"
+              JAVA_HOME=`ls /usr/lib/jvm/java-1.${JDK_VERSION}.0-openjdk-1.${JDK_VERSION}*.x86_64 -rd1 | head -1`
+            fi
+            ;;
+          *)
+            echo "unknown arch ${ARCH}" >&2
+            exit 1
+            ;;
+        esac
+        PACKAGES="${PACKAGES} ${JDK_INSTALLNAME}"
+        ;;
+      *)
+        # use default jdk
+        ;;
+    esac
+    echo 'cd /usr/lib/gcc/x86_64-linux-gnu/4.8 && cp -n crtbeginT.o crtbeginT.orig.o && cp -f crtbeginS.o crtbeginT.o' | sudo bash
+    export JAVA_HOME
     ;;
   Darwin)
     PKG_ADD="brew install"
@@ -83,11 +87,16 @@ case "${OS}" in
     ;;
   OpenBSD)
     case "$JDK" in
-      openjdk7) JDK_INSTALLNAME=jdk%1.7;;
-      *) JDK_INSTALLNAME=jdk%1.8;;
+      openjdk7)
+        JAVA_HOME="/usr/local/jdk-1.7.0"
+        JDK_INSTALLNAME=jdk%1.7;;
+      *)
+        JAVA_HOME="/usr/local/jdk-1.8.0"
+        JDK_INSTALLNAME=jdk%1.8;;
     esac
     PKG_ADD="sudo pkg_add -I"
     PACKAGES="automake%1.15 libtool gcc texinfo gmake ${JDK_INSTALLNAME}"
+    export JAVA_HOME
     ;;
   *)
     echo 'Platform not support' >&2
