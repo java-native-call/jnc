@@ -1,8 +1,8 @@
 #include "jnc.h"
-#include <float.h>
-#include <math.h>
-#include <time.h>
-#include <wctype.h>
+#include <cfloat>
+#include <cmath>
+#include <ctime>
+#include <cwctype>
 
 #if (!defined(_MSC_VER) && defined(_WIN32)) || \
     defined(__unix__) || defined(__MACH__)
@@ -29,147 +29,104 @@
 
 namespace jnc_type_traits {
 
-    template <class _Tp, _Tp v> struct integral_constant {
+    template<class _Tp, _Tp v> struct integral_constant {
 
-        static constexpr _Tp value() noexcept {
-            return v;
-        }
-
+        enum : _Tp {
+            value = v
+        };
     };
 
-#define TRUE_TYPE(x) x : integral_constant<bool, true> {}
-#define FALSE_TYPE(x) x : integral_constant<bool, false> {}
+    template<bool v> using bool_constant = integral_constant<bool, v>;
 
-    FALSE_TYPE(template<typename T> struct is_pointer);
-    TRUE_TYPE(template<typename T> struct is_pointer<T*>);
+    template<class> struct is_pointer : bool_constant<false> {
+    };
 
-    FALSE_TYPE(template<typename T> struct is_floating_point);
-    TRUE_TYPE(template<> struct is_floating_point<float>);
-    TRUE_TYPE(template<> struct is_floating_point<double>);
-    TRUE_TYPE(template<> struct is_floating_point<long double>);
+    /* just ignore const and volatile */
+    template<class T> struct is_pointer<T *> : bool_constant<true> {
+    };
 
 #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)
-#define JNC_HAS_FETURE_IS_ENUM 1
-#elif defined(__is_enum)
-#define JNC_HAS_FETURE_IS_ENUM 1
-#elif defined(__has_feature)
+#define JNC_IS_ENUM(T) __is_enum(T)
+#elif defined(__clang__) && defined(__has_feature)
 #if __has_feature(is_enum)
-#define JNC_HAS_FETURE_IS_ENUM 1
+#define JNC_IS_ENUM(T) __is_enum(T)
 #else
-#define JNC_HAS_FETURE_IS_ENUM 0
+#define JNC_IS_ENUM(T) false
 #endif
 #else
-#define JNC_HAS_FETURE_IS_ENUM 0
+#define JNC_IS_ENUM(T) false
 #endif
-#if JNC_HAS_FETURE_IS_ENUM
 
-    template<typename T> struct is_enum : integral_constant<bool, __is_enum(T)> {
-    };
-
-#else
-    FALSE_TYPE(template<typename T> struct is_enum);
-#endif
-#undef FALSE_TYPE
-#undef TRUE_TYPE
-
-    template<typename T,
-    bool = is_enum<T>::value(),
-    bool = is_pointer<T>::value(),
-    bool = ::std::numeric_limits<T>::is_integer,
-    bool = is_floating_point<T>::value()>
-    struct get_ffi_type : integral_constant<int, -1 > {
-    };
-
-    template<typename T> struct get_ffi_type<T, false, true, false, false> : integral_constant<FFI_TYPE, JNC_TYPE(POINTER)> {
-    };
-
-    /* we may got warning for unsigned types, such as size_t,
-     * here we use 1 to compare, it's also available */
-    template<typename T> struct is_signed : integral_constant<bool, T(-1) < T(1)> { };
-
-    template<typename T> struct size_helper {
-        static const size_t size = sizeof (T);
-        static const size_t align = alignof (T);
-        static const bool signed_ = is_signed<T>::value();
-    };
+    /*
+     * must implement this, for std::numeric_limits::is_signed is false on enum
+     * use -1<1 rather -1<0 to avoid compiler warning.
+     */
+    template<class T> struct is_signed : bool_constant<T(-1) < T(1)> { };
 
     template<size_t, size_t, bool>
-    struct get_ffi_type_by_size;
+    struct match_ffi_type;
 
-#define DEF(type, value) \
-    template<> struct get_ffi_type_by_size< \
-    size_helper<type>::size, \
-    size_helper<type>::align, \
-    size_helper<type>::signed_ \
-    > : \
-    integral_constant<FFI_TYPE, JNC_TYPE(value)> {};
+#define DEF(T, v) template<> struct match_ffi_type<sizeof(T), alignof(T), is_signed<T>::value> : integral_constant<int, JNC_TYPE(v)> {}
 
-    DEF(uint8_t, UINT8)
-    DEF(int8_t, SINT8)
-    DEF(uint16_t, UINT16)
-    DEF(int16_t, SINT16)
-    DEF(uint32_t, UINT32)
-    DEF(int32_t, SINT32)
-    DEF(uint64_t, UINT64)
-    DEF(int64_t, SINT64)
+    DEF(uint8_t, UINT8);
+    DEF(int8_t, SINT8);
+    DEF(uint16_t, UINT16);
+    DEF(int16_t, SINT16);
+    DEF(uint32_t, UINT32);
+    DEF(int32_t, SINT32);
+    DEF(uint64_t, UINT64);
+    DEF(int64_t, SINT64);
 #undef DEF
 
-    template<typename T> struct get_ffi_type_integral : get_ffi_type_by_size<
-    size_helper<T>::size,
-    size_helper<T>::align,
-    size_helper<T>::signed_> {
+    template<class T, bool = JNC_IS_ENUM(T) || std::numeric_limits<T>::is_integer, bool = is_pointer<T>::value>
+    struct get_ffi_type;
+
+    template<class T> struct get_ffi_type<T, false, true> : integral_constant<int, JNC_TYPE(POINTER)> {
     };
 
-    /* integer */
-    template<typename T> struct get_ffi_type<T, false, false, true, false> : get_ffi_type_integral<T> {
-    };
-
-    /* enum */
-    template<typename T> struct get_ffi_type<T, true, false, false, false> : get_ffi_type_integral<T> {
+    /* integer or enum */
+    template<class T> struct get_ffi_type<T, true, false> : match_ffi_type<sizeof (T), alignof (T), is_signed<T>::value> {
     };
 
 }
 
-#define getFFITypeValue(type) (jnc_type_traits::get_ffi_type<type>::value())
-
 #define MAX_N 128
-#define INDEX_MASK 127
-static const char* typeName[MAX_N]; /* 1024B/512B on 64/32 bit machine */
+static const char *typeName[MAX_N]; /* 1024B/512B on 64/32 bit machine */
 static uint8_t typeValue[MAX_N]; /* 128B */
 
-#define DEFINE(name) {#name, getFFITypeValue(name)},
+#define DEFINE(name) {#name, jnc_type_traits::get_ffi_type<name>::value},
 
 template<class T, size_t N>
 static constexpr size_t array_size(T(&)[N]) noexcept {
     return N;
 }
 
-static int32_t hashString(const char *name) noexcept {
-    int32_t ret = 0;
+static uint32_t hashString(const char *name) noexcept {
+    uint32_t ret = 0;
     uint8_t ch;
-    for (; (ch = *name) != 0; ++name) {
-        ret = 97 * ret ^ ch;
+    for (; (ch = static_cast<uint8_t> (*name)) != 0; ++name) {
+        ret = 97U * ret ^ ch;
     }
-    return ret ^ ((uint32_t) ret >> 16);
+    return ret ^ ((uint32_t) ret >> 16U);
 }
 
-static void add(const char * name, int value) noexcept {
-    int index = hashString(name) & INDEX_MASK, origin = index;
+static void add(const char *name, int value) noexcept {
+    uint32_t index = hashString(name) % MAX_N, origin = index;
     do {
-        if (likely(NULL == typeName[index])) {
+        if (likely(nullptr == typeName[index])) {
             typeName[index] = name;
-            typeValue[index] = value;
+            typeValue[index] = static_cast<uint8_t> (value);
             return;
         }
-    } while (likely((index = (index + 1) & INDEX_MASK) != origin));
+    } while (likely((index = (index + 1U) % MAX_N) != origin));
 }
 
 /* initialize not thread safe */
-static void init() {
+static void init() noexcept {
     typedef void *pointer;
 
-    static const struct {
-        const char * name;
+    const struct {
+        const char *name;
         int8_t v;
     } tuples[] = {
         /* on some platform sizeof(int) = 2 */
@@ -266,18 +223,17 @@ static void init() {
         // DEFINE(trace_attr_t)
     };
 
-    size_t i = 0;
-    for (; i < array_size(tuples); ++i) {
+    for (size_t i = 0; i < array_size(tuples); ++i) {
         add(tuples[i].name, tuples[i].v);
     }
 }
 
-static int find(const char * name) noexcept {
-    int index = hashString(name) & INDEX_MASK, origin = index;
+static int find(const char *name) noexcept {
+    uint32_t index = hashString(name) % MAX_N, origin = index;
     do {
-        if (unlikely(NULL == typeName[index])) break;
+        if (unlikely(nullptr == typeName[index])) break;
         if (likely(!strcmp(typeName[index], name))) return typeValue[index];
-    } while (likely((index = (index + 1) & INDEX_MASK) != origin));
+    } while (likely((index = (index + 1) % MAX_N) != origin));
     return -1;
 }
 
@@ -286,9 +242,9 @@ static int find(const char * name) noexcept {
  * Method:    findAlias
  * Signature: (Ljava/lang/String;)I
  */
-EXTERNC JNIEXPORT jint JNICALL
+extern "C" JNIEXPORT jint JNICALL
 Java_jnc_foreign_internal_NativeMethods_findAlias
-(JNIEnv * env, jobject self, jstring string) {
+(JNIEnv *env, jobject self, jstring string) {
     checkNullPointer(env, string, 0);
     static volatile bool inited = false;
     if (unlikely(!inited)) {
@@ -301,11 +257,11 @@ Java_jnc_foreign_internal_NativeMethods_findAlias
             CALLJNI(env, MonitorExit, self);
         } else {
             /* lock failed, throw IllegalStateException if no exception in jni env */
-            if (!CALLJNI(env, ExceptionCheck)) throwByName(env, IllegalState, NULL);
+            if (!CALLJNI(env, ExceptionCheck)) throwByName(env, IllegalState, nullptr);
             return -1;
         }
-#if DEBUG
-        const char* type2name[] = {
+#ifndef NDEBUG
+        const char *type2name[] = {
             "void",
             "int?",
             "float",
@@ -343,7 +299,7 @@ Java_jnc_foreign_internal_NativeMethods_findAlias
         res = -1;
     }
     if (unlikely(res == -1)) {
-        throwByName(env, UnsupportedOperation, NULL);
+        throwByName(env, UnsupportedOperation, nullptr);
     }
     return res;
 }

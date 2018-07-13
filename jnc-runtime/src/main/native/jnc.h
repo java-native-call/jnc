@@ -138,29 +138,3 @@ CHECK_JNC_FFI(POINTER)
 #undef CHECK_JNC_FFI
 
 #define JNC_CALL(type) jnc_foreign_internal_NativeMethods_CONVENTION_##type
-
-#if __cplusplus >= 201103L
-// OK noop
-#elif !defined(__cplusplus)
-#define alignof(type) offsetof(struct { char _dummy_; __typeof__(type) member; }, member)
-#else
-
-namespace jnc_alignof_impl {
-
-    template<typename T> struct align_of {
-        char _dummy_;
-        T member;
-    };
-
-}
-
-#define alignof(type) offsetof(jnc_alignof_impl::align_of<__typeof__(type)>, member)
-#endif
-
-#ifndef EXTERNC
-#ifdef __cplusplus
-#define EXTERNC extern "C"
-#else /* __cplusplus */
-#define EXTERNC extern
-#endif /* __cplusplus */
-#endif /* EXTERNC */
