@@ -8,7 +8,7 @@
 #define GetLastError() errno
 #endif
 
-static inline void saveLastError(JNIEnv* env, jobject obj, jlong methodId, int error) {
+static inline void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int error) {
     if (likely(obj != NULL && methodId != 0)) {
         jmethodID method = j2p(methodId, jmethodID);
         jvalue v;
@@ -24,7 +24,7 @@ static inline void saveLastError(JNIEnv* env, jobject obj, jlong methodId, int e
  */
 JNIEXPORT jint JNICALL
 Java_jnc_foreign_internal_NativeMethods_sizeof_1ffi_1cif
-(JNIEnv * UNUSED(env), jobject UNUSED(self)) {
+(JNIEnv *UNUSED(env), jobject UNUSED(self)) {
     return sizeof (ffi_cif);
 }
 
@@ -41,26 +41,26 @@ Java_jnc_foreign_internal_NativeMethods_sizeof_1ffi_1cif
  */
 JNIEXPORT void JNICALL
 Java_jnc_foreign_internal_NativeMethods_prepareInvoke
-(JNIEnv * env, jobject UNUSED(self), jlong lcif, jint abi, jint nargs,
+(JNIEnv *env, jobject UNUSED(self), jlong lcif, jint abi, jint nargs,
         jlong lrtype, jlong latype) {
-    ffi_cif * pcif = j2c(lcif, ffi_cif);
-    ffi_type * prtype = j2c(lrtype, ffi_type);
-    ffi_type ** patype = j2c(latype, ffi_type*);
+    ffi_cif *pcif = j2c(lcif, ffi_cif);
+    ffi_type *prtype = j2c(lrtype, ffi_type);
+    ffi_type **patype = j2c(latype, ffi_type*);
     checkNullPointer(env, pcif, /*void*/);
     checkNullPointer(env, prtype, /*void*/);
     checkNullPointer(env, patype, /*void*/);
-    switch (ffi_prep_cif(pcif, GET_ABI(abi), nargs, prtype, patype)) {
-        case FFI_OK:
-            break;
-        case FFI_BAD_TYPEDEF:
-            throwByName(env, IllegalArgument, "Bad typedef");
-            break;
-        case FFI_BAD_ABI:
-            throwByName(env, IllegalArgument, "Bad abi");
-            break;
-        default:
-            throwByName(env, UnknownError, NULL);
-            break;
+    switch (ffi_prep_cif(pcif, (ffi_abi) GET_ABI(abi), (unsigned) nargs, prtype, patype)) {
+    case FFI_OK:
+        break;
+    case FFI_BAD_TYPEDEF:
+        throwByName(env, IllegalArgument, "Bad typedef");
+        break;
+    case FFI_BAD_ABI:
+        throwByName(env, IllegalArgument, "Bad abi");
+        break;
+    default:
+        throwByName(env, UnknownError, NULL);
+        break;
     }
 }
 

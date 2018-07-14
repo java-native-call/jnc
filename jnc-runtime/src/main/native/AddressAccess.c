@@ -42,11 +42,11 @@ DEFINE_GETTER(Double, jdouble);
  */
 JNIEXPORT void JNICALL
 Java_jnc_foreign_internal_NativeMethods_putStringUTF
-(JNIEnv * env, jobject UNUSED(self), jlong laddr, jstring value) {
-    void * paddr = j2vp(laddr);
+(JNIEnv *env, jobject UNUSED(self), jlong laddr, jstring value) {
+    void *paddr = j2vp(laddr);
     checkNullPointer(env, paddr, /*void*/);
     checkNullPointer(env, value, /*void*/);
-    DO_WITH_STRING_UTF(env, value, str, memcpy(paddr, str, _len + 1), /*void*/);
+    DO_WITH_STRING_UTF(env, value, str, memcpy(paddr, str, (size_t) (_len + 1)), /*void*/);
 }
 
 /*
@@ -57,7 +57,7 @@ Java_jnc_foreign_internal_NativeMethods_putStringUTF
 JNIEXPORT jstring JNICALL
 Java_jnc_foreign_internal_NativeMethods_getStringUTF
 (JNIEnv *env, jobject UNUSED(self), jlong laddr) {
-    char * paddr = j2c(laddr, char);
+    char *paddr = j2c(laddr, char);
     checkNullPointer(env, paddr, NULL);
     return (*env)->NewStringUTF(env, paddr);
 }
@@ -77,13 +77,13 @@ Java_jnc_foreign_internal_NativeMethods_getStringUTFN
         throwByName(env, IllegalArgument, "limit>=0");
         return NULL;
     }
-    char * paddr = j2c(laddr, char);
+    char *paddr = j2c(laddr, char);
     checkNullPointer(env, paddr, NULL);
-    size_t szLimit = MIN(limit, (jlong) ((SIZE_MAX >> 1) - 1));
+    size_t szLimit = (size_t) MIN(limit, (jlong) ((SIZE_MAX >> 1) - 1));
     if (likely(NULL != memchr(paddr, 0, szLimit))) {
         return (*env)->NewStringUTF(env, paddr);
     }
-    char * tmp = (char*) malloc(szLimit + 1);
+    char *tmp = (char *) malloc(szLimit + 1);
     checkOutOfMemory(env, tmp, NULL);
     memcpy(tmp, paddr, szLimit);
     tmp[szLimit] = 0;

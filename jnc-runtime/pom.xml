@@ -36,7 +36,7 @@
             <plugin>
                 <groupId>net.orfjackal.retrolambda</groupId>
                 <artifactId>retrolambda-maven-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>2.5.4</version>
                 <executions>
                     <execution>
                         <goals>
@@ -87,10 +87,10 @@
                                 <configuration>
                                     <target>
                                         <condition property="build.arch" value="x86_64">
-                                            <matches pattern="^(x(86[_-])?64|amd64|em64t)$" string="${os.arch}"/>
+                                            <matches pattern="^(?i)(?:x(86[_-])?64|amd64|em64t)$" string="${os.arch}"/>
                                         </condition>
                                         <condition property="build.arch" value="i386">
-                                            <matches pattern="^(?:i[3-6]86|x86|pentium)$" string="${os.arch}"/>
+                                            <matches pattern="^(?i)(?:i[3-6]86|x86|pentium)$" string="${os.arch}"/>
                                         </condition>
                                         <property name="build.arch" value="${os.arch}" />
                                         <condition property="cmake.build.dir.name" value="cmake-build-universal">

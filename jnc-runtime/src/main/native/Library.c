@@ -118,7 +118,7 @@ Java_jnc_foreign_internal_NativeMethods_dlopen
  */
 JNIEXPORT jlong JNICALL
 Java_jnc_foreign_internal_NativeMethods_dlsym
-(JNIEnv * env, jobject UNUSED(self), jlong lhandle, jstring symbol) {
+(JNIEnv *env, jobject UNUSED(self), jlong lhandle, jstring symbol) {
     HMODULE hModule = j2p(lhandle, HMODULE);
     checkNullPointer(env, hModule, 0);
     checkNullPointer(env, symbol, 0);
@@ -137,7 +137,7 @@ Java_jnc_foreign_internal_NativeMethods_dlsym
  */
 JNIEXPORT void JNICALL
 Java_jnc_foreign_internal_NativeMethods_dlclose
-(JNIEnv * env, jobject UNUSED(self), jlong lhandle) {
+(JNIEnv *env, jobject UNUSED(self), jlong lhandle) {
     HMODULE hModule = j2p(lhandle, HMODULE);
     checkNullPointer(env, hModule, /*void*/);
 #ifdef _WIN32

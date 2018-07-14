@@ -4,9 +4,9 @@
 #include <ctime>
 #include <cwctype>
 
+// see http://nadeausoftware.com/articles/2012/01/c_c_tip_how_use_compiler_predefined_macros_detect_operating_system
 #if (!defined(_MSC_VER) && defined(_WIN32)) || \
-    defined(__unix__) || defined(__MACH__)
-#include <pthread.h>
+    defined(__unix) || defined(__unix__) || defined(__MACH__)
 #include <sys/fcntl.h>
 #include <sys/param.h>
 #include <sys/stat.h>
@@ -188,8 +188,6 @@ static void init() noexcept {
         /* not an integer type */
         // DEFINE(mbstate_t)
         DEFINE(nlink_t)
-        /* not an integer type */
-        // DEFINE(pthread_attr_t)
         DEFINE(rlim_t)
         DEFINE(sa_family_t)
         /* maybe not an integer type */
@@ -218,7 +216,6 @@ static void init() noexcept {
         DEFINE(user_ulong_t)
 #endif /* __MACH__ */
 #endif /* _WIN32 */
-        // DEFINE(pthread_barrier_t)
         // DEFINE(timer_t)
         // DEFINE(trace_attr_t)
     };

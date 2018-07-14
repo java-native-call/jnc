@@ -7,16 +7,16 @@
  */
 JNIEXPORT jlong JNICALL
 Java_jnc_foreign_internal_NativeMethods_allocateMemory
-(JNIEnv * env, jobject UNUSED(self), jlong size) {
+(JNIEnv *env, jobject UNUSED(self), jlong size) {
     checkIllegalArgument(env, size >= 0, 0);
     if (unlikely((jlong) (size_t) size != size)) {
         throwByName(env, OutOfMemory, NULL);
         return 0;
     }
     if (unlikely(size == 0)) size = 1;
-    void * ret = malloc(size);
+    void *ret = malloc((size_t) size);
     checkOutOfMemory(env, ret, 0);
-    return p2j(memset(ret, 0, size));
+    return p2j(memset(ret, 0, (size_t) size));
 }
 
 /*
@@ -26,15 +26,15 @@ Java_jnc_foreign_internal_NativeMethods_allocateMemory
  */
 JNIEXPORT void JNICALL
 Java_jnc_foreign_internal_NativeMethods_copyMemory
-(JNIEnv * env, jobject UNUSED(self), jlong ldst, jlong lsrc, jlong n) {
+(JNIEnv *env, jobject UNUSED(self), jlong ldst, jlong lsrc, jlong n) {
     if (unlikely(n <= 0 || (jlong) (size_t) n != n)) {
         if (n != 0) {
             throwByName(env, IllegalArgument, NULL);
         }
         return;
     }
-    void * pdst = j2vp(ldst);
-    void * psrc = j2vp(lsrc);
+    void *pdst = j2vp(ldst);
+    void *psrc = j2vp(lsrc);
     checkNullPointer(env, pdst, /*void*/);
     checkNullPointer(env, psrc, /*void*/);
     memcpy(pdst, psrc, (size_t) n);
@@ -47,9 +47,9 @@ Java_jnc_foreign_internal_NativeMethods_copyMemory
  */
 JNIEXPORT void JNICALL
 Java_jnc_foreign_internal_NativeMethods_freeMemory
-(JNIEnv * UNUSED(env), jobject UNUSED(self), jlong laddr) {
+(JNIEnv *UNUSED(env), jobject UNUSED(self), jlong laddr) {
     /* free(NULL) should be noop, it's a good habbit to check null */
-    void * paddr = j2vp(laddr);
+    void *paddr = j2vp(laddr);
     if (likely(NULL != paddr)) {
         free(paddr);
     }
@@ -62,8 +62,8 @@ Java_jnc_foreign_internal_NativeMethods_freeMemory
  */
 JNIEXPORT jint JNICALL
 Java_jnc_foreign_internal_NativeMethods_strlen
-(JNIEnv * env, jobject UNUSED(self), jlong laddr) {
-    char * paddr = j2c(laddr, char);
+(JNIEnv *env, jobject UNUSED(self), jlong laddr) {
+    char *paddr = j2c(laddr, char);
     checkNullPointer(env, paddr, 0);
     return strlen(paddr);
 }
@@ -75,8 +75,8 @@ Java_jnc_foreign_internal_NativeMethods_strlen
  */
 JNIEXPORT jint JNICALL
 Java_jnc_foreign_internal_NativeMethods_wcslen
-(JNIEnv * env, jobject UNUSED(self), jlong laddr) {
-    wchar_t * paddr = j2c(laddr, wchar_t);
+(JNIEnv *env, jobject UNUSED(self), jlong laddr) {
+    wchar_t *paddr = j2c(laddr, wchar_t);
     checkNullPointer(env, paddr, 0);
     return wcslen(paddr);
 }

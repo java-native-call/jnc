@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.12)
 project(jnc C CXX)
 
 # CMAKE_SYSTEM_PROCESSOR from command line won't be visible here
@@ -10,13 +10,14 @@ endif ()
 string(REGEX REPLACE "^(([Xx]|[Ii][3-6])86|[Pp][Ee][Nn][Tt][Ii][Uu][Mm])$" "i386" SYSTEM_PROCESSOR ${SYSTEM_PROCESSOR})
 string(REGEX REPLACE "^(([Xx](86[_-])?|[Aa][Mm][Dd])64|[Ee][Mm]64[Tt])$" "x86_64" SYSTEM_PROCESSOR ${SYSTEM_PROCESSOR})
 if (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
+    set(triple ${SYSTEM_PROCESSOR}-pc-mingw32)
     string(REGEX REPLACE "^i386-" "i686-" HOST_PREFIX ${SYSTEM_PROCESSOR}-w64-mingw32)
-    set(CMAKE_C_COMPILER_TARGET ${HOST_PREFIX})
-    set(CMAKE_C_COMPILER ${CMAKE_C_COMPILER_TARGET}-gcc)
+    set(CMAKE_C_COMPILER_TARGET ${triple})
+    set(CMAKE_C_COMPILER ${HOST_PREFIX}-gcc)
     set(CMAKE_C_COMPILER_AR ${CMAKE_C_COMPILER}-ar)
     set(CMAKE_C_COMPILER_RANLIB ${CMAKE_C_COMPILER}-ranlib)
-    set(CMAKE_CXX_COMPILER_TARGET ${HOST_PREFIX})
-    set(CMAKE_CXX_COMPILER ${CMAKE_CXX_COMPILER_TARGET}-g++)
+    set(CMAKE_CXX_COMPILER_TARGET ${triple})
+    set(CMAKE_CXX_COMPILER ${HOST_PREFIX}-g++)
 endif ()
 
 set(LIBFFI_MAKE ${CMAKE_MAKE_PROGRAM})
@@ -35,8 +36,11 @@ else ()
 endif ()
 math(EXPR CMAKE_SIZEOF_VOID_P "${ARCH_BITS}/8")
 
-# cmake 3.1 supports CMAKE_CXX_STANDARD
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+if (${CMAKE_VERSION} VERSION_LESS 3.1)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+else ()
+    set(CMAKE_CXX_STANDARD 11)
+endif ()
 
 file(GLOB SOURCES *.h *.c *.cpp)
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
@@ -115,7 +119,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
                 DEPENDERS configure)
         ExternalProject_Add_Step(libffi build-${arch}
                 COMMAND ${LIBFFI_MAKE}
-                DEPENDEES configure
+                DEPENDEES configure-${arch}
                 DEPENDERS build
                 WORKING_DIRECTORY <BINARY_DIR>-${arch})
     endforeach ()
@@ -125,14 +129,13 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
     ExternalProject_Add_Step(libffi copy-darwin-header
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/darwin <BINARY_DIR>
             DEPENDERS install
-            DEPENDS $(MKDIR) ${libffi-darwin-headers})
+            DEPENDS ${libffi-darwin-headers})
 
     ExternalProject_Add_Step(libffi merge-libffi-static
             COMMAND ${CMAKE_COMMAND} -E make_directory <BINARY_DIR>/.libs
             COMMAND libtool -static -o <BINARY_DIR>/.libs/libffi.a
             <BINARY_DIR>-x86_64/.libs/libffi.a <BINARY_DIR>-i386/.libs/libffi.a
-            DEPENDEES build
-            DEPENDERS install)
+            DEPENDEES build DEPENDERS install)
 
     set(ARCH_FLAGS "-arch i386 -arch x86_64")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ARCH_FLAGS}")
@@ -141,7 +144,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
     set(LDFLAGS "${LDFLAGS} ${ARCH_FLAGS}")
 else ()
     if (CMAKE_C_COMPILER_TARGET)
-        set(HOST "--host" "${CMAKE_C_COMPILER_TARGET}")
+        set(HOST_CONFIG "--host" "${CMAKE_C_COMPILER_TARGET}")
     endif ()
     ExternalProject_Add_Step(libffi configure-impl
             COMMAND env ${LIBFFI_BUILD_ENV}
@@ -150,7 +153,7 @@ else ()
             "LDFLAGS=${LIBFFI_BUILD_LDFLAGS}"
             # use relative path, let autoconf determine style of the path
             ../libffi/configure ${LIBFFI_MAKE_CONFIG}
-            ${HOST} "--prefix=<INSTALL_DIR>"
+            ${HOST_CONFIG} "--prefix=<INSTALL_DIR>"
             DEPENDEES autogen
             DEPENDERS configure
             WORKING_DIRECTORY <BINARY_DIR>)
