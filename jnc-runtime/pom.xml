@@ -10,6 +10,7 @@
 
     <properties>
         <java.version>1.8</java.version>
+        <jni.header.dir>${project.basedir}/src/main/native</jni.header.dir>
     </properties>
 
     <dependencies>
@@ -47,6 +48,16 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-h</arg>
+                        <arg>${jni.header.dir}</arg>
+                    </compilerArgs>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -88,15 +99,6 @@
                                         <property name="cmake.build.dir.name" value="cmake-build-${build.arch}" />
                                         <property name="cmake.build.dir" value="${project.basedir}/src/main/native/${cmake.build.dir.name}" />
                                         <property name="jni.dist.prefix" value="${project.basedir}/src/main/resources/jnc/foreign/internal/native"/>
-                                        <property name="jni.header.dir" value="${project.basedir}/src/main/native" />
-                                        <exec executable="${JAVA_HOME}/bin/javah" failonerror="true">
-                                            <arg line="-classpath" />
-                                            <arg line='"${project.build.outputDirectory}"' />
-                                            <arg line="-d" />
-                                            <arg line='"${jni.header.dir}"' />
-                                            <arg line="-jni" />
-                                            <arg line="jnc.foreign.internal.NativeMethods" />
-                                        </exec>
                                         <mkdir dir="${cmake.build.dir}"/>
                                         <exec dir="${cmake.build.dir}" executable="cmake" failonerror="true">
                                             <arg line="-G" />
