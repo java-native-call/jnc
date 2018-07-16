@@ -1,32 +1,10 @@
 cmake_minimum_required(VERSION 2.8.12)
+
+if (NOT CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE default_toolchain.cmake)
+endif ()
+
 project(jnc C CXX)
-
-# CMAKE_SYSTEM_PROCESSOR from command line won't be visible here
-if (NOT SYSTEM_PROCESSOR)
-    set(SYSTEM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR})
-else ()
-    set(CMAKE_SYSTEM_PROCESSOR ${SYSTEM_PROCESSOR})
-endif ()
-string(REGEX REPLACE "^(([Xx]|[Ii][3-6])86|[Pp][Ee][Nn][Tt][Ii][Uu][Mm])$" "i386" SYSTEM_PROCESSOR ${SYSTEM_PROCESSOR})
-string(REGEX REPLACE "^(([Xx](86[_-])?|[Aa][Mm][Dd])64|[Ee][Mm]64[Tt])$" "x86_64" SYSTEM_PROCESSOR ${SYSTEM_PROCESSOR})
-if (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
-    set(triple ${SYSTEM_PROCESSOR}-pc-mingw32)
-    string(REGEX REPLACE "^i386-" "i686-" HOST_PREFIX ${SYSTEM_PROCESSOR}-w64-mingw32)
-    set(CMAKE_C_COMPILER_TARGET ${triple})
-    set(CMAKE_C_COMPILER ${HOST_PREFIX}-gcc)
-    set(CMAKE_C_COMPILER_AR ${CMAKE_C_COMPILER}-ar)
-    set(CMAKE_C_COMPILER_RANLIB ${CMAKE_C_COMPILER}-ranlib)
-    set(CMAKE_CXX_COMPILER_TARGET ${triple})
-    set(CMAKE_CXX_COMPILER ${HOST_PREFIX}-g++)
-endif ()
-
-set(LIBFFI_MAKE ${CMAKE_MAKE_PROGRAM})
-if (${CMAKE_HOST_SYSTEM_NAME} STREQUAL Windows)
-    set(CMAKE_AR ar)
-    set(CMAKE_RANLIB ranlib)
-    set(CMAKE_LINKER ld)
-    set(LIBFFI_MAKE make)
-endif ()
 
 string(FIND "${SYSTEM_PROCESSOR}" 64 ARCH_BITS)
 if (${ARCH_BITS} GREATER -1)
@@ -34,7 +12,6 @@ if (${ARCH_BITS} GREATER -1)
 else ()
     set(ARCH_BITS 32)
 endif ()
-math(EXPR CMAKE_SIZEOF_VOID_P "${ARCH_BITS}/8")
 
 if (${CMAKE_VERSION} VERSION_LESS 3.1)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -42,7 +19,7 @@ else ()
     set(CMAKE_CXX_STANDARD 11)
 endif ()
 
-file(GLOB SOURCES *.h *.c *.cpp)
+file(GLOB SOURCES jni/*.h *.h *.c *.cpp)
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 include(ExternalProject)
@@ -118,7 +95,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
                 DEPENDEES autogen
                 DEPENDERS configure)
         ExternalProject_Add_Step(libffi build-${arch}
-                COMMAND ${LIBFFI_MAKE}
+                COMMAND $(MAKE)
                 DEPENDEES configure-${arch}
                 DEPENDERS build
                 WORKING_DIRECTORY <BINARY_DIR>-${arch})
@@ -159,7 +136,7 @@ else ()
             WORKING_DIRECTORY <BINARY_DIR>)
 
     ExternalProject_Add_Step(libffi build-impl
-            COMMAND ${LIBFFI_MAKE}
+            COMMAND $(MAKE)
             DEPENDEES configure
             DEPENDERS build
             WORKING_DIRECTORY <BINARY_DIR>)
@@ -173,19 +150,18 @@ ExternalProject_Add_Step(libffi autogen
         WORKING_DIRECTORY <SOURCE_DIR>)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND strip ${STRIP_ARGS} "${CMAKE_BINARY_DIR}/${SONAME}")
+        COMMAND ${CMAKE_STRIP} ${STRIP_ARGS} "${CMAKE_BINARY_DIR}/${SONAME}")
 if (DIST_PREFIX)
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-        set(CMAKE_SYSTEM_NAME_LOWER win32)
+        set(JNI_DIRECTORY_NAME win32)
     else ()
-        string(TOLOWER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_LOWER)
+        string(TOLOWER "${CMAKE_SYSTEM_NAME}" JNI_DIRECTORY_NAME)
     endif ()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/${SONAME}" "${DIST_PREFIX}/${CMAKE_SYSTEM_NAME_LOWER}")
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/${SONAME}" "${DIST_PREFIX}/${JNI_DIRECTORY_NAME}")
 endif ()
 
-find_package(JNI REQUIRED)
-include_directories(${JNI_INCLUDE_DIRS} ${BINARY_DIR}/include)
+include_directories(jni ${BINARY_DIR}/include)
 set(LIBFFI_LIBS ${BINARY_DIR}/.libs/libffi.a)
 
 set(SHARE_FLAGS "${SHARE_FLAGS} -MMD -MP -Werror -fno-exceptions")

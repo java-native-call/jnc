@@ -1,0 +1,6 @@
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR ARM)
+set(CMAKE_C_COMPILER arm-linux-gnu-gcc)
+set(CMAKE_CXX_COMPILER arm-linux-gnu-g++)
+set(_CMAKE_TOOLCHAIN_PREFIX arm-linux-gnu-)
+set(CMAKE_C_COMPILER_TARGET arm-linux-gnu)
