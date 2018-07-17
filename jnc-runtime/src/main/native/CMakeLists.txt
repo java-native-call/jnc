@@ -19,7 +19,7 @@ else ()
     set(CMAKE_CXX_STANDARD 11)
 endif ()
 
-file(GLOB SOURCES jni/*.h *.h *.c *.cpp)
+file(GLOB SOURCES jni/*.h src/*.h src/*.c src/*.cpp)
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 include(ExternalProject)

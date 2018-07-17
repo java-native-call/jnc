@@ -1,8 +1,7 @@
 #pragma once
 
-#include "jnc_foreign_internal_NativeMethods.h"
+#include <jnc_foreign_internal_NativeMethods.h>
 #include <ffi.h>
-#include <jni.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
