@@ -36,21 +36,19 @@ typedef __int64 jlong;
 
 #if defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ > 2)
 #define JNIEXPORT __attribute__((visibility("default")))
-#define JNIIMPORT __attribute__((visibility("default")))
 #elif defined(__has_attribute) /* !__GNUC__ || __GNUC__ <= 4.2 */
 #if __has_attribute(visibility)
 #define JNIEXPORT __attribute__((visibility("default")))
-#define JNIIMPORT __attribute__((visibility("default")))
 #else /* __has_attribute(visibility) */
 #define JNIEXPORT
-#define JNIIMPORT
 #endif /* __has_attribute(visibility) */
 #else /* !__GNUC__ && !defined(__has_attribute) */
 #define JNIEXPORT
-#define JNIIMPORT
 #endif /* !__GNUC__ && !defined(__has_attribute) */
 
+#define JNIIMPORT
 #define JNICALL
+
 typedef int jint;
 #if defined(__LP64__) && __LP64__ /* for -Wundef */
 typedef long jlong;
