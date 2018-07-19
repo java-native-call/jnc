@@ -1,6 +1,5 @@
 package jnc.foreign.internal;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import jnc.foreign.Foreign;
@@ -35,7 +34,7 @@ class ForeignImpl implements Foreign {
 
     @Override
     @SuppressWarnings("FinalMethod")
-    public final void close() throws IOException {
+    public final void close() {
         throw new UnsupportedOperationException();
     }
 

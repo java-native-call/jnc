@@ -13,7 +13,7 @@ class TypeHandlers {
         if (returnType.isPrimitive() || Primitives.isWrapperType(returnType)) {
             return BuiltinType.findByType(returnType, annotation);
         }
-        return findType(returnType, annotation);
+        return findType(returnType);
     }
 
     static FFIType findParameterType(Class<?> parameterType, Typedef annotation) {
@@ -23,10 +23,10 @@ class TypeHandlers {
             }
             return BuiltinType.findByType(parameterType, annotation);
         }
-        return findType(parameterType, annotation);
+        return findType(parameterType);
     }
 
-    private static FFIType findType(Class<?> type, /*nullable*/ Typedef aliasA) {
+    private static FFIType findType(Class<?> type) {
         if (Struct.class.isAssignableFrom(type) || Pointer.class.isAssignableFrom(type)) {
             return BuiltinType.POINTER;
         }

@@ -53,7 +53,7 @@ case "${OS}" in
             ;;
           x86_64|amd64)
             if command -v apt-get 2>/dev/null; then
-              JDK_INSTALLNAME="openjdk-${JDK_VERSION}-jdk-jdk:amd64"
+              JDK_INSTALLNAME="openjdk-${JDK_VERSION}-jdk:amd64"
               JAVA_HOME="/usr/lib/jvm/java-${JDK_VERSION}-openjdk-amd64"
             else
               JDK_INSTALLNAME="java-1.${JDK_VERSION}.0-openjdkk-devel.x86_64"

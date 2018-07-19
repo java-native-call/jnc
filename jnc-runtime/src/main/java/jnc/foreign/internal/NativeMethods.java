@@ -9,8 +9,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.Buffer;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 import jnc.foreign.Arch;
 import jnc.foreign.OS;
 import jnc.foreign.Platform;
@@ -43,7 +46,7 @@ class NativeMethods {
     static final int CONVENTION_STDCALL = 1;
     static final int CONVENTION_SYSV = 2;
 
-    private static final Object LOCK = new Object();
+    private static final ReentrantLock lock = new ReentrantLock();
     private static final List<Runnable> ON_UNLOAD = new ArrayList<>(4);
 
     static {
@@ -121,8 +124,11 @@ class NativeMethods {
     @SuppressWarnings({"unused", "CollectionsToArray"})
     private static void onUnload() {
         Runnable[] array;
-        synchronized (LOCK) {
+        lock.lock();
+        try {
             array = ON_UNLOAD.toArray(new Runnable[ON_UNLOAD.size()]);
+        } finally {
+            lock.unlock();
         }
         for (int i = array.length - 1; i >= 0; --i) {
             array[i].run();
@@ -130,8 +136,7 @@ class NativeMethods {
     }
 
     /**
-     *
-     * @param id
+     * @param id type id
      * @return the address of the specified type
      */
     native long findType(int id) throws IllegalArgumentException;
@@ -139,8 +144,8 @@ class NativeMethods {
     /**
      * get type info size:32 alignment:16 type:16
      *
-     * @param address
-     * @return
+     * @param address address of ffi_type
+     * @return type info
      * @throws NullPointerException if address is zero
      * @see #findType(int)
      */
@@ -294,7 +299,6 @@ class NativeMethods {
     native long getMethodId(Method method);
 
     /**
-     *
      * @param buffer
      * @return address
      * @throws NullPointerException if buffer is null
@@ -302,10 +306,19 @@ class NativeMethods {
      */
     native long getBufferAddress(Buffer buffer);
 
-    void registUnload(Runnable runnable) {
-        runnable.getClass();
-        synchronized (LOCK) {
-            ON_UNLOAD.add(runnable);
+    void onFinalize(Set<Runnable> set) {
+        lock.lock();
+        try {
+            ON_UNLOAD.add(() -> {
+                for (Iterator<Runnable> it = set.iterator(); it.hasNext(); it.remove()) {
+                    try {
+                        it.next().run();
+                    } catch (Throwable ignored) {
+                    }
+                }
+            });
+        } finally {
+            lock.unlock();
         }
     }
 

@@ -10,16 +10,7 @@ class AllocatedMemory extends SizedDirectMemory {
     private static final Set<Runnable> SET = Collections.newSetFromMap(new ConcurrentHashMap<>(32));
 
     static {
-        nm.registUnload(() -> {
-            for (Runnable runnable : SET) {
-                try {
-                    runnable.run();
-                } catch (Throwable t) {
-                } finally {
-                    SET.remove(runnable);
-                }
-            }
-        });
+        nm.onFinalize(SET);
     }
 
     private static AllocatedMemory allocateImpl(int size) {

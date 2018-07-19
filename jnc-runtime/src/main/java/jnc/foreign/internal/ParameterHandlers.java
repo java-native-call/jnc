@@ -22,7 +22,7 @@ class ParameterHandlers {
         MAP = handlers;
     }
 
-    public static ParameterHandler<?> forHandler(Class<?> type) {
+    static ParameterHandler<?> forHandler(Class<?> type) {
         return MAP.get(Primitives.unwrap(type));
     }
 

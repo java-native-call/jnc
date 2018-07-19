@@ -23,7 +23,7 @@ public class Struct {
     }
 
     // visiable for testing
-    static int getPack(Class<?> type) {
+    private static int getPack(Class<?> type) {
         Pack pack = AnnotationUtil.getAnnotation(type, Pack.class);
         if (pack != null) {
             int value = pack.value();
@@ -425,7 +425,7 @@ public class Struct {
         return inner(new Padding(size, alignment));
     }
 
-    private static enum State {
+    private enum State {
 
         INITIAL,
         FIELD_ADDING,

@@ -81,6 +81,9 @@ ExternalProject_Add(libffi
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
 
+    set(LIB_FFI_A_ARCH)
+    set(ARCH_FLAGS)
+
     foreach (arch i386 x86_64)
         ExternalProject_Add_Step(libffi configure-${arch}
                 COMMAND ${CMAKE_COMMAND} -E make_directory <BINARY_DIR>-${arch}
@@ -99,6 +102,8 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
                 DEPENDEES configure-${arch}
                 DEPENDERS build
                 WORKING_DIRECTORY <BINARY_DIR>-${arch})
+        set(LIB_FFI_A_ARCH ${LIB_FFI_A_ARCH} <BINARY_DIR>-${arch}/.libs/libffi.a)
+        set(ARCH_FLAGS "${ARCH_FLAGS} -arch ${arch}")
     endforeach ()
 
     file(GLOB libffi-darwin-headers ${CMAKE_SOURCE_DIR}/darwin/include/*.h)
@@ -108,13 +113,12 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
             DEPENDERS install
             DEPENDS ${libffi-darwin-headers})
 
-    ExternalProject_Add_Step(libffi merge-libffi-static
+    ExternalProject_Add_Step(libffi merge-static
             COMMAND ${CMAKE_COMMAND} -E make_directory <BINARY_DIR>/.libs
             COMMAND libtool -static -o <BINARY_DIR>/.libs/libffi.a
-            <BINARY_DIR>-x86_64/.libs/libffi.a <BINARY_DIR>-i386/.libs/libffi.a
+            ${LIB_FFI_A_ARCH}
             DEPENDEES build DEPENDERS install)
 
-    set(ARCH_FLAGS "-arch i386 -arch x86_64")
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ARCH_FLAGS}")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARCH_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ARCH_FLAGS}")

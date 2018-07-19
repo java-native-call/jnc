@@ -20,7 +20,7 @@ class DefaultMethodInvoker {
         } catch (Exception ex) {
             try {
                 lookup = findLookup2();
-            } catch (Exception ex1) {
+            } catch (Exception ignored) {
             }
         }
         IMPL_LOOPUP = lookup;

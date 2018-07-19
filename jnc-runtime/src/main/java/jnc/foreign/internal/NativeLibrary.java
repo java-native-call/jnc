@@ -14,16 +14,7 @@ class NativeLibrary implements NativeObject, Closeable {
     private static final Set<Runnable> SET = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
     static {
-        nm.registUnload(() -> {
-            for (Runnable dlclose : SET) {
-                try {
-                    dlclose.run();
-                } catch (Throwable t) {
-                } finally {
-                    SET.remove(dlclose);
-                }
-            }
-        });
+        nm.onFinalize(SET);
     }
 
     static NativeLibrary open(String libname, int mode) {

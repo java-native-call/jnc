@@ -36,13 +36,13 @@ class BuiltinTypeHelper {
         MAP = map;
     }
 
-    static BuiltinType findByType(int type) {
+    private static BuiltinType findByType(int type) {
         try {
             BuiltinType result = TYPES[type];
             if (result != null) {
                 return result;
             }
-        } catch (IndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException ignored) {
         }
         throw new IllegalArgumentException("unsupport type " + type);
     }
@@ -53,7 +53,7 @@ class BuiltinTypeHelper {
             return findByType(nm.findAlias(name));
         } catch (IllegalArgumentException ex) {
             throw new AssertionError(ex);
-        } catch (UnsupportedOperationException ex) {
+        } catch (UnsupportedOperationException ignored) {
         }
         throw new IllegalArgumentException("unsupport alias " + name);
     }

@@ -31,14 +31,14 @@ class ffi_cif implements NativeObject {
             FFIType param = params[i];
             int align = Math.max(param.alignment(), pointerSize);
             alignment = Math.max(align, alignment);
-            size = Aligns.align(size, align);
+            size = Aligns.alignUp(size, align);
             offs[i] = size;
             size += param.size();
         }
-        size = Aligns.align(size, alignment);
+        size = Aligns.alignUp(size, alignment);
         DirectMemory cif = AllocatedMemory.allocate(1, SIZE_OF_FFI_CIF);
         PointerArray atypes = PointerArray.allocate(params);
-        int offset = Aligns.align(count * pointerSize, alignment);
+        int offset = Aligns.alignUp(count * pointerSize, alignment);
         nm.prepareInvoke(cif.address(), convention(callingMode), count, resultType.address(), atypes.address());
         this.offsets = offs;
         this.ffi_cif = cif;

@@ -5,7 +5,7 @@ class ThreadLocalError implements LastErrorHandler {
     /**
      * Use Integer to avoid memory leak.
      */
-    private static final ThreadLocal<Integer> THREAD_LOCAL = new ThreadLocal<Integer>();
+    private static final ThreadLocal<Integer> THREAD_LOCAL = new ThreadLocal<>();
     private static final ThreadLocalError INSTANCE = new ThreadLocalError();
 
     static int get() {

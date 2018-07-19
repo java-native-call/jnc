@@ -9,7 +9,7 @@ class PropertyUtil {
             if (value != null) {
                 return Boolean.parseBoolean(value);
             }
-        } catch (SecurityException ex) {
+        } catch (SecurityException ignored) {
         }
         return defaultValue;
     }
@@ -22,7 +22,7 @@ class PropertyUtil {
         }
     }
 
-    public static String getStringProperty(String key, String defaultValue) {
+    static String getStringProperty(String key, String defaultValue) {
         try {
             return System.getProperty(key, defaultValue);
         } catch (SecurityException ex) {
