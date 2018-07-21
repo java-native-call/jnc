@@ -28,6 +28,7 @@ public class TypedefTest {
         list.add("mode_t");
         list.add("off_t");
         list.add("pid_t");
+        // list.add("pointer"); // should not be used, just for test
         list.add("ptrdiff_t");
         // DEFINE(rsize_t)
         list.add("size_t");
@@ -52,6 +53,38 @@ public class TypedefTest {
         /* pointer type on OpenBSD */
         list.add("wctype_t");
         list.add("wint_t");
+        list.add("blkcnt_t");
+        list.add("blksize_t");
+        list.add("fsblkcnt_t");
+        list.add("fsfilcnt_t");
+        list.add("gid_t");
+        list.add("id_t");
+        list.add("in_addr_t");
+        list.add("in_port_t");
+        list.add("key_t");
+        /* not an integer type */
+        // DEFINE(mbstate_t)
+        list.add("nlink_t");
+        list.add("rlim_t");
+        list.add("sa_family_t");
+        /* maybe not an integer type */
+        /* https://www.gnu.org/software/libc/manual/html_node/Signal-Sets.html */
+        // DEFINE(sigset_t)
+        list.add("suseconds_t");
+        list.add("uid_t");
+        list.add("ct_rune_t");
+        list.add("rune_t");
+        list.add("sae_associd_t");
+        list.add("sae_connid_t");
+        // DEFINE(swblk_t)
+        list.add("syscall_arg_t");
+        list.add("user_addr_t");
+        list.add("user_long_t");
+        list.add("user_off_t");
+        list.add("user_size_t");
+        list.add("user_ssize_t");
+        list.add("user_time_t");
+        list.add("user_ulong_t");
         String pkg = Typedef.class.getPackage().getName();
         for (String string : list) {
             String className = string;
