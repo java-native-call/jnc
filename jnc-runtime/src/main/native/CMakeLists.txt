@@ -6,6 +6,10 @@ endif ()
 
 project(jnc C CXX)
 
+if (NOT SYSTEM_PROCESSOR)
+    set(SYSTEM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR})
+endif ()
+
 string(FIND "${SYSTEM_PROCESSOR}" 64 ARCH_BITS)
 if (${ARCH_BITS} GREATER -1)
     set(ARCH_BITS 64)
