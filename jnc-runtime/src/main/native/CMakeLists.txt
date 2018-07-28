@@ -76,7 +76,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
 endif ()
 
 ExternalProject_Add(libffi
-        GIT_REPOSITORY https://github.com/libffi/libffi.git GIT_TAG v3.2.1
+        GIT_REPOSITORY https://github.com/libffi/libffi.git GIT_TAG v3.3-rc0
         UPDATE_COMMAND true
         CONFIGURE_COMMAND true
         BUILD_COMMAND true
