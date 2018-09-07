@@ -8,13 +8,13 @@ cache:
 matrix:
   include:
     - os: osx
-      jdk: oraclejdk8
+      osx_image: xcode9.4
     - os: linux
       env: JDK=oraclejdk8 deploy=true
     - os: linux
       env: JDK=oraclejdk8 ARCH=i386
     - os: osx
-      jdk: oraclejdk8
+      osx_image: xcode9.4
       env: MAVEN_CONFIG=-Pnative
     - os: linux
       env: MAVEN_CONFIG=-Pnative JDK=oraclejdk8
