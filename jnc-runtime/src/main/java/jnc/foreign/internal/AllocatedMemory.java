@@ -3,6 +3,7 @@ package jnc.foreign.internal;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 class AllocatedMemory extends SizedDirectMemory {
 
@@ -81,8 +82,10 @@ class AllocatedMemory extends SizedDirectMemory {
 
     private static class Free implements Runnable {
 
-        private final long address;
-        private volatile boolean finalized;
+        private static final AtomicLongFieldUpdater<Free> UPDATER
+                = AtomicLongFieldUpdater.newUpdater(Free.class, "address");
+        @SuppressWarnings("unused")
+        private volatile long address;
 
         Free(long addr) {
             this.address = addr;
@@ -101,9 +104,9 @@ class AllocatedMemory extends SizedDirectMemory {
 
         @Override
         public synchronized void run() {
-            if (!finalized) {
-                finalized = true;
-                nm.freeMemory(address);
+            long addr = UPDATER.getAndSet(this, 0);
+            if (addr != 0) {
+                nm.freeMemory(addr);
             }
         }
     }

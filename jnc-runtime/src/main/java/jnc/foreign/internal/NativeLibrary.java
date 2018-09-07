@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 class NativeLibrary implements NativeObject, Closeable {
 
@@ -86,8 +87,10 @@ class NativeLibrary implements NativeObject, Closeable {
 
     private static class Dlclose implements Runnable {
 
-        private final long address;
-        private volatile boolean closed;
+        private static final AtomicLongFieldUpdater<Dlclose> UPDATER
+                = AtomicLongFieldUpdater.newUpdater(Dlclose.class, "address");
+        @SuppressWarnings("unused")
+        private volatile long address;
 
         Dlclose(long addr) {
             this.address = addr;
@@ -106,9 +109,9 @@ class NativeLibrary implements NativeObject, Closeable {
 
         @Override
         public synchronized void run() {
-            if (!closed) {
-                closed = true;
-                nm.dlclose(address);
+            long addr = UPDATER.getAndSet(this, 0);
+            if (addr != 0) {
+                nm.dlclose(addr);
             }
         }
 
