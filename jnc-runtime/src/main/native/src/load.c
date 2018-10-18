@@ -28,7 +28,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad
 JNIEXPORT jint JNICALL
 Java_jnc_foreign_internal_NativeMethods_getJniVersion
 (JNIEnv *env, jobject UNUSED(self)) {
-    return (*env)->GetVersion(env);
+    return CALLJNI(env, GetVersion);
 }
 
 /*
@@ -46,13 +46,13 @@ JNIEXPORT void JNICALL JNI_OnUnload
 (JavaVM *vm, void *UNUSED(reserved)) {
     JNIEnv *env;
     if (likely((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) == JNI_OK)) {
-        jclass class = (*env)->FindClass(env, "jnc/foreign/internal/NativeMethods");
+        jclass class = CALLJNI(env, FindClass, "jnc/foreign/internal/NativeMethods");
         if (likely(class != NULL)) {
-            jmethodID methodId = (*env)->GetStaticMethodID(env, class, "onUnload", "()V");
+            jmethodID methodId = CALLJNI(env, GetStaticMethodID, class, "onUnload", "()V");
             if (likely(methodId != NULL)) {
-                (*env)->CallStaticVoidMethodA(env, class, methodId, NULL);
+                CALLJNI(env, CallStaticVoidMethodA, class, methodId, NULL);
             }
-            (*env)->DeleteLocalRef(env, class);
+            CALLJNI(env, DeleteLocalRef, class);
         }
     }
 }

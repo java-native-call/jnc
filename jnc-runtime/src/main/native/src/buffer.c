@@ -9,7 +9,7 @@ JNIEXPORT jlong JNICALL
 Java_jnc_foreign_internal_NativeMethods_getBufferAddress
 (JNIEnv *env, jobject UNUSED(self), jobject buf) {
     checkNullPointer(env, buf, 0);
-    void *addr = (*env)->GetDirectBufferAddress(env, buf);
+    void *addr = CALLJNI(env, GetDirectBufferAddress, buf);
     if (unlikely(NULL == addr)) {
         throwByName(env, IllegalArgument, NULL);
         return 0;

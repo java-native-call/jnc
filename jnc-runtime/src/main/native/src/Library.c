@@ -16,10 +16,10 @@
    especially on old jdk */
 #define DO_WITH_STRING(env, jstring, name, stat, ret)               \
 do {                                                                \
-    jsize _len = (*env)->GetStringLength(env, jstring);             \
+    jsize _len = CALLJNI(env, GetStringLength, jstring);             \
     LPWSTR name = (LPWSTR) malloc((_len + 1) * sizeof (wchar_t));   \
     checkOutOfMemory(env, name, ret);                               \
-    (*env)->GetStringRegion(env, jstring, 0, _len, (jchar*) name);  \
+    CALLJNI(env, GetStringRegion, jstring, 0, _len, (jchar*) name);  \
     name[_len] = 0;                                                 \
     stat;                                                           \
     free(name);                                                     \
@@ -42,12 +42,12 @@ static void throwByLastError(JNIEnv * env, const char * type) {
     size_t len = wcslen(lpMsgBuf);
     if (likely(len > 0 && lpMsgBuf[len - 1] == '\n'))--len;
     if (likely(len > 0 && lpMsgBuf[len - 1] == '\r'))--len;
-    jstring string = (*env)->NewString(env, (jchar*) lpMsgBuf, len);
+    jstring string = CALLJNI(env, NewString, (jchar*) lpMsgBuf, len);
     LocalFree(lpMsgBuf);
     if (likely(NULL != string)) {
         throwByNameS(env, type, string);
-        (*env)->DeleteLocalRef(env, string);
-    } else if (!(*env)->ExceptionCheck(env)) {
+        CALLJNI(env, DeleteLocalRef, string);
+    } else if (!CALLJNI(env, ExceptionCheck)) {
         /* out of memory? */
         throwByName(env, OutOfMemory, NULL);
     }

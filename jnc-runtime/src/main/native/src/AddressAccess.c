@@ -59,7 +59,7 @@ Java_jnc_foreign_internal_NativeMethods_getStringUTF
 (JNIEnv *env, jobject UNUSED(self), jlong laddr) {
     char *paddr = j2c(laddr, char);
     checkNullPointer(env, paddr, NULL);
-    return (*env)->NewStringUTF(env, paddr);
+    return CALLJNI(env, NewStringUTF, paddr);
 }
 
 /*
@@ -72,7 +72,7 @@ Java_jnc_foreign_internal_NativeMethods_getStringUTFN
 (JNIEnv *env, jobject UNUSED(self), jlong laddr, jlong limit) {
     if (unlikely(limit <= 0)) {
         if (likely(limit == 0)) {
-            return (*env)->NewStringUTF(env, "");
+            return CALLJNI(env, NewStringUTF, "");
         }
         throwByName(env, IllegalArgument, "limit>=0");
         return NULL;
@@ -81,13 +81,13 @@ Java_jnc_foreign_internal_NativeMethods_getStringUTFN
     checkNullPointer(env, paddr, NULL);
     size_t szLimit = (size_t) MIN(limit, (jlong) ((SIZE_MAX >> 1) - 1));
     if (likely(NULL != memchr(paddr, 0, szLimit))) {
-        return (*env)->NewStringUTF(env, paddr);
+        return CALLJNI(env, NewStringUTF, paddr);
     }
     char *tmp = (char *) malloc(szLimit + 1);
     checkOutOfMemory(env, tmp, NULL);
     memcpy(tmp, paddr, szLimit);
     tmp[szLimit] = 0;
-    jstring result = (*env)->NewStringUTF(env, tmp);
+    jstring result = CALLJNI(env, NewStringUTF, tmp);
     free(tmp);
     return result;
 }

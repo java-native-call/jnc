@@ -13,7 +13,7 @@ static inline void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int e
         jmethodID method = j2p(methodId, jmethodID);
         jvalue v;
         v.i = error;
-        (*env)->CallVoidMethodA(env, obj, method, &v);
+        CALLJNI(env, CallVoidMethodA, obj, method, &v);
     }
 }
 
