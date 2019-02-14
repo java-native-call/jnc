@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-PACKAGES="automake cmake libtool texinfo"
+packages=(automake cmake libtool texinfo)
 OS=`uname -s`
 PKG_ADD=
-if [ x"$ARCH" == "x" ]; then
+if [[ -z "$ARCH" ]]; then
   ARCH=`uname -m`
 fi
 case "${OS}" in
@@ -11,12 +11,12 @@ case "${OS}" in
     PKG_ADD=echo;;
   Linux)
     if command -v apt-get 2>/dev/null; then
-      PACKAGES="${PACKAGES} gcc g++ g++-multilib"
+      packages+=(gcc g++ g++-multilib)
       sudo apt-get update -y
       # -f fix-broken attempt to correct a system with broken dependencies in place
       PKG_ADD="sudo apt-get -f -y install"
     elif command -v yum 2>/dev/null; then
-      PACKAGES="${PACKAGES} gcc gcc-c++ glibc-devel.i686 libgcc.i686 libstdc++-devel.i686 ncurses-devel.i686"
+      packages+=(gcc gcc-c++ glibc-devel.i686 libgcc.i686 libstdc++-devel.i686 ncurses-devel.i686)
       # -y assume yes
       PKG_ADD="sudo yum install -y"
     else
@@ -27,17 +27,17 @@ case "${OS}" in
       oraclejdk8)
         case "$ARCH" in
           i386|i486|i586|i686|x86)
-            JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u181-b13/96a7b8442fe848ef90c96a2fad6ed6d1/jdk-8u181-linux-i586.tar.gz
+            JDK_DOWNLOAD_URL=https://download.oracle.com/otn/java/jdk/8u192-b12/750e1c8617c5452694857ad95c3ee230/jdk-8u192-linux-i586.tar.gz
             ;;
           x86_64|amd64)
-            JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u181-b13/96a7b8442fe848ef90c96a2fad6ed6d1/jdk-8u181-linux-x64.tar.gz
+            JDK_DOWNLOAD_URL=http://download.oracle.com/otn/java/jdk/8u192-b12/750e1c8617c5452694857ad95c3ee230/jdk-8u192-linux-x64.tar.gz
             ;;
           *)
             echo "unknown arch ${ARCH}" >&2
             exit 1
             ;;
         esac
-        JAVA_HOME="`pwd`/jdk1.8.0_181"
+        JAVA_HOME="`pwd`/jdk1.8.0_192"
         ;;
       openjdk7|openjdk8)
         JDK_VERSION=`echo "$JDK" | sed -e 's/^openjdk//g'`
@@ -65,7 +65,7 @@ case "${OS}" in
             exit 1
             ;;
         esac
-        PACKAGES="${PACKAGES} ${JDK_INSTALLNAME}"
+        packages+=("$JDK_INSTALLNAME")
         ;;
       *)
         # use default jdk
@@ -79,11 +79,12 @@ case "${OS}" in
     ;;
   FreeBSD)
     PKG_ADD="sudo pkg install -fy"
-    case "$JDK" in
-      openjdk7) PACKAGES="${PACKAGES} openjdk7";;
-      *) PACKAGES="${PACKAGES} openjdk8";;
-    esac
-    PACKAGES="${PACKAGES} gmake"
+    if [[ "$JDK" == "openjdk7" ]]; then
+      packages+=(openjdk7)
+    else
+      packages+=(openjdk8)
+    fi
+    packages+=(gmake)
     ;;
   OpenBSD)
     case "$JDK" in
@@ -95,7 +96,7 @@ case "${OS}" in
         JDK_INSTALLNAME=jdk%1.8;;
     esac
     PKG_ADD="sudo pkg_add -I"
-    PACKAGES="automake%1.15 libtool gcc texinfo gmake ${JDK_INSTALLNAME}"
+    packages=(automake%1.15 libtool gcc texinfo gmake "${JDK_INSTALLNAME}")
     export JAVA_HOME
     ;;
   *)
@@ -110,15 +111,14 @@ case "$1" in
   reset)
     git fetch && rm -rf * && git reset --hard origin/master;;
   install)
-    if [ x"${JDK_DOWNLOAD_URL}" != "x" ]; then
-      wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" "${JDK_DOWNLOAD_URL}"
-      tar -xf `echo "${JDK_DOWNLOAD_URL}" | sed -e 's/^.*\///g'`
+    if [[ -n "${JDK_DOWNLOAD_URL}" ]]; then
+      wget -O- --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" "${JDK_DOWNLOAD_URL}" | tar -zxf-
     fi
-    ${PKG_ADD} ${PACKAGES} || true
+    ${PKG_ADD} "${packages[@]}" || true
     ;;
   test|build|package)
     echo "JAVA_HOME: ${JAVA_HOME}"
-    if [ x"$deploy" == xtrue ] &&  git config --get remote.origin.url 2>&1 | grep -F https://github.com/java-native-call/jnc-build -q && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    if [[ "$deploy" == true ]] &&  git config --get remote.origin.url 2>&1 | grep -F https://github.com/java-native-call/jnc-build -q && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
       chmod +x mvnw && ./mvnw -Duser.name=zhanhb deploy -s .travis/settings.xml $*
     else
       chmod +x mvnw && ./mvnw install $*
