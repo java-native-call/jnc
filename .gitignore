@@ -28,3 +28,6 @@ cmake-build-*/
 
 # header
 jnc_foreign_internal_*.h
+
+# flattened-maven-plugin
+.flattened-pom.xml

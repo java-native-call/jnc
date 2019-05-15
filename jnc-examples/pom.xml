@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.zhanhb</groupId>
         <artifactId>jnc-build</artifactId>
-        <version>0.0.1.BUILD-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <artifactId>jnc-examples</artifactId>
     <packaging>pom</packaging>
