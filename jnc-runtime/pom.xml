@@ -10,6 +10,9 @@
 
     <properties>
         <jni.header.dir>${project.basedir}/src/main/native/jni</jni.header.dir>
+        <module.name>com.github.zhanhb.jnc.runtime</module.name>
+        <osgi.export>!jnc.foreign.internal.*,jnc.*;-noimport:=true</osgi.export>
+        <osgi.import>javax.annotation.*;resolution:=optional,*</osgi.import>
     </properties>
 
     <dependencies>

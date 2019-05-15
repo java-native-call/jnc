@@ -8,6 +8,10 @@
     </parent>
     <artifactId>jnc-example-primitive</artifactId>
 
+    <properties>
+        <module.name>com.github.zhanhb.jnc.example.primitive</module.name>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

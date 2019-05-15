@@ -5,7 +5,7 @@
     <artifactId>jnc-build</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
-    <url>https://github.com/java-native-call/jnc-build</url>
+    <url>https://java-native-call.github.io</url>
     <inceptionYear>2017</inceptionYear>
 
     <licenses>
@@ -59,6 +59,7 @@
         <junit.version>4.12</junit.version>
         <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
+        <maven-bundle-plugin.version>4.2.0</maven-bundle-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
         <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
@@ -67,6 +68,12 @@
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <module.name>com.github.zhanhb.jnc</module.name>
+        <osgi.dynamicImport />
+        <osgi.export>${project.groupId}.*;version=${project.version};-noimport:=true</osgi.export>
+        <osgi.import>*</osgi.import>
+        <osgi.private />
+        <osgi.symbolicName>${project.groupId}.${project.artifactId}</osgi.symbolicName>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <revision>0.0.1.BUILD-SNAPSHOT</revision>
         <slf4j.version>1.7.26</slf4j.version>
@@ -128,6 +135,39 @@
                     </configuration>
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${maven-bundle-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>bundle-manifest</id>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>manifest</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <excludeDependencies>true</excludeDependencies>
+                        <manifestLocation>${project.build.directory}/osgi</manifestLocation>
+                        <supportedProjectTypes>
+                            <supportedProjectType>jar</supportedProjectType>
+                            <supportedProjectType>bundle</supportedProjectType>
+                            <supportedProjectType>war</supportedProjectType>
+                            <supportedProjectType>maven-plugin</supportedProjectType>
+                        </supportedProjectTypes>
+                        <instructions>
+                            <_nouses>true</_nouses>
+                            <Bundle-SymbolicName>${osgi.symbolicName}</Bundle-SymbolicName>
+                            <Export-Package>${osgi.export}</Export-Package>
+                            <Private-Package>${osgi.private}</Private-Package>
+                            <Import-Package>${osgi.import}</Import-Package>
+                            <DynamicImport-Package>${osgi.dynamicImport}</DynamicImport-Package>
+                            <Bundle-DocURL>${project.url}</Bundle-DocURL>
+                        </instructions>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>${maven-antrun-plugin.version}</version>
@@ -153,7 +193,9 @@
                     <version>${maven-jar-plugin.version}</version>
                     <configuration>
                         <archive>
+                            <manifestFile>${project.build.directory}/osgi/MANIFEST.MF</manifestFile>
                             <manifestEntries>
+                                <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
                                 <Built-By>zhanhb</Built-By>
                             </manifestEntries>
                             <manifest>
@@ -236,5 +278,13 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
     </build>
 </project>
