@@ -9,11 +9,14 @@
     <artifactId>jnc-runtime</artifactId>
 
     <properties>
-        <java.version>1.8</java.version>
         <jni.header.dir>${project.basedir}/src/main/native/jni</jni.header.dir>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -33,22 +36,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>net.orfjackal.retrolambda</groupId>
-                <artifactId>retrolambda-maven-plugin</artifactId>
-                <version>2.5.6</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>process-main</goal>
-                            <goal>process-test</goal>
-                        </goals>
-                        <configuration>
-                            <target>1.6</target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -87,10 +74,10 @@
                                 <configuration>
                                     <target>
                                         <condition property="build.arch" value="x86_64">
-                                            <matches pattern="^(?i)(?:x(86[_-])?64|amd64|em64t)$" string="${os.arch}"/>
+                                            <matches pattern="^(?i)(?:x(86[_-])?64|amd64|em64t)$" string="${os.arch}" />
                                         </condition>
                                         <condition property="build.arch" value="i386">
-                                            <matches pattern="^(?i)(?:i[3-6]86|x86|pentium)$" string="${os.arch}"/>
+                                            <matches pattern="^(?i)(?:i[3-6]86|x86|pentium)$" string="${os.arch}" />
                                         </condition>
                                         <property name="build.arch" value="${os.arch}" />
                                         <condition property="cmake.build.dir.name" value="cmake-build-universal">
@@ -98,23 +85,23 @@
                                         </condition>
                                         <property name="cmake.build.dir.name" value="cmake-build-${build.arch}" />
                                         <property name="cmake.build.dir" value="${project.basedir}/src/main/native/${cmake.build.dir.name}" />
-                                        <property name="jni.dist.prefix" value="${project.basedir}/src/main/resources/jnc/foreign/internal/native"/>
-                                        <mkdir dir="${cmake.build.dir}"/>
+                                        <property name="jni.dist.prefix" value="${project.basedir}/src/main/resources/jnc/foreign/internal/native" />
+                                        <mkdir dir="${cmake.build.dir}" />
                                         <exec dir="${cmake.build.dir}" executable="cmake" failonerror="true">
                                             <arg line="-G" />
-                                            <arg line='"Unix Makefiles"' />
-                                            <arg line="-DCMAKE_BUILD_TYPE=MinSizeRel"/>
+                                            <arg line="&quot;Unix Makefiles&quot;" />
+                                            <arg line="-DCMAKE_BUILD_TYPE=MinSizeRel" />
                                             <arg line="-DSYSTEM_PROCESSOR=${build.arch}" />
-                                            <arg line='"-DDIST_PREFIX=${jni.dist.prefix}"' />
-                                            <arg line=".."/>
+                                            <arg line="&quot;-DDIST_PREFIX=${jni.dist.prefix}&quot;" />
+                                            <arg line=".." />
                                         </exec>
                                         <exec executable="cmake" failonerror="true">
                                             <arg line="--build" />
-                                            <arg line='"${cmake.build.dir}"' />
+                                            <arg line="&quot;${cmake.build.dir}&quot;" />
                                             <arg line="--target all -- -j 2" />
                                         </exec>
-                                        <copy todir="${project.build.outputDirectory}/jnc/foreign/internal/native" preservelastmodified="true">
-                                            <fileset dir="${project.basedir}/src/main/resources/jnc/foreign/internal/native"/>
+                                        <copy preservelastmodified="true" todir="${project.build.outputDirectory}/jnc/foreign/internal/native">
+                                            <fileset dir="${project.basedir}/src/main/resources/jnc/foreign/internal/native" />
                                         </copy>
                                     </target>
                                 </configuration>

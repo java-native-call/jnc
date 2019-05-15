@@ -119,9 +119,9 @@ case "$1" in
   test|build|package)
     echo "JAVA_HOME: ${JAVA_HOME}"
     if [[ "$deploy" == true ]] &&  git config --get remote.origin.url 2>&1 | grep -F https://github.com/java-native-call/jnc-build -q && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-      chmod +x mvnw && ./mvnw -Duser.name=zhanhb deploy -s .travis/settings.xml $*
+      chmod +x mvnw && ./mvnw -Duser.name=zhanhb deploy -s .travis/settings.xml "$@"
     else
-      chmod +x mvnw && ./mvnw install $*
+      chmod +x mvnw && ./mvnw install "$@"
     fi
     ;;
 esac
