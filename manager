@@ -1,22 +1,28 @@
 #!/bin/bash
 set -e
-packages=(automake cmake libtool texinfo)
 OS=`uname -s`
-PKG_ADD=
+PKG_ADD=()
+PKG_LIST_INSTALLED=()
+if [[ -n "$MAVEN_CONFIG" ]]; then
+  packages=(automake cmake libtool texinfo)
+else
+  packages=()
+fi
 if [[ -z "$ARCH" ]]; then ARCH=`uname -m`; fi
 case "${OS}" in
   CYGWIN*|MINGW*|MSYS*)
-    PKG_ADD=echo;;
+    PKG_ADD=(echo)
+    ;;
   Linux)
     if command -v apt-get 2>/dev/null; then
       packages+=(gcc g++ g++-multilib)
       sudo apt-get update -y
       # -f fix-broken attempt to correct a system with broken dependencies in place
-      PKG_ADD="sudo apt-get -f -y install"
+      PKG_ADD=(sudo apt-get -f -y install)
     elif command -v yum 2>/dev/null; then
       packages+=(gcc gcc-c++ glibc-devel.i686 libgcc.i686 libstdc++-devel.i686 ncurses-devel.i686)
       # -y assume yes
-      PKG_ADD="sudo yum install -y"
+      PKG_ADD=(sudo yum install -y)
     else
       echo 'Package manager not found' >&2
       exit 1
@@ -54,7 +60,7 @@ case "${OS}" in
               JDK_INSTALL_NAME="openjdk-${JDK_VERSION}-jdk:amd64"
               export JAVA_HOME="/usr/lib/jvm/java-${JDK_VERSION}-openjdk-amd64"
             else
-              JDK_INSTALL_NAME="java-1.${JDK_VERSION}.0-openjdkk-devel.x86_64"
+              JDK_INSTALL_NAME="java-1.${JDK_VERSION}.0-openjdk-devel.x86_64"
               export JAVA_HOME=`ls /usr/lib/jvm/java-1.${JDK_VERSION}.0-openjdk-1.${JDK_VERSION}*.x86_64 -rd1 | head -1`
             fi
             ;;
@@ -72,14 +78,15 @@ case "${OS}" in
     echo 'cd /usr/lib/gcc/x86_64-linux-gnu/4.8 && cp -n crtbeginT.o crtbeginT.orig.o && cp -f crtbeginS.o crtbeginT.o' | sudo bash || true
     ;;
   Darwin)
-    PKG_ADD="brew install"
+    PKG_ADD=(brew install)
+    PKG_LIST_INSTALLED=(brew list)
     ;;
   FreeBSD)
-    PKG_ADD="sudo pkg install -fy"
+    PKG_ADD=(sudo pkg install -fy)
     packages+=(gmake openjdk8)
     ;;
   OpenBSD)
-    PKG_ADD="sudo pkg_add -I"
+    PKG_ADD=(sudo pkg_add -I)
     export JAVA_HOME="/usr/local/jdk-1.8.0"
     packages=(automake%1.15 libtool gcc texinfo gmake jdk%1.8)
     ;;
@@ -93,12 +100,25 @@ case "$1" in
   fetch)
     git fetch;;
   reset)
-    git fetch && rm -rf * && git reset --hard origin/master;;
+    git fetch
+    find . \( -path './.git/*' -o -print0 \) | xargs -0 rm -rf
+    git reset --hard origin/master
+    ;;
   install)
     if [[ -n "${JDK_DOWNLOAD_URL}" ]]; then
       wget -O- --no-cookies -c --header "Cookie: oraclelicense=a" "${JDK_DOWNLOAD_URL}" | tar -zxf-
     fi
-    ${PKG_ADD} "${packages[@]}" || true
+    if [[ "${#PKG_LIST_INSTALLED[@]}" -gt 0 ]]; then
+      n_packages=()
+      for pkg in "${packages[@]}"; do
+        if ! "${PKG_LIST_INSTALLED[@]}" "$pkg" 2>/dev/null; then
+          n_packages+=("$pkg")
+        fi
+      done
+      packages=("${n_packages[@]}")
+      unset n_packages
+    fi
+    if [[ "${#packages[@]}" -gt 0 ]]; then "${PKG_ADD[@]}" "${packages[@]}" || true; fi
     ;;
   test|build|package)
     echo "JAVA_HOME: ${JAVA_HOME}"
