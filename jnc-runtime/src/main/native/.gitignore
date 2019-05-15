@@ -1,0 +1,11 @@
+/CMakeCache.txt
+/CMakeFiles/
+/Makefile
+/cmake_install.cmake
+/compile_commands.json
+/jnc_i386.dll
+/jnc_x86_64.dll
+/libffi-prefix/
+/libjnc.jnilib
+/libjnc_i386.so
+/libjnc_x86_64.so
