@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -73,7 +74,7 @@ class NativeMethods {
                 Path tmp = Files.createTempFile("lib", System.mapLibraryName("jnc"));
                 try {
                     try (InputStream is = url.openStream()) {
-                        Files.copy(is, tmp);
+                        Files.copy(is, tmp, StandardCopyOption.REPLACE_EXISTING);
                     }
                     System.load(tmp.toAbsolutePath().toString());
                 } finally {
