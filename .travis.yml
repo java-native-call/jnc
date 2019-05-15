@@ -1,8 +1,7 @@
 language: java
-jdk: openjdk8
 before_cache:
 - ./mvnw build-helper:remove-project-artifact
-- find $HOME/.m2/ -type d -name '*-SNAPSHOT' -exec rm -rf {} \; 2>/dev/null
+- find $HOME/.m2/ -type d -name '*-SNAPSHOT' -print0 | xargs rm -rvf
 cache:
   directories:
     - $HOME/.m2
@@ -20,7 +19,5 @@ matrix:
     - os: linux
       env: MAVEN_CONFIG=-Pnative JDK=openjdk8 ARCH=i386
 sudo: required
-dist: trusty
-group: travis_lts
 install: chmod +x manager && ./manager install
 script: ./manager test

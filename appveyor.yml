@@ -17,6 +17,6 @@ before_test:
   - 'SET MINGW_HOME=C:\MinGW'
   - 'SET PATH=%MINGW64_HOME%\bin;%MINGW32_HOME%\bin;%MSYS_HOME%\bin;%MINGW_HOME%\bin;%PATH%'
 test_script:
-  - mvnw install -B
+  - mvnw install
 cache:
   - '%USERPROFILE%\.m2'

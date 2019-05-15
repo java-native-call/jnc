@@ -153,6 +153,9 @@
                     <version>${maven-jar-plugin.version}</version>
                     <configuration>
                         <archive>
+                            <manifestEntries>
+                                <Built-By>zhanhb</Built-By>
+                            </manifestEntries>
                             <manifest>
                                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>

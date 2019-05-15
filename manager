@@ -1,11 +1,9 @@
 #!/bin/bash
-
+set -e
 packages=(automake cmake libtool texinfo)
 OS=`uname -s`
 PKG_ADD=
-if [[ -z "$ARCH" ]]; then
-  ARCH=`uname -m`
-fi
+if [[ -z "$ARCH" ]]; then ARCH=`uname -m`; fi
 case "${OS}" in
   CYGWIN*|MINGW*|MSYS*)
     PKG_ADD=echo;;
@@ -27,37 +25,37 @@ case "${OS}" in
       oraclejdk8)
         case "$ARCH" in
           i386|i486|i586|i686|x86)
-            JDK_DOWNLOAD_URL=https://download.oracle.com/otn/java/jdk/8u192-b12/750e1c8617c5452694857ad95c3ee230/jdk-8u192-linux-i586.tar.gz
+            JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-i586.tar.gz
             ;;
           x86_64|amd64)
-            JDK_DOWNLOAD_URL=http://download.oracle.com/otn/java/jdk/8u192-b12/750e1c8617c5452694857ad95c3ee230/jdk-8u192-linux-x64.tar.gz
+            JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz
             ;;
           *)
             echo "unknown arch ${ARCH}" >&2
             exit 1
             ;;
         esac
-        JAVA_HOME="`pwd`/jdk1.8.0_192"
+        JAVA_HOME="`pwd`/jdk1.8.0_131"
         ;;
-      openjdk7|openjdk8)
+      openjdk8)
         JDK_VERSION=`echo "$JDK" | sed -e 's/^openjdk//g'`
         case "$ARCH" in
           i386|i486|i586|i686|x86)
             if command -v apt-get 2>/dev/null; then
-                JDK_INSTALLNAME="openjdk-${JDK_VERSION}-jdk:i386"
-                JAVA_HOME="/usr/lib/jvm/java-${JDK_VERSION}-openjdk-i386"
+                JDK_INSTALL_NAME="openjdk-${JDK_VERSION}-jdk:i386"
+                export JAVA_HOME="/usr/lib/jvm/java-${JDK_VERSION}-openjdk-i386"
             else
-                JDK_INSTALLNAME="java-1.${JDK_VERSION}.0-openjdk-devel.i686"
-                JAVA_HOME=`ls /usr/lib/jvm/java-1.${JDK_VERSION}.0-openjdk-1.${JDK_VERSION}*.i386 -rd1 | head -1`
+                JDK_INSTALL_NAME="java-1.${JDK_VERSION}.0-openjdk-devel.i686"
+                export JAVA_HOME=`ls /usr/lib/jvm/java-1.${JDK_VERSION}.0-openjdk-1.${JDK_VERSION}*.i386 -rd1 | head -1`
             fi
             ;;
           x86_64|amd64)
             if command -v apt-get 2>/dev/null; then
-              JDK_INSTALLNAME="openjdk-${JDK_VERSION}-jdk:amd64"
-              JAVA_HOME="/usr/lib/jvm/java-${JDK_VERSION}-openjdk-amd64"
+              JDK_INSTALL_NAME="openjdk-${JDK_VERSION}-jdk:amd64"
+              export JAVA_HOME="/usr/lib/jvm/java-${JDK_VERSION}-openjdk-amd64"
             else
-              JDK_INSTALLNAME="java-1.${JDK_VERSION}.0-openjdkk-devel.x86_64"
-              JAVA_HOME=`ls /usr/lib/jvm/java-1.${JDK_VERSION}.0-openjdk-1.${JDK_VERSION}*.x86_64 -rd1 | head -1`
+              JDK_INSTALL_NAME="java-1.${JDK_VERSION}.0-openjdkk-devel.x86_64"
+              export JAVA_HOME=`ls /usr/lib/jvm/java-1.${JDK_VERSION}.0-openjdk-1.${JDK_VERSION}*.x86_64 -rd1 | head -1`
             fi
             ;;
           *)
@@ -65,39 +63,25 @@ case "${OS}" in
             exit 1
             ;;
         esac
-        packages+=("$JDK_INSTALLNAME")
+        packages+=("$JDK_INSTALL_NAME")
         ;;
       *)
         # use default jdk
         ;;
     esac
-    echo 'cd /usr/lib/gcc/x86_64-linux-gnu/4.8 && cp -n crtbeginT.o crtbeginT.orig.o && cp -f crtbeginS.o crtbeginT.o' | sudo bash
-    export JAVA_HOME
+    echo 'cd /usr/lib/gcc/x86_64-linux-gnu/4.8 && cp -n crtbeginT.o crtbeginT.orig.o && cp -f crtbeginS.o crtbeginT.o' | sudo bash || true
     ;;
   Darwin)
     PKG_ADD="brew install"
     ;;
   FreeBSD)
     PKG_ADD="sudo pkg install -fy"
-    if [[ "$JDK" == "openjdk7" ]]; then
-      packages+=(openjdk7)
-    else
-      packages+=(openjdk8)
-    fi
-    packages+=(gmake)
+    packages+=(gmake openjdk8)
     ;;
   OpenBSD)
-    case "$JDK" in
-      openjdk7)
-        JAVA_HOME="/usr/local/jdk-1.7.0"
-        JDK_INSTALLNAME=jdk%1.7;;
-      *)
-        JAVA_HOME="/usr/local/jdk-1.8.0"
-        JDK_INSTALLNAME=jdk%1.8;;
-    esac
     PKG_ADD="sudo pkg_add -I"
-    packages=(automake%1.15 libtool gcc texinfo gmake "${JDK_INSTALLNAME}")
-    export JAVA_HOME
+    export JAVA_HOME="/usr/local/jdk-1.8.0"
+    packages=(automake%1.15 libtool gcc texinfo gmake jdk%1.8)
     ;;
   *)
     echo 'Platform not support' >&2
@@ -112,14 +96,14 @@ case "$1" in
     git fetch && rm -rf * && git reset --hard origin/master;;
   install)
     if [[ -n "${JDK_DOWNLOAD_URL}" ]]; then
-      wget -O- --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" "${JDK_DOWNLOAD_URL}" | tar -zxf-
+      wget -O- --no-cookies -c --header "Cookie: oraclelicense=a" "${JDK_DOWNLOAD_URL}" | tar -zxf-
     fi
     ${PKG_ADD} "${packages[@]}" || true
     ;;
   test|build|package)
     echo "JAVA_HOME: ${JAVA_HOME}"
     if [[ "$deploy" == true ]] &&  git config --get remote.origin.url 2>&1 | grep -F https://github.com/java-native-call/jnc-build -q && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-      chmod +x mvnw && ./mvnw -Duser.name=zhanhb deploy -s .travis/settings.xml "$@"
+      chmod +x mvnw && ./mvnw deploy -s .travis/settings.xml "$@"
     else
       chmod +x mvnw && ./mvnw install "$@"
     fi
