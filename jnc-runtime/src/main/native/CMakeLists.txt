@@ -172,10 +172,14 @@ endif ()
 include_directories(jni ${BINARY_DIR}/include)
 set(LIBFFI_LIBS ${BINARY_DIR}/.libs/libffi.a)
 
-set(SHARE_FLAGS "${SHARE_FLAGS} -MMD -MP -Werror -fno-exceptions")
+set(SHARE_FLAGS "${SHARE_FLAGS} -MMD -MP -fno-exceptions")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SHARE_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SHARE_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARE_FLAGS} ${LDFLAGS}")
+
+if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+endif()
 
 target_link_libraries(${PROJECT_NAME} ${LIBFFI_LIBS})
 add_dependencies(${PROJECT_NAME} libffi)
