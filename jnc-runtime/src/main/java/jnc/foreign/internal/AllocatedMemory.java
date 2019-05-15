@@ -97,7 +97,6 @@ class AllocatedMemory extends SizedDirectMemory {
         }
 
         @Override
-        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
         public boolean equals(Object obj) {
             return obj == this;
         }

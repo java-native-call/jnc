@@ -8,7 +8,7 @@ public enum Arch {
 
     private final int size;
 
-    private Arch(int size) {
+    Arch(int size) {
         this.size = size;
     }
 

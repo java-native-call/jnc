@@ -17,6 +17,7 @@ package jnc.foreign.internal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -91,7 +92,7 @@ final class Primitives {
    * @see Class#isPrimitive
    */
   public static boolean isWrapperType(Class<?> type) {
-    type.getClass(); // null check
+    Objects.requireNonNull(type);
     return WRAPPER_TO_PRIMITIVE_TYPE.containsKey(type);
   }
 
@@ -106,7 +107,7 @@ final class Primitives {
    * </pre>
    */
   public static <T> Class<T> wrap(Class<T> type) {
-    type.getClass(); // null check
+    Objects.requireNonNull(type);
 
     // cast is safe: long.class and Long.class are both of type Class<Long>
     @SuppressWarnings("unchecked")
@@ -125,7 +126,7 @@ final class Primitives {
    * </pre>
    */
   public static <T> Class<T> unwrap(Class<T> type) {
-    type.getClass(); // null check
+    Objects.requireNonNull(type);
 
     // cast is safe: long.class and Long.class are both of type Class<Long>
     @SuppressWarnings("unchecked")

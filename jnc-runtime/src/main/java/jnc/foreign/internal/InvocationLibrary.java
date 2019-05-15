@@ -15,11 +15,6 @@ import jnc.foreign.typedef.Typedef;
 
 class InvocationLibrary {
 
-    private static boolean isDefault(Method method) {
-        return ((method.getModifiers() & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC))
-                == Modifier.PUBLIC) && method.getDeclaringClass().isInterface();
-    }
-
     private final NativeLibrary library;
     private final CallingMode callingMode;
     private final ConcurrentMap<Method, InvocationHandler> map = new ConcurrentHashMap<>(4);
@@ -52,7 +47,7 @@ class InvocationLibrary {
                 }
                 throw new AssertionError();
             };
-        } else if (isDefault(method)) {
+        } else if (method.isDefault()) {
             if (DefaultMethodInvoker.isAvailiable()) {
                 handler = DefaultMethodInvoker.getInstance(method);
             } else {
@@ -83,7 +78,7 @@ class InvocationLibrary {
                 @SuppressWarnings("unchecked")
                 ParameterHandler<Object>[] h = (ParameterHandler<Object>[]) handlers;
                 int length = h.length;
-                if (length > 0) {
+                if (length != 0) {
                     CallContext context = cif.newCallContext();
                     for (int i = 0; i < length; i++) {
                         h[i].handle(context, i, args[i]);

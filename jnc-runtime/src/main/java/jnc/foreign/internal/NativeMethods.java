@@ -1,19 +1,21 @@
 package jnc.foreign.internal;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.Buffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.annotation.Nullable;
 import jnc.foreign.Arch;
 import jnc.foreign.OS;
 import jnc.foreign.Platform;
@@ -68,19 +70,16 @@ class NativeMethods {
             if ("file".equalsIgnoreCase(url.getProtocol())) {
                 System.load(new File(url.toURI()).getPath());
             } else {
-                File tmp = File.createTempFile("lib", System.mapLibraryName("jnc"));
+                Path tmp = Files.createTempFile("lib", System.mapLibraryName("jnc"));
                 try {
-                    try (InputStream is = url.openStream();
-                            FileOutputStream fos = new FileOutputStream(tmp)) {
-                        byte[] buf = new byte[4096];
-                        for (int count, len = buf.length; (count = is.read(buf, 0, len)) > 0;) {
-                            fos.write(buf, 0, count);
-                        }
+                    try (InputStream is = url.openStream()) {
+                        Files.copy(is, tmp);
                     }
-                    System.load(tmp.getAbsolutePath());
+                    System.load(tmp.toAbsolutePath().toString());
                 } finally {
-                    if (!tmp.delete()) {
-                        tmp.deleteOnExit();
+                    try {
+                        Files.delete(tmp);
+                    } catch (IOException ignored) {
                     }
                 }
             }
@@ -151,7 +150,7 @@ class NativeMethods {
      */
     native long getTypeInfo(long address);
 
-    native long dlopen(/*nullable*/String path, int mode) throws UnsatisfiedLinkError;
+    native long dlopen(@Nullable String path, int mode) throws UnsatisfiedLinkError;
 
     native long dlsym(long handle, String symbol) throws UnsatisfiedLinkError;
 

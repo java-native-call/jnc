@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * indicate the value pass to the function is by value.
  *
- * For primitives types and wrapper types, parameters are always passed by
+ * For primitives types and their wrapper types, parameters are always passed by
  * value, no need to annotation with this. Annotation @ByValue onto a struct
  * parameter will lead to pass the content of the structure to native.
  */

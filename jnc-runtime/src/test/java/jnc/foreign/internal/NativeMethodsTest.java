@@ -3,6 +3,7 @@ package jnc.foreign.internal;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import jnc.foreign.TestLibs;
 import jnc.foreign.abi.CallingMode;
 import static org.junit.Assert.assertArrayEquals;
@@ -68,7 +69,7 @@ public class NativeMethodsTest {
     @Test
     public void testGetBytesRawChar() {
         log.info("getBytesRawChar");
-        byte[] bytes = "abcdef".getBytes(Charsets.UTF_8);
+        byte[] bytes = "abcdef".getBytes(StandardCharsets.UTF_8);
         int offset = 3;
         char expResult = toByteBuffer(bytes).getChar(offset);
         char result = nm.getBytesRawChar(bytes, offset);

@@ -1,5 +1,7 @@
 package jnc.foreign;
 
+import javax.annotation.Nullable;
+
 public interface Pointer {
 
     long address();
@@ -104,10 +106,10 @@ public interface Pointer {
 
     void putDouble(int offset, Type type, double value);
 
-    /*nullable*/
+    @Nullable
     Pointer getPointer(int offset);
 
-    void putPointer(int offset, /*nullable*/ Pointer pointer);
+    void putPointer(int offset, @Nullable Pointer pointer);
 
     Pointer slice(int offset, int size);
 

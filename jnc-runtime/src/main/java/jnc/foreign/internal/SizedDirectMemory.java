@@ -1,5 +1,6 @@
 package jnc.foreign.internal;
 
+import java.nio.charset.StandardCharsets;
 import jnc.foreign.Pointer;
 
 class SizedDirectMemory extends DirectMemory {
@@ -185,7 +186,7 @@ class SizedDirectMemory extends DirectMemory {
 
     @Override
     public void putStringUTF(int offset, String value) {
-        byte[] bytes = value.getBytes(Charsets.UTF_8);
+        byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
         int len = bytes.length;
         // we must check for offset might be negative
         checkIndex(offset, len + 1);

@@ -3,6 +3,7 @@ package jnc.foreign.internal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 class CallContext implements NativeObject {
 
@@ -59,7 +60,7 @@ class CallContext implements NativeObject {
     }
 
     CallContext onFinish(Runnable r) {
-        r.getClass(); // null check
+        Objects.requireNonNull(r);
         List<Runnable> finish = this.onFinish;
         if (finish == null) {
             finish = new ArrayList<>(values.length());

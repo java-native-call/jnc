@@ -3,7 +3,7 @@ package jnc.foreign;
 import jnc.foreign.annotation.Pack;
 import jnc.foreign.internal.AnnotationUtil;
 
-@SuppressWarnings({"FinalMethod", "PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "FinalClass"})
+@SuppressWarnings({"FinalMethod", "PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess", "FinalClass"})
 public class Struct {
 
     private static final int MAX_ALIGN = 16;

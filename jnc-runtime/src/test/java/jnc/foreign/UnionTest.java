@@ -41,9 +41,9 @@ public class UnionTest {
 
     private static class Test1 extends Union {
 
-        private final uint8_t b[] = array(new uint8_t[8]);
-        private final uint16_t s[] = array(new uint16_t[4]);
-        private final uint32_t u[] = array(new uint32_t[2]);
+        private final uint8_t[] b = array(new uint8_t[8]);
+        private final uint16_t[] s = array(new uint16_t[4]);
+        private final uint32_t[] u = array(new uint32_t[2]);
         private final int64_t j = new int64_t();
         private final uint64_t ju = new uint64_t();
         private final Float64 d = new Float64();
@@ -60,7 +60,7 @@ public class UnionTest {
 
     private static class Test2 extends Union {
 
-        private final uint8_t b[] = array(new uint8_t[18]);
+        private final uint8_t[] b = array(new uint8_t[18]);
         private final uint64_t ju = new uint64_t();
 
     }
@@ -68,7 +68,7 @@ public class UnionTest {
     private static class Test3 extends Union {
 
         private final uint64_t ju = new uint64_t();
-        private final uint8_t b[] = array(new uint8_t[17]);
+        private final uint8_t[] b = array(new uint8_t[17]);
 
     }
 

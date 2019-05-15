@@ -64,9 +64,9 @@ namespace jnc_type_traits {
     template<class T> struct is_signed : bool_constant<T(-1) < T(1)> { };
 
     template<size_t, size_t, bool>
-    struct match_ffi_type;
+    struct ffi_type_matcher;
 
-#define DEF(T, v) template<> struct match_ffi_type<sizeof(T), alignof(T), is_signed<T>::value> : integral_constant<int, JNC_TYPE(v)> {}
+#define DEF(T, v) template<> struct ffi_type_matcher<sizeof(T), alignof(T), is_signed<T>::value> : integral_constant<int, JNC_TYPE(v)> {}
 
     DEF(uint8_t, UINT8);
     DEF(int8_t, SINT8);
@@ -79,13 +79,13 @@ namespace jnc_type_traits {
 #undef DEF
 
     template<class T, bool = JNC_IS_ENUM(T) || std::numeric_limits<T>::is_integer, bool = is_pointer<T>::value>
-    struct get_ffi_type;
+    struct get_ffi_matcher;
 
-    template<class T> struct get_ffi_type<T, false, true> : integral_constant<int, JNC_TYPE(POINTER)> {
+    template<class T> struct get_ffi_matcher<T, false, true> : integral_constant<int, JNC_TYPE(POINTER)> {
     };
 
     /* integer or enum */
-    template<class T> struct get_ffi_type<T, true, false> : match_ffi_type<sizeof (T), alignof (T), is_signed<T>::value> {
+    template<class T> struct get_ffi_matcher<T, true, false> : ffi_type_matcher<sizeof (T), alignof (T), is_signed<T>::value> {
     };
 
 }
@@ -94,7 +94,7 @@ namespace jnc_type_traits {
 static const char *typeName[MAX_N]; /* 1024B/512B on 64/32 bit machine */
 static uint8_t typeValue[MAX_N]; /* 128B */
 
-#define DEFINE(name) {#name, jnc_type_traits::get_ffi_type<name>::value},
+#define DEFINE(name) {#name, jnc_type_traits::get_ffi_matcher<name>::value},
 
 template<class T, size_t N>
 static constexpr size_t array_size(T(&)[N]) noexcept {

@@ -2,6 +2,8 @@ package jnc.foreign.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Objects;
+import javax.annotation.Nullable;
 
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 public class AnnotationUtil {
@@ -16,16 +18,16 @@ public class AnnotationUtil {
         return null;
     }
 
-    /*nullable*/
-    public static <T extends Annotation> T getAnnotation(Method method, Class<T> type) {
-        T anno = method.getAnnotation(type);
-        if (anno != null) {
-            return anno;
+    @Nullable
+    static <T extends Annotation> T getAnnotation(Method method, Class<T> type) {
+        T annotation = method.getAnnotation(type);
+        if (annotation != null) {
+            return annotation;
         }
         return getAnnotation0(method.getAnnotations(), type);
     }
 
-    /*nullable*/
+    @Nullable
     @SuppressWarnings("NestedAssignment")
     public static <T extends Annotation> T getAnnotation(Class<?> klass, Class<T> type) {
         T anno;
@@ -41,9 +43,9 @@ public class AnnotationUtil {
         return pkg != null ? pkg.getAnnotation(type) : null;
     }
 
-    /*nullable*/
+    @Nullable
     static <T extends Annotation> T getAnnotation(Annotation[] annotationse, Class<T> type) {
-        type.getClass(); // null check
+        Objects.requireNonNull(type, "type");
         for (Annotation annotation : annotationse) {
             if (type.isInstance(annotation)) {
                 return type.cast(annotation);
