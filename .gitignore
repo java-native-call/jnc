@@ -1,33 +1,11 @@
-# IDEA
-.idea/
 *.iml
-
-# maven
-target/
-pom.xml.bak
-
-# mac
 .DS_Store
-
-# NetBeans
-nbproject/
-
-# NetBeans java project
-nb-configuration.xml
-
-# git
-*~
-
-# jvm crash
-hs_err_pid*.log
-replay_pid*.log
-
-# cmake files
-cmake-build/
-cmake-build-*/
-
-# header
-jnc_foreign_internal_*.h
-
-# flattened-maven-plugin
 .flattened-pom.xml
+.idea/
+hs_err_pid*.log
+jnc_foreign_internal_*.h
+nb-configuration.xml
+nbproject/
+pom.xml.bak
+replay_pid*.log
+target/

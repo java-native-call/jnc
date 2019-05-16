@@ -1,8 +1,12 @@
 /CMakeCache.txt
 /CMakeFiles/
 /Makefile
+/cmake-build-*/
+/cmake-build/
 /cmake_install.cmake
 /compile_commands.json
+/compiler-file*.d
+/jnc.cbp
 /jnc_i386.dll
 /jnc_x86_64.dll
 /libffi-prefix/
