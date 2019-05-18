@@ -40,7 +40,7 @@ set(LIBFFI_BUILD_ENV
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
     set(CMAKE_SHARED_LIBRARY_SUFFIX .jnilib)
-    set(SHARE_FLAGS "${SHARE_FLAGS} -mmacosx-version-min=10.8")
+    set(SHARE_FLAGS "${SHARE_FLAGS} -mmacosx-version-min=10.7")
     set(STRIP_ARGS -x)
 else ()
     set(CMAKE_SHARED_LIBRARY_SUFFIX -${SYSTEM_PROCESSOR}${CMAKE_SHARED_LIBRARY_SUFFIX})
