@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PACKAGE, ElementType.TYPE, ElementType.METHOD})
-@CallingConvertion(CallingMode.DEFAULT)
+@CallingConvention(CallingMode.DEFAULT)
 public @interface Default {
 }

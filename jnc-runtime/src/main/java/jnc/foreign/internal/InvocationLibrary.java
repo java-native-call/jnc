@@ -3,13 +3,12 @@ package jnc.foreign.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import jnc.foreign.LoadOptions;
 import jnc.foreign.Pointer;
-import jnc.foreign.abi.CallingConvertion;
+import jnc.foreign.abi.CallingConvention;
 import jnc.foreign.abi.CallingMode;
 import jnc.foreign.typedef.Typedef;
 
@@ -21,8 +20,8 @@ class InvocationLibrary {
 
     InvocationLibrary(Class<?> interfaceClass, NativeLibrary nativeLibrary, LoadOptions loadOptions) {
         this.library = nativeLibrary;
-        CallingConvertion callingConvertion = AnnotationUtil.getAnnotation(interfaceClass, CallingConvertion.class);
-        this.callingMode = callingConvertion != null ? callingConvertion.value() : loadOptions.getCallingMode();
+        CallingConvention callingConvention = AnnotationUtil.getAnnotation(interfaceClass, CallingConvention.class);
+        this.callingMode = callingConvention != null ? callingConvention.value() : loadOptions.getCallingMode();
     }
 
     public InvocationHandler findMethodInvoker(Method method) {
@@ -72,7 +71,7 @@ class InvocationLibrary {
                 ptypes[i] = TypeHandlers.findParameterType(type, aliasA);
                 handlers[i] = TypeHandlers.forParameterHandler(type);
             }
-            CallingConvertion annotation = AnnotationUtil.getAnnotation(method, CallingConvertion.class);
+            CallingConvention annotation = AnnotationUtil.getAnnotation(method, CallingConvention.class);
             ffi_cif cif = new ffi_cif(annotation != null ? annotation.value() : callingMode, retType, ptypes);
             handler = (Object proxy, Method m, Object[] args) -> {
                 @SuppressWarnings("unchecked")
