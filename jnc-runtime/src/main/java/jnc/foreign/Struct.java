@@ -42,20 +42,16 @@ public class Struct {
         return MAX_ALIGN;
     }
 
-    private final int pack;
     private int size;
     private int alignment = 1;
     private jnc.foreign.Pointer memory;
     private Struct enclosing;
     private int offset;
     private State state = State.INITIAL;
-
-    public Struct() {
-        this.pack = getPack(getClass());
-    }
+    private final int pack = getPack(getClass());
 
     private int addField0(int offset, int size, int alignment) {
-        checkState(State.FIELD_ADDING, State.FIELD_ADDING);
+        checkState(State.FIELDS_ADDING, State.FIELDS_ADDING);
         this.size = Math.max(this.size, offset + checkSize(size));
         this.alignment = Math.max(this.alignment, Math.min(alignment, pack));
         return offset;
@@ -88,7 +84,7 @@ public class Struct {
     }
 
     public final int size() {
-        advance(State.FIELD_FINISH);
+        advance(State.FIELDS_FINISHED);
         return align(size, alignment);
     }
 
@@ -101,7 +97,7 @@ public class Struct {
     }
 
     public final int alignment() {
-        advance(State.FIELD_FINISH);
+        advance(State.FIELDS_FINISHED);
         return alignment;
     }
 
@@ -126,12 +122,12 @@ public class Struct {
 
     @Nullable
     public final Struct getEnclosing() {
-        advance(State.FIELD_FINISH);
+        advance(State.FIELDS_FINISHED);
         return enclosing;
     }
 
     final void setEnclosing(Struct enclosing, int offset) {
-        checkState(State.FIELD_FINISH, State.OUTTER_ASSIGNED);
+        checkState(State.FIELDS_FINISHED, State.ENCLOSING_ASSIGNED);
         this.enclosing = enclosing;
         this.offset = offset;
     }
@@ -455,9 +451,9 @@ public class Struct {
     private enum State {
 
         INITIAL,
-        FIELD_ADDING,
-        FIELD_FINISH,
-        OUTTER_ASSIGNED,
+        FIELDS_ADDING,
+        FIELDS_FINISHED,
+        ENCLOSING_ASSIGNED,
         MEMORY_ALLOCATED;
 
         void throwException(Struct struct, State advance) {
