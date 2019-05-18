@@ -3,6 +3,7 @@ package jnc.foreign.internal;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Native;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -25,28 +26,49 @@ class NativeMethods {
 
     private static final NativeMethods theInstance = new NativeMethods();
 
+    @Native
     static final int TYPE_VOID = 0;
+    @Native
     static final int TYPE_INT = 1;
+    @Native
     static final int TYPE_FLOAT = 2;
+    @Native
     static final int TYPE_DOUBLE = 3;
+    @Native
     static final int TYPE_UINT8 = 5;
+    @Native
     static final int TYPE_SINT8 = 6;
+    @Native
     static final int TYPE_UINT16 = 7;
+    @Native
     static final int TYPE_SINT16 = 8;
+    @Native
     static final int TYPE_UINT32 = 9;
+    @Native
     static final int TYPE_SINT32 = 10;
+    @Native
     static final int TYPE_UINT64 = 11;
+    @Native
     static final int TYPE_SINT64 = 12;
+    @Native
     static final int TYPE_STRUCT = 13;
+    @Native
     static final int TYPE_POINTER = 14;
 
+    @Native
     static final int RTLD_LAZY = 1;
+    @Native
     static final int RTLD_NOW = 2;
+    @Native
     static final int RTLD_LOCAL = 4;
+    @Native
     static final int RTLD_GLOBAL = 8;
 
+    @Native
     static final int CONVENTION_DEFAULT = 0;
+    @Native
     static final int CONVENTION_STDCALL = 1;
+    @Native
     static final int CONVENTION_SYSV = 2;
 
     private static final ReentrantLock lock = new ReentrantLock();
