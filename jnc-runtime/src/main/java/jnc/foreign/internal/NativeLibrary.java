@@ -12,11 +12,7 @@ class NativeLibrary implements NativeObject, Closeable {
     // maybe the classloader is finalized before the lib, meanwhile the native lib is also finalized
     // let it call our method finalizeAll to make sure we are closed before it's unloaded.
     // There is no issue with java builtin object.
-    private static final Set<Runnable> SET = Collections.newSetFromMap(new ConcurrentHashMap<>(16));
-
-    static {
-        nm.onFinalize(SET);
-    }
+    private static final Set<Runnable> SET = nm.onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(16)));
 
     static NativeLibrary open(String libname, int mode) {
         long addr;

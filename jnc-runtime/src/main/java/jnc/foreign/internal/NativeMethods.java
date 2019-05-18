@@ -306,7 +306,7 @@ class NativeMethods {
      */
     native long getBufferAddress(Buffer buffer);
 
-    void onFinalize(Set<Runnable> set) {
+    Set<Runnable> onFinalize(Set<Runnable> set) {
         lock.lock();
         try {
             ON_UNLOAD.add(() -> {
@@ -320,6 +320,7 @@ class NativeMethods {
         } finally {
             lock.unlock();
         }
+        return set;
     }
 
 }

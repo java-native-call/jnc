@@ -8,11 +8,7 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 class AllocatedMemory extends SizedDirectMemory {
 
     private static final NativeMethods nm = NativeMethods.getInstance();
-    private static final Set<Runnable> SET = Collections.newSetFromMap(new ConcurrentHashMap<>(32));
-
-    static {
-        nm.onFinalize(SET);
-    }
+    private static final Set<Runnable> SET = nm.onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(32)));
 
     private static AllocatedMemory allocateImpl(int size) {
         long addr = nm.allocateMemory(size);
