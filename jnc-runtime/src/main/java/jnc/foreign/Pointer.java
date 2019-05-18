@@ -1,5 +1,6 @@
 package jnc.foreign;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public interface Pointer {
@@ -70,6 +71,7 @@ public interface Pointer {
 
     void putDoubleArray(int offset, double[] array, int off, int len);
 
+    @Nonnull
     String getStringUTF(int offset);
 
     void putStringUTF(int offset, String value);
@@ -111,6 +113,7 @@ public interface Pointer {
 
     void putPointer(int offset, @Nullable Pointer pointer);
 
+    @Nonnull
     Pointer slice(int offset, int size);
 
 }

@@ -36,7 +36,7 @@ class ffi_cif implements NativeObject {
             size += param.size();
         }
         size = Aligns.alignUp(size, alignment);
-        DirectMemory cif = AllocatedMemory.allocate(SIZE_OF_FFI_CIF);
+        DirectMemory cif = AllocatedMemory.allocate(1, SIZE_OF_FFI_CIF);
         PointerArray atypes = PointerArray.allocate(params);
         int offset = Aligns.alignUp(count * pointerSize, alignment);
         nm.prepareInvoke(cif.address(), convention(callingMode), count, resultType.address(), atypes.address());

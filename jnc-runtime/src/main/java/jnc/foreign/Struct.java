@@ -1,5 +1,7 @@
 package jnc.foreign;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jnc.foreign.annotation.Pack;
 import jnc.foreign.internal.AnnotationUtil;
 
@@ -122,6 +124,7 @@ public class Struct {
         return m;
     }
 
+    @Nullable
     public final Struct getEnclosing() {
         advance(State.FIELD_FINISH);
         return enclosing;
@@ -148,12 +151,13 @@ public class Struct {
     void arrayEnd() {
     }
 
-    protected final <T extends Struct> T inner(T struct) {
+    protected final <T extends Struct> T inner(@Nonnull T struct) {
         struct.setEnclosing(this, addField(struct.size(), struct.alignment()));
         return struct;
     }
 
-    protected final int8_t[] array(int8_t[] array) {
+    @Nonnull
+    protected final int8_t[] array(@Nonnull int8_t[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -165,7 +169,8 @@ public class Struct {
         return array;
     }
 
-    protected final int16_t[] array(int16_t[] array) {
+    @Nonnull
+    protected final int16_t[] array(@Nonnull int16_t[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -177,7 +182,8 @@ public class Struct {
         return array;
     }
 
-    protected final int32_t[] array(int32_t[] array) {
+    @Nonnull
+    protected final int32_t[] array(@Nonnull int32_t[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -189,7 +195,8 @@ public class Struct {
         return array;
     }
 
-    protected final int64_t[] array(int64_t[] array) {
+    @Nonnull
+    protected final int64_t[] array(@Nonnull int64_t[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -201,7 +208,8 @@ public class Struct {
         return array;
     }
 
-    protected final uint8_t[] array(uint8_t[] array) {
+    @Nonnull
+    protected final uint8_t[] array(@Nonnull uint8_t[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -213,7 +221,8 @@ public class Struct {
         return array;
     }
 
-    protected final uint16_t[] array(uint16_t[] array) {
+    @Nonnull
+    protected final uint16_t[] array(@Nonnull uint16_t[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -225,7 +234,8 @@ public class Struct {
         return array;
     }
 
-    protected final uint32_t[] array(uint32_t[] array) {
+    @Nonnull
+    protected final uint32_t[] array(@Nonnull uint32_t[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -237,7 +247,8 @@ public class Struct {
         return array;
     }
 
-    protected final uint64_t[] array(uint64_t[] array) {
+    @Nonnull
+    protected final uint64_t[] array(@Nonnull uint64_t[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -249,7 +260,8 @@ public class Struct {
         return array;
     }
 
-    protected final bool[] array(bool[] array) {
+    @Nonnull
+    protected final bool[] array(@Nonnull bool[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -261,7 +273,8 @@ public class Struct {
         return array;
     }
 
-    protected final Address[] array(Address[] array) {
+    @Nonnull
+    protected final Address[] array(@Nonnull Address[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -273,7 +286,8 @@ public class Struct {
         return array;
     }
 
-    protected final Pointer[] array(Pointer[] array) {
+    @Nonnull
+    protected final Pointer[] array(@Nonnull Pointer[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -285,7 +299,8 @@ public class Struct {
         return array;
     }
 
-    protected final size_t[] array(size_t[] array) {
+    @Nonnull
+    protected final size_t[] array(@Nonnull size_t[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -297,7 +312,8 @@ public class Struct {
         return array;
     }
 
-    protected final uintptr_t[] array(uintptr_t[] array) {
+    @Nonnull
+    protected final uintptr_t[] array(@Nonnull uintptr_t[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -309,7 +325,8 @@ public class Struct {
         return array;
     }
 
-    protected final intptr_t[] array(intptr_t[] array) {
+    @Nonnull
+    protected final intptr_t[] array(@Nonnull intptr_t[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -321,7 +338,8 @@ public class Struct {
         return array;
     }
 
-    protected final clong[] array(clong[] array) {
+    @Nonnull
+    protected final clong[] array(@Nonnull clong[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -333,7 +351,8 @@ public class Struct {
         return array;
     }
 
-    protected final Float32[] array(Float32[] array) {
+    @Nonnull
+    protected final Float32[] array(@Nonnull Float32[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -345,7 +364,8 @@ public class Struct {
         return array;
     }
 
-    protected final Float64[] array(Float64[] array) {
+    @Nonnull
+    protected final Float64[] array(@Nonnull Float64[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -357,7 +377,8 @@ public class Struct {
         return array;
     }
 
-    protected final BYTE[] array(BYTE[] array) {
+    @Nonnull
+    protected final BYTE[] array(@Nonnull BYTE[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -369,7 +390,8 @@ public class Struct {
         return array;
     }
 
-    protected final WBOOL[] array(WBOOL[] array) {
+    @Nonnull
+    protected final WBOOL[] array(@Nonnull WBOOL[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -381,7 +403,8 @@ public class Struct {
         return array;
     }
 
-    protected final WORD[] array(WORD[] array) {
+    @Nonnull
+    protected final WORD[] array(@Nonnull WORD[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -393,7 +416,8 @@ public class Struct {
         return array;
     }
 
-    protected final DWORD[] array(DWORD[] array) {
+    @Nonnull
+    protected final DWORD[] array(@Nonnull DWORD[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -405,7 +429,8 @@ public class Struct {
         return array;
     }
 
-    protected final DWORDLONG[] array(DWORDLONG[] array) {
+    @Nonnull
+    protected final DWORDLONG[] array(@Nonnull DWORDLONG[] array) {
         arrayBegin();
         try {
             for (int i = 0, len = array.length; i < len; ++i) {
@@ -417,10 +442,12 @@ public class Struct {
         return array;
     }
 
+    @Nonnull
     public final Padding padding(int size) {
         return inner(new Padding(size));
     }
 
+    @Nonnull
     public final Padding padding(int size, int alignment) {
         return inner(new Padding(size, alignment));
     }

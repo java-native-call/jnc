@@ -2,6 +2,7 @@ package jnc.foreign;
 
 import java.text.MessageFormat;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import jnc.foreign.abi.CallingMode;
 
 public class LoadOptionsBuilder {
@@ -36,6 +37,7 @@ public class LoadOptionsBuilder {
         return this;
     }
 
+    @Nonnull
     public LoadOptions create() {
         CallingMode cm = callingMode;
         return new LoadOptions(cm != null ? cm : CallingMode.DEFAULT);

@@ -1,7 +1,10 @@
 package jnc.foreign;
 
+import javax.annotation.Nonnull;
+
 public class LibraryLoader<T> {
 
+    @Nonnull
     public static <T> LibraryLoader<T> create(Class<T> cl) {
         return new LibraryLoader<>(cl);
     }
@@ -13,11 +16,13 @@ public class LibraryLoader<T> {
         this.interfaceClass = interfaceClass;
     }
 
+    @Nonnull
     public LibraryLoader<T> stdcall() {
         loadOptionsBuilder.stdcall();
         return this;
     }
 
+    @Nonnull
     public T load(String libname) {
         return ForeignProviders.getDefault().load(interfaceClass, libname, loadOptionsBuilder.create());
     }
