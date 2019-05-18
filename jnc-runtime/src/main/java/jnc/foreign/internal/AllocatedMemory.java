@@ -76,7 +76,7 @@ class AllocatedMemory extends SizedDirectMemory {
         }
     }
 
-    private static class Free implements Runnable {
+    private static final class Free implements Runnable {
 
         private static final AtomicLongFieldUpdater<Free> UPDATER
                 = AtomicLongFieldUpdater.newUpdater(Free.class, "address");

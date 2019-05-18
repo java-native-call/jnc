@@ -81,7 +81,7 @@ class NativeLibrary implements NativeObject, Closeable {
         }
     }
 
-    private static class Dlclose implements Runnable {
+    private static final class Dlclose implements Runnable {
 
         private static final AtomicLongFieldUpdater<Dlclose> UPDATER
                 = AtomicLongFieldUpdater.newUpdater(Dlclose.class, "address");
@@ -98,7 +98,6 @@ class NativeLibrary implements NativeObject, Closeable {
         }
 
         @Override
-        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
         public boolean equals(Object obj) {
             return obj == this;
         }
