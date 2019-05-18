@@ -6,7 +6,7 @@ import java.util.Map;
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 class ParameterHandlers {
 
-    private static final Map<Class<?>, ParameterHandler<?>> MAP;
+    private static final Map<Class<?>, ParameterHandler<?>> PRIMARY_HANDLERS;
 
     static {
         Map<Class<?>, ParameterHandler<?>> handlers = new HashMap<>(16);
@@ -19,11 +19,13 @@ class ParameterHandlers {
         put(handlers, long.class, CallContext::putLong);
         put(handlers, float.class, CallContext::putFloat);
         put(handlers, double.class, CallContext::putDouble);
-        MAP = handlers;
+        PRIMARY_HANDLERS = handlers;
     }
 
-    static ParameterHandler<?> forHandler(Class<?> type) {
-        return MAP.get(Primitives.unwrap(type));
+    @SuppressWarnings("unchecked")
+    static <T> ParameterHandler<T> forHandler(Class<T> type) {
+        // should be safe without check generic type
+        return (ParameterHandler<T>) PRIMARY_HANDLERS.get(Primitives.unwrap(type));
     }
 
     private static <T> void put(Map<Class<?>, ParameterHandler<?>> map, Class<T> type, ParameterHandler<T> handler) {

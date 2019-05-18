@@ -123,7 +123,7 @@ class NativeMethods {
             case DARWIN:
                 return prefix + "darwin/libjnc.jnilib";
             case UNKNOWN:
-                throw new UnsupportedOperationException("unsupport operation system");
+                throw new UnsupportedOperationException("unsupportted operation system");
             case LINUX:
             default:
                 osPrefix = os.name().toLowerCase(Locale.US);
@@ -137,7 +137,7 @@ class NativeMethods {
                 archName = arch.name().toLowerCase(Locale.US);
                 break;
             default:
-                throw new UnsupportedOperationException("unsupport operation system arch");
+                throw new UnsupportedOperationException("unsupportted operation system arch");
         }
         return prefix + osPrefix + "/" + System.mapLibraryName("jnc-" + archName);
     }
