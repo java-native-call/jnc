@@ -19,7 +19,11 @@ class ThreadLocalError implements LastErrorHandler {
 
     @Override
     public void handle(int error) {
-        THREAD_LOCAL.set(error);
+        if (error == 0) {
+            THREAD_LOCAL.remove();
+        } else {
+            THREAD_LOCAL.set(error);
+        }
     }
 
 }
