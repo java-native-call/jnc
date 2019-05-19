@@ -52,7 +52,6 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Windows)
     if (${ARCH_BITS} EQUAL 32)
         set(LDFLAGS "${LDFLAGS} -Wl,--add-stdcall-alias -Wl,--kill-at")
     endif ()
-    set(CMAKE_SHARED_LIBRARY_PREFIX "")
 endif ()
 
 set(SONAME ${CMAKE_SHARED_LIBRARY_PREFIX}${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
