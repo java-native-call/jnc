@@ -62,7 +62,7 @@ class InvocationLibrary {
             Annotation[][] annotations = method.getParameterAnnotations();
             int len = parameterTypes.length;
             FFIType[] ptypes = new FFIType[len];
-            Invoker invoker = TypeHandlers.getInvoker(method.getReturnType());
+            Invoker<?> invoker = TypeHandlers.getInvoker(method.getReturnType());
             @SuppressWarnings("rawtypes")
             ParameterHandler<?>[] handlers = new ParameterHandler[len];
             for (int i = 0; i < len; ++i) {

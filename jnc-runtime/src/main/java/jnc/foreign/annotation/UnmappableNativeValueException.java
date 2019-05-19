@@ -16,12 +16,28 @@
 package jnc.foreign.annotation;
 
 /**
+ *
  * @author zhanhb
  */
-public enum EnumMappingErrorAction {
+public class UnmappableNativeValueException extends RuntimeException {
 
-    REPORT_ALL,
-    NULL_WHEN_ZERO,
-    SET_TO_NULL
+    private static final long serialVersionUID = 0L;
+
+    private final Class<?> type;
+    private final int intValue;
+
+    public UnmappableNativeValueException(Class<?> type, int intVal) {
+        super("type=" + type.getName() + ",value=" + intVal);
+        this.type = type;
+        this.intValue = intVal;
+    }
+
+    public Class<?> getType() {
+        return type;
+    }
+
+    public int getIntValue() {
+        return intValue;
+    }
 
 }

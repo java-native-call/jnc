@@ -1,8 +1,8 @@
 package jnc.foreign.internal;
 
 @FunctionalInterface
-interface Invoker {
+interface Invoker<T> {
 
-    Object invoke(long cif, long function, long avalues);
+    T invoke(long cif, long function, long avalues);
 
 }

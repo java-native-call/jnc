@@ -45,6 +45,7 @@ class PrimitiveArrayParameterHandler {
         if (handler != null) {
             return handler;
         }
+        // boolean array
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

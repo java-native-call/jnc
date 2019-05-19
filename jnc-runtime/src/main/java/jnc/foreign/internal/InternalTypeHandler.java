@@ -4,10 +4,9 @@ import jnc.foreign.TypeHandler;
 
 interface InternalTypeHandler<T> extends TypeHandler<T> {
 
-    @Deprecated(/* FIXME: 2019-05-19 for removal */)
     BuiltinType getBuiltinType();
 
-    Invoker getInvoker();
+    Invoker<T> getInvoker();
 
     ParameterHandler<T> getParameterHandler();
 

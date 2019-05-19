@@ -15,7 +15,7 @@ import jnc.foreign.NativeType;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ContinuouslyEnum {
+public @interface Continuously {
 
     /**
      * native type to mapped with
@@ -25,16 +25,9 @@ public @interface ContinuouslyEnum {
     int start() default 0;
 
     /**
-     * when converting this enum from native, the result is zero, this
-     * configuration is ignored if this enum has already a mapping value to
-     * zero.
+     * when converting this enum from native, the result is doesn't match any
+     * value of this enum.
      */
-    EnumMappingErrorAction onZero() default EnumMappingErrorAction.SET_TO_NULL;
-
-    /**
-     * when converting this enum from native, the result is neither mapping to
-     * any value, nor is zero.
-     */
-    EnumMappingErrorAction onUnmappable() default EnumMappingErrorAction.REPORT;
+    EnumMappingErrorAction onUnmappable() default EnumMappingErrorAction.NULL_WHEN_ZERO;
 
 }

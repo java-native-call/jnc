@@ -45,7 +45,7 @@ class PrimaryTypeHandler<T> implements InternalTypeHandler<T> {
         TYPE_HANDLERS = map;
     }
 
-    private static <T> void add(Map<Class<?>, PrimaryTypeHandler<?>> map, Class<T> type, NativeType nativeType, ParameterHandler<T> handler, Invoker invoker) {
+    private static <T> void add(Map<Class<?>, PrimaryTypeHandler<?>> map, Class<T> type, NativeType nativeType, ParameterHandler<T> handler, Invoker<T> invoker) {
         map.put(type, new PrimaryTypeHandler<>(nativeType, invoker, handler));
     }
 
@@ -53,7 +53,7 @@ class PrimaryTypeHandler<T> implements InternalTypeHandler<T> {
         return nm.invokeLong(cif, function, avalues, object(), methodId());
     }
 
-    private static int invokeInt(long cif, long function, long avalues) {
+    static int invokeInt(long cif, long function, long avalues) {
         return nm.invokeInt(cif, function, avalues, object(), methodId());
     }
 
@@ -94,10 +94,10 @@ class PrimaryTypeHandler<T> implements InternalTypeHandler<T> {
     }
 
     private final NativeType nativeType;
-    private final Invoker invoker;
+    private final Invoker<T> invoker;
     private final ParameterHandler<T> parameterHandler;
 
-    private PrimaryTypeHandler(NativeType nativeType, Invoker invoker, ParameterHandler<T> parameterHandler) {
+    private PrimaryTypeHandler(NativeType nativeType, Invoker<T> invoker, ParameterHandler<T> parameterHandler) {
         this.nativeType = nativeType;
         this.invoker = invoker;
         this.parameterHandler = parameterHandler;
@@ -107,10 +107,9 @@ class PrimaryTypeHandler<T> implements InternalTypeHandler<T> {
     public NativeType nativeType() {
         return nativeType;
     }
-    
 
     @Override
-    public Invoker getInvoker() {
+    public Invoker<T> getInvoker() {
         return invoker;
     }
 
@@ -119,7 +118,6 @@ class PrimaryTypeHandler<T> implements InternalTypeHandler<T> {
         return parameterHandler;
     }
 
-    @Deprecated
     @Override
     public BuiltinType getBuiltinType() {
         return BuiltinTypeHelper.findByNativeType(nativeType);

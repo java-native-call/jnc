@@ -1,6 +1,6 @@
 package jnc.foreign;
 
-import jnc.foreign.annotation.ContinuouslyEnum;
+import jnc.foreign.annotation.Continuously;
 import jnc.foreign.typedef.int32_t;
 import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uintptr_t;
@@ -21,7 +21,6 @@ public class InvokeTest {
         assertEquals(Math.sqrt(5), Libm.INSTANCE.sqrt(5), -1);
         assertEquals(Math.PI, Libm.INSTANCE.atan2(0, -1), -1);
         assertEquals(Math.PI / 2, Libm.INSTANCE.atan2(1, 0), 1e-14);
-        assertTrue(Libc.INSTANCE.isalpha(Char.A));
     }
 
     @Test
@@ -34,7 +33,17 @@ public class InvokeTest {
         Libc.INSTANCE.memcpy(null, 0, 0);
     }
 
-    @ContinuouslyEnum(start = 'A')
+    @Test
+    public void testEnumParameter() {
+        assertTrue(Libc.INSTANCE.isalpha(Char.A));
+    }
+
+    @Test
+    public void testEnumReturnValue() {
+        assertEquals(Char.A, Libc.INSTANCE.toupper('a'));
+    }
+
+    @Continuously(start = 'A')
     public enum Char {
         A, B
     }
@@ -51,6 +60,8 @@ public class InvokeTest {
 
         @int32_t
         boolean isalpha(Char ch);
+
+        Char toupper(int ch);
 
         default int memcpy() {
             return 0x123456;

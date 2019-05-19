@@ -9,8 +9,13 @@ enum PointerTypeHandler implements InternalTypeHandler<Pointer> {
 
     INSTANCE;
 
+    @SuppressWarnings("unchecked")
+    public static <T> InternalTypeHandler<T> getInstance() {
+        return (InternalTypeHandler<T>) INSTANCE;
+    }
+
     @Override
-    public Invoker getInvoker() {
+    public Invoker<Pointer> getInvoker() {
         return (long cif, long function, long avalues)
                 -> DirectMemory.of(NativeMethods.getInstance().invokeLong(cif, function, avalues, object(), methodId()));
     }
@@ -25,7 +30,6 @@ enum PointerTypeHandler implements InternalTypeHandler<Pointer> {
         return NativeType.ADDRESS;
     }
 
-    @Deprecated
     @Override
     public BuiltinType getBuiltinType() {
         return BuiltinType.POINTER;

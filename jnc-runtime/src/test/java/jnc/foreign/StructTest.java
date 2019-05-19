@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import jnc.foreign.annotation.Continuously;
 import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uint32_t;
 import jnc.foreign.typedef.uintptr_t;
@@ -216,6 +217,33 @@ public class StructTest {
         @uintptr_t
         long memcpy(Pointer dst, Struct src, @size_t long n);
 
+    }
+
+    @Continuously(type = NativeType.SINT8)
+    private enum Season {
+        Spring, Summer, Autumn, Winter
+    }
+
+    private class Struct1 extends Struct {
+
+        private final EnumField<Season> season = new EnumField<>(Season.class);
+
+        public Season getSeason() {
+            return season.get();
+        }
+
+        public void setSeason(Season field) {
+            this.season.set(field);
+        }
+
+    }
+
+    @Test
+    public void testEnum() {
+        Struct1 struct1 = new Struct1();
+        assertEquals(1, struct1.size());
+        struct1.setSeason(StructTest.Season.Winter);
+        assertEquals(StructTest.Season.Winter, struct1.getSeason());
     }
 
 }
