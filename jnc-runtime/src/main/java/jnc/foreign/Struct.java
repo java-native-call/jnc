@@ -3,6 +3,7 @@ package jnc.foreign;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import jnc.foreign.annotation.Pack;
+import jnc.foreign.annotation.UnmappableNativeValueException;
 import jnc.foreign.internal.AnnotationUtil;
 
 @SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess"})
@@ -998,10 +999,12 @@ public class Struct {
 
     protected final class EnumField<E extends Enum<E>> {
 
+        private final Class<E> type;
         private final TypeHandler<E> typeHandler;
         private final BaseField field;
 
         EnumField(Class<E> type) {
+            this.type = type;
             typeHandler = getForeign().findTypeHandler(type);
             field = new BaseField(typeHandler.nativeType());
         }
@@ -1012,6 +1015,18 @@ public class Struct {
 
         public final void set(E e) {
             typeHandler.set(getMemory(), field.getOffset(), e);
+        }
+
+        /**
+         * if this enum field indicate to null, return string "null"
+         */
+        @Override
+        public String toString() {
+            try {
+                return String.valueOf(get());
+            } catch (UnmappableNativeValueException ex) {
+                return type.getName() + "(unmappable)";
+            }
         }
     }
 
