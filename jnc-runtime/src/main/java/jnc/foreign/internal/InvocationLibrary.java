@@ -24,7 +24,7 @@ class InvocationLibrary {
         this.callingMode = callingConvention != null ? callingConvention.value() : loadOptions.getCallingMode();
     }
 
-    public InvocationHandler findMethodInvoker(Method method) {
+    InvocationHandler findMethodInvoker(Method method) {
         InvocationHandler handler = map.get(method);
         if (handler != null) {
             return handler;
@@ -47,7 +47,7 @@ class InvocationLibrary {
                 throw new AssertionError();
             };
         } else if (method.isDefault()) {
-            if (DefaultMethodInvoker.isAvailiable()) {
+            if (DefaultMethodInvoker.isAvailable()) {
                 handler = DefaultMethodInvoker.getInstance(method);
             } else {
                 throw new UnsupportedOperationException("Default method");
@@ -59,7 +59,7 @@ class InvocationLibrary {
             long function = library.dlsym(name);
             FFIType retType = TypeHandlers.findReturnType(method.getReturnType(), AnnotationUtil.getAnnotation(method, Typedef.class));
             Class<?>[] parameterTypes = method.getParameterTypes();
-            Annotation[][] annotationses = method.getParameterAnnotations();
+            Annotation[][] annotations = method.getParameterAnnotations();
             int len = parameterTypes.length;
             FFIType[] ptypes = new FFIType[len];
             Invoker invoker = TypeHandlers.forInvoker(method.getReturnType());
@@ -67,7 +67,7 @@ class InvocationLibrary {
             ParameterHandler<?>[] handlers = new ParameterHandler[len];
             for (int i = 0; i < len; ++i) {
                 Class<?> type = parameterTypes[i];
-                Typedef aliasA = AnnotationUtil.getAnnotation(annotationses[i], Typedef.class);
+                Typedef aliasA = AnnotationUtil.getAnnotation(annotations[i], Typedef.class);
                 ptypes[i] = TypeHandlers.findParameterType(type, aliasA);
                 handlers[i] = TypeHandlers.forParameterHandler(type);
             }

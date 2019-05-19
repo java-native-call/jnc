@@ -47,7 +47,7 @@ class DefaultMethodInvoker {
         }
     }
 
-    static boolean isAvailiable() {
+    static boolean isAvailable() {
         return IMPL_LOOPUP != null;
     }
 

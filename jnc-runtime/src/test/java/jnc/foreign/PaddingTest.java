@@ -15,6 +15,7 @@
  */
 package jnc.foreign;
 
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
@@ -25,12 +26,20 @@ public class PaddingTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testIllegal1() {
-        new Padding(0);
+        Padding padding = new Padding(0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testIllegal2() {
-        new Padding(3, 3);
+        Padding padding = new Padding(3, 3);
+    }
+
+    @Test
+    public void testPaddingInStruct() {
+        class A extends Struct {
+           private final Padding padding = padding(9, 2);
+        }
+        assertEquals(10, new A().size());
     }
 
 }

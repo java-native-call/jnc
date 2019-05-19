@@ -15,6 +15,7 @@
  */
 package jnc.foreign;
 
+@SuppressWarnings("WeakerAccess")
 public final class Padding extends Struct {
 
     Padding(int size) {
