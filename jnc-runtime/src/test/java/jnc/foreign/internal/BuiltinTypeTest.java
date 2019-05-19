@@ -18,7 +18,12 @@ public class BuiltinTypeTest {
         log.info("values");
         for (BuiltinType value : BuiltinType.values()) {
             String name = value.name();
-            log.info(name + " " + Long.toHexString(value.address()) + " " + value.type() + " " + value.size() + " " + value.alignment() + " " + value.isSigned());
+            String address = String.format("%#x", value.address());
+            int type = value.type();
+            int size = value.size();
+            int alignment = value.alignment();
+            char signed = value.isSigned() ? 's' : 'u';
+            log.info("{},addr={},type={},size={},align={},{}", name, address, type, size, alignment, signed);
         }
     }
 
