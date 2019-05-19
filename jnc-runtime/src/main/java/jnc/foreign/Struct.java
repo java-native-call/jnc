@@ -490,75 +490,87 @@ public class Struct {
         }
     }
 
-    private abstract class NumberField extends BaseField {
+    private abstract class NumberField extends Number {
+
+        private static final long serialVersionUID = 0L;
+
+        private final BaseField base;
 
         NumberField(Type type) {
-            super(type);
+            base = new BaseField(type);
         }
 
         NumberField(NativeType nativeType) {
-            super(nativeType);
+            base = new BaseField(nativeType);
         }
 
         final void putBoolean(boolean value) {
-            getMemory().putBoolean(offset, super.getType(), value);
+            getMemory().putBoolean(base.getOffset(), base.getType(), value);
         }
 
         final void putInt(int value) {
-            getMemory().putInt(super.getOffset(), super.getType(), value);
+            getMemory().putInt(base.getOffset(), base.getType(), value);
         }
 
         final void putLong(long value) {
-            getMemory().putLong(super.getOffset(), super.getType(), value);
+            getMemory().putLong(base.getOffset(), base.getType(), value);
         }
 
         final void putFloat(float value) {
-            getMemory().putFloat(super.getOffset(), super.getType(), value);
+            getMemory().putFloat(base.getOffset(), base.getType(), value);
         }
 
         final void putDouble(double value) {
-            getMemory().putDouble(super.getOffset(), super.getType(), value);
+            getMemory().putDouble(base.getOffset(), base.getType(), value);
         }
 
         final boolean booleanValue() {
-            return getMemory().getBoolean(super.getOffset(), super.getType());
+            return getMemory().getBoolean(base.getOffset(), base.getType());
         }
 
+        @Override
         public final short shortValue() {
-            return getMemory().getShort(super.getOffset(), super.getType());
+            return getMemory().getShort(base.getOffset(), base.getType());
         }
 
+        @Override
         public final byte byteValue() {
-            return getMemory().getByte(super.getOffset(), super.getType());
+            return getMemory().getByte(base.getOffset(), base.getType());
         }
 
+        @Override
         public final int intValue() {
-            return getMemory().getInt(super.getOffset(), super.getType());
+            return getMemory().getInt(base.getOffset(), base.getType());
         }
 
+        @Override
         public final long longValue() {
-            return getMemory().getLong(super.getOffset(), super.getType());
+            return getMemory().getLong(base.getOffset(), base.getType());
         }
 
+        @Override
         public final float floatValue() {
-            return getMemory().getFloat(super.getOffset(), super.getType());
+            return getMemory().getFloat(base.getOffset(), base.getType());
         }
 
+        @Override
         public final double doubleValue() {
-            return getMemory().getDouble(super.getOffset(), super.getType());
+            return getMemory().getDouble(base.getOffset(), base.getType());
         }
 
         final jnc.foreign.Pointer getPointer() {
-            return getMemory().getPointer(super.getOffset());
+            return getMemory().getPointer(base.getOffset());
         }
 
         final void setPointer(jnc.foreign.Pointer value) {
-            getMemory().putPointer(super.getOffset(), value);
+            getMemory().putPointer(base.getOffset(), value);
         }
 
     }
 
     private abstract class AbstraceBoolean extends NumberField {
+
+        private static final long serialVersionUID = 0L;
 
         AbstraceBoolean(NativeType type) {
             super(type);
@@ -576,6 +588,8 @@ public class Struct {
 
     protected class int8_t extends NumberField {
 
+        private static final long serialVersionUID = 0L;
+
         public int8_t() {
             super(NativeType.SINT8);
         }
@@ -591,6 +605,8 @@ public class Struct {
     }
 
     protected class int16_t extends NumberField {
+
+        private static final long serialVersionUID = 0L;
 
         public int16_t() {
             super(NativeType.SINT16);
@@ -608,6 +624,8 @@ public class Struct {
 
     protected class int32_t extends NumberField {
 
+        private static final long serialVersionUID = 0L;
+
         public int32_t() {
             super(NativeType.SINT32);
         }
@@ -623,6 +641,8 @@ public class Struct {
     }
 
     private class LongField extends NumberField {
+
+        private static final long serialVersionUID = 0L;
 
         LongField(Type type) {
             super(type);
@@ -644,6 +664,8 @@ public class Struct {
 
     protected class int64_t extends LongField {
 
+        private static final long serialVersionUID = 0L;
+
         public int64_t() {
             super(NativeType.SINT64);
         }
@@ -651,6 +673,8 @@ public class Struct {
     }
 
     protected class uint8_t extends NumberField {
+
+        private static final long serialVersionUID = 0L;
 
         public uint8_t() {
             super(NativeType.UINT8);
@@ -668,6 +692,8 @@ public class Struct {
 
     protected class uint16_t extends NumberField {
 
+        private static final long serialVersionUID = 0L;
+
         public uint16_t() {
             super(NativeType.UINT16);
         }
@@ -684,6 +710,8 @@ public class Struct {
 
     protected class uint32_t extends LongField {
 
+        private static final long serialVersionUID = 0L;
+
         public uint32_t() {
             super(NativeType.UINT32);
         }
@@ -691,6 +719,8 @@ public class Struct {
     }
 
     protected class uint64_t extends LongField {
+
+        private static final long serialVersionUID = 0L;
 
         public uint64_t() {
             super(NativeType.UINT64);
@@ -700,6 +730,8 @@ public class Struct {
 
     protected class bool extends AbstraceBoolean {
 
+        private static final long serialVersionUID = 0L;
+
         public bool() {
             super(NativeType.UINT8);
         }
@@ -707,6 +739,8 @@ public class Struct {
     }
 
     protected class Address extends LongField {
+
+        private static final long serialVersionUID = 0L;
 
         public Address() {
             super(NativeType.ADDRESS);
@@ -733,6 +767,8 @@ public class Struct {
 
     protected class size_t extends LongField {
 
+        private static final long serialVersionUID = 0L;
+
         public size_t() {
             super(getForeign().findType("size_t"));
         }
@@ -740,6 +776,8 @@ public class Struct {
     }
 
     protected class uintptr_t extends LongField {
+
+        private static final long serialVersionUID = 0L;
 
         public uintptr_t() {
             super(getForeign().findType("uintptr_t"));
@@ -749,6 +787,8 @@ public class Struct {
 
     protected class intptr_t extends LongField {
 
+        private static final long serialVersionUID = 0L;
+
         public intptr_t() {
             super(getForeign().findType("intptr_t"));
         }
@@ -757,6 +797,8 @@ public class Struct {
 
     protected class clong extends LongField {
 
+        private static final long serialVersionUID = 0L;
+
         public clong() {
             super(getForeign().findType("long"));
         }
@@ -764,6 +806,8 @@ public class Struct {
     }
 
     protected class Float32 extends NumberField {
+
+        private static final long serialVersionUID = 0L;
 
         public Float32() {
             super(NativeType.FLOAT);
@@ -780,6 +824,8 @@ public class Struct {
     }
 
     protected class Float64 extends NumberField {
+
+        private static final long serialVersionUID = 0L;
 
         public Float64() {
             super(NativeType.DOUBLE);
@@ -800,12 +846,16 @@ public class Struct {
      */
     protected class BYTE extends uint8_t {
 
+        private static final long serialVersionUID = 0L;
+
         public BYTE() {
         }
 
     }
 
     protected class WBOOL extends AbstraceBoolean {
+
+        private static final long serialVersionUID = 0L;
 
         public WBOOL() {
             super(NativeType.SINT32);
@@ -815,6 +865,8 @@ public class Struct {
 
     protected class WORD extends uint16_t {
 
+        private static final long serialVersionUID = 0L;
+
         public WORD() {
         }
 
@@ -822,12 +874,16 @@ public class Struct {
 
     protected class DWORD extends uint32_t {
 
+        private static final long serialVersionUID = 0L;
+
         public DWORD() {
         }
 
     }
 
     protected class DWORDLONG extends uint64_t {
+
+        private static final long serialVersionUID = 0L;
 
         public DWORDLONG() {
         }
