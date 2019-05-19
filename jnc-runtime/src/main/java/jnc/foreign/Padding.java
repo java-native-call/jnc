@@ -15,7 +15,7 @@
  */
 package jnc.foreign;
 
-public class Padding extends Struct {
+public final class Padding extends Struct {
 
     Padding(int size) {
         this(size, 1);
