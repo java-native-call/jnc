@@ -1,9 +1,9 @@
 package jnc.foreign.internal;
 
-import javax.annotation.Nullable;
 import jnc.foreign.NativeType;
-import static jnc.foreign.internal.BuiltinTypeConstants.*;
-import jnc.foreign.typedef.Typedef;
+import static jnc.foreign.internal.BuiltinTypeConstants.MASK_FLOAT;
+import static jnc.foreign.internal.BuiltinTypeConstants.MASK_INTEGER;
+import static jnc.foreign.internal.BuiltinTypeConstants.MASK_SIGNED;
 
 enum BuiltinType implements SimpleType {
 

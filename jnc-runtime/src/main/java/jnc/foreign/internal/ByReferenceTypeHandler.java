@@ -18,7 +18,6 @@ enum ByReferenceTypeHandler implements InternalTypeHandler<ByReference> {
         return BuiltinType.POINTER;
     }
 
-    @Deprecated
     @Override
     public Invoker<ByReference> getInvoker() {
         throw new IllegalStateException("ByReference should not be a return type");
