@@ -79,7 +79,7 @@ public class Struct {
             advance(advance);
             return;
         }
-        state.throwException(this, advance);
+        throw state.toException(this, advance);
     }
 
     public final int size() {
@@ -500,8 +500,8 @@ public class Struct {
         ENCLOSING_ASSIGNED,
         MEMORY_ALLOCATED;
 
-        void throwException(Struct struct, State advance) {
-            throw new IllegalStateException("status of struct: " + this + ", can't advance to " + advance);
+        IllegalStateException toException(Struct struct, State advance) {
+            return new IllegalStateException("status of struct: " + this + ", can't advance to " + advance);
         }
 
     }
