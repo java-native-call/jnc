@@ -1,24 +1,25 @@
 package jnc.foreign.internal;
 
 import jnc.foreign.NativeType;
-import static jnc.foreign.internal.BuiltinTypeConstants.MASK_FLOAT;
-import static jnc.foreign.internal.BuiltinTypeConstants.MASK_INTEGER;
-import static jnc.foreign.internal.BuiltinTypeConstants.MASK_SIGNED;
 
 enum BuiltinType implements SimpleType {
 
     VOID(NativeType.VOID, NativeMethods.TYPE_VOID, 0),
-    FLOAT(NativeType.FLOAT, NativeMethods.TYPE_FLOAT, MASK_SIGNED | MASK_FLOAT),
-    DOUBLE(NativeType.DOUBLE, NativeMethods.TYPE_DOUBLE, MASK_SIGNED | MASK_FLOAT),
-    UINT8(NativeType.UINT8, NativeMethods.TYPE_UINT8, MASK_INTEGER),
-    SINT8(NativeType.SINT8, NativeMethods.TYPE_SINT8, MASK_INTEGER | MASK_SIGNED),
-    UINT16(NativeType.UINT16, NativeMethods.TYPE_UINT16, MASK_INTEGER),
-    SINT16(NativeType.SINT16, NativeMethods.TYPE_SINT16, MASK_INTEGER | MASK_SIGNED),
-    UINT32(NativeType.UINT32, NativeMethods.TYPE_UINT32, MASK_INTEGER),
-    SINT32(NativeType.SINT32, NativeMethods.TYPE_SINT32, MASK_INTEGER | MASK_SIGNED),
-    UINT64(NativeType.UINT64, NativeMethods.TYPE_UINT64, MASK_INTEGER),
-    SINT64(NativeType.SINT64, NativeMethods.TYPE_SINT64, MASK_INTEGER | MASK_SIGNED),
-    POINTER(NativeType.ADDRESS, NativeMethods.TYPE_POINTER, MASK_INTEGER);
+    FLOAT(NativeType.FLOAT, NativeMethods.TYPE_FLOAT, BuiltinType.MASK_SIGNED | BuiltinType.MASK_FLOAT),
+    DOUBLE(NativeType.DOUBLE, NativeMethods.TYPE_DOUBLE, BuiltinType.MASK_SIGNED | BuiltinType.MASK_FLOAT),
+    UINT8(NativeType.UINT8, NativeMethods.TYPE_UINT8, BuiltinType.MASK_INTEGER),
+    SINT8(NativeType.SINT8, NativeMethods.TYPE_SINT8, BuiltinType.MASK_INTEGER | BuiltinType.MASK_SIGNED),
+    UINT16(NativeType.UINT16, NativeMethods.TYPE_UINT16, BuiltinType.MASK_INTEGER),
+    SINT16(NativeType.SINT16, NativeMethods.TYPE_SINT16, BuiltinType.MASK_INTEGER | BuiltinType.MASK_SIGNED),
+    UINT32(NativeType.UINT32, NativeMethods.TYPE_UINT32, BuiltinType.MASK_INTEGER),
+    SINT32(NativeType.SINT32, NativeMethods.TYPE_SINT32, BuiltinType.MASK_INTEGER | BuiltinType.MASK_SIGNED),
+    UINT64(NativeType.UINT64, NativeMethods.TYPE_UINT64, BuiltinType.MASK_INTEGER),
+    SINT64(NativeType.SINT64, NativeMethods.TYPE_SINT64, BuiltinType.MASK_INTEGER | BuiltinType.MASK_SIGNED),
+    POINTER(NativeType.ADDRESS, NativeMethods.TYPE_POINTER, BuiltinType.MASK_INTEGER);
+
+    private static final int MASK_SIGNED = 1;
+    private static final int MASK_INTEGER = 2;
+    private static final int MASK_FLOAT = 4;
 
     private final long address;
     private final NativeType nativeType;
