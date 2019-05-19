@@ -1,7 +1,5 @@
 package jnc.foreign.internal;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.EnumSet;
 import javax.annotation.Nullable;
 import jnc.foreign.NativeType;
@@ -52,24 +50,7 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
     @SuppressWarnings("unchecked")
     private EnumTypeHandler(Class<E> type, BuiltinType builtinType, int start,
             EnumMappingErrorAction onUnmappable) {
-        try {
-            Method method = type.getMethod("values");
-            if (!method.isAccessible()) {
-                // this enum is not public
-                method.setAccessible(true);
-            }
-            values = (E[]) method.invoke(null);
-        } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException ex) {
-            throw new IllegalArgumentException("class '" + type + "' is not an enum", ex);
-        } catch (InvocationTargetException ex) {
-            Throwable cause = ex.getCause();
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
-            } else if (cause instanceof Error) {
-                throw (Error) cause;
-            }
-            throw new AssertionError(cause);
-        }
+        this.values = type.getEnumConstants();
         this.type = type;
         this.builtinType = builtinType;
         this.start = start;
