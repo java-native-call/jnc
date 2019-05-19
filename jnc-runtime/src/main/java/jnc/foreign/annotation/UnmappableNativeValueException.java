@@ -19,7 +19,7 @@ package jnc.foreign.annotation;
  *
  * @author zhanhb
  */
-public class UnmappableNativeValueException extends RuntimeException {
+public class UnmappableNativeValueException extends IllegalArgumentException {
 
     private static final long serialVersionUID = 0L;
 
