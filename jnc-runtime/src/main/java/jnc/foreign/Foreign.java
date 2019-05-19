@@ -20,6 +20,8 @@ public interface Foreign extends Closeable {
     @Nonnull
     Type findType(NativeType nativeType) throws IllegalArgumentException;
 
+    <T> TypeHandler<T> findTypeHandler(Class<T> clazz) throws UnsupportedOperationException;
+
     @Nonnull
     MemoryManager getMemoryManager();
 

@@ -62,14 +62,14 @@ class InvocationLibrary {
             Annotation[][] annotations = method.getParameterAnnotations();
             int len = parameterTypes.length;
             FFIType[] ptypes = new FFIType[len];
-            Invoker invoker = TypeHandlers.forInvoker(method.getReturnType());
+            Invoker invoker = TypeHandlers.getInvoker(method.getReturnType());
             @SuppressWarnings("rawtypes")
             ParameterHandler<?>[] handlers = new ParameterHandler[len];
             for (int i = 0; i < len; ++i) {
                 Class<?> type = parameterTypes[i];
                 Typedef aliasA = AnnotationUtil.getAnnotation(annotations[i], Typedef.class);
                 ptypes[i] = TypeHandlers.findParameterType(type, aliasA);
-                handlers[i] = TypeHandlers.forParameterHandler(type);
+                handlers[i] = TypeHandlers.getParameterHandler(type);
             }
             CallingConvention annotation = AnnotationUtil.getAnnotation(method, CallingConvention.class);
             ffi_cif cif = new ffi_cif(annotation != null ? annotation.value() : callingMode, retType, ptypes);

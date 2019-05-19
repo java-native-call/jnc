@@ -35,7 +35,7 @@ public class BuiltinTypeTest {
         log.info("findByNativeType");
         NativeType nativeType = NativeType.ADDRESS;
         BuiltinType expResult = BuiltinType.POINTER;
-        BuiltinType result = BuiltinType.findByNativeType(nativeType);
+        BuiltinType result = BuiltinTypeHelper.findByNativeType(nativeType);
         assertEquals(expResult, result);
     }
 
@@ -47,26 +47,26 @@ public class BuiltinTypeTest {
         log.info("findAlias");
         String name = "";
         try {
-            BuiltinType.findAlias(name);
+            BuiltinTypeHelper.findAlias(name);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException ex) {
             // ok
         }
-        assertEquals(BuiltinType.UINT8, BuiltinType.findAlias("uint8_t"));
-        assertEquals(BuiltinType.SINT8, BuiltinType.findAlias("int8_t"));
-        assertEquals(BuiltinType.UINT16, BuiltinType.findAlias("uint16_t"));
-        assertEquals(BuiltinType.SINT16, BuiltinType.findAlias("int16_t"));
-        assertEquals(BuiltinType.UINT32, BuiltinType.findAlias("uint32_t"));
-        assertEquals(BuiltinType.SINT32, BuiltinType.findAlias("int32_t"));
-        assertEquals(BuiltinType.SINT64, BuiltinType.findAlias("int64_t"));
-        assertEquals(BuiltinType.UINT64, BuiltinType.findAlias("uint64_t"));
-        BuiltinType intptr_t = BuiltinType.findAlias("intptr_t");
-        BuiltinType uintptr_t = BuiltinType.findAlias("uintptr_t");
+        assertEquals(BuiltinType.UINT8, BuiltinTypeHelper.findAlias("uint8_t"));
+        assertEquals(BuiltinType.SINT8, BuiltinTypeHelper.findAlias("int8_t"));
+        assertEquals(BuiltinType.UINT16, BuiltinTypeHelper.findAlias("uint16_t"));
+        assertEquals(BuiltinType.SINT16, BuiltinTypeHelper.findAlias("int16_t"));
+        assertEquals(BuiltinType.UINT32, BuiltinTypeHelper.findAlias("uint32_t"));
+        assertEquals(BuiltinType.SINT32, BuiltinTypeHelper.findAlias("int32_t"));
+        assertEquals(BuiltinType.SINT64, BuiltinTypeHelper.findAlias("int64_t"));
+        assertEquals(BuiltinType.UINT64, BuiltinTypeHelper.findAlias("uint64_t"));
+        BuiltinType intptr_t = BuiltinTypeHelper.findAlias("intptr_t");
+        BuiltinType uintptr_t = BuiltinTypeHelper.findAlias("uintptr_t");
         assertEquals(BuiltinType.POINTER.size(), intptr_t.size());
         assertEquals(BuiltinType.POINTER.size(), uintptr_t.size());
         assertTrue(intptr_t.isSigned());
         assertFalse(uintptr_t.isSigned());
-        assertEquals(BuiltinType.POINTER, BuiltinType.findAlias("pointer"));
+        assertEquals(BuiltinType.POINTER, BuiltinTypeHelper.findAlias("pointer"));
     }
 
 }

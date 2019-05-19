@@ -3,7 +3,6 @@ package jnc.foreign.internal;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 import jnc.foreign.NativeType;
 import jnc.foreign.typedef.Typedef;
 
@@ -79,15 +78,12 @@ class BuiltinTypeHelper {
         return (int) typeInfo & 0xFF;
     }
 
-    private static BuiltinType findByType(Class<?> type) {
+    static BuiltinType findByType(Class<?> type) {
         return PrimitivesMap.getByType(type);
     }
 
-    static BuiltinType findByType(Class<?> type, @Nullable Typedef alias) {
-        if (alias != null) {
-            return findAlias(alias.value());
-        }
-        return findByType(type);
+    static BuiltinType findByAlias(Typedef alias) {
+        return findAlias(alias.value());
     }
 
     private static class PrimitivesMap {

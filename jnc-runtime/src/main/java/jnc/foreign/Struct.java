@@ -462,7 +462,7 @@ public class Struct {
 
     }
 
-    private abstract class NumberField {
+    private class NumberField {
 
         private final int offset;
         private final Type type;
@@ -474,6 +474,10 @@ public class Struct {
 
         NumberField(NativeType nativeType) {
             this(getForeign().findType(nativeType));
+        }
+
+        private int getOffset() {
+            return offset;
         }
 
         final void putBoolean(boolean value) {
@@ -808,6 +812,25 @@ public class Struct {
         public DWORDLONG() {
         }
 
+    }
+
+    protected class EnumField<E extends Enum<E>> {
+
+        private final TypeHandler<E> typeHandler;
+        private final NumberField field;
+
+        public EnumField(Class<E> type) {
+            typeHandler = getForeign().findTypeHandler(type);
+            field = new NumberField(typeHandler.nativeType());
+        }
+
+        public E get() {
+            return typeHandler.get(getMemory(), field.getOffset());
+        }
+
+        public void set(E e) {
+            typeHandler.set(getMemory(), field.getOffset(), e);
+        }
     }
 
 }

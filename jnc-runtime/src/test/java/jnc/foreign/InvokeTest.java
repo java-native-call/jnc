@@ -1,5 +1,7 @@
 package jnc.foreign;
 
+import jnc.foreign.annotation.ContinuouslyEnum;
+import jnc.foreign.typedef.int32_t;
 import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uintptr_t;
 import static org.junit.Assert.assertEquals;
@@ -19,11 +21,22 @@ public class InvokeTest {
         assertEquals(Math.sqrt(5), Libm.INSTANCE.sqrt(5), -1);
         assertEquals(Math.PI, Libm.INSTANCE.atan2(0, -1), -1);
         assertEquals(Math.PI / 2, Libm.INSTANCE.atan2(1, 0), 1e-14);
+        assertTrue(Libc.INSTANCE.isalpha(Char.A));
     }
 
     @Test
     public void testDefaultMethod() {
         assertEquals(0x123456, Libc.INSTANCE.memcpy());
+    }
+
+    @Test
+    public void testVoid() {
+        Libc.INSTANCE.memcpy(null, 0, 0);
+    }
+
+    @ContinuouslyEnum(start = 'A')
+    public enum Char {
+        A, B
     }
 
     public interface Libc {
@@ -32,6 +45,12 @@ public class InvokeTest {
 
         @uintptr_t
         long memcpy(@uintptr_t long dst, @uintptr_t long src, @size_t long n);
+
+        @uintptr_t
+        void memcpy(Void dst, @uintptr_t long src, @size_t long n);
+
+        @int32_t
+        boolean isalpha(Char ch);
 
         default int memcpy() {
             return 0x123456;

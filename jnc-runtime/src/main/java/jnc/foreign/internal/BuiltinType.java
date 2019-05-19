@@ -20,18 +20,6 @@ enum BuiltinType implements SimpleType {
     SINT64(NativeType.SINT64, NativeMethods.TYPE_SINT64, MASK_INTEGER | MASK_SIGNED),
     POINTER(NativeType.ADDRESS, NativeMethods.TYPE_POINTER, MASK_INTEGER);
 
-    static BuiltinType findByType(Class<?> type, @Nullable Typedef alias) {
-        return BuiltinTypeHelper.findByType(type, alias);
-    }
-
-    static BuiltinType findAlias(String name) {
-        return BuiltinTypeHelper.findAlias(name);
-    }
-
-    static BuiltinType findByNativeType(NativeType nativeType) {
-        return BuiltinTypeHelper.findByNativeType(nativeType);
-    }
-
     private final long address;
     private final NativeType nativeType;
     private final long typeInfo;
