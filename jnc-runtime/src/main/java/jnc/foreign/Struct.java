@@ -453,6 +453,21 @@ public class Struct {
         return new EnumField<>(klass);
     }
 
+    @Nonnull
+    public final <E extends Enum<E>> EnumField<E>[] enumArray(Class<E> klass, int length) {
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        EnumField<E>[] array = new EnumField[length];
+        arrayBegin();
+        try {
+            for (int i = 0, len = array.length; i < len; ++i) {
+                array[i] = enumField(klass);
+            }
+        } finally {
+            arrayEnd();
+        }
+        return array;
+    }
+
     private enum State {
 
         INITIAL,
