@@ -21,12 +21,21 @@ public class InvokeTest {
         assertEquals(Math.PI / 2, Libm.INSTANCE.atan2(1, 0), 1e-14);
     }
 
+    @Test
+    public void testDefaultMethod() {
+        assertEquals(0x123456, Libc.INSTANCE.memcpy());
+    }
+
     public interface Libc {
 
         Libc INSTANCE = LibraryLoader.create(Libc.class).load(Platform.getNativePlatform().getLibcName());
 
         @uintptr_t
         long memcpy(@uintptr_t long dst, @uintptr_t long src, @size_t long n);
+
+        default int memcpy() {
+            return 0x123456;
+        }
 
         @Override
         int hashCode();

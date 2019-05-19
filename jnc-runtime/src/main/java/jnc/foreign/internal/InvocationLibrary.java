@@ -29,7 +29,13 @@ class InvocationLibrary {
         if (handler != null) {
             return handler;
         }
-        if (method.getDeclaringClass() == Object.class) {
+        if (method.isDefault()) {
+            if (DefaultMethodInvoker.isAvailable()) {
+                handler = DefaultMethodInvoker.getInstance(method);
+            } else {
+                throw new UnsupportedOperationException("Default method");
+            }
+        } else if (method.getDeclaringClass() == Object.class) {
             handler = (proxy, m, args) -> {
                 InvocationHandler ih = Proxy.getInvocationHandler(proxy);
                 switch (m.getName()) {
@@ -46,12 +52,6 @@ class InvocationLibrary {
                 }
                 throw new AssertionError();
             };
-        } else if (method.isDefault()) {
-            if (DefaultMethodInvoker.isAvailable()) {
-                handler = DefaultMethodInvoker.getInstance(method);
-            } else {
-                throw new UnsupportedOperationException("Default method");
-            }
         } else if (method.isVarArgs()) {
             throw new UnsupportedOperationException("Not supported yet.");
         } else {
