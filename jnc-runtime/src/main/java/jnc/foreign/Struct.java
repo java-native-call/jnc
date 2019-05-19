@@ -147,6 +147,7 @@ public class Struct {
     void arrayEnd() {
     }
 
+    @Nonnull
     protected final <T extends Struct> T inner(@Nonnull T struct) {
         struct.setEnclosing(this, addField(struct.size(), struct.alignment()));
         return struct;
