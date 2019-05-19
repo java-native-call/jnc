@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 public class AnnotationUtil {
 
-    private static <T extends Annotation> T getAnnotation0(Annotation[] annotationse, Class<T> type) {
-        for (Annotation annotation : annotationse) {
+    private static <T extends Annotation> T getAnnotation0(Annotation[] annotations, Class<T> type) {
+        for (Annotation annotation : annotations) {
             T anno = annotation.annotationType().getAnnotation(type);
             if (anno != null) {
                 return anno;
@@ -19,7 +19,7 @@ public class AnnotationUtil {
     }
 
     @Nullable
-    static <T extends Annotation> T getAnnotation(Method method, Class<T> type) {
+    static <T extends Annotation> T getMethodAnnotation(Method method, Class<T> type) {
         T annotation = method.getAnnotation(type);
         if (annotation != null) {
             return annotation;
@@ -29,7 +29,7 @@ public class AnnotationUtil {
 
     @Nullable
     @SuppressWarnings("NestedAssignment")
-    public static <T extends Annotation> T getAnnotation(Class<?> klass, Class<T> type) {
+    public static <T extends Annotation> T getClassAnnotation(Class<?> klass, Class<T> type) {
         T anno;
         for (Class<?> tmp = klass;
                 tmp != null;
@@ -44,14 +44,14 @@ public class AnnotationUtil {
     }
 
     @Nullable
-    static <T extends Annotation> T getAnnotation(Annotation[] annotationse, Class<T> type) {
+    static <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {
         Objects.requireNonNull(type, "type");
-        for (Annotation annotation : annotationse) {
+        for (Annotation annotation : annotations) {
             if (type.isInstance(annotation)) {
                 return type.cast(annotation);
             }
         }
-        return getAnnotation0(annotationse, type);
+        return getAnnotation0(annotations, type);
     }
 
 }

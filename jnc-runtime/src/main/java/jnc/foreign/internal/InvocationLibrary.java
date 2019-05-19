@@ -20,7 +20,7 @@ class InvocationLibrary {
 
     InvocationLibrary(Class<?> interfaceClass, NativeLibrary nativeLibrary, LoadOptions loadOptions) {
         this.library = nativeLibrary;
-        CallingConvention callingConvention = AnnotationUtil.getAnnotation(interfaceClass, CallingConvention.class);
+        CallingConvention callingConvention = AnnotationUtil.getClassAnnotation(interfaceClass, CallingConvention.class);
         this.callingMode = callingConvention != null ? callingConvention.value() : loadOptions.getCallingMode();
     }
 
@@ -57,7 +57,7 @@ class InvocationLibrary {
         } else {
             String name = method.getName();
             long function = library.dlsym(name);
-            FFIType retType = TypeHandlers.findReturnType(method.getReturnType(), AnnotationUtil.getAnnotation(method, Typedef.class));
+            FFIType retType = TypeHandlers.findReturnType(method.getReturnType(), AnnotationUtil.getMethodAnnotation(method, Typedef.class));
             Class<?>[] parameterTypes = method.getParameterTypes();
             Annotation[][] annotations = method.getParameterAnnotations();
             int len = parameterTypes.length;
@@ -71,7 +71,7 @@ class InvocationLibrary {
                 ptypes[i] = TypeHandlers.findParameterType(type, aliasA);
                 handlers[i] = TypeHandlers.getParameterHandler(type);
             }
-            CallingConvention annotation = AnnotationUtil.getAnnotation(method, CallingConvention.class);
+            CallingConvention annotation = AnnotationUtil.getMethodAnnotation(method, CallingConvention.class);
             ffi_cif cif = new ffi_cif(annotation != null ? annotation.value() : callingMode, retType, ptypes);
             handler = (Object proxy, Method m, Object[] args) -> {
                 @SuppressWarnings("unchecked")

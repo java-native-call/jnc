@@ -1,5 +1,6 @@
 package jnc.foreign.internal;
 
+import javax.annotation.Nonnull;
 import jnc.foreign.Arch;
 import jnc.foreign.OS;
 import jnc.foreign.Platform;
@@ -18,7 +19,7 @@ class DefaultPlatform extends Platform {
     private final Arch arch;
     private final String libc;
 
-    DefaultPlatform() {
+    private DefaultPlatform() {
         String osName = PropertyUtil.getStringProperty("os.name", "unknown");
         if (startsWith(osName, "mac") || startsWith(osName, "darwin")) {
             os = OS.DARWIN;
@@ -50,16 +51,19 @@ class DefaultPlatform extends Platform {
         this.libc = c;
     }
 
+    @Nonnull
     @Override
     public OS getOS() {
         return os;
     }
 
+    @Nonnull
     @Override
     public Arch getArch() {
         return arch;
     }
 
+    @Nonnull
     @Override
     public String getLibcName() {
         return libc;

@@ -1,5 +1,7 @@
 package jnc.foreign.internal;
 
+import javax.annotation.Nonnull;
+
 class Slice extends SizedDirectMemory {
 
     private final DirectMemory parent;
@@ -11,6 +13,7 @@ class Slice extends SizedDirectMemory {
         this.offset = offset;
     }
 
+    @Nonnull
     @Override
     public DirectMemory slice(int offset, int size) {
         checkIndex(offset, size);

@@ -69,7 +69,7 @@ class TypeHandlers {
         if (type.isPrimitive() || Primitives.isWrapperType(type)) {
             return PrimaryTypeHandler.forType(type);
         } else if (type.isEnum()) {
-            Continuously annotation = AnnotationUtil.getAnnotation(type, Continuously.class);
+            Continuously annotation = AnnotationUtil.getClassAnnotation(type, Continuously.class);
             return EnumTypeHandler.newInstance((Class) type, annotation);
         } else if (type == Pointer.class) {
             return PointerTypeHandler.getInstance();

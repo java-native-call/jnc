@@ -33,9 +33,9 @@ class DefaultMethodInvoker {
     }
 
     private static Lookup findLookup2() throws Exception {
-        Constructor<Lookup> contructor = Lookup.class.getDeclaredConstructor(Class.class, int.class);
-        contructor.setAccessible(true);
-        return contructor.newInstance(Object.class, -1);
+        Constructor<Lookup> constructor = Lookup.class.getDeclaredConstructor(Class.class, int.class);
+        constructor.setAccessible(true);
+        return constructor.newInstance(Object.class, -1);
     }
 
     static InvocationHandler getInstance(Method method) {

@@ -26,7 +26,7 @@ public class Struct {
 
     // visiable for testing
     private static int getPack(Class<?> type) {
-        Pack pack = AnnotationUtil.getAnnotation(type, Pack.class);
+        Pack pack = AnnotationUtil.getClassAnnotation(type, Pack.class);
         if (pack != null) {
             int value = pack.value();
             if (value > 0) {
@@ -448,6 +448,11 @@ public class Struct {
         return inner(new Padding(size, alignment));
     }
 
+    @Nonnull
+    public final <E extends Enum<E>> EnumField<E> enumField(Class<E> klass) {
+        return new EnumField<>(klass);
+    }
+
     private enum State {
 
         INITIAL,
@@ -462,78 +467,93 @@ public class Struct {
 
     }
 
-    private class NumberField {
+    private class BaseField {
 
         private final int offset;
         private final Type type;
 
-        NumberField(Type type) {
+        BaseField(Type type) {
             this.offset = addField(type.size(), type.alignment());
             this.type = type;
         }
 
-        NumberField(NativeType nativeType) {
+        BaseField(NativeType nativeType) {
             this(getForeign().findType(nativeType));
         }
 
-        private int getOffset() {
+        final int getOffset() {
             return offset;
         }
 
+        final Type getType() {
+            return type;
+        }
+    }
+
+    private abstract class NumberField extends BaseField {
+
+        NumberField(Type type) {
+            super(type);
+        }
+
+        NumberField(NativeType nativeType) {
+            super(nativeType);
+        }
+
         final void putBoolean(boolean value) {
-            getMemory().putBoolean(offset, type, value);
+            getMemory().putBoolean(offset, super.getType(), value);
         }
 
         final void putInt(int value) {
-            getMemory().putInt(offset, type, value);
+            getMemory().putInt(super.getOffset(), super.getType(), value);
         }
 
         final void putLong(long value) {
-            getMemory().putLong(offset, type, value);
+            getMemory().putLong(super.getOffset(), super.getType(), value);
         }
 
         final void putFloat(float value) {
-            getMemory().putFloat(offset, type, value);
+            getMemory().putFloat(super.getOffset(), super.getType(), value);
         }
 
         final void putDouble(double value) {
-            getMemory().putDouble(offset, type, value);
+            getMemory().putDouble(super.getOffset(), super.getType(), value);
         }
 
         final boolean booleanValue() {
-            return getMemory().getBoolean(offset, type);
+            return getMemory().getBoolean(super.getOffset(), super.getType());
         }
 
         public final short shortValue() {
-            return getMemory().getShort(offset, type);
+            return getMemory().getShort(super.getOffset(), super.getType());
         }
 
         public final byte byteValue() {
-            return getMemory().getByte(offset, type);
+            return getMemory().getByte(super.getOffset(), super.getType());
         }
 
         public final int intValue() {
-            return getMemory().getInt(offset, type);
+            return getMemory().getInt(super.getOffset(), super.getType());
         }
 
         public final long longValue() {
-            return getMemory().getLong(offset, type);
+            return getMemory().getLong(super.getOffset(), super.getType());
         }
 
         public final float floatValue() {
-            return getMemory().getFloat(offset, type);
+            return getMemory().getFloat(super.getOffset(), super.getType());
         }
 
         public final double doubleValue() {
-            return getMemory().getDouble(offset, type);
+            return getMemory().getDouble(super.getOffset(), super.getType());
         }
 
         final jnc.foreign.Pointer getPointer() {
-            return getMemory().getPointer(offset);
+            return getMemory().getPointer(super.getOffset());
         }
 
         final void setPointer(jnc.foreign.Pointer value) {
-            getMemory().putPointer(offset, value);
+            getMemory().putPointer(super.getOffset(), value);
         }
 
     }
@@ -814,21 +834,21 @@ public class Struct {
 
     }
 
-    protected class EnumField<E extends Enum<E>> {
+    protected final class EnumField<E extends Enum<E>> {
 
         private final TypeHandler<E> typeHandler;
-        private final NumberField field;
+        private final BaseField field;
 
-        public EnumField(Class<E> type) {
+        EnumField(Class<E> type) {
             typeHandler = getForeign().findTypeHandler(type);
-            field = new NumberField(typeHandler.nativeType());
+            field = new BaseField(typeHandler.nativeType());
         }
 
-        public E get() {
+        public final E get() {
             return typeHandler.get(getMemory(), field.getOffset());
         }
 
-        public void set(E e) {
+        public final void set(E e) {
             typeHandler.set(getMemory(), field.getOffset(), e);
         }
     }

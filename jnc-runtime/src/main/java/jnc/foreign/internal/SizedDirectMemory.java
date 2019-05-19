@@ -1,6 +1,7 @@
 package jnc.foreign.internal;
 
 import java.nio.charset.StandardCharsets;
+import javax.annotation.Nonnull;
 import jnc.foreign.Pointer;
 
 class SizedDirectMemory extends DirectMemory {
@@ -195,12 +196,14 @@ class SizedDirectMemory extends DirectMemory {
         super.putBytes(offset, bytes, 0, len);
     }
 
+    @Nonnull
     @Override
     public String getStringUTF(int offset) {
         checkIndex(offset, 1);
         return nm.getStringUTFN(address() + offset, size);
     }
 
+    @Nonnull
     @Override
     public Pointer slice(int offset, int size) {
         if (size < 0) {

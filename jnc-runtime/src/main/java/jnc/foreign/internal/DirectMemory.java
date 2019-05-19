@@ -1,5 +1,7 @@
 package jnc.foreign.internal;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import jnc.foreign.Pointer;
 
 class DirectMemory extends AbstractMemory implements NativeObject, Pointer {
@@ -160,21 +162,24 @@ class DirectMemory extends AbstractMemory implements NativeObject, Pointer {
         nm.putStringUTF(address + offset, value);
     }
 
+    @Nonnull
     @Override
     public String getStringUTF(int offset) {
         return nm.getStringUTF(address + offset);
     }
 
+    @Nullable
     @Override
     public Pointer getPointer(int offset) {
         return of(getAddress(offset));
     }
 
     @Override
-    public void putPointer(int offset, Pointer pointer) {
+    public void putPointer(int offset, @Nullable Pointer pointer) {
         putAddress(offset, pointer != null ? pointer.address() : 0);
     }
 
+    @Nonnull
     @Override
     public Pointer slice(int offset, int size) {
         if (size < 0) {

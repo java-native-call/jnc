@@ -226,7 +226,7 @@ public class StructTest {
 
     private class Struct1 extends Struct {
 
-        private final EnumField<Season> season = new EnumField<>(Season.class);
+        private final EnumField<Season> season = enumField(Season.class);
 
         public Season getSeason() {
             return season.get();

@@ -21,12 +21,11 @@ class PointerArray implements NativeObject {
         return array;
     }
 
-    static PointerArray init(PointerArray array, long base, long[] offsets) {
+    static void init(PointerArray array, long base, long[] offsets) {
         int len = offsets.length;
         for (int i = 0; i < len; ++i) {
             array.set(i, base + offsets[i]);
         }
-        return array;
     }
 
     static PointerArray wrap(DirectMemory directMemory, int length) {
