@@ -45,8 +45,7 @@ public class Struct {
     private int size;
     private int alignment = 1;
     private jnc.foreign.Pointer memory;
-    private Struct enclosing;
-    private int offset;
+    private Enclosing enclosing;
     private State state = State.INITIAL;
     private final int pack = getPack(getClass());
 
@@ -92,7 +91,8 @@ public class Struct {
         return size;
     }
 
-    void setSize(int size) {
+    // access from Union
+    final void setSize(int size) {
         this.size = size;
     }
 
@@ -109,9 +109,9 @@ public class Struct {
         advance(State.MEMORY_ALLOCATED);
         jnc.foreign.Pointer m = memory;
         if (m == null) {
-            Struct enclose = enclosing;
+            Enclosing enclose = enclosing;
             if (enclose != null) {
-                m = enclose.getMemory().slice(offset, size());
+                m = enclose.getMemory(this.size());
             } else {
                 m = getForeign().getMemoryManager().allocateWithAlign(size(), alignment());
             }
@@ -123,13 +123,13 @@ public class Struct {
     @Nullable
     public final Struct getEnclosing() {
         advance(State.FIELDS_FINISHED);
-        return enclosing;
+        Enclosing enclose = enclosing;
+        return enclose != null ? enclosing.getStruct() : null;
     }
 
     final void setEnclosing(Struct enclosing, int offset) {
         checkState(State.FIELDS_FINISHED, State.ENCLOSING_ASSIGNED);
-        this.enclosing = enclosing;
-        this.offset = offset;
+        this.enclosing = new Enclosing(enclosing, offset);
     }
 
     @Override
@@ -466,6 +466,29 @@ public class Struct {
             arrayEnd();
         }
         return array;
+    }
+
+    private static final class Enclosing {
+
+        private final Struct struct;
+        private final int offset;
+
+        public Enclosing(Struct struct, int offset) {
+            this.struct = struct;
+            this.offset = offset;
+        }
+
+        public final Struct getStruct() {
+            return struct;
+        }
+
+        public final int getOffset() {
+            return offset;
+        }
+
+        public final jnc.foreign.Pointer getMemory(int size) {
+            return struct.getMemory().slice(offset, size);
+        }
     }
 
     private enum State {
