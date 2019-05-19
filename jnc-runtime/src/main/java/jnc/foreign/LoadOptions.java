@@ -2,7 +2,6 @@ package jnc.foreign;
 
 import jnc.foreign.abi.CallingMode;
 
-@SuppressWarnings("FinalClass")
 public final class LoadOptions {
 
     public static LoadOptions defaultOptions() {

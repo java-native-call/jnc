@@ -37,7 +37,6 @@ class ForeignImpl implements Foreign {
     }
 
     @Override
-    @SuppressWarnings("FinalMethod")
     public final void close() {
         throw new UnsupportedOperationException();
     }

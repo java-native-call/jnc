@@ -22,7 +22,6 @@ class DirectMemory extends AbstractMemory implements NativeObject, Pointer {
     }
 
     @Override
-    @SuppressWarnings("FinalMethod")
     public final long address() {
         return address;
     }

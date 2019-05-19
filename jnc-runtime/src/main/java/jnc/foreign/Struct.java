@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import jnc.foreign.annotation.Pack;
 import jnc.foreign.internal.AnnotationUtil;
 
-@SuppressWarnings({"FinalMethod", "PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess", "FinalClass"})
+@SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess"})
 public class Struct {
 
     private static final int MAX_ALIGN = 16;

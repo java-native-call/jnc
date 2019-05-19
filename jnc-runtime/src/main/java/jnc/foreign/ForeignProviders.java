@@ -3,7 +3,6 @@ package jnc.foreign;
 import javax.annotation.Nonnull;
 import jnc.foreign.internal.DefaultForeignProvider;
 
-@SuppressWarnings("FinalClass")
 public final class ForeignProviders {
 
     @Nonnull
