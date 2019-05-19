@@ -573,6 +573,9 @@ public class Struct {
             return getMemory().getDouble(base.getOffset(), base.getType());
         }
 
+        @Override
+        public abstract String toString();
+
         final jnc.foreign.Pointer getPointer() {
             return getMemory().getPointer(base.getOffset());
         }
@@ -599,6 +602,10 @@ public class Struct {
             putBoolean(value);
         }
 
+        @Override
+        public String toString() {
+            return Boolean.toString(get());
+        }
     }
 
     protected class int8_t extends NumberField {
@@ -617,6 +624,10 @@ public class Struct {
             putInt(value);
         }
 
+        @Override
+        public String toString() {
+            return Integer.toString(get());
+        }
     }
 
     protected class int16_t extends NumberField {
@@ -635,6 +646,10 @@ public class Struct {
             putInt(value);
         }
 
+        @Override
+        public String toString() {
+            return Integer.toString(get());
+        }
     }
 
     protected class int32_t extends NumberField {
@@ -653,9 +668,13 @@ public class Struct {
             putInt(value);
         }
 
+        @Override
+        public String toString() {
+            return Integer.toString(get());
+        }
     }
 
-    private class LongField extends NumberField {
+    private abstract class LongField extends NumberField {
 
         private static final long serialVersionUID = 0L;
 
@@ -685,6 +704,10 @@ public class Struct {
             super(NativeType.SINT64);
         }
 
+        @Override
+        public String toString() {
+            return Long.toString(get());
+        }
     }
 
     protected class uint8_t extends NumberField {
@@ -703,6 +726,10 @@ public class Struct {
             putInt(value);
         }
 
+        @Override
+        public String toString() {
+            return Integer.toString(get());
+        }
     }
 
     protected class uint16_t extends NumberField {
@@ -721,6 +748,10 @@ public class Struct {
             putInt(value);
         }
 
+        @Override
+        public String toString() {
+            return Integer.toString(get());
+        }
     }
 
     protected class uint32_t extends LongField {
@@ -731,6 +762,10 @@ public class Struct {
             super(NativeType.UINT32);
         }
 
+        @Override
+        public String toString() {
+            return Long.toString(get());
+        }
     }
 
     protected class uint64_t extends LongField {
@@ -741,6 +776,10 @@ public class Struct {
             super(NativeType.UINT64);
         }
 
+        @Override
+        public String toString() {
+            return Long.toUnsignedString(get());
+        }
     }
 
     protected class bool extends AbstraceBoolean {
@@ -761,6 +800,10 @@ public class Struct {
             super(NativeType.ADDRESS);
         }
 
+        @Override
+        public String toString() {
+            return Long.toHexString(get());
+        }
     }
 
     protected class Pointer {
@@ -788,6 +831,10 @@ public class Struct {
             super(getForeign().findType("size_t"));
         }
 
+        @Override
+        public String toString() {
+            return Long.toUnsignedString(get());
+        }
     }
 
     protected class uintptr_t extends LongField {
@@ -798,6 +845,10 @@ public class Struct {
             super(getForeign().findType("uintptr_t"));
         }
 
+        @Override
+        public String toString() {
+            return Long.toUnsignedString(get());
+        }
     }
 
     protected class intptr_t extends LongField {
@@ -808,6 +859,10 @@ public class Struct {
             super(getForeign().findType("intptr_t"));
         }
 
+        @Override
+        public String toString() {
+            return Long.toString(get());
+        }
     }
 
     protected class clong extends LongField {
@@ -818,6 +873,10 @@ public class Struct {
             super(getForeign().findType("long"));
         }
 
+        @Override
+        public String toString() {
+            return Long.toString(get());
+        }
     }
 
     protected class Float32 extends NumberField {
@@ -836,6 +895,10 @@ public class Struct {
             putFloat(value);
         }
 
+        @Override
+        public String toString() {
+            return Float.toString(get());
+        }
     }
 
     protected class Float64 extends NumberField {
@@ -854,6 +917,10 @@ public class Struct {
             putDouble(value);
         }
 
+        @Override
+        public String toString() {
+            return Double.toString(get());
+        }
     }
 
     /**
