@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -49,6 +50,10 @@ public final class StructArray<T extends Struct> extends Struct implements Itera
     @Override
     public Spliterator<T> spliterator() {
         return list.spliterator();
+    }
+
+    public Stream<T> stream() {
+        return list.stream();
     }
 
 }
