@@ -6,11 +6,6 @@ import jnc.foreign.Type;
 abstract class AbstractMemory implements Pointer {
 
     @Override
-    public void putBoolean(int offset, boolean value) {
-        putInt(offset, BuiltinType.UINT8, value ? 1 : 0);
-    }
-
-    @Override
     public void putByte(int offset, byte value) {
         putInt(offset, BuiltinType.SINT8, value);
     }
@@ -48,11 +43,6 @@ abstract class AbstractMemory implements Pointer {
     @Override
     public void putAddress(int offset, long value) {
         putLong(offset, BuiltinType.POINTER, value);
-    }
-
-    @Override
-    public boolean getBoolean(int offset) {
-        return getBoolean(offset, BuiltinType.UINT8);
     }
 
     @Override
@@ -121,26 +111,6 @@ abstract class AbstractMemory implements Pointer {
     @Override
     public short getShort(int offset, Type type) {
         return (short) getInt(offset, toInternalType(type));
-    }
-
-    @Override
-    public char getChar(int offset, Type type) {
-        return (char) getInt(offset, toInternalType(type));
-    }
-
-    @Override
-    public void putByte(int offset, Type type, byte value) {
-        putInt(offset, toInternalType(type), offset);
-    }
-
-    @Override
-    public void putShort(int offset, Type type, short value) {
-        putInt(offset, toInternalType(type), offset);
-    }
-
-    @Override
-    public void putChar(int offset, Type type, char value) {
-        putInt(offset, toInternalType(type), offset);
     }
 
     @Override

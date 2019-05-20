@@ -5,11 +5,16 @@ import javax.annotation.Nullable;
 
 public interface Pointer {
 
+    /**
+     * @return address of {@code this} pointer
+     */
     long address();
 
+    /**
+     * @param offset
+     * @return treat specified offset of this pointer as address value and read the data.
+     */
     long getAddress(int offset);
-
-    boolean getBoolean(int offset);
 
     byte getByte(int offset);
 
@@ -26,8 +31,6 @@ public interface Pointer {
     short getShort(int offset);
 
     void putAddress(int offset, long value);
-
-    void putBoolean(int offset, boolean value);
 
     void putByte(int offset, byte value);
 
@@ -82,8 +85,6 @@ public interface Pointer {
 
     short getShort(int offset, Type type);
 
-    char getChar(int offset, Type type);
-
     int getInt(int offset, Type type);
 
     long getLong(int offset, Type type);
@@ -93,12 +94,6 @@ public interface Pointer {
     double getDouble(int offset, Type type);
 
     void putBoolean(int offset, Type type, boolean value);
-
-    void putByte(int offset, Type type, byte value);
-
-    void putShort(int offset, Type type, short value);
-
-    void putChar(int offset, Type type, char value);
 
     void putInt(int offset, Type type, int value);
 

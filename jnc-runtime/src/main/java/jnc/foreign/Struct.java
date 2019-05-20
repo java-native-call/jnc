@@ -25,7 +25,7 @@ public class Struct {
         return size;
     }
 
-    // visiable for testing
+    // visible for testing
     private static int getPack(Class<?> type) {
         Pack pack = AnnotationUtil.getClassAnnotation(type, Pack.class);
         if (pack != null) {
@@ -80,7 +80,7 @@ public class Struct {
             advance(advance);
             return;
         }
-        throw state.toException(this, advance);
+        throw state.toException(advance);
     }
 
     public final int size() {
@@ -501,7 +501,7 @@ public class Struct {
         ENCLOSING_ASSIGNED,
         MEMORY_ALLOCATED;
 
-        IllegalStateException toException(Struct struct, State advance) {
+        IllegalStateException toException(State advance) {
             return new IllegalStateException("status of struct: " + this + ", can't advance to " + advance);
         }
 
