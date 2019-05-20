@@ -159,14 +159,14 @@ ExternalProject_Add_Step(libffi autogen
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_STRIP} ${STRIP_ARGS} "${CMAKE_BINARY_DIR}/${SONAME}")
-if (DIST_PREFIX)
+if (DIST_DIR)
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
         set(JNI_DIRECTORY_NAME win32)
     else ()
         string(TOLOWER "${CMAKE_SYSTEM_NAME}" JNI_DIRECTORY_NAME)
     endif ()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/${SONAME}" "${DIST_PREFIX}/${JNI_DIRECTORY_NAME}/${SONAME}")
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/${SONAME}" "${DIST_DIR}/${JNI_DIRECTORY_NAME}/${SONAME}")
 endif ()
 
 include_directories(jni ${BINARY_DIR}/include)

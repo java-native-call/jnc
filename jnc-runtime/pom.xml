@@ -93,14 +93,14 @@
                                         </condition>
                                         <property name="cmake.build.dir.name" value="cmake-build-${build.arch}" />
                                         <property name="cmake.build.dir" value="${project.basedir}/src/main/native/${cmake.build.dir.name}" />
-                                        <property name="jni.dist.prefix" value="${project.basedir}/src/main/resources/jnc/foreign/internal/native" />
+                                        <property name="jni.dist.dir" value="${project.basedir}/src/main/resources/jnc/foreign/internal/native" />
                                         <mkdir dir="${cmake.build.dir}" />
                                         <exec dir="${cmake.build.dir}" executable="cmake" failonerror="true">
                                             <arg line="-G" />
                                             <arg line="&quot;Unix Makefiles&quot;" />
                                             <arg line="-DCMAKE_BUILD_TYPE=MinSizeRel" />
                                             <arg line="-DSYSTEM_PROCESSOR=${build.arch}" />
-                                            <arg line="&quot;-DDIST_PREFIX=${jni.dist.prefix}&quot;" />
+                                            <arg line="&quot;-DDIST_DIR=${jni.dist.dir}&quot;" />
                                             <arg line=".." />
                                         </exec>
                                         <exec executable="cmake" failonerror="true">
@@ -108,8 +108,9 @@
                                             <arg line="&quot;${cmake.build.dir}&quot;" />
                                             <arg line="--target all -- -j 2" />
                                         </exec>
+                                        <mkdir dir="${jni.dist.dir}" />
                                         <copy preservelastmodified="true" todir="${project.build.outputDirectory}/jnc/foreign/internal/native">
-                                            <fileset dir="${project.basedir}/src/main/resources/jnc/foreign/internal/native" />
+                                            <fileset dir="${jni.dist.dir}" />
                                         </copy>
                                     </target>
                                 </configuration>
