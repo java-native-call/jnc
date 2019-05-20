@@ -182,34 +182,6 @@ class NativeMethods {
 
     native int getJniVersion();
 
-    native short getBytesRawShort(byte[] bytes, int offset);
-
-    native void putBytesRawShort(byte[] bytes, int offset, short value);
-
-    native char getBytesRawChar(byte[] bytes, int offset);
-
-    native void putBytesRawChar(byte[] bytes, int offset, char value);
-
-    native int getBytesRawInt(byte[] bytes, int offset);
-
-    native void putBytesRawInt(byte[] bytes, int offset, int value);
-
-    native long getBytesRawLong(byte[] bytes, int offset);
-
-    native void putBytesRawLong(byte[] bytes, int offset, long value);
-
-    native float getBytesRawFloat(byte[] bytes, int offset);
-
-    native void putBytesRawFloat(byte[] bytes, int offset, float value);
-
-    native double getBytesRawDouble(byte[] bytes, int offset);
-
-    native void putBytesRawDouble(byte[] bytes, int offset, double value);
-
-    native long getBytesRawAddress(byte[] bytes, int offset);
-
-    native void putBytesRawAddress(byte[] bytes, int offset, long value);
-
     native void putInt(long address, long type, int value);
 
     native void putLong(long address, long type, long value);

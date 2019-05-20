@@ -9,44 +9,6 @@ static inline bool checkNullAndRange(JNIEnv *env, jarray array, jint offset, jin
     return false;
 }
 
-#define ARRAY_RAW_ACCESS_E(jni, atype, name, native, jtype, j2n, n2j)   \
-union atype##array_AND_##name {                                         \
-    atype array[sizeof (native) / sizeof (atype)];                      \
-    native value;                                                       \
-};                                                                      \
-JNIEXPORT void JNICALL                                                  \
-Java_jnc_foreign_internal_NativeMethods_put##jni##sRaw##name            \
-(JNIEnv *env, jobject UNUSED(self), atype##Array array,                 \
-        jint offset, jtype value) {                                     \
-    union atype##array_AND_##name v;                                    \
-    int size = sizeof(native) / sizeof(atype);                          \
-    if (unlikely(checkNullAndRange(env, array, offset, size))) return;  \
-    v.value = j2n(value);                                               \
-    (*env)->Set##jni##ArrayRegion(env, array, offset, size, v.array);   \
-}                                                                       \
-JNIEXPORT jtype JNICALL                                                 \
-Java_jnc_foreign_internal_NativeMethods_get##jni##sRaw##name            \
-(JNIEnv *env, jobject UNUSED(self), atype##Array array, jint offset) {  \
-    union atype##array_AND_##name v;                                    \
-    int size = sizeof(native) / sizeof(atype);                          \
-    if (unlikely(checkNullAndRange(env, array, offset, size))) return 0;\
-    (*env)->Get##jni##ArrayRegion(env, array, offset, size, v.array);   \
-    return n2j(v.value);                                                \
-}
-
-#define ARRAY_RAW_ACCESS(jni, atype, name, jtype) \
-    ARRAY_RAW_ACCESS_E(jni, atype, name, jtype, jtype, NOOP, NOOP)
-#define BYTE_ARRAY_RAW_ACCESS_E(...) ARRAY_RAW_ACCESS_E(Byte, jbyte, __VA_ARGS__)
-#define BYTE_ARRAY_RAW_ACCESS(...) ARRAY_RAW_ACCESS(Byte, jbyte, __VA_ARGS__)
-
-BYTE_ARRAY_RAW_ACCESS(Short, jshort);
-BYTE_ARRAY_RAW_ACCESS(Char, jchar);
-BYTE_ARRAY_RAW_ACCESS(Int, jint);
-BYTE_ARRAY_RAW_ACCESS(Long, jlong);
-BYTE_ARRAY_RAW_ACCESS(Float, jfloat);
-BYTE_ARRAY_RAW_ACCESS(Double, jdouble);
-BYTE_ARRAY_RAW_ACCESS_E(Address, void*, jlong, j2vp, p2j);
-
 #define ACCESS_ADDRESS_ARRAY(atype, jni, fname)             \
 JNIEXPORT void JNICALL                                      \
 Java_jnc_foreign_internal_NativeMethods_get##fname          \
