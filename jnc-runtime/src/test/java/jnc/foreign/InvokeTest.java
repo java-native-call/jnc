@@ -1,6 +1,7 @@
 package jnc.foreign;
 
 import jnc.foreign.annotation.Continuously;
+import jnc.foreign.byref.IntByReference;
 import jnc.foreign.typedef.int32_t;
 import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uintptr_t;
@@ -24,6 +25,15 @@ public class InvokeTest {
     }
 
     @Test
+    public void testByReference() {
+        Struct1 struct1 = new Struct1();
+        struct1.setValue(123456);
+        IntByReference reference = new IntByReference();
+        assertEquals(0, reference.getValue());
+        Libc.INSTANCE.memcpy(reference, struct1, 4);
+    }
+
+    @Test
     public void testDefaultMethod() {
         assertEquals(0x123456, Libc.INSTANCE.memcpy());
     }
@@ -43,6 +53,19 @@ public class InvokeTest {
         assertEquals(Char.A, Libc.INSTANCE.toupper('a'));
     }
 
+    private static class Struct1 extends Struct {
+
+        private final int32_t value = new int32_t();
+
+        public void setValue(int i) {
+            value.set(i);
+        }
+
+        public int getValue() {
+            return value.get();
+        }
+    }
+
     @Continuously(start = 'A')
     public enum Char {
         A, B
@@ -54,6 +77,9 @@ public class InvokeTest {
 
         @uintptr_t
         long memcpy(@uintptr_t long dst, @uintptr_t long src, @size_t long n);
+
+        @uintptr_t
+        long memcpy(IntByReference dst, Struct src, @size_t long n);
 
         @uintptr_t
         void memcpy(Void dst, @uintptr_t long src, @size_t long n);
