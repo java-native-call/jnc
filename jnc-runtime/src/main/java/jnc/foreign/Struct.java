@@ -611,11 +611,11 @@ public class Struct {
 
     }
 
-    private abstract class AbstraceBoolean extends NumberField {
+    private abstract class AbstractBoolean extends NumberField {
 
         private static final long serialVersionUID = 0L;
 
-        AbstraceBoolean(NativeType type) {
+        AbstractBoolean(NativeType type) {
             super(type);
         }
 
@@ -807,7 +807,7 @@ public class Struct {
         }
     }
 
-    protected class bool extends AbstraceBoolean {
+    protected class bool extends AbstractBoolean {
 
         private static final long serialVersionUID = 0L;
 
@@ -960,7 +960,7 @@ public class Struct {
 
     }
 
-    protected class WBOOL extends AbstraceBoolean {
+    protected class WBOOL extends AbstractBoolean {
 
         private static final long serialVersionUID = 0L;
 

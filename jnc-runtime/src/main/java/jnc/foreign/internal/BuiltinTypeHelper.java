@@ -44,7 +44,7 @@ class BuiltinTypeHelper {
             }
         } catch (IndexOutOfBoundsException ignored) {
         }
-        throw new IllegalArgumentException("unsupportted type " + type);
+        throw new IllegalArgumentException("unsupported type " + type);
     }
 
     static BuiltinType findAlias(String name) {
@@ -55,13 +55,13 @@ class BuiltinTypeHelper {
             throw new AssertionError(ex);
         } catch (UnsupportedOperationException ignored) {
         }
-        throw new IllegalArgumentException("unsupportted alias " + name);
+        throw new IllegalArgumentException("unsupported alias " + name);
     }
 
     static BuiltinType findByNativeType(NativeType nativeType) {
         BuiltinType builtinType = MAP.get(nativeType);
         if (builtinType == null) {
-            throw new IllegalArgumentException("unsupportted native type " + nativeType);
+            throw new IllegalArgumentException("unsupported native type " + nativeType);
         }
         return builtinType;
     }

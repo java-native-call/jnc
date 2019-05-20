@@ -15,7 +15,7 @@ class TypeHandlers {
         if (Pointer.class.isAssignableFrom(returnType)) {
             return BuiltinType.POINTER;
         } else if (annotation != null) {
-            return BuiltinTypeHelper.findAlias(annotation.value());
+            return BuiltinTypeHelper.findByAlias(annotation);
         } else {
             return findType(returnType);
         }
@@ -29,7 +29,7 @@ class TypeHandlers {
         } else if (ByReference.class.isAssignableFrom(parameterType)) {
             return BuiltinType.POINTER;
         } else if (annotation != null) {
-            return BuiltinTypeHelper.findAlias(annotation.value());
+            return BuiltinTypeHelper.findByAlias(annotation);
         } else if (Void.class == parameterType) {
             return BuiltinType.POINTER;
         } else {
