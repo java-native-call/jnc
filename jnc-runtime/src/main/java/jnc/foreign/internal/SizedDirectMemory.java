@@ -42,63 +42,63 @@ class SizedDirectMemory extends DirectMemory {
     }
 
     @Override
-    void putDouble(int offset, BuiltinType builtinType, double value) {
-        checkIndex(offset, builtinType.size());
-        super.putDouble(offset, builtinType, value);
+    void putDouble(int offset, InternalType internalType, double value) {
+        checkIndex(offset, internalType.size());
+        super.putDouble(offset, internalType, value);
     }
 
     @Override
-    void putFloat(int offset, BuiltinType builtinType, float value) {
-        checkIndex(offset, builtinType.size());
-        super.putFloat(offset, builtinType, value);
+    void putFloat(int offset, InternalType internalType, float value) {
+        checkIndex(offset, internalType.size());
+        super.putFloat(offset, internalType, value);
     }
 
     @Override
-    void putBoolean(int offset, BuiltinType builtinType, boolean value) {
-        checkIndex(offset, builtinType.size());
-        super.putBoolean(offset, builtinType, value);
+    void putBoolean(int offset, InternalType internalType, boolean value) {
+        checkIndex(offset, internalType.size());
+        super.putBoolean(offset, internalType, value);
     }
 
     @Override
-    void putInt(int offset, BuiltinType builtinType, int value) {
-        checkIndex(offset, builtinType.size());
-        super.putInt(offset, builtinType, value);
+    void putInt(int offset, InternalType internalType, int value) {
+        checkIndex(offset, internalType.size());
+        super.putInt(offset, internalType, value);
     }
 
     @Override
-    void putLong(int offset, BuiltinType builtinType, long value) {
-        checkIndex(offset, builtinType.size());
-        super.putLong(offset, builtinType, value);
+    void putLong(int offset, InternalType internalType, long value) {
+        checkIndex(offset, internalType.size());
+        super.putLong(offset, internalType, value);
     }
 
     @Override
-    double getDouble(int offset, BuiltinType builtinType) {
-        checkIndex(offset, builtinType.size());
-        return super.getDouble(offset, builtinType);
+    double getDouble(int offset, InternalType internalType) {
+        checkIndex(offset, internalType.size());
+        return super.getDouble(offset, internalType);
     }
 
     @Override
-    float getFloat(int offset, BuiltinType builtinType) {
-        checkIndex(offset, builtinType.size());
-        return super.getFloat(offset, builtinType);
+    float getFloat(int offset, InternalType internalType) {
+        checkIndex(offset, internalType.size());
+        return super.getFloat(offset, internalType);
     }
 
     @Override
-    long getLong(int offset, BuiltinType builtinType) {
-        checkIndex(offset, builtinType.size());
-        return super.getLong(offset, builtinType);
+    long getLong(int offset, InternalType internalType) {
+        checkIndex(offset, internalType.size());
+        return super.getLong(offset, internalType);
     }
 
     @Override
-    int getInt(int offset, BuiltinType builtinType) {
-        checkIndex(offset, builtinType.size());
-        return super.getInt(offset, builtinType);
+    int getInt(int offset, InternalType internalType) {
+        checkIndex(offset, internalType.size());
+        return super.getInt(offset, internalType);
     }
 
     @Override
-    boolean getBoolean(int offset, BuiltinType builtinType) {
-        checkIndex(offset, builtinType.size());
-        return super.getBoolean(offset, builtinType);
+    boolean getBoolean(int offset, InternalType internalType) {
+        checkIndex(offset, internalType.size());
+        return super.getBoolean(offset, internalType);
     }
 
     @Override

@@ -40,7 +40,7 @@ set(LIBFFI_BUILD_ENV
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
     set(CMAKE_SHARED_LIBRARY_SUFFIX .jnilib)
-    set(SHARE_FLAGS "${SHARE_FLAGS} -mmacosx-version-min=10.7")
+    set(SHARE_FLAGS "${SHARE_FLAGS} -mmacosx-version-min=10.0")
     set(STRIP_ARGS -x)
 else ()
     set(CMAKE_SHARED_LIBRARY_SUFFIX -${SYSTEM_PROCESSOR}${CMAKE_SHARED_LIBRARY_SUFFIX})
@@ -166,7 +166,7 @@ if (DIST_PREFIX)
         string(TOLOWER "${CMAKE_SYSTEM_NAME}" JNI_DIRECTORY_NAME)
     endif ()
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/${SONAME}" "${DIST_PREFIX}/${JNI_DIRECTORY_NAME}")
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/${SONAME}" "${DIST_PREFIX}/${JNI_DIRECTORY_NAME}/${SONAME}")
 endif ()
 
 include_directories(jni ${BINARY_DIR}/include)
@@ -178,7 +178,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SHARE_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARE_FLAGS} ${LDFLAGS}")
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
 
 target_link_libraries(${PROJECT_NAME} ${LIBFFI_LIBS})

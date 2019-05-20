@@ -29,7 +29,8 @@ public class StructTest {
         PrintStream out = System.out;
         for (int i = list.size() - 1; i >= 0; --i) {
             String simpleName = list.get(i).getSimpleName();
-            out.println("protected final " + simpleName + "[] array("
+            out.println("@Nonnull");
+            out.println("protected final " + simpleName + "[] array(@Nonnull "
                     + simpleName + "[] array) {");
             out.println("    arrayBegin();");
             out.println("    try {");

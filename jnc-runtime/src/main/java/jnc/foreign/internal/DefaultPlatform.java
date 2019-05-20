@@ -20,7 +20,7 @@ class DefaultPlatform extends Platform {
     private final String libc;
 
     private DefaultPlatform() {
-        String osName = PropertyUtil.getStringProperty("os.name", "unknown");
+        String osName = System.getProperty("os.name", "unknown");
         if (startsWith(osName, "mac") || startsWith(osName, "darwin")) {
             os = OS.DARWIN;
         } else if (startsWith(osName, "windows")) {
@@ -34,7 +34,7 @@ class DefaultPlatform extends Platform {
         } else {
             os = OS.UNKNOWN;
         }
-        String osArch = PropertyUtil.getStringProperty("os.arch", "unknown");
+        String osArch = System.getProperty("os.arch", "unknown");
         if (osArch.matches("^(x(86[_-])?64|amd64|em64t)$")) {
             arch = Arch.X86_64;
         } else if (osArch.matches("^(i[3-6]86|x86|pentium)$")) {

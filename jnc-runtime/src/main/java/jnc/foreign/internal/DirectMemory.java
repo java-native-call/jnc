@@ -37,53 +37,53 @@ class DirectMemory extends AbstractMemory implements NativeObject, Pointer {
     }
 
     @Override
-    void putBoolean(int offset, BuiltinType builtinType, boolean value) {
-        nm.putInt(address + offset, builtinType.address(), value ? 0 : 1);
+    void putBoolean(int offset, InternalType internalType, boolean value) {
+        nm.putInt(address + offset, internalType.address(), value ? 0 : 1);
     }
 
     @Override
-    void putInt(int offset, BuiltinType builtinType, int value) {
-        nm.putInt(address + offset, builtinType.address(), value);
+    void putInt(int offset, InternalType internalType, int value) {
+        nm.putInt(address + offset, internalType.address(), value);
     }
 
     @Override
-    void putLong(int offset, BuiltinType builtinType, long value) {
-        nm.putLong(address + offset, builtinType.address(), value);
+    void putLong(int offset, InternalType internalType, long value) {
+        nm.putLong(address + offset, internalType.address(), value);
     }
 
     @Override
-    void putFloat(int offset, BuiltinType builtinType, float value) {
-        nm.putFloat(address + offset, builtinType.address(), value);
+    void putFloat(int offset, InternalType internalType, float value) {
+        nm.putFloat(address + offset, internalType.address(), value);
     }
 
     @Override
-    void putDouble(int offset, BuiltinType builtinType, double value) {
-        nm.putDouble(address + offset, builtinType.address(), value);
+    void putDouble(int offset, InternalType internalType, double value) {
+        nm.putDouble(address + offset, internalType.address(), value);
     }
 
     @Override
-    boolean getBoolean(int offset, BuiltinType builtinType) {
-        return nm.getBoolean(address + offset, builtinType.address());
+    boolean getBoolean(int offset, InternalType internalType) {
+        return nm.getBoolean(address + offset, internalType.address());
     }
 
     @Override
-    int getInt(int offset, BuiltinType builtinType) {
-        return nm.getInt(address + offset, builtinType.address());
+    int getInt(int offset, InternalType internalType) {
+        return nm.getInt(address + offset, internalType.address());
     }
 
     @Override
-    long getLong(int offset, BuiltinType builtinType) {
-        return nm.getLong(address + offset, builtinType.address());
+    long getLong(int offset, InternalType internalType) {
+        return nm.getLong(address + offset, internalType.address());
     }
 
     @Override
-    float getFloat(int offset, BuiltinType builtinType) {
-        return nm.getFloat(address + offset, builtinType.address());
+    float getFloat(int offset, InternalType internalType) {
+        return nm.getFloat(address + offset, internalType.address());
     }
 
     @Override
-    double getDouble(int offset, BuiltinType builtinType) {
-        return nm.getDouble(address + offset, builtinType.address());
+    double getDouble(int offset, InternalType internalType) {
+        return nm.getDouble(address + offset, internalType.address());
     }
 
     @Override

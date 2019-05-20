@@ -32,8 +32,8 @@ public class ffi_cifTest {
         log.info("test memcpy");
         NativeLibrary libc = NativeLibrary.open(LIBC, 0);
         long function = libc.dlsym("memcpy");
-        BuiltinType sizeT = BuiltinTypeHelper.findAlias("size_t");
-        BuiltinType uIntPtr = BuiltinTypeHelper.findAlias("uintptr_t");
+        Alias sizeT = BuiltinTypeHelper.findAlias("size_t");
+        Alias uIntPtr = BuiltinTypeHelper.findAlias("uintptr_t");
         ffi_cif cif = new ffi_cif(CallingMode.DEFAULT, uIntPtr, uIntPtr, uIntPtr, sizeT);
         CallContext p = cif.newCallContext();
         DirectMemory a = AllocatedMemory.allocate(20);

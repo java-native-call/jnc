@@ -2,7 +2,7 @@ package jnc.foreign.internal;
 
 import jnc.foreign.NativeType;
 
-enum BuiltinType implements SimpleType {
+enum BuiltinType implements InternalType {
 
     VOID(NativeType.VOID, NativeMethods.TYPE_VOID, 0),
     FLOAT(NativeType.FLOAT, NativeMethods.TYPE_FLOAT, BuiltinType.MASK_SIGNED | BuiltinType.MASK_FLOAT),

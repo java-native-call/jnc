@@ -1,65 +1,25 @@
 package jnc.foreign.internal;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import jnc.foreign.NativeType;
 import jnc.foreign.typedef.Typedef;
 
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 class BuiltinTypeHelper {
 
-    private static final NativeMethods nm = NativeMethods.getInstance();
-    private static final BuiltinType[] TYPES;
-    private static final EnumMap<NativeType, BuiltinType> MAP;
-
-    static {
-        BuiltinType[] builtinTypes = BuiltinType.values();
-        int maxType = 0;
-        for (BuiltinType builtinType : builtinTypes) {
-            maxType = Math.max(maxType, builtinType.type());
-        }
-        BuiltinType[] types = new BuiltinType[maxType + 1];
-        for (BuiltinType type : builtinTypes) {
-            int typeId = type.type();
-            if (types[typeId] == null) {
-                types[typeId] = type;
-            } else {
-                throw new AssertionError("duplicate type " + typeId);
-            }
-        }
-        TYPES = types;
-        EnumMap<NativeType, BuiltinType> map = new EnumMap<>(NativeType.class);
-        for (BuiltinType builtinType : builtinTypes) {
-            map.put(builtinType.getNativeType(), builtinType);
-        }
-        MAP = map;
-    }
-
-    private static BuiltinType findByType(int type) {
-        try {
-            BuiltinType result = TYPES[type];
-            if (result != null) {
-                return result;
-            }
-        } catch (IndexOutOfBoundsException ignored) {
-        }
-        throw new IllegalArgumentException("unsupported type " + type);
-    }
-
-    static BuiltinType findAlias(String name) {
-        try {
-            // throw NullPointerException if name is null
-            return findByType(nm.findAlias(name));
-        } catch (IllegalArgumentException ex) {
-            throw new AssertionError(ex);
-        } catch (UnsupportedOperationException ignored) {
-        }
-        throw new IllegalArgumentException("unsupported alias " + name);
+    static Alias findAlias(String name) {
+        Objects.requireNonNull(name, "name");
+        return LazyAlias.find(name);
     }
 
     static BuiltinType findByNativeType(NativeType nativeType) {
-        BuiltinType builtinType = MAP.get(nativeType);
+        BuiltinType builtinType = LazyNative.NATIVE_MAP.get(nativeType);
         if (builtinType == null) {
             throw new IllegalArgumentException("unsupported native type " + nativeType);
         }
@@ -78,12 +38,42 @@ class BuiltinTypeHelper {
         return (int) typeInfo & 0xFF;
     }
 
-    static BuiltinType findByType(Class<?> type) {
+    static BuiltinType findByPrimaryType(Class<?> type) {
         return PrimitivesMap.getByType(type);
     }
 
-    static BuiltinType findByAlias(Typedef alias) {
+    static Alias findByAlias(Typedef alias) {
         return findAlias(alias.value());
+    }
+
+    private interface LazyNative {
+
+        EnumMap<NativeType, BuiltinType> NATIVE_MAP = EnumSet.allOf(BuiltinType.class).stream()
+                .collect(Collectors.toMap(BuiltinType::getNativeType, Function.identity(),
+                        (a, b) -> b, () -> new EnumMap<>(NativeType.class)));
+    }
+
+    private static class LazyAlias {
+
+        private static final Map<String, Alias> ALIAS_MAP;
+
+        static {
+            Map<Integer, BuiltinType> builtinTypes = EnumSet.allOf(BuiltinType.class)
+                    .stream().collect(Collectors.toMap(BuiltinType::type, Function.identity()));
+            HashMap<String, Integer> nativeAliasMap = new HashMap<>(50);
+            NativeMethods.getInstance().initAlias(nativeAliasMap);
+            ALIAS_MAP = nativeAliasMap.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey,
+                            entry -> new Alias(entry.getKey(), builtinTypes.get(entry.getValue()))));
+        }
+
+        static Alias find(String name) {
+            Alias alias = ALIAS_MAP.get(name);
+            if (alias == null) {
+                throw new IllegalArgumentException("unsupported alias " + name);
+            }
+            return alias;
+        }
     }
 
     private static class PrimitivesMap {

@@ -1,28 +1,31 @@
 #!/bin/bash
 set -e
 OS=`uname -s`
+PKG_UPDATE=()
 PKG_ADD=()
-PKG_LIST_INSTALLED=()
+PKG_QUERY_INSTALLED=()
+if [[ -z "$ARCH" ]]; then ARCH=`uname -m`; fi
+
 if [[ -n "$MAVEN_CONFIG" ]]; then
   packages=(automake cmake libtool texinfo)
 else
   packages=()
 fi
-if [[ -z "$ARCH" ]]; then ARCH=`uname -m`; fi
 case "${OS}" in
   CYGWIN*|MINGW*|MSYS*)
     PKG_ADD=(echo)
     ;;
   Linux)
     if command -v apt-get 2>/dev/null; then
+      PKG_UPDATE=(sudo apt-get update -y)
       packages+=(gcc g++ g++-multilib)
-      sudo apt-get update -y
       # -f fix-broken attempt to correct a system with broken dependencies in place
       PKG_ADD=(sudo apt-get -f -y install)
     elif command -v yum 2>/dev/null; then
       packages+=(gcc gcc-c++ glibc-devel.i686 libgcc.i686 libstdc++-devel.i686 ncurses-devel.i686)
       # -y assume yes
       PKG_ADD=(sudo yum install -y)
+      PKG_QUERY_INSTALLED=(yum list installed)
     else
       echo 'Package manager not found' >&2
       exit 1
@@ -41,7 +44,7 @@ case "${OS}" in
             exit 1
             ;;
         esac
-        JAVA_HOME="`pwd`/jdk1.8.0_131"
+        export JAVA_HOME="`pwd`/jdk1.8.0_131"
         ;;
       openjdk8)
         JDK_VERSION=`echo "$JDK" | sed -e 's/^openjdk//g'`
@@ -75,20 +78,28 @@ case "${OS}" in
         # use default jdk
         ;;
     esac
-    echo 'cd /usr/lib/gcc/x86_64-linux-gnu/4.8 && cp -n crtbeginT.o crtbeginT.orig.o && cp -f crtbeginS.o crtbeginT.o' | sudo bash || true
+    echo 'cd /usr/lib/gcc/x86_64-*/4.8* && cp -n crtbeginT.o crtbeginT.orig.o && cp -f crtbeginS.o crtbeginT.o' | sudo bash || true
     ;;
   Darwin)
     PKG_ADD=(brew install)
-    PKG_LIST_INSTALLED=(brew list)
+    PKG_QUERY_INSTALLED=(brew list)
+    echo 'cd /usr/local/lib && ln -s ../../lib/libSystem.B.dylib libgcc_s.10.4.dylib libgcc_s.10.5.dylib' | bash || true
     ;;
   FreeBSD)
     PKG_ADD=(sudo pkg install -fy)
+    PKG_QUERY_INSTALLED=(pkg info)
     packages+=(gmake openjdk8)
     ;;
   OpenBSD)
+    pkg_query() {
+        pkg_info | grep -qF "$1"
+    }
     PKG_ADD=(sudo pkg_add -I)
+    #PKG_QUERY_INSTALLED=(pkg_query)
+    export AUTOMAKE_VERSION=1.15
+    export AUTOCONF_VERSION=2.69
     export JAVA_HOME="/usr/local/jdk-1.8.0"
-    packages=(automake%1.15 libtool gcc texinfo gmake jdk%1.8)
+    packages=(automake%$AUTOMAKE_VERSION cmake libtool gcc texinfo gmake jdk%1.8)
     ;;
   *)
     echo 'Platform not support' >&2
@@ -101,24 +112,28 @@ case "$1" in
     git fetch;;
   reset)
     git fetch
-    find . \( -path './.git/*' -o -print0 \) | xargs -0 rm -rf
+    rm -rf *
     git reset --hard origin/master
     ;;
   install)
     if [[ -n "${JDK_DOWNLOAD_URL}" ]]; then
       wget -O- --no-cookies -c --header "Cookie: oraclelicense=a" "${JDK_DOWNLOAD_URL}" | tar -zxf-
     fi
-    if [[ "${#PKG_LIST_INSTALLED[@]}" -gt 0 ]]; then
+    if [[ "${#PKG_QUERY_INSTALLED[@]}" -gt 0 ]]; then
       n_packages=()
       for pkg in "${packages[@]}"; do
-        if ! "${PKG_LIST_INSTALLED[@]}" "$pkg" 2>/dev/null; then
+        if ! "${PKG_QUERY_INSTALLED[@]}" "$pkg" 2>/dev/null; then
           n_packages+=("$pkg")
         fi
       done
       packages=("${n_packages[@]}")
       unset n_packages
     fi
-    if [[ "${#packages[@]}" -gt 0 ]]; then "${PKG_ADD[@]}" "${packages[@]}" || true; fi
+    if [[ "${#packages[@]}" -gt 0 ]]; then
+      echo "Prepare install ${packages[@]}"
+      "${PKG_UPDATE[@]}"
+      "${PKG_ADD[@]}" "${packages[@]}" || true
+    fi
     ;;
   test|build|package)
     echo "JAVA_HOME: ${JAVA_HOME}"

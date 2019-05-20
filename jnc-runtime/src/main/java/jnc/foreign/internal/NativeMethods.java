@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nullable;
@@ -265,7 +266,7 @@ class NativeMethods {
 
     native void putDoubleArray(long address, double[] bytes, int off, int len);
 
-    native int findAlias(String name) throws UnsupportedOperationException;
+    native void initAlias(Map<String, Integer> map);
 
     /**
      * allocate clean memory of specified size

@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import jnc.foreign.TestLibs;
 import jnc.foreign.abi.CallingMode;
 import static org.junit.Assert.assertArrayEquals;
@@ -205,28 +206,19 @@ public class NativeMethodsTest {
     }
 
     @Test
-    public void testFindAlias() {
-        log.info("test find alias");
-        assertEquals(BuiltinType.UINT8.type(), nm.findAlias("uint8_t"));
-        assertEquals(BuiltinType.SINT32.type(), nm.findAlias("int32_t"));
+    public void testInitAlias() {
+        log.info("initAlias");
         try {
-            nm.findAlias(null);
+            nm.initAlias(null);
             fail("should throw NullPointerException");
         } catch (NullPointerException ex) {
             // ok
         }
-        try {
-            assertEquals(-1, nm.findAlias(""));
-            fail("should throw UnsupportedOperationException");
-        } catch (UnsupportedOperationException ex) {
-            // ok
-        }
-        try {
-            assertEquals(-1, nm.findAlias("unsupported"));
-            fail("should throw UnsupportedOperationException");
-        } catch (UnsupportedOperationException ex) {
-            // ok
-        }
+        HashMap<String, Integer> map = new HashMap<>(50);
+        nm.initAlias(map);
+        log.info("map={}", map);
+        assertEquals(Integer.valueOf(BuiltinType.UINT8.type()), map.get("uint8_t"));
+        assertEquals(Integer.valueOf(BuiltinType.SINT32.type()), map.get("int32_t"));
     }
 
     @Test

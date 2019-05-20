@@ -2,7 +2,10 @@ package jnc.foreign.internal;
 
 import jnc.foreign.NativeType;
 
-interface SimpleType extends FFIType {
+interface InternalType extends FFIType {
+
+    @Override
+    long address();
 
     NativeType getNativeType();
 
