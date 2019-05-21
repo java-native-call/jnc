@@ -12,15 +12,11 @@
 #define JAVA_LANG_STR(name)     "java/lang/" #name
 #define ArrayIndexOutOfBounds   JAVA_LANG_STR(ArrayIndexOutOfBoundsException)
 #define IllegalArgument         JAVA_LANG_STR(IllegalArgumentException)
-#define IllegalState            JAVA_LANG_STR(IllegalStateException)
 #define NullPointer             JAVA_LANG_STR(NullPointerException)
 #define OutOfMemory             JAVA_LANG_STR(OutOfMemoryError)
-#define StackOverflow           JAVA_LANG_STR(StackOverflowError)
 #define UnknownError            JAVA_LANG_STR(UnknownError)
 #define UnsatisfiedLink         JAVA_LANG_STR(UnsatisfiedLinkError)
-#define UnsupportedOperation    JAVA_LANG_STR(UnsupportedOperationException)
 #define SIG_STRING              "L" JAVA_LANG_STR(String) ";"
-#define SIG_OBJECT              "L" JAVA_LANG_STR(Object) ";"
 
 #define PP_THIRD_ARG(a, b, c, ...) c
 #define VA_OPT_SUPPORTED_I(...) PP_THIRD_ARG(__VA_OPT__(,),true,false,)
@@ -51,9 +47,7 @@ do {                                                                        \
     CALLJNI(env, DeleteLocalRef, _jo);                                      \
     CALLJNI(env, DeleteLocalRef, _jc);                                      \
 } while(false)
-#define throwByNameI(...) throwByNameA(i, "I", __VA_ARGS__)
 #define throwByNameS(...) throwByNameA(l, SIG_STRING, __VA_ARGS__)
-#define throwByNameO(...) throwByNameA(l, SIG_OBJECT, __VA_ARGS__)
 #define checkError(type, env, name, ret)    \
 do {                                        \
     if (unlikely(NULL == name)) {           \
@@ -72,7 +66,6 @@ do {                                                    \
 
 #define checkNullPointer(...)   checkError(NullPointer, __VA_ARGS__)
 #define checkOutOfMemory(...)   checkError(OutOfMemory, __VA_ARGS__)
-#define checkStackOverflow(...) checkError(StackOverflow, __VA_ARGS__)
 
 #define DO_WITH_STRING_UTF(env, jstring, name, stat, ret)       \
 do {                                                            \
@@ -102,7 +95,6 @@ do {                                                            \
 #define j2c(x, type) j2p(x, type*)
 #define j2vp(x) j2c(x, void)
 
-#define MAX(x, y) ((x) < (y) ? (y) : (x))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 
 #ifdef __GNUC__
