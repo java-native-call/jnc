@@ -83,7 +83,7 @@ case "${OS}" in
   Darwin)
     PKG_ADD=(brew install)
     PKG_QUERY_INSTALLED=(brew list)
-    echo 'cd /usr/local/lib && ln -s ../../lib/libSystem.B.dylib libgcc_s.10.4.dylib libgcc_s.10.5.dylib' | bash || true
+    echo 'cd /usr/local/lib && ln -s ../../lib/libSystem.B.dylib libgcc_s.10.4.dylib && ln -s ../../lib/libSystem.B.dylib libgcc_s.10.5.dylib' | bash || true
     ;;
   FreeBSD)
     PKG_ADD=(sudo pkg install -fy)
