@@ -93,7 +93,6 @@
                                         </condition>
                                         <property name="cmake.build.dir.name" value="cmake-build-${build.arch}" />
                                         <property name="cmake.build.dir" value="${project.basedir}/src/main/native/${cmake.build.dir.name}" />
-                                        <property name="jni.dist.dir" value="${project.basedir}/src/main/resources/jnc/foreign/internal/native" />
                                         <mkdir dir="${cmake.build.dir}" />
                                         <exec dir="${cmake.build.dir}" executable="cmake" failonerror="true">
                                             <arg line="-G" />
@@ -119,12 +118,18 @@
                     </plugin>
                 </plugins>
             </build>
+            <properties>
+                <jni.dist.dir>${project.build.directory}/dist</jni.dist.dir>
+            </properties>
         </profile>
         <profile>
             <id>built-lib</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <jni.libs.dir>${basedir}/../lib</jni.libs.dir>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -133,7 +138,7 @@
                         <executions>
                             <execution>
                                 <id>copy-native-binary</id>
-                                <phase>process-resources</phase>
+                                <phase>generate-resources</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
@@ -141,7 +146,7 @@
                                     <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>${basedir}/../lib</directory>
+                                            <directory>${jni.libs.dir}</directory>
                                             <filtering>false</filtering>
                                             <targetPath>jnc/foreign/internal/native</targetPath>
                                         </resource>
