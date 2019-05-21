@@ -165,6 +165,8 @@ ExternalProject_Add_Step(libffi autogen
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_STRIP} ${STRIP_ARGS} "${CMAKE_BINARY_DIR}/${TARGET_FILE_NAME}")
 if (DIST_DIR)
+    # chanage backslash to slash on windows
+    file(TO_CMAKE_PATH "${DIST_DIR}" DIST_DIR)
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
         set(JNI_DIRECTORY_NAME win32)
     else ()
