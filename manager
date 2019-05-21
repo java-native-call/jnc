@@ -6,9 +6,12 @@ PKG_ADD=()
 PKG_QUERY_INSTALLED=()
 if [[ -z "$ARCH" ]]; then ARCH=`uname -m`; fi
 
-if [[ -n "$MAVEN_CONFIG" ]]; then
+if [[ -n "$build_native" ]]; then
+  native=true
   packages=(automake cmake libtool texinfo)
+  export MAVEN_CONFIG=-Pnative
 else
+  native=false
   packages=()
 fi
 case "${OS}" in
