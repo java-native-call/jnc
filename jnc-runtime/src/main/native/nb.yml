@@ -1,0 +1,30 @@
+# usage of this file is to open project in NetBeans IDE, and cross build dll for windows.
+#
+# Steps:
+# 1. Click File -> Net Project -> C/C++ -> C/C++ Project with Existing Sources.
+# 2. Enter the location of current project, set Configuration mode to Custom, and click Next.
+# 3. Change values as mention in section init, replace ${source-dir} with current directory.
+# 4. Right click the opened project -> Properties -> General -> Manage configuration
+# 5. Change values as method in section profiles.
+
+init:
+  run-in-folder: '${source-dir}/cmake-build-nb'
+  command:
+    predefined:
+      arguments: '-G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_C_COMPILER=${IDE_CC} -DCMAKE_CXX_COMPILER=${IDE_CXX} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DDIST_DIR=../../../main/resources/jnc/foreign/internal/native'
+  source-folder-filter: '^(?:nbproject|cmake-build(?:-.+)|CMakeFiles|libffi-prefix|\.idea)$'
+profiles:
+  win-x86:
+    build:
+      pre-build:
+        working-directory: cmake-build-win-i386
+        command-line: '${CMAKE} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=windows.cmake -DSYSTEM_PROCESSOR=x86 -DDIST_DIR=../../../main/resources/jnc/foreign/internal/native ..'
+      make:
+        working-directory: cmake-build-win-i386
+  win-x64:
+    build:
+      pre-build:
+        working-directory: cmake-build-win-x86_64
+        command-line: '${CMAKE} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=windows.cmake -DSYSTEM_PROCESSOR=x64 -DDIST_DIR=../../../main/resources/jnc/foreign/internal/native ..'
+      make:
+        working-directory: cmake-build-win-x86_64
