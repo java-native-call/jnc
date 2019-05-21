@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
-import static jnc.foreign.internal.LastErrorHandlers.methodId;
-import static jnc.foreign.internal.LastErrorHandlers.object;
 
 /**
  * @author zhanhb
@@ -50,39 +48,39 @@ class PrimaryTypeHandler<T> implements InternalTypeHandler<T> {
     }
 
     private static long invokeLong(long cif, long function, long avalues) {
-        return nm.invokeLong(cif, function, avalues, object(), methodId());
+        return nm.invokeLong(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     static int invokeInt(long cif, long function, long avalues) {
-        return nm.invokeInt(cif, function, avalues, object(), methodId());
+        return nm.invokeInt(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     private static boolean invokeBoolean(long cif, long function, long avalues) {
-        return nm.invokeBoolean(cif, function, avalues, object(), methodId());
+        return nm.invokeBoolean(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     private static byte invokeByte(long cif, long function, long avalues) {
-        return (byte) nm.invokeInt(cif, function, avalues, object(), methodId());
+        return (byte) nm.invokeInt(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     private static char invokeChar(long cif, long function, long avalues) {
-        return (char) nm.invokeInt(cif, function, avalues, object(), methodId());
+        return (char) nm.invokeInt(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     private static short invokeShort(long cif, long function, long avalues) {
-        return (short) nm.invokeInt(cif, function, avalues, object(), methodId());
+        return (short) nm.invokeInt(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     private static float invokeFloat(long cif, long function, long avalues) {
-        return nm.invokeFloat(cif, function, avalues, object(), methodId());
+        return nm.invokeFloat(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     private static double invokeDouble(long cif, long function, long avalues) {
-        return nm.invokeDouble(cif, function, avalues, object(), methodId());
+        return nm.invokeDouble(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     private static Void invokeVoid(long cif, long function, long avalues) {
-        nm.invokeVoid(cif, function, avalues, object(), methodId());
+        nm.invokeVoid(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
         return null;
     }
 

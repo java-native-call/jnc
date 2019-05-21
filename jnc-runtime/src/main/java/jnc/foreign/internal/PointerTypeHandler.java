@@ -2,8 +2,6 @@ package jnc.foreign.internal;
 
 import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
-import static jnc.foreign.internal.LastErrorHandlers.methodId;
-import static jnc.foreign.internal.LastErrorHandlers.object;
 
 enum PointerTypeHandler implements InternalTypeHandler<Pointer> {
 
@@ -17,7 +15,7 @@ enum PointerTypeHandler implements InternalTypeHandler<Pointer> {
     @Override
     public Invoker<Pointer> getInvoker() {
         return (long cif, long function, long avalues)
-                -> DirectMemory.of(NativeMethods.getInstance().invokeLong(cif, function, avalues, object(), methodId()));
+                -> DirectMemory.of(NativeMethods.getInstance().invokeLong(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID));
     }
 
     @Override
