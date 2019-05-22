@@ -29,11 +29,11 @@ public class DirectMemoryTest {
                     assertEquals(MAGIC, array[j]);
                 }
             }
-            assertEquals(Double.longBitsToDouble(MAGIC), memory.getDouble(off), -1);
+            assertEquals(MAGIC, Double.doubleToLongBits(memory.getDouble(off)), -1);
             if (LITTLE_ENDIAN) {
-                assertEquals(Float.intBitsToFloat((int) MAGIC), memory.getFloat(off), -1);
+                assertEquals((int) MAGIC, Float.floatToIntBits(memory.getFloat(off)));
             } else {
-                assertEquals(Float.intBitsToFloat((int) (MAGIC >> 8)), memory.getFloat(off), -1);
+                assertEquals((int) (MAGIC >> 8), Float.floatToIntBits(memory.getFloat(off)));
             }
         }
     }

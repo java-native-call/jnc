@@ -44,10 +44,6 @@ public class NativeMethodsTest {
         assertTrue(result >= expResult);
     }
 
-    private ByteBuffer toByteBuffer(byte[] bytes) {
-        return ByteBuffer.wrap(bytes).order(ByteOrder.nativeOrder());
-    }
-
     @Test
     public void testNotFound() {
         log.info("test not found");
