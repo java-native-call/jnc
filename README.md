@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/java-native-call/jnc-build.svg?branch=master)](https://travis-ci.org/java-native-call/jnc-build)
 [![Build status](https://ci.appveyor.com/api/projects/status/github/java-native-call/jnc-build?svg=true)](https://ci.appveyor.com/project/zhanhb/jnc-build)
 
-Origin design of this project is for the [online judge system](https://github.com/zjnu-acm/judge), who's kernel requires native support.
+Original design of this project is for the [online judge system](https://github.com/zjnu-acm/judge), who's kernel requires native support.
 
 Why not [jna](https://github.com/java-native-access/jna) or [jnr](https://github.com/jnr/jnr-ffi)?
 - There is no type conversion for primary types in jna.
