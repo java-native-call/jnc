@@ -28,19 +28,15 @@ public class StructTest {
         }
         PrintStream out = System.out;
         for (int i = list.size() - 1; i >= 0; --i) {
-            String simpleName = list.get(i).getSimpleName();
+            String s = list.get(i).getSimpleName();
             out.println("@Nonnull");
-            out.println("protected final " + simpleName + "[] array(@Nonnull "
-                    + simpleName + "[] array) {");
-            out.println("    arrayBegin();");
-            out.println("    try {");
+            out.println("protected final " + s + "[] array(@Nonnull " + s + "[] array) {");
+            out.println("    Objects.requireNonNull(array, \"array\");");
+            out.println("    return wrapperArrayCreaion(array, arr -> {");
             out.println("        for (int i = 0, len = array.length; i < len; ++i) {");
-            out.println("            array[i] = new " + simpleName + "();");
+            out.println("            array[i] = new " + s + "();");
             out.println("        }");
-            out.println("    } finally {");
-            out.println("        arrayEnd();");
-            out.println("    }");
-            out.println("    return array;");
+            out.println("    });");
             out.println("}");
         }
     }

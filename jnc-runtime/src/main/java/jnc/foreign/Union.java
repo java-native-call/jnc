@@ -1,5 +1,7 @@
 package jnc.foreign;
 
+import java.util.function.Consumer;
+
 public class Union extends Struct {
 
     private int lastSize = -1;
@@ -13,15 +15,16 @@ public class Union extends Struct {
     }
 
     @Override
-    void arrayBegin() {
+    <T> T wrapperArrayCreaion(T arr, Consumer<T> consumer) {
         lastSize = sizeInternal();
         setSize(0);
-    }
-
-    @Override
-    void arrayEnd() {
-        setSize(Math.max(lastSize, sizeInternal()));
-        lastSize = -1;
+        try {
+            consumer.accept(arr);
+        } finally {
+            setSize(Math.max(lastSize, sizeInternal()));
+            lastSize = -1;
+        }
+        return arr;
     }
 
 }
