@@ -127,9 +127,6 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <properties>
-                <jni.libs.dir>${basedir}/../lib</jni.libs.dir>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -157,6 +154,9 @@
                     </plugin>
                 </plugins>
             </build>
+            <properties>
+                <jni.libs.dir>${basedir}/../lib</jni.libs.dir>
+            </properties>
         </profile>
     </profiles>
 </project>
