@@ -15,7 +15,7 @@ public class Union extends Struct {
     }
 
     @Override
-    <T> T wrapperArrayCreaion(T arr, Consumer<T> consumer) {
+    <T> T wrapperArrayCreation(T arr, Consumer<T> consumer) {
         lastSize = sizeInternal();
         setSize(0);
         try {

@@ -32,8 +32,8 @@ public class StructTest {
             out.println("@Nonnull");
             out.println("protected final " + s + "[] array(@Nonnull " + s + "[] array) {");
             out.println("    Objects.requireNonNull(array, \"array\");");
-            out.println("    return wrapperArrayCreaion(array, arr -> {");
-            out.println("        for (int i = 0, len = array.length; i < len; ++i) {");
+            out.println("    return wrapperArrayCreation(array, arr -> {");
+            out.println("        for (int i = 0, len = arr.length; i < len; ++i) {");
             out.println("            array[i] = new " + s + "();");
             out.println("        }");
             out.println("    });");

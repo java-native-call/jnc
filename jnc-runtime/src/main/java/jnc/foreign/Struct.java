@@ -150,7 +150,7 @@ public class Struct {
         return struct;
     }
 
-    <T> T wrapperArrayCreaion(T arr, Consumer<T> consumer) {
+    <T> T wrapperArrayCreation(T arr, Consumer<T> consumer) {
         consumer.accept(arr);
         return arr;
     }
@@ -158,8 +158,8 @@ public class Struct {
     @Nonnull
     protected final int8_t[] array(@Nonnull int8_t[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new int8_t();
             }
         });
@@ -168,8 +168,8 @@ public class Struct {
     @Nonnull
     protected final int16_t[] array(@Nonnull int16_t[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new int16_t();
             }
         });
@@ -178,8 +178,8 @@ public class Struct {
     @Nonnull
     protected final int32_t[] array(@Nonnull int32_t[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new int32_t();
             }
         });
@@ -188,8 +188,8 @@ public class Struct {
     @Nonnull
     protected final int64_t[] array(@Nonnull int64_t[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new int64_t();
             }
         });
@@ -198,8 +198,8 @@ public class Struct {
     @Nonnull
     protected final uint8_t[] array(@Nonnull uint8_t[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new uint8_t();
             }
         });
@@ -208,8 +208,8 @@ public class Struct {
     @Nonnull
     protected final uint16_t[] array(@Nonnull uint16_t[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new uint16_t();
             }
         });
@@ -218,8 +218,8 @@ public class Struct {
     @Nonnull
     protected final uint32_t[] array(@Nonnull uint32_t[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new uint32_t();
             }
         });
@@ -228,8 +228,8 @@ public class Struct {
     @Nonnull
     protected final uint64_t[] array(@Nonnull uint64_t[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new uint64_t();
             }
         });
@@ -238,8 +238,8 @@ public class Struct {
     @Nonnull
     protected final bool[] array(@Nonnull bool[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new bool();
             }
         });
@@ -248,8 +248,8 @@ public class Struct {
     @Nonnull
     protected final Address[] array(@Nonnull Address[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new Address();
             }
         });
@@ -258,8 +258,8 @@ public class Struct {
     @Nonnull
     protected final Pointer[] array(@Nonnull Pointer[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new Pointer();
             }
         });
@@ -268,8 +268,8 @@ public class Struct {
     @Nonnull
     protected final size_t[] array(@Nonnull size_t[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new size_t();
             }
         });
@@ -278,8 +278,8 @@ public class Struct {
     @Nonnull
     protected final uintptr_t[] array(@Nonnull uintptr_t[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new uintptr_t();
             }
         });
@@ -288,8 +288,8 @@ public class Struct {
     @Nonnull
     protected final intptr_t[] array(@Nonnull intptr_t[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new intptr_t();
             }
         });
@@ -298,8 +298,8 @@ public class Struct {
     @Nonnull
     protected final clong[] array(@Nonnull clong[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new clong();
             }
         });
@@ -308,8 +308,8 @@ public class Struct {
     @Nonnull
     protected final Float32[] array(@Nonnull Float32[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new Float32();
             }
         });
@@ -318,8 +318,8 @@ public class Struct {
     @Nonnull
     protected final Float64[] array(@Nonnull Float64[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new Float64();
             }
         });
@@ -328,8 +328,8 @@ public class Struct {
     @Nonnull
     protected final BYTE[] array(@Nonnull BYTE[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new BYTE();
             }
         });
@@ -338,8 +338,8 @@ public class Struct {
     @Nonnull
     protected final WBOOL[] array(@Nonnull WBOOL[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new WBOOL();
             }
         });
@@ -348,8 +348,8 @@ public class Struct {
     @Nonnull
     protected final WORD[] array(@Nonnull WORD[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new WORD();
             }
         });
@@ -358,8 +358,8 @@ public class Struct {
     @Nonnull
     protected final DWORD[] array(@Nonnull DWORD[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new DWORD();
             }
         });
@@ -368,8 +368,8 @@ public class Struct {
     @Nonnull
     protected final DWORDLONG[] array(@Nonnull DWORDLONG[] array) {
         Objects.requireNonNull(array, "array");
-        return wrapperArrayCreaion(array, arr -> {
-            for (int i = 0, len = array.length; i < len; ++i) {
+        return wrapperArrayCreation(array, arr -> {
+            for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = new DWORDLONG();
             }
         });
@@ -394,7 +394,7 @@ public class Struct {
     public final <E extends Enum<E>> EnumField<E>[] enumArray(Class<E> klass, int length) {
         @SuppressWarnings({"unchecked", "rawtypes"})
         EnumField<E>[] array = new EnumField[length];
-        return wrapperArrayCreaion(array, arr -> {
+        return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
                 array[i] = enumField(klass);
             }
