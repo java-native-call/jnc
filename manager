@@ -1,15 +1,36 @@
 #!/bin/bash
+
+# These environment variables will be loaded:
+#   ARCH build_native JDK deploy TRAVIS_PULL_REQUEST
+
 set -e
-OS=`uname -s`
+OS="`uname -s`"
+HOST_ARCH="`uname -m`"
+
 PKG_UPDATE=()
 PKG_ADD=()
 PKG_QUERY_INSTALLED=()
-if [[ -z "$ARCH" ]]; then ARCH=`uname -m`; fi
+maven_extra_config=()
+build_x86_on_x64=false
+
+if [[ -z "$ARCH" ]]; then
+  ARCH="${HOST_ARCH}"
+else
+  case "$ARCH" in
+    i386|i486|i586|i686|x86)
+      case "$HOST_ARCH" in
+        x86_64|amd64|x64)
+          build_x86_on_x64=true
+          ;;
+      esac
+      ;;
+  esac
+fi
 
 if [[ -n "$build_native" ]]; then
   native=true
-  packages=(automake cmake libtool texinfo)
-  export MAVEN_CONFIG=-Pnative
+  packages=(cmake libtool texinfo)
+  maven_extra_config+=('-Pnative')
 else
   native=false
   packages=()
@@ -19,13 +40,21 @@ case "${OS}" in
     PKG_ADD=(echo)
     ;;
   Linux)
-    if command -v apt-get 2>/dev/null; then
+    if command -v apt-get >/dev/null 2>&1; then
       PKG_UPDATE=(sudo apt-get update -y)
-      packages+=(gcc g++ g++-multilib)
+      if "$native"; then
+        packages+=(automake gcc g++)
+        if "$build_x86_on_x64"; then packages+=(g++-multilib); fi
+      fi
       # -f fix-broken attempt to correct a system with broken dependencies in place
       PKG_ADD=(sudo apt-get -f -y install)
-    elif command -v yum 2>/dev/null; then
-      packages+=(gcc gcc-c++ glibc-devel.i686 libgcc.i686 libstdc++-devel.i686 ncurses-devel.i686)
+    elif command -v yum >/dev/null 2>&1; then
+      if "$native"; then
+        packages+=(automake gcc gcc-c++)
+        if "$build_x86_on_x64"; then
+          packages+=(glibc-devel.i686 libgcc.i686 libstdc++-devel.i686 ncurses-devel.i686)
+        fi
+      fi
       # -y assume yes
       PKG_ADD=(sudo yum install -y)
       PKG_QUERY_INSTALLED=(yum list installed)
@@ -37,10 +66,10 @@ case "${OS}" in
       oraclejdk8)
         case "$ARCH" in
           i386|i486|i586|i686|x86)
-            JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-i586.tar.gz
+            JDK_DOWNLOAD_URL=https://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-i586.tar.gz
             ;;
           x86_64|amd64)
-            JDK_DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz
+            JDK_DOWNLOAD_URL=https://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz
             ;;
           *)
             echo "unknown arch ${ARCH}" >&2
@@ -49,11 +78,11 @@ case "${OS}" in
         esac
         export JAVA_HOME="`pwd`/jdk1.8.0_131"
         ;;
-      openjdk8)
+      openjdk8|openjdk9)
         JDK_VERSION=`echo "$JDK" | sed -e 's/^openjdk//g'`
         case "$ARCH" in
           i386|i486|i586|i686|x86)
-            if command -v apt-get 2>/dev/null; then
+            if command -v apt-get >/dev/null 2>&1; then
                 JDK_INSTALL_NAME="openjdk-${JDK_VERSION}-jdk:i386"
                 export JAVA_HOME="/usr/lib/jvm/java-${JDK_VERSION}-openjdk-i386"
             else
@@ -61,8 +90,8 @@ case "${OS}" in
                 export JAVA_HOME=`ls /usr/lib/jvm/java-1.${JDK_VERSION}.0-openjdk-1.${JDK_VERSION}*.i386 -rd1 | head -1`
             fi
             ;;
-          x86_64|amd64)
-            if command -v apt-get 2>/dev/null; then
+          x86_64|amd64|x64)
+            if command -v apt-get >/dev/null 2>&1; then
               JDK_INSTALL_NAME="openjdk-${JDK_VERSION}-jdk:amd64"
               export JAVA_HOME="/usr/lib/jvm/java-${JDK_VERSION}-openjdk-amd64"
             else
@@ -86,12 +115,14 @@ case "${OS}" in
   Darwin)
     PKG_ADD=(brew install)
     PKG_QUERY_INSTALLED=(brew list)
+    if "$native"; then packages+=(automake gmake); fi
     echo 'cd /usr/local/lib && ln -s ../../lib/libSystem.B.dylib libgcc_s.10.4.dylib && ln -s ../../lib/libSystem.B.dylib libgcc_s.10.5.dylib' | bash || true
     ;;
   FreeBSD)
     PKG_ADD=(sudo pkg install -fy)
     PKG_QUERY_INSTALLED=(pkg info)
-    packages+=(gmake openjdk8)
+    if "$native"; then packages+=(automake gmake); fi
+    packages+=(openjdk8)
     ;;
   OpenBSD)
     pkg_query() {
@@ -99,10 +130,11 @@ case "${OS}" in
     }
     PKG_ADD=(sudo pkg_add -I)
     #PKG_QUERY_INSTALLED=(pkg_query)
-    export AUTOMAKE_VERSION=1.15
     export AUTOCONF_VERSION=2.69
+    export AUTOMAKE_VERSION=1.16
     export JAVA_HOME="/usr/local/jdk-1.8.0"
-    packages=(automake%$AUTOMAKE_VERSION cmake libtool gcc texinfo gmake jdk%1.8)
+    if "$native"; then packages+=(automake%$AUTOMAKE_VERSION gcc gmake); fi
+    packages+=(jdk%1.8)
     ;;
   *)
     echo 'Platform not support' >&2
@@ -118,32 +150,34 @@ case "$1" in
     rm -rf *
     git reset --hard origin/master
     ;;
-  install)
+  dependency)
     if [[ -n "${JDK_DOWNLOAD_URL}" ]]; then
       wget -O- --no-cookies -c --header "Cookie: oraclelicense=a" "${JDK_DOWNLOAD_URL}" | tar -zxf-
     fi
-    if [[ "${#PKG_QUERY_INSTALLED[@]}" -gt 0 ]]; then
-      n_packages=()
-      for pkg in "${packages[@]}"; do
-        if ! "${PKG_QUERY_INSTALLED[@]}" "$pkg" 2>/dev/null; then
-          n_packages+=("$pkg")
-        fi
-      done
-      packages=("${n_packages[@]}")
-      unset n_packages
-    fi
     if [[ "${#packages[@]}" -gt 0 ]]; then
-      echo "Prepare install ${packages[@]}"
-      "${PKG_UPDATE[@]}"
-      "${PKG_ADD[@]}" "${packages[@]}" || true
+      if [[ "${#PKG_QUERY_INSTALLED[@]}" -gt 0 ]]; then
+        n_packages=()
+        for pkg in "${packages[@]}"; do
+          if ! "${PKG_QUERY_INSTALLED[@]}" "$pkg" 2>/dev/null; then
+            n_packages+=("$pkg")
+          fi
+        done
+        packages=("${n_packages[@]}")
+        unset n_packages
+      fi
+      if [[ "${#packages[@]}" -gt 0 ]]; then
+        echo "Prepare install ${packages[@]}"
+        "${PKG_UPDATE[@]}"
+        "${PKG_ADD[@]}" "${packages[@]}" || true
+      fi
     fi
     ;;
   test|build|package)
     echo "JAVA_HOME: ${JAVA_HOME}"
     if [[ "$deploy" == true ]] &&  git config --get remote.origin.url 2>&1 | grep -F https://github.com/java-native-call/jnc-build -q && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-      chmod +x mvnw && ./mvnw deploy -s .travis/settings.xml "$@"
+      chmod +x mvnw && ./mvnw "${maven_extra_config[@]}" deploy -s .travis/settings.xml "$@"
     else
-      chmod +x mvnw && ./mvnw install "$@"
+      chmod +x mvnw && ./mvnw "${maven_extra_config[@]}" install "$@"
     fi
     ;;
 esac

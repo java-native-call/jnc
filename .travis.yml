@@ -19,5 +19,5 @@ matrix:
     - os: linux
       env: build_native=true JDK=openjdk8 ARCH=i386
 sudo: required
-install: chmod +x manager && ./manager install
+install: chmod +x manager && ./manager dependency
 script: ./manager test
