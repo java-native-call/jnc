@@ -21,6 +21,7 @@ if (${CMAKE_VERSION} VERSION_LESS 3.1)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 else ()
     set(CMAKE_CXX_STANDARD 11)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif ()
 
 file(GLOB SOURCES jni/*.h src/*.h src/*.c src/*.cpp)
@@ -155,7 +156,7 @@ else ()
             WORKING_DIRECTORY <BINARY_DIR>)
 endif ()
 
-ExternalProject_Get_Property(libffi SOURCE_DIR BINARY_DIR)
+ExternalProject_Get_Property(libffi BINARY_DIR)
 
 ExternalProject_Add_Step(libffi autogen
         COMMAND env NOCONFIGURE=1 ./autogen.sh
