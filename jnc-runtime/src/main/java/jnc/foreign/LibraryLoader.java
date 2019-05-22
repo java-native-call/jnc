@@ -1,11 +1,13 @@
 package jnc.foreign;
 
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 public class LibraryLoader<T> {
 
     @Nonnull
     public static <T> LibraryLoader<T> create(Class<T> cl) {
+        Objects.requireNonNull(cl, "interface class");
         return new LibraryLoader<>(cl);
     }
 
