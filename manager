@@ -115,7 +115,7 @@ case "${OS}" in
   Darwin)
     PKG_ADD=(brew install)
     PKG_QUERY_INSTALLED=(brew list)
-    if "$native"; then packages+=(automake gmake); fi
+    if "$native"; then packages+=(automake make); fi
     echo 'cd /usr/local/lib && ln -s ../../lib/libSystem.B.dylib libgcc_s.10.4.dylib && ln -s ../../lib/libSystem.B.dylib libgcc_s.10.5.dylib' | bash || true
     ;;
   FreeBSD)
