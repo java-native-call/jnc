@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
- * A utility class, should only be used in parameter
+ * A utility class, can be used as a parameter or inner struct field
  */
 @SuppressWarnings("unused")
 public final class StructArray<T extends Struct> extends Struct implements Iterable<T> {

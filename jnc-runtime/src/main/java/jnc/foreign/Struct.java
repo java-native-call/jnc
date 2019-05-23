@@ -2,13 +2,14 @@ package jnc.foreign;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import jnc.foreign.annotation.Pack;
 import jnc.foreign.annotation.UnmappableNativeValueException;
 import jnc.foreign.internal.AnnotationUtil;
 
-@SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess" ,"unused"})
+@SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess", "unused"})
 public class Struct {
 
     private static final int MAX_ALIGN = 16;
@@ -399,6 +400,11 @@ public class Struct {
                 array[i] = enumField(klass);
             }
         });
+    }
+
+    @Nonnull
+    public final <T extends Struct> StructArray<T> structArray(Supplier<T> constructor, int length) {
+        return inner(new StructArray<>(constructor, length));
     }
 
     private static final class Enclosing {
