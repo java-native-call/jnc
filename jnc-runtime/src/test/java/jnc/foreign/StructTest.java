@@ -9,6 +9,9 @@ import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uint32_t;
 import jnc.foreign.typedef.uintptr_t;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -50,7 +53,7 @@ public class StructTest {
         SizeTStruct instance = new SizeTStruct();
         SizeTStruct tmp = new SizeTStruct();
         Type expResult = ForeignProviders.getDefault().findType("size_t");
-        long mask = -1;
+        final long mask;
         switch (expResult.size()) {
             case 1:
                 mask = 0xFFL;
@@ -78,7 +81,7 @@ public class StructTest {
         assertEquals(0, tmp.getValue());
         Libc.INSTANCE.memcpy(tmp, instance.getMemory(), instance.size());
         assertEquals(MAGIC & mask, tmp.getValue());
-        assertEquals(null, Libc.INSTANCE.memcpy((Pointer) null, (Pointer) null, 0));
+        assertNull(Libc.INSTANCE.memcpy((Pointer) null, (Pointer) null, 0));
     }
 
     /**
@@ -116,6 +119,44 @@ public class StructTest {
         } catch (IllegalStateException ex) {
             // ok
         }
+    }
+
+    @Test
+    public void testEnum() {
+        Struct1 struct1 = new Struct1();
+        assertEquals(1, struct1.size());
+        struct1.setSeason(StructTest.Season.Winter);
+        assertEquals(StructTest.Season.Winter, struct1.getSeason());
+    }
+
+    @Test
+    public void testConvertFromDouble() {
+        DoubleStruct struct = new DoubleStruct();
+        assertEquals(8, struct.size());
+        struct.setValue(0.0);
+        assertFalse(struct.getAsBoolean());
+        struct.setValue(Double.NaN);
+        assertTrue("Double NaN converted to boolean, expect true, but was false", struct.getAsBoolean());
+        struct.setValue(Long.MAX_VALUE);
+        assertEquals(Long.MIN_VALUE, struct.getAsLong()); // value truncated
+    }
+
+    @Test(expected = OutOfMemoryError.class)
+    public void testStructSizeTooLarge() {
+        new Struct() {
+            {
+                padding(Integer.MAX_VALUE);
+            }
+        };
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalSize() {
+        new Struct() {
+            {
+                padding(Integer.MIN_VALUE);
+            }
+        };
     }
 
     private static class Wrapper extends Struct {
@@ -196,6 +237,38 @@ public class StructTest {
 
     }
 
+    private static class Struct1 extends Struct {
+
+        private final EnumField<Season> season = enumField(Season.class);
+
+        public Season getSeason() {
+            return season.get();
+        }
+
+        public void setSeason(Season field) {
+            this.season.set(field);
+        }
+
+    }
+
+    private static class DoubleStruct extends Struct {
+
+        Float64 d = new Float64();
+
+        public boolean getAsBoolean() {
+            return d.booleanValue();
+        }
+
+        public long getAsLong() {
+            return d.longValue();
+        }
+
+        public void setValue(double v) {
+            d.set(v);
+        }
+
+    }
+
     @SuppressWarnings("PublicInnerClass")
     public interface Libc {
 
@@ -219,28 +292,6 @@ public class StructTest {
     @Continuously(type = NativeType.SINT8)
     private enum Season {
         Spring, Summer, Autumn, Winter
-    }
-
-    private class Struct1 extends Struct {
-
-        private final EnumField<Season> season = enumField(Season.class);
-
-        public Season getSeason() {
-            return season.get();
-        }
-
-        public void setSeason(Season field) {
-            this.season.set(field);
-        }
-
-    }
-
-    @Test
-    public void testEnum() {
-        Struct1 struct1 = new Struct1();
-        assertEquals(1, struct1.size());
-        struct1.setSeason(StructTest.Season.Winter);
-        assertEquals(StructTest.Season.Winter, struct1.getSeason());
     }
 
 }
