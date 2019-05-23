@@ -127,3 +127,16 @@ CHECK_JNC_FFI(POINTER)
 #undef CHECK_JNC_FFI
 
 #define JNC_CALL(type) jnc_foreign_internal_NativeMethods_CONVENTION_##type
+
+/* GetStringChars is not guaranteed to be null terminated
+   especially on old jdk */
+#define DO_WITH_STRING_16(env, jstring, name, stat, ret)               \
+do {                                                                \
+    jsize _len = CALLJNI(env, GetStringLength, jstring);             \
+    jchar* name = (jchar*) malloc((_len + 1) * sizeof (jchar));   \
+    checkOutOfMemory(env, name, ret);                               \
+    CALLJNI(env, GetStringRegion, jstring, 0, _len, (jchar*) name);  \
+    name[_len] = 0;                                                 \
+    stat;                                                           \
+    free(name);                                                     \
+} while(false)

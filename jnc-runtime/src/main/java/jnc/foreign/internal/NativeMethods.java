@@ -157,6 +157,12 @@ class NativeMethods {
         }
     }
 
+    private NativeMethods() {
+        if (theInstance != null) {
+            throw new AssertionError();
+        }
+    }
+
     /**
      * @param id type id
      * @return the address of the specified type
@@ -204,6 +210,12 @@ class NativeMethods {
     native String getStringUTF(long address);
 
     native String getStringUTFN(long address, long limit);
+
+    native void putStringChar16(long address, String value);
+
+    native String getStringChar16(long address);
+
+    native String getStringChar16N(long address, long limit);
 
     native void putRawAddress(long address, long value);
 

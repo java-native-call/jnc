@@ -9,22 +9,12 @@
 #define dlsym(hModule, symbol) GetProcAddress(hModule, symbol)
 #define dlclose(module) !FreeLibrary(module)
 /* assume wchar_t on windows is 2 byte, compile error when not */
-#if WCHAR_MAX != 0xFFFFU
+#if WCHAR_MAX != UINT16_MAX
 #error Unsupported wchar_t type
-#else /* WCHAR_MAX != 0xFFFFU */
-/* GetStringChars is not guaranteed to be null terminated
-   especially on old jdk */
-#define DO_WITH_STRING(env, jstring, name, stat, ret)               \
-do {                                                                \
-    jsize _len = CALLJNI(env, GetStringLength, jstring);             \
-    LPWSTR name = (LPWSTR) malloc((_len + 1) * sizeof (wchar_t));   \
-    checkOutOfMemory(env, name, ret);                               \
-    CALLJNI(env, GetStringRegion, jstring, 0, _len, (jchar*) name);  \
-    name[_len] = 0;                                                 \
-    stat;                                                           \
-    free(name);                                                     \
-} while(false)
-#endif /* WCHAR_MAX != 0xFFFFU */
+#else /* WCHAR_MAX != UINT16_MAX */
+#define DO_WITH_PLATFORM_STRING DO_WITH_STRING_16
+#define DLOPEN_PARAM_TYPE LPWSTR
+#endif /* WCHAR_MAX != UINT16_MAX */
 
 static void throwByLastError(JNIEnv * env, const char * type) {
     DWORD dw = GetLastError();
@@ -69,7 +59,8 @@ static void throwByLastError(JNIEnv * env, const char * type) {
 ) : DEFAULT_RTLD
 
 #define HMODULE void*
-#define DO_WITH_STRING DO_WITH_STRING_UTF
+#define DO_WITH_PLATFORM_STRING DO_WITH_STRING_UTF
+#define DLOPEN_PARAM_TYPE char*
 #define throwByLastError(env, type)         \
 do {                                        \
     const char * _msg = dlerror();          \
@@ -103,7 +94,7 @@ Java_jnc_foreign_internal_NativeMethods_dlopen
         ret = dlopen(NULL, RTLD_LAZY);
 #endif
     } else {
-        DO_WITH_STRING(env, path, buf, ret = dlopen(buf, JNC2RTLD(mode)), 0);
+        DO_WITH_PLATFORM_STRING(env, path, buf, ret = dlopen((DLOPEN_PARAM_TYPE)(void*)buf, JNC2RTLD(mode)), 0);
     }
     if (unlikely(NULL == ret)) {
         throwByLastError(env, UnsatisfiedLink);

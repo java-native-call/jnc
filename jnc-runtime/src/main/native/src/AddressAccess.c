@@ -62,6 +62,27 @@ Java_jnc_foreign_internal_NativeMethods_getStringUTF
     return CALLJNI(env, NewStringUTF, paddr);
 }
 
+#define checkLimit(env, limit, ret) \
+do { \
+    if (unlikely(limit <= 0)) { \
+        if (likely(limit == 0)) { \
+            return CALLJNI(env, NewStringUTF, ""); \
+        } \
+        throwByName(env, IllegalArgument, "limit>=0"); \
+        return ret; \
+    } \
+} while(false)
+
+#if SIZE_MAX == UINT64_MAX
+#define LP64_ONLY(x) x
+#define NOT_LP64(x)
+#elif SIZE_MAX == UINT32_MAX
+#define LP64_ONLY(x)
+#define NOT_LP64(x) x
+#else
+#error unknown type size_t
+#endif
+
 /*
  * Class:     jnc_foreign_internal_NativeMethods
  * Method:    getStringUTFN
@@ -70,16 +91,11 @@ Java_jnc_foreign_internal_NativeMethods_getStringUTF
 JNIEXPORT jstring JNICALL
 Java_jnc_foreign_internal_NativeMethods_getStringUTFN
 (JNIEnv *env, jobject UNUSED(self), jlong laddr, jlong limit) {
-    if (unlikely(limit <= 0)) {
-        if (likely(limit == 0)) {
-            return CALLJNI(env, NewStringUTF, "");
-        }
-        throwByName(env, IllegalArgument, "limit>=0");
-        return NULL;
-    }
+    checkLimit(env, limit, NULL);
     char *paddr = j2c(laddr, char);
     checkNullPointer(env, paddr, NULL);
-    size_t szLimit = (size_t) MIN(limit, (jlong) ((SIZE_MAX >> 1) - 1));
+    LP64_ONLY(size_t szLimit = (size_t) limit);
+    NOT_LP64(size_t szLimit = (size_t) MIN(limit, (jlong) (UINT32_MAX - 1)));
     if (likely(NULL != memchr(paddr, 0, szLimit))) {
         return CALLJNI(env, NewStringUTF, paddr);
     }
@@ -90,6 +106,108 @@ Java_jnc_foreign_internal_NativeMethods_getStringUTFN
     jstring result = CALLJNI(env, NewStringUTF, tmp);
     free(tmp);
     return result;
+}
+
+/*
+ * Class:     jnc_foreign_internal_NativeMethods
+ * Method:    putStringChar16
+ * Signature: (JLjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_putStringChar16
+(JNIEnv *env, jobject UNUSED(self), jlong laddr, jstring value) {
+    void *paddr = j2vp(laddr);
+    checkNullPointer(env, paddr, /*void*/);
+    checkNullPointer(env, value, /*void*/);
+    DO_WITH_STRING_16(env, value, str, memcpy(paddr, str, (size_t) (_len + 1) * sizeof (jchar)), /*void*/);
+}
+
+static jstring returnNewString(JNIEnv *env, const jchar *addr, size_t len) {
+    // parameter to call NewString is jsize, which is alias of jint
+    if (unlikely(len > INT32_MAX)) {
+        // can't find a presentation for this length
+        throwByName(env, OutOfMemory, NULL);
+        return NULL;
+    }
+    return CALLJNI(env, NewString, addr, len);
+}
+
+/*
+ * Class:     jnc_foreign_internal_NativeMethods
+ * Method:    getStringChar16
+ * Signature: (J)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_jnc_foreign_internal_NativeMethods_getStringChar16
+(JNIEnv *env, jobject UNUSED(self), jlong laddr) {
+    const jchar *paddr = j2c(laddr, jchar);
+    checkNullPointer(env, paddr, NULL);
+    if (unlikely(laddr & 1)) {
+        // unaligned access
+        const jchar *p = j2c(laddr + 1, jchar), *q = p;
+        uint16_t x = *j2c(laddr, uint8_t), y;
+        do {
+            x <<= 8;
+            y = *p;
+            x |= y >> 8;
+            if (x == 0) break;
+            x = y;
+            ++p;
+        } while (true);
+        size_t len = p - q;
+        jchar *tmp = (jchar *) malloc(len * sizeof (jchar));
+        checkOutOfMemory(env, tmp, NULL);
+        memcpy(tmp, paddr, len * sizeof(jchar));
+        jstring res = CALLJNI(env, NewString, tmp, len);
+        free(tmp);
+        return res;
+    }
+#if WCHAR_MAX == UINT16_MAX
+    // on windows
+    size_t len = wcslen((wchar_t*) paddr);
+#else
+    const jchar *p = paddr;
+    while (*p) ++p;
+    size_t len = p - paddr;
+#endif
+    return returnNewString(env, paddr, len);
+}
+
+/*
+ * Class:     jnc_foreign_internal_NativeMethods
+ * Method:    getStringChar16N
+ * Signature: (JJ)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_jnc_foreign_internal_NativeMethods_getStringChar16N
+(JNIEnv *env, jobject UNUSED(self), jlong laddr, jlong limit) {
+    checkLimit(env, limit, NULL);
+    const jchar *paddr = j2c(laddr, jchar);
+    checkNullPointer(env, paddr, NULL);
+    LP64_ONLY(size_t szLimit = (size_t) limit);
+    NOT_LP64(size_t szLimit = (size_t) MIN(limit, (jlong) (UINT32_MAX - 1)));
+    szLimit /= sizeof (jchar);
+    if (unlikely(laddr & 1)) {
+        // unaligned access
+        const jchar *p = j2c(laddr + 1, jchar), *q = p;
+        uint16_t x = *j2c(laddr, uint8_t), y;
+        do {
+            x <<= 8;
+            y = *p;
+            x |= y >> 8;
+            if (szLimit-- == 0 || x == 0) break;
+            x = y;
+            ++p;
+        } while (true);
+        size_t len = p - q;
+        jchar *tmp = (jchar *) malloc(len * sizeof (jchar));
+        checkOutOfMemory(env, tmp, NULL);
+        memcpy(tmp, paddr, len * sizeof(jchar));
+        jstring res = CALLJNI(env, NewString, tmp, len);
+        free(tmp);
+        return res;
+    }
+    const jchar *p = paddr;
+    while (szLimit-- > 0 && *p) ++p;
+    size_t len = p - paddr;
+    return returnNewString(env, paddr, len);
 }
 
 #define ADDRESS_ACCESS_E(name, native, jtype, j2n, n2j)             \
