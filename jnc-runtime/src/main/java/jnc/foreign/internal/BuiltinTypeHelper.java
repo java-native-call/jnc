@@ -15,11 +15,12 @@ class BuiltinTypeHelper {
 
     static Alias findAlias(String name) {
         Objects.requireNonNull(name, "name");
-        return LazyAlias.find(name);
+        return AliasMapHolder.find(name);
     }
 
     static BuiltinType findByNativeType(NativeType nativeType) {
-        BuiltinType builtinType = LazyNative.NATIVE_MAP.get(nativeType);
+        Objects.requireNonNull(nativeType, "native type");
+        BuiltinType builtinType = NativeMapHolder.MAP.get(nativeType);
         if (builtinType == null) {
             throw new IllegalArgumentException("unsupported native type " + nativeType);
         }
@@ -39,36 +40,36 @@ class BuiltinTypeHelper {
     }
 
     static BuiltinType findByPrimaryType(Class<?> type) {
-        return PrimitivesMap.getByType(type);
+        return PrimitivesMapHolder.getByType(type);
     }
 
     static Alias findByAlias(Typedef alias) {
         return findAlias(alias.value());
     }
 
-    private interface LazyNative {
+    private interface NativeMapHolder {
 
-        EnumMap<NativeType, BuiltinType> NATIVE_MAP = EnumSet.allOf(BuiltinType.class).stream()
+        EnumMap<NativeType, BuiltinType> MAP = EnumSet.allOf(BuiltinType.class).stream()
                 .collect(Collectors.toMap(BuiltinType::getNativeType, Function.identity(),
                         (a, b) -> b, () -> new EnumMap<>(NativeType.class)));
     }
 
-    private static class LazyAlias {
+    private static class AliasMapHolder {
 
-        private static final Map<String, Alias> ALIAS_MAP;
+        private static final Map<String, Alias> MAP;
 
         static {
             Map<Integer, BuiltinType> builtinTypes = EnumSet.allOf(BuiltinType.class)
                     .stream().collect(Collectors.toMap(BuiltinType::type, Function.identity()));
             HashMap<String, Integer> nativeAliasMap = new HashMap<>(50);
             NativeMethods.getInstance().initAlias(nativeAliasMap);
-            ALIAS_MAP = nativeAliasMap.entrySet().stream()
+            MAP = nativeAliasMap.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey,
                             entry -> new Alias(entry.getKey(), builtinTypes.get(entry.getValue()))));
         }
 
         static Alias find(String name) {
-            Alias alias = ALIAS_MAP.get(name);
+            Alias alias = MAP.get(name);
             if (alias == null) {
                 throw new IllegalArgumentException("unsupported alias " + name);
             }
@@ -76,22 +77,22 @@ class BuiltinTypeHelper {
         }
     }
 
-    private static class PrimitivesMap {
+    private static class PrimitivesMapHolder {
 
         private static final Map<Class<?>, BuiltinType> MAP;
 
         static {
-            Map<Class<?>, BuiltinType> hashMap = new HashMap<>(16);
-            put(hashMap, void.class, BuiltinType.VOID);
-            put(hashMap, boolean.class, BuiltinType.UINT8);
-            put(hashMap, byte.class, BuiltinType.SINT8);
-            put(hashMap, short.class, BuiltinType.SINT16);
-            put(hashMap, char.class, BuiltinType.UINT16);
-            put(hashMap, int.class, BuiltinType.SINT32);
-            put(hashMap, long.class, BuiltinType.SINT64);
-            put(hashMap, float.class, BuiltinType.FLOAT);
-            put(hashMap, double.class, BuiltinType.DOUBLE);
-            MAP = hashMap;
+            Map<Class<?>, BuiltinType> map = new HashMap<>(16);
+            put(map, void.class, BuiltinType.VOID);
+            put(map, boolean.class, BuiltinType.UINT8);
+            put(map, byte.class, BuiltinType.SINT8);
+            put(map, short.class, BuiltinType.SINT16);
+            put(map, char.class, BuiltinType.UINT16);
+            put(map, int.class, BuiltinType.SINT32);
+            put(map, long.class, BuiltinType.SINT64);
+            put(map, float.class, BuiltinType.FLOAT);
+            put(map, double.class, BuiltinType.DOUBLE);
+            MAP = map;
         }
 
         private static void put(Map<Class<?>, BuiltinType> map, Class<?> klass, BuiltinType builtinType) {

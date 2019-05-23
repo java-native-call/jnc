@@ -8,7 +8,7 @@ import jnc.foreign.annotation.Pack;
 import jnc.foreign.annotation.UnmappableNativeValueException;
 import jnc.foreign.internal.AnnotationUtil;
 
-@SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess"})
+@SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess" ,"unused"})
 public class Struct {
 
     private static final int MAX_ALIGN = 16;
