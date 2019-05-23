@@ -42,12 +42,12 @@ class Alias implements InternalType {
         return delegate.isSigned();
     }
 
-    public boolean isFloat() {
-        return delegate.isFloat();
+    public boolean isFloatingPoint() {
+        return delegate.isFloatingPoint();
     }
 
-    public boolean isInteger() {
-        return delegate.isInteger();
+    public boolean isIntegral() {
+        return delegate.isIntegral();
     }
 
     public String getName() {
