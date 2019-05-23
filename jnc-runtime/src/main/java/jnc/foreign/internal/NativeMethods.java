@@ -7,7 +7,6 @@ import java.lang.annotation.Native;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -292,14 +291,6 @@ class NativeMethods {
     native void invokeStruct(long cif, long function, long params, long struct, Object obj, long methodId);
 
     native long getMethodId(Method method);
-
-    /**
-     * @param buffer
-     * @return address
-     * @throws NullPointerException if buffer is null
-     * @throws IllegalArgumentException if buffer is not direct
-     */
-    native long getBufferAddress(Buffer buffer);
 
     Set<Runnable> onFinalize(Set<Runnable> set) {
         lock.lock();

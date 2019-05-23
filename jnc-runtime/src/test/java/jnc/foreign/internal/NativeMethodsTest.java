@@ -1,13 +1,9 @@
 package jnc.foreign.internal;
 
 import java.lang.reflect.Field;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import jnc.foreign.TestLibs;
 import jnc.foreign.abi.CallingMode;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -168,17 +164,6 @@ public class NativeMethodsTest {
         log.info("pageSize");
         int result = nm.pageSize();
         assertEquals(expResult, result);
-    }
-
-    /**
-     * Test of getBufferAddress method, of class NativeMethods.
-     */
-    @Test
-    public void testGetBufferAddress() {
-        log.info("getBufferAddress");
-        ByteBuffer buffer = ByteBuffer.allocateDirect(1);
-        long address = nm.getBufferAddress(buffer);
-        log.info(Long.toHexString(address));
     }
 
 }
