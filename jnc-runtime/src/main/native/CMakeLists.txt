@@ -6,6 +6,15 @@ endif ()
 
 project(jnc C CXX)
 
+if (APPLE)
+    if (NOT CMAKE_LIBTOOL)
+        find_program(CMAKE_LIBTOOL NAMES libtool)
+    endif ()
+    if (CMAKE_LIBTOOL)
+        set(CMAKE_LIBTOOL ${CMAKE_LIBTOOL} CACHE PATH "libtool executable")
+    endif ()
+endif ()
+
 if (NOT SYSTEM_PROCESSOR)
     set(SYSTEM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR})
 endif ()
@@ -30,7 +39,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 include(ExternalProject)
 
 set(SHARED_FLAGS "-Wall -Wextra -fPIC -fomit-frame-pointer -fno-ident")
-set(LIBFFI_MAKE_CONFIG --enable-structs --enable-raw-api --enable-static --disable-shared --with-pic=yes)
+set(LIBFFI_BUILD_CONFIG --enable-structs --enable-raw-api --enable-static --disable-shared --with-pic=yes)
 set(LIBFFI_BUILD_ENV
         "CC=${CMAKE_C_COMPILER}"
         "CXX=${CMAKE_CXX_COMPILER}"
@@ -94,8 +103,9 @@ ExternalProject_Add(libffi
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
 
-    set(LIB_FFI_A_ARCH)
+    set(LIBFFI_STATICS)
     set(ARCH_FLAGS)
+    set(LIBFFI_TARGET <BINARY_DIR>/.libs/libffi.a)
 
     foreach (arch i386 x86_64)
         ExternalProject_Add_Step(libffi configure-${arch}
@@ -106,7 +116,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
                 "CXXFLAGS=${LIBFFI_BUILD_CXXFLAGS} -arch ${arch}"
                 "LDFLAGS=${LIBFFI_BUILD_LDFLAGS} -arch ${arch}"
                 # use relative path, let autoconf determine style of the path
-                ../libffi/configure ${LIBFFI_MAKE_CONFIG}
+                ../libffi/configure ${LIBFFI_BUILD_CONFIG}
                 -host ${arch}-apple-darwin "--prefix=<INSTALL_DIR>"
                 DEPENDEES autogen
                 DEPENDERS configure)
@@ -115,7 +125,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
                 DEPENDEES configure-${arch}
                 DEPENDERS build
                 WORKING_DIRECTORY <BINARY_DIR>-${arch})
-        set(LIB_FFI_A_ARCH ${LIB_FFI_A_ARCH} <BINARY_DIR>-${arch}/.libs/libffi.a)
+        set(LIBFFI_STATICS ${LIBFFI_STATICS} <BINARY_DIR>-${arch}/.libs/libffi.a)
         set(ARCH_FLAGS "${ARCH_FLAGS} -arch ${arch}")
     endforeach ()
 
@@ -128,8 +138,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
 
     ExternalProject_Add_Step(libffi merge-static
             COMMAND ${CMAKE_COMMAND} -E make_directory <BINARY_DIR>/.libs
-            COMMAND libtool -static -o <BINARY_DIR>/.libs/libffi.a
-            ${LIB_FFI_A_ARCH}
+            COMMAND ${CMAKE_LIBTOOL} -static -o ${LIBFFI_TARGET} ${LIBFFI_STATICS}
             DEPENDEES build DEPENDERS install)
 
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ARCH_FLAGS}")
@@ -146,7 +155,7 @@ else ()
             "CXXFLAGS=${LIBFFI_BUILD_CXXFLAGS}"
             "LDFLAGS=${LIBFFI_BUILD_LDFLAGS}"
             # use relative path, let autoconf determine style of the path
-            ../libffi/configure ${LIBFFI_MAKE_CONFIG}
+            ../libffi/configure ${LIBFFI_BUILD_CONFIG}
             ${HOST_CONFIG} "--prefix=<INSTALL_DIR>"
             DEPENDEES autogen
             DEPENDERS configure
