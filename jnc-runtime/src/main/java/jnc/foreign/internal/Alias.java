@@ -1,7 +1,5 @@
 package jnc.foreign.internal;
 
-import jnc.foreign.NativeType;
-
 class Alias implements InternalType {
 
     private final String name;
@@ -15,11 +13,6 @@ class Alias implements InternalType {
     @Override
     public long address() {
         return delegate.address();
-    }
-
-    @Override
-    public NativeType getNativeType() {
-        return delegate.getNativeType();
     }
 
     @Override
@@ -37,17 +30,8 @@ class Alias implements InternalType {
         return delegate.type();
     }
 
-    @Override
-    public boolean isSigned() {
+    boolean isSigned() {
         return delegate.isSigned();
-    }
-
-    public boolean isFloatingPoint() {
-        return delegate.isFloatingPoint();
-    }
-
-    public boolean isIntegral() {
-        return delegate.isIntegral();
     }
 
     public String getName() {
@@ -56,7 +40,7 @@ class Alias implements InternalType {
 
     @Override
     public String toString() {
-        return "Alias(" + getName() + ",target=" + delegate + ")";
+        return "Alias(" + name + ",target=" + delegate + ")";
     }
 
 }

@@ -21,14 +21,14 @@ class ffi_cif implements NativeObject {
     private final int parameterSize;
     private final int parameterAlign;
 
-    ffi_cif(CallingMode callingMode, FFIType resultType, FFIType... params) {
+    ffi_cif(CallingMode callingMode, InternalType resultType, InternalType... params) {
         int count = params.length;
         int size = 0;
         int pointerSize = BuiltinType.POINTER.size();
         int alignment = pointerSize;
         long[] offs = new long[count];
         for (int i = 0; i < count; ++i) {
-            FFIType param = params[i];
+            InternalType param = params[i];
             int align = Math.max(param.alignment(), pointerSize);
             alignment = Math.max(align, alignment);
             size = Aligns.alignUp(size, align);

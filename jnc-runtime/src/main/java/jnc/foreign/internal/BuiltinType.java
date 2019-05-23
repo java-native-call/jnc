@@ -39,7 +39,6 @@ enum BuiltinType implements InternalType {
         return address;
     }
 
-    @Override
     public NativeType getNativeType() {
         return nativeType;
     }
@@ -59,7 +58,6 @@ enum BuiltinType implements InternalType {
         return BuiltinTypeHelper.type(typeInfo);
     }
 
-    @Override
     public boolean isSigned() {
         return (mask & MASK_SIGNED) != 0;
     }

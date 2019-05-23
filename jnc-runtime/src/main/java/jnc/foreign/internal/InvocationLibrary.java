@@ -57,11 +57,11 @@ class InvocationLibrary {
         } else {
             String name = method.getName();
             long function = library.dlsym(name);
-            FFIType retType = TypeHandlers.findReturnType(method.getReturnType(), AnnotationUtil.getMethodAnnotation(method, Typedef.class));
+            InternalType retType = TypeHandlers.findReturnType(method.getReturnType(), AnnotationUtil.getMethodAnnotation(method, Typedef.class));
             Class<?>[] parameterTypes = method.getParameterTypes();
             Annotation[][] annotations = method.getParameterAnnotations();
             int len = parameterTypes.length;
-            FFIType[] ptypes = new FFIType[len];
+            InternalType[] ptypes = new InternalType[len];
             Invoker<?> invoker = TypeHandlers.getInvoker(method.getReturnType());
             @SuppressWarnings("rawtypes")
             ParameterHandler<?>[] handlers = new ParameterHandler[len];

@@ -11,7 +11,7 @@ class TypeHandlers {
 
     private static final ConcurrentWeakIdentityHashMap<Class<?>, InternalTypeHandler<?>> TYPE_HANDLERS = new ConcurrentWeakIdentityHashMap<>(40);
 
-    static FFIType findReturnType(Class<?> returnType, Typedef annotation) {
+    static InternalType findReturnType(Class<?> returnType, Typedef annotation) {
         if (Pointer.class.isAssignableFrom(returnType)) {
             return BuiltinType.POINTER;
         } else if (annotation != null) {
@@ -21,7 +21,7 @@ class TypeHandlers {
         }
     }
 
-    static FFIType findParameterType(Class<?> parameterType, Typedef annotation) {
+    static InternalType findParameterType(Class<?> parameterType, Typedef annotation) {
         if (Struct.class.isAssignableFrom(parameterType) || Pointer.class.isAssignableFrom(parameterType)) {
             return BuiltinType.POINTER;
         } else if (parameterType.isArray() && parameterType.getComponentType().isPrimitive()) {
@@ -37,7 +37,7 @@ class TypeHandlers {
         }
     }
 
-    private static FFIType findType(Class<?> type) {
+    private static InternalType findType(Class<?> type) {
         return findByType(type).getBuiltinType();
     }
 
