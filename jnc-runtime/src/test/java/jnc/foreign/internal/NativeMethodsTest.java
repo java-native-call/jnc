@@ -109,19 +109,25 @@ public class NativeMethodsTest {
     }
 
     @Test
-    public void testFfi_call() throws Exception {
-        NativeLibrary lib = NativeLibrary.open(LIBC, 0);
-        long puts = lib.dlsym("puts");
-        ffi_cif cif = new ffi_cif(CallingMode.DEFAULT, BuiltinType.SINT32, BuiltinType.POINTER);
-        CallContext p = cif.newCallContext();
+    public void testStringUTF() {
         DirectMemory hello = AllocatedMemory.allocate(10);
         String str = "hello!123";
         hello.putStringUTF(0, str);
-        p.putLong(0, hello.address());
-        long addr = p.address();
-        long result = nm.invokeLong(cif.address(), puts, addr, null, 0);
-        log.info("result = " + result);
         assertEquals(str, hello.getStringUTF(0));
+    }
+
+    @Test
+    public void testFfi_call() throws Exception {
+        NativeLibrary lib = NativeLibrary.open(LIBC, 0);
+        long toupper = lib.dlsym("toupper");
+        ffi_cif cif = new ffi_cif(CallingMode.DEFAULT, BuiltinType.SINT32, BuiltinType.SINT32);
+        CallContext p = cif.newCallContext();
+        int param = 'a';
+        p.putInt(0, param);
+        long addr = p.address();
+        long result = nm.invokeInt(cif.address(), toupper, addr, null, 0);
+        log.info("result = " + result);
+        assertEquals('A', result);
     }
 
     /**
