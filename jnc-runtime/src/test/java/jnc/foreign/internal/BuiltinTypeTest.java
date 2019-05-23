@@ -16,9 +16,10 @@ public class BuiltinTypeTest {
     @Test
     public void testValues() {
         log.info("values");
+        int width = BuiltinType.POINTER.size() * 2 + 2;
         for (BuiltinType value : BuiltinType.values()) {
             String name = value.name();
-            String address = String.format("%#x", value.address());
+            String address = String.format("%#0" + width + "x", value.address());
             int type = value.type();
             int size = value.size();
             int alignment = value.alignment();
