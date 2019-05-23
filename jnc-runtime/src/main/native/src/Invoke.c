@@ -78,7 +78,7 @@ Java_jnc_foreign_internal_NativeMethods_invoke##name    \
     checkNullPointer(env, pavalues, ret);               \
     ffi_type * rtype = pcif->rtype;                     \
     uint64_t res = 0;                                   \
-    void * retAddr = (rtype->size <= sizeof (res))      \
+    void * retAddr = likely(rtype->size <= sizeof (res))\
             ? &res : alloca(rtype->size);               \
     ffi_call(pcif, pfunction, retAddr, pavalues);       \
     saveLastError(env, obj, methodId, GetLastError());  \
