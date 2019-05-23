@@ -19,6 +19,8 @@ if (NOT SYSTEM_PROCESSOR)
     set(SYSTEM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR})
 endif ()
 
+# when perform a cross build i386 on x86_64
+# CMAKE_SIZEOF_VOID_P is 8, but we need 32 here.
 string(FIND "${SYSTEM_PROCESSOR}" 64 ARCH_BITS)
 if (${ARCH_BITS} GREATER -1)
     set(ARCH_BITS 64)
