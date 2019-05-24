@@ -15,7 +15,7 @@ class TypeHandlers {
         if (Pointer.class == returnType) {
             return BuiltinType.POINTER;
         } else if (annotation != null) {
-            return BuiltinTypeHelper.findByAlias(annotation);
+            return TypeHelper.findByAlias(annotation);
         } else {
             return findType(returnType);
         }
@@ -29,7 +29,7 @@ class TypeHandlers {
         } else if (ByReference.class.isAssignableFrom(parameterType)) {
             return BuiltinType.POINTER;
         } else if (annotation != null) {
-            return BuiltinTypeHelper.findByAlias(annotation);
+            return TypeHelper.findByAlias(annotation);
         } else if (Void.class == parameterType) {
             return BuiltinType.POINTER;
         } else {
@@ -38,7 +38,7 @@ class TypeHandlers {
     }
 
     private static InternalType findType(Class<?> type) {
-        return findByType(type).getBuiltinType();
+        return findByType(type).getInternalType();
     }
 
     static <T> ParameterHandler<T> getParameterHandler(Class<T> type) {

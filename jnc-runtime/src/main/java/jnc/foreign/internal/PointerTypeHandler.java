@@ -29,7 +29,7 @@ enum PointerTypeHandler implements InternalTypeHandler<Pointer> {
     }
 
     @Override
-    public BuiltinType getBuiltinType() {
+    public InternalType getInternalType() {
         return BuiltinType.POINTER;
     }
 

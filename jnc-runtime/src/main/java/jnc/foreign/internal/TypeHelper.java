@@ -11,20 +11,20 @@ import jnc.foreign.NativeType;
 import jnc.foreign.typedef.Typedef;
 
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
-class BuiltinTypeHelper {
+class TypeHelper {
 
     static Alias findAlias(String name) {
         Objects.requireNonNull(name, "name");
         return AliasMapHolder.find(name);
     }
 
-    static BuiltinType findByNativeType(NativeType nativeType) {
+    static InternalType findByNativeType(NativeType nativeType) {
         Objects.requireNonNull(nativeType, "native type");
-        BuiltinType builtinType = NativeMapHolder.MAP.get(nativeType);
-        if (builtinType == null) {
+        InternalType internalType = NativeMapHolder.MAP.get(nativeType);
+        if (internalType == null) {
             throw new IllegalArgumentException("unsupported native type " + nativeType);
         }
-        return builtinType;
+        return internalType;
     }
 
     static BuiltinType findByPrimaryType(Class<?> type) {
@@ -124,7 +124,7 @@ class BuiltinTypeHelper {
 
     private interface NativeMapHolder {
 
-        EnumMap<NativeType, BuiltinType> MAP = EnumSet.allOf(BuiltinType.class).stream()
+        EnumMap<NativeType, InternalType> MAP = EnumSet.allOf(BuiltinType.class).stream()
                 .collect(Collectors.toMap(BuiltinType::getNativeType, Function.identity(),
                         (a, b) -> b, () -> new EnumMap<>(NativeType.class)));
     }

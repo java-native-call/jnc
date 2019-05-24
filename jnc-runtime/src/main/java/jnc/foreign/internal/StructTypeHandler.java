@@ -31,7 +31,7 @@ enum StructTypeHandler implements InternalTypeHandler<Struct> {
     }
 
     @Override
-    public BuiltinType getBuiltinType() {
+    public BuiltinType getInternalType() {
         return BuiltinType.POINTER;
     }
 

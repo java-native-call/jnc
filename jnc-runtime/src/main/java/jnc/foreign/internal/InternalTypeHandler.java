@@ -4,7 +4,7 @@ import jnc.foreign.TypeHandler;
 
 interface InternalTypeHandler<T> extends TypeHandler<T> {
 
-    BuiltinType getBuiltinType();
+    InternalType getInternalType();
 
     Invoker<T> getInvoker();
 

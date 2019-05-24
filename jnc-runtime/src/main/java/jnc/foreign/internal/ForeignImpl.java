@@ -50,13 +50,13 @@ class ForeignImpl implements Foreign {
     @Nonnull
     @Override
     public Type findType(String alias) {
-        return BuiltinTypeHelper.findAlias(alias);
+        return TypeHelper.findAlias(alias);
     }
 
     @Nonnull
     @Override
     public Type findType(NativeType nativeType) {
-        return BuiltinTypeHelper.findByNativeType(nativeType);
+        return TypeHelper.findByNativeType(nativeType);
     }
 
     @Override

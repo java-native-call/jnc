@@ -33,7 +33,7 @@ enum BuiltinType implements InternalType {
 
     @Override
     public long address() {
-        return BuiltinTypeHelper.getTypeInfo(type).address();
+        return TypeHelper.getTypeInfo(type).address();
     }
 
     public NativeType getNativeType() {
@@ -42,12 +42,12 @@ enum BuiltinType implements InternalType {
 
     @Override
     public int size() {
-        return BuiltinTypeHelper.getTypeInfo(type).size();
+        return TypeHelper.getTypeInfo(type).size();
     }
 
     @Override
     public int alignment() {
-        return BuiltinTypeHelper.getTypeInfo(type).alignment();
+        return TypeHelper.getTypeInfo(type).alignment();
     }
 
     @Override

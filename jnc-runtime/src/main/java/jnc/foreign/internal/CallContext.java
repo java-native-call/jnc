@@ -80,12 +80,4 @@ class CallContext implements NativeObject {
         }
     }
 
-    //public void putStruct(int i, long address, long size) {
-    //    int size1 = BuiltinTypeHelper.size(nm.getTypeInfo(types.get(i)));
-    //    if (size != size1) {
-    //        throw new IllegalArgumentException("size not match");
-    //    }
-    //    nm.copyMemory(values.get(i), address, size);
-    //}
-    //
 }

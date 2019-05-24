@@ -116,8 +116,8 @@ class PrimaryTypeHandler<T> implements InternalTypeHandler<T> {
     }
 
     @Override
-    public BuiltinType getBuiltinType() {
-        return BuiltinTypeHelper.findByNativeType(nativeType);
+    public InternalType getInternalType() {
+        return TypeHelper.findByNativeType(nativeType);
     }
 
 }

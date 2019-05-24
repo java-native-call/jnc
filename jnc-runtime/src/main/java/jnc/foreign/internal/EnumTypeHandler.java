@@ -36,36 +36,38 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
             throw new IllegalStateException("Only integral type allowd on enum, but found "
                     + nativeType + " on " + type.getName());
         }
-        BuiltinType builtinType = BuiltinTypeHelper.findByNativeType(nativeType);
-        return new EnumTypeHandler<>(type, builtinType, start, onUnmappable);
+        InternalType internalType = TypeHelper.findByNativeType(nativeType);
+        return new EnumTypeHandler<>(type, nativeType, internalType, start, onUnmappable);
     }
 
     private final E[] values;
     private final Class<E> type;
-    private final BuiltinType builtinType;
+    private final NativeType nativeType;
+    private final InternalType internalType;
     private final int start;
     private final int end;
     private final EnumMappingErrorAction onUnmappable;
     private FieldAccessor fieldAccessor;
 
-    private EnumTypeHandler(Class<E> type, BuiltinType builtinType, int start,
+    private EnumTypeHandler(Class<E> type, NativeType nativeType, InternalType internalType, int start,
             EnumMappingErrorAction onUnmappable) {
         this.values = type.getEnumConstants();
         this.type = type;
-        this.builtinType = builtinType;
+        this.nativeType = nativeType;
+        this.internalType = internalType;
         this.start = start;
         end = start + values.length;
         this.onUnmappable = onUnmappable;
     }
 
     @Override
-    public BuiltinType getBuiltinType() {
-        return builtinType;
+    public InternalType getInternalType() {
+        return internalType;
     }
 
     @Override
     public NativeType nativeType() {
-        return builtinType.getNativeType();
+        return nativeType;
     }
 
     @Override
@@ -107,12 +109,12 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
 
         @Override
         public E get(Pointer memory, int offset) {
-            return mapInt(memory.getInt(offset, builtinType));
+            return mapInt(memory.getInt(offset, internalType));
         }
 
         @Override
         public void set(Pointer memory, int offset, E value) {
-            memory.putInt(offset, builtinType, value != null ? start + value.ordinal() : 0);
+            memory.putInt(offset, internalType, value != null ? start + value.ordinal() : 0);
         }
     }
 
