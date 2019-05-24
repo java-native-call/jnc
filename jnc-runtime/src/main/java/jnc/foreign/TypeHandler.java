@@ -23,14 +23,8 @@ public interface TypeHandler<T> {
 
     NativeType nativeType();
 
-    /**
-     * Don't use this, currently internal use for enum only
-     */
-    T get(Pointer memory, int offset);
-
-    /**
-     * Don't use this, currently internal use for enum only
-     */
-    void set(Pointer memory, int offset, T value);
+    default FieldAccessor<T> getFieldAccessor() {
+        throw new UnsupportedOperationException();
+    }
 
 }

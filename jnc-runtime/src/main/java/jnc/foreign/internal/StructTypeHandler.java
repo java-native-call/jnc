@@ -16,7 +16,6 @@
 package jnc.foreign.internal;
 
 import jnc.foreign.NativeType;
-import jnc.foreign.Pointer;
 import jnc.foreign.Struct;
 
 /**
@@ -49,16 +48,6 @@ enum StructTypeHandler implements InternalTypeHandler<Struct> {
 
     @Override
     public NativeType nativeType() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Struct get(Pointer memory, int offset) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void set(Pointer memory, int offset, Struct value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -34,13 +34,22 @@ enum PointerTypeHandler implements InternalTypeHandler<Pointer> {
     }
 
     @Override
-    public Pointer get(Pointer memory, int offset) {
-        return memory.getPointer(offset);
+    public FieldAccessor getFieldAccessor() {
+        return FieldAccessor.INSTANCE;
     }
 
-    @Override
-    public void set(Pointer memory, int offset, Pointer value) {
-        memory.putPointer(offset, value);
+    private enum FieldAccessor implements jnc.foreign.FieldAccessor<Pointer> {
+        INSTANCE;
+
+        @Override
+        public Pointer get(Pointer memory, int offset) {
+            return memory.getPointer(offset);
+        }
+
+        @Override
+        public void set(Pointer memory, int offset, Pointer value) {
+            memory.putPointer(offset, value);
+        }
     }
 
 }

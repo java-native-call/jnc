@@ -46,6 +46,7 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
     private final int start;
     private final int end;
     private final EnumMappingErrorAction onUnmappable;
+    private FieldAccessor fieldAccessor;
 
     @SuppressWarnings("unchecked")
     private EnumTypeHandler(Class<E> type, BuiltinType builtinType, int start,
@@ -69,11 +70,6 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
     }
 
     @Override
-    public void set(Pointer memory, int offset, E e) {
-        memory.putInt(offset, builtinType, e != null ? start + e.ordinal() : 0);
-    }
-
-    @Override
     public ParameterHandler<E> getParameterHandler() {
         return (CallContext context, int index, E obj) -> {
             context.putInt(index, obj != null ? start + obj.ordinal() : 0);
@@ -93,14 +89,32 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
     }
 
     @Override
-    public E get(Pointer memory, int offset) {
-        return mapInt(memory.getInt(offset, builtinType));
-    }
-
-    @Override
     public Invoker<E> getInvoker() {
         return (long cif, long function, long avalues)
                 -> mapInt(PrimaryTypeHandler.invokeInt(cif, function, avalues));
+    }
+
+    @Override
+    public FieldAccessor getFieldAccessor() {
+        FieldAccessor fa = this.fieldAccessor;
+        if (fa == null) {
+            fa = new FieldAccessor();
+            this.fieldAccessor = fa;
+        }
+        return fa;
+    }
+
+    private class FieldAccessor implements jnc.foreign.FieldAccessor<E> {
+
+        @Override
+        public E get(Pointer memory, int offset) {
+            return mapInt(memory.getInt(offset, builtinType));
+        }
+
+        @Override
+        public void set(Pointer memory, int offset, E value) {
+            memory.putInt(offset, builtinType, value != null ? start + value.ordinal() : 0);
+        }
     }
 
 }

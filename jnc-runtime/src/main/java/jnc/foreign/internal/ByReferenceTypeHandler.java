@@ -42,14 +42,4 @@ enum ByReferenceTypeHandler implements InternalTypeHandler<ByReference> {
         return NativeType.ADDRESS;
     }
 
-    @Override
-    public ByReference get(Pointer memory, int offset) {
-        throw new UnsupportedOperationException("Not supported yet");
-    }
-
-    @Override
-    public void set(Pointer memory, int offset, ByReference value) {
-        throw new UnsupportedOperationException("Not supported yet");
-    }
-
 }

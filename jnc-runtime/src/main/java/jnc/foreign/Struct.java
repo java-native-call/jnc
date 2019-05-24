@@ -937,21 +937,22 @@ public class Struct {
     protected final class EnumField<E extends Enum<E>> {
 
         private final Class<E> type;
-        private final TypeHandler<E> typeHandler;
+        private final FieldAccessor<E> fieldAccessor;
         private final BaseField field;
 
         EnumField(Class<E> type) {
             this.type = type;
-            typeHandler = getForeign().findTypeHandler(type);
-            field = new BaseField(typeHandler.nativeType());
+            TypeHandler<E> typeHandler = getForeign().findTypeHandler(type);
+            this.fieldAccessor = typeHandler.getFieldAccessor();
+            this.field = new BaseField(typeHandler.nativeType());
         }
 
         public final E get() {
-            return typeHandler.get(getMemory(), field.getOffset());
+            return fieldAccessor.get(getMemory(), field.getOffset());
         }
 
         public final void set(E e) {
-            typeHandler.set(getMemory(), field.getOffset(), e);
+            fieldAccessor.set(getMemory(), field.getOffset(), e);
         }
 
         /**

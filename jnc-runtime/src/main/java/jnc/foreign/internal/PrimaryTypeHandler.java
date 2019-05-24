@@ -18,7 +18,6 @@ package jnc.foreign.internal;
 import java.util.HashMap;
 import java.util.Map;
 import jnc.foreign.NativeType;
-import jnc.foreign.Pointer;
 
 /**
  * @author zhanhb
@@ -119,16 +118,6 @@ class PrimaryTypeHandler<T> implements InternalTypeHandler<T> {
     @Override
     public BuiltinType getBuiltinType() {
         return BuiltinTypeHelper.findByNativeType(nativeType);
-    }
-
-    @Override
-    public T get(Pointer memory, int offset) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void set(Pointer memory, int offset, T value) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }
