@@ -24,15 +24,6 @@ public class NativeMethodsTest {
     private static final NativeMethods nm = NativeMethods.getInstance();
 
     /**
-     * Test of getTypeInfo method, of class NativeMethods.
-     */
-    @Test(expected = NullPointerException.class)
-    public void testGetTypeInfo() {
-        log.info("getTypeInfo");
-        long result = nm.getTypeInfo(0);
-    }
-
-    /**
      * Test of getJniVersion method, of class NativeMethods.
      */
     @Test

@@ -1,5 +1,5 @@
 #include "jnc.h"
-#include "types.h"
+#include "convert.h"
 
 #define DEFINE_PUTTER(name, jtype)                  \
 JNIEXPORT void JNICALL                              \
@@ -152,6 +152,7 @@ JNIEXPORT jstring JNICALL Java_jnc_foreign_internal_NativeMethods_getStringChar1
     if (unlikely(laddr & 1)) {
         // unaligned access
         const jchar *p = j2c(laddr + 1, jchar), *q = p;
+        // require c99 if defined in for loop
         uint16_t x = *j2c(laddr, uint8_t), y;
         for (;; x = y, ++p) {
             y = *p;
@@ -187,6 +188,7 @@ JNIEXPORT jstring JNICALL Java_jnc_foreign_internal_NativeMethods_getStringChar1
     if (unlikely(laddr & 1)) {
         // unaligned access
         const jchar *p = j2c(laddr + 1, jchar), *q = p;
+        // require c99 if defined in for loop
         uint16_t x = *j2c(laddr, uint8_t), y;
         for (;; x = y, ++p) {
             y = *p;

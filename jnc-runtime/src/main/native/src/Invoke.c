@@ -1,5 +1,5 @@
 #include "jnc.h"
-#include "types.h"
+#include "convert.h"
 
 #ifdef _WIN32
 #include <windows.h>

@@ -27,24 +27,48 @@ class BuiltinTypeHelper {
         return builtinType;
     }
 
-    static int size(long typeInfo) {
-        return (int) (typeInfo >>> 32);
-    }
-
-    static int alignment(long typeInfo) {
-        return (int) (typeInfo >> 16) & 0xFF;
-    }
-
-    static int type(long typeInfo) {
-        return (int) typeInfo & 0xFF;
-    }
-
     static BuiltinType findByPrimaryType(Class<?> type) {
         return PrimitivesMapHolder.getByType(type);
     }
 
     static Alias findByAlias(Typedef alias) {
         return findAlias(alias.value());
+    }
+
+    static TypeInfo getTypeInfo(int type) {
+        return TypesHolder.get(type);
+    }
+
+    private static class TypesHolder {
+
+        private static final TypeInfo[] TYPE_INFOS;
+
+        static {
+            long[][] types = NativeMethods.getInstance().getTypes();
+            int len = types.length;
+            TypeInfo[] typeInfos = new TypeInfo[len];
+            for (int i = 0; i < len; ++i) {
+                long[] arr = types[i];
+                if (arr != null) {
+                    long address = arr[0];
+                    long info = arr[1];
+                    typeInfos[i] = new TypeInfo(address, info);
+                }
+            }
+            TYPE_INFOS = typeInfos;
+        }
+
+        private static TypeInfo get(int type) {
+            try {
+                TypeInfo ti = TYPE_INFOS[type];
+                if (ti != null) {
+                    return ti;
+                }
+            } catch (IndexOutOfBoundsException ex) {
+            }
+            throw new IllegalArgumentException("unsupported type " + type);
+        }
+
     }
 
     private static class AliasMapHolder {

@@ -164,20 +164,10 @@ class NativeMethods {
     }
 
     /**
-     * @param id type id
-     * @return the address of the specified type
-     */
-    native long findType(int id) throws IllegalArgumentException;
-
-    /**
-     * get type info size:32 alignment:16 type:16
      *
-     * @param address address of ffi_type
-     * @return type info
-     * @throws NullPointerException if address is zero
-     * @see #findType(int)
+     * @return [type_address, type_info(size:32 align:16 type:16)]
      */
-    native long getTypeInfo(long address);
+    native long[][] getTypes();
 
     native long dlopen(@Nullable String path, int mode) throws UnsatisfiedLinkError;
 

@@ -21,22 +21,19 @@ enum BuiltinType implements InternalType {
     private static final int MASK_INTEGRAL = 2;
     private static final int MASK_FLOATING = 4;
 
-    private final long address;
     private final NativeType nativeType;
-    private final long typeInfo;
+    private final int type;
     private final int mask;
 
     BuiltinType(NativeType nativeType, int type, int mask) {
-        NativeMethods nm = NativeMethods.getInstance();
-        this.address = nm.findType(type);
-        this.typeInfo = nm.getTypeInfo(address);
+        this.type = type;
         this.mask = mask;
         this.nativeType = nativeType;
     }
 
     @Override
     public long address() {
-        return address;
+        return BuiltinTypeHelper.getTypeInfo(type).address();
     }
 
     public NativeType getNativeType() {
@@ -45,17 +42,17 @@ enum BuiltinType implements InternalType {
 
     @Override
     public int size() {
-        return BuiltinTypeHelper.size(typeInfo);
+        return BuiltinTypeHelper.getTypeInfo(type).size();
     }
 
     @Override
     public int alignment() {
-        return BuiltinTypeHelper.alignment(typeInfo);
+        return BuiltinTypeHelper.getTypeInfo(type).alignment();
     }
 
     @Override
     public int type() {
-        return BuiltinTypeHelper.type(typeInfo);
+        return type;
     }
 
     public boolean isSigned() {

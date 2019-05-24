@@ -1,43 +1,41 @@
 #include "jnc.h"
 
-/*
- * Class:     jnc_foreign_internal_NativeMethods
- * Method:    findType
- * Signature: (I)J
- */
-JNIEXPORT jlong JNICALL
-Java_jnc_foreign_internal_NativeMethods_findType
-(JNIEnv *env, jobject UNUSED(self), jint type) {
-    switch (type) {
-#define F(id, value) case JNC_TYPE(id): return c2j(ffi_type_##value)
-        F(VOID, void);
-        F(FLOAT, float);
-        F(DOUBLE, double);
-        F(UINT8, uint8);
-        F(SINT8, sint8);
-        F(UINT16, uint16);
-        F(SINT16, sint16);
-        F(UINT32, uint32);
-        F(SINT32, sint32);
-        F(UINT64, uint64);
-        F(SINT64, sint64);
-        F(POINTER, pointer);
-#undef F
-    default:
-        throwByName(env, IllegalArgument, NULL);
-        return 0;
-    }
-}
+#define ARRAY_LENGTH(x) (sizeof(x) / sizeof(x[0]))
 
 /*
  * Class:     jnc_foreign_internal_NativeMethods
- * Method:    getTypeInfo
- * Signature: (J)J
+ * Method:    getTypes
+ * Signature: ()[[J
  */
-JNIEXPORT jlong JNICALL
-Java_jnc_foreign_internal_NativeMethods_getTypeInfo
-(JNIEnv *env, jobject UNUSED(self), jlong laddr) {
-    ffi_type *paddr = j2c(laddr, ffi_type);
-    checkNullPointer(env, paddr, 0);
-    return ((jlong) paddr->size << 32) | (paddr->alignment << 16) | (paddr->type);
+JNIEXPORT jobjectArray JNICALL Java_jnc_foreign_internal_NativeMethods_getTypes
+(JNIEnv *env, jobject UNUSED(self)) {
+#define F(value) &ffi_type_##value
+    ffi_type * addr[] = {
+        F(void), F(float), F(double), F(pointer),
+        F(uint8), F(sint8), F(uint16), F(sint16),
+        F(uint32), F(sint32), F(uint64), F(sint64),
+#undef F
+    };
+    jclass longArray = (*env)->FindClass(env, "[J");
+    if (unlikely((*env)->ExceptionCheck(env))) return NULL;
+    jobjectArray res = (*env)->NewObjectArray(env, FFI_TYPE_LAST + 1, longArray, NULL);
+    if (unlikely((*env)->ExceptionCheck(env))) return NULL;
+
+    // require c99 if defined in for loop
+    size_t i = 0;
+    for (; i != ARRAY_LENGTH(addr); ++i) {
+        ffi_type *p = addr[i];
+        unsigned short type = p->type;
+        jlong info = ((jlong) p->size << 32) | (p->alignment << 16) | type;
+        jlongArray arr = (*env)->NewLongArray(env, 2);
+        if (unlikely((*env)->ExceptionCheck(env))) return NULL;
+        jlong region[2] = {p2j(p), info};
+        (*env)->SetLongArrayRegion(env, arr, 0, 2, region);
+        if (unlikely((*env)->ExceptionCheck(env))) return NULL;
+        (*env)->SetObjectArrayElement(env, res, type, arr);
+        if (unlikely((*env)->ExceptionCheck(env))) return NULL;
+        (*env)->DeleteLocalRef(env, arr);
+        if (unlikely((*env)->ExceptionCheck(env))) return NULL;
+    }
+    return res;
 }
