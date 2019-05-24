@@ -29,6 +29,11 @@ public class PaddingTest {
         Padding padding = new Padding(0);
     }
 
+    @Test
+    public void testSuccess() {
+        Padding padding = new Padding(1);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testIllegal2() {
         Padding padding = new Padding(3, 3);

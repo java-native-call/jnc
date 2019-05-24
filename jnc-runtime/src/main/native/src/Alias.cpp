@@ -70,24 +70,24 @@ namespace jnc_type_traits {
     template<class> struct is_integral : false_type {
     };
 
-#define DEF_INTEGRAL(T) template<> struct is_integral<T> : true_type {}
-    DEF_INTEGRAL(bool);
-    DEF_INTEGRAL(char);
-    DEF_INTEGRAL(signed char);
-    DEF_INTEGRAL(unsigned char);
-    // DEF_INTEGRAL(char8_t);
-    DEF_INTEGRAL(char16_t);
-    DEF_INTEGRAL(char32_t);
-    DEF_INTEGRAL(wchar_t);
-    DEF_INTEGRAL(short);
-    DEF_INTEGRAL(unsigned short);
-    DEF_INTEGRAL(int);
-    DEF_INTEGRAL(unsigned);
-    DEF_INTEGRAL(long);
-    DEF_INTEGRAL(unsigned long);
-    DEF_INTEGRAL(long long);
-    DEF_INTEGRAL(unsigned long long);
-#undef DEF_INTEGRAL
+#define DEFINE_INTEGRAL(T) template<> struct is_integral<T> : true_type {}
+    DEFINE_INTEGRAL(bool);
+    DEFINE_INTEGRAL(char);
+    DEFINE_INTEGRAL(signed char);
+    DEFINE_INTEGRAL(unsigned char);
+    // DEFINE_INTEGRAL(char8_t);
+    DEFINE_INTEGRAL(char16_t);
+    DEFINE_INTEGRAL(char32_t);
+    DEFINE_INTEGRAL(wchar_t);
+    DEFINE_INTEGRAL(short);
+    DEFINE_INTEGRAL(unsigned short);
+    DEFINE_INTEGRAL(int);
+    DEFINE_INTEGRAL(unsigned);
+    DEFINE_INTEGRAL(long);
+    DEFINE_INTEGRAL(unsigned long);
+    DEFINE_INTEGRAL(long long);
+    DEFINE_INTEGRAL(unsigned long long);
+#undef DEFINE_INTEGRAL
 
     /*
      * std::is_signed is false on enum, but we should work with will test that

@@ -48,7 +48,6 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
     private final EnumMappingErrorAction onUnmappable;
     private FieldAccessor fieldAccessor;
 
-    @SuppressWarnings("unchecked")
     private EnumTypeHandler(Class<E> type, BuiltinType builtinType, int start,
             EnumMappingErrorAction onUnmappable) {
         this.values = type.getEnumConstants();
