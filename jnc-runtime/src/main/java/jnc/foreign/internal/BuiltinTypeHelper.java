@@ -47,13 +47,6 @@ class BuiltinTypeHelper {
         return findAlias(alias.value());
     }
 
-    private interface NativeMapHolder {
-
-        EnumMap<NativeType, BuiltinType> MAP = EnumSet.allOf(BuiltinType.class).stream()
-                .collect(Collectors.toMap(BuiltinType::getNativeType, Function.identity(),
-                        (a, b) -> b, () -> new EnumMap<>(NativeType.class)));
-    }
-
     private static class AliasMapHolder {
 
         private static final Map<String, Alias> MAP;
@@ -103,6 +96,13 @@ class BuiltinTypeHelper {
             return MAP.get(Primitives.unwrap(type));
         }
 
+    }
+
+    private interface NativeMapHolder {
+
+        EnumMap<NativeType, BuiltinType> MAP = EnumSet.allOf(BuiltinType.class).stream()
+                .collect(Collectors.toMap(BuiltinType::getNativeType, Function.identity(),
+                        (a, b) -> b, () -> new EnumMap<>(NativeType.class)));
     }
 
 }

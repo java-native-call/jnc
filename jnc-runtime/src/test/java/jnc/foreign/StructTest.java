@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings({"PublicInnerClass", "UnusedReturnValue", "WeakerAccess", "unused", "SameParameterValue"})
 public class StructTest {
 
     private static final Logger log = LoggerFactory.getLogger(StructTest.class);

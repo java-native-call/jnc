@@ -46,7 +46,7 @@ Java_jnc_foreign_internal_NativeMethods_putStringUTF
     void *paddr = j2vp(laddr);
     checkNullPointer(env, paddr, /*void*/);
     checkNullPointer(env, value, /*void*/);
-    DO_WITH_STRING_UTF(env, value, str, memcpy(paddr, str, (size_t) (_len + 1)), /*void*/);
+    DO_WITH_STRING_UTF(env, value, str, len, memcpy(paddr, str, (size_t) (len + 1)), /*void*/);
 }
 
 /*
@@ -118,7 +118,7 @@ JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_putStringChar16
     void *paddr = j2vp(laddr);
     checkNullPointer(env, paddr, /*void*/);
     checkNullPointer(env, value, /*void*/);
-    DO_WITH_STRING_16(env, value, str, memcpy(paddr, str, (size_t) (_len + 1) * sizeof (jchar)), /*void*/);
+    DO_WITH_STRING_16(env, value, str, len, memcpy(paddr, str, (size_t) (len + 1) * sizeof (jchar)), /*void*/);
 }
 
 static jstring returnNewString(JNIEnv *env, const jchar *addr, size_t len) {
@@ -129,6 +129,15 @@ static jstring returnNewString(JNIEnv *env, const jchar *addr, size_t len) {
         return NULL;
     }
     return CALLJNI(env, NewString, addr, len);
+}
+
+static jstring copyNewString(JNIEnv *env, const jchar *addr, size_t len) {
+    jchar *tmp = (jchar *) malloc(len * sizeof (jchar));
+    checkOutOfMemory(env, tmp, NULL);
+    memcpy(tmp, addr, len * sizeof (jchar));
+    jstring res = CALLJNI(env, NewString, tmp, len);
+    free(tmp);
+    return res;
 }
 
 /*
@@ -144,21 +153,12 @@ JNIEXPORT jstring JNICALL Java_jnc_foreign_internal_NativeMethods_getStringChar1
         // unaligned access
         const jchar *p = j2c(laddr + 1, jchar), *q = p;
         uint16_t x = *j2c(laddr, uint8_t), y;
-        do {
-            x <<= 8;
+        for (;; x = y, ++p) {
             y = *p;
-            x |= y >> 8;
+            x = (x << 8) | (y >> 8);
             if (x == 0) break;
-            x = y;
-            ++p;
-        } while (true);
-        size_t len = p - q;
-        jchar *tmp = (jchar *) malloc(len * sizeof (jchar));
-        checkOutOfMemory(env, tmp, NULL);
-        memcpy(tmp, paddr, len * sizeof(jchar));
-        jstring res = CALLJNI(env, NewString, tmp, len);
-        free(tmp);
-        return res;
+        }
+        return copyNewString(env, paddr, p - q);
     }
 #if WCHAR_MAX == UINT16_MAX
     // on windows
@@ -188,21 +188,12 @@ JNIEXPORT jstring JNICALL Java_jnc_foreign_internal_NativeMethods_getStringChar1
         // unaligned access
         const jchar *p = j2c(laddr + 1, jchar), *q = p;
         uint16_t x = *j2c(laddr, uint8_t), y;
-        do {
-            x <<= 8;
+        for (;; x = y, ++p) {
             y = *p;
-            x |= y >> 8;
+            x = (x << 8) | (y >> 8);
             if (szLimit-- == 0 || x == 0) break;
-            x = y;
-            ++p;
-        } while (true);
-        size_t len = p - q;
-        jchar *tmp = (jchar *) malloc(len * sizeof (jchar));
-        checkOutOfMemory(env, tmp, NULL);
-        memcpy(tmp, paddr, len * sizeof(jchar));
-        jstring res = CALLJNI(env, NewString, tmp, len);
-        free(tmp);
-        return res;
+        }
+        return copyNewString(env, paddr, p - q);
     }
     const jchar *p = paddr;
     while (szLimit-- > 0 && *p) ++p;

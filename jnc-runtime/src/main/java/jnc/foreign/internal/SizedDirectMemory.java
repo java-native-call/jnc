@@ -21,8 +21,6 @@ class SizedDirectMemory extends DirectMemory {
 
     /**
      * Do not rely on the String presentation, maybe changed in the future.
-     *
-     * @return
      */
     @Override
     public String toString() {
@@ -186,7 +184,7 @@ class SizedDirectMemory extends DirectMemory {
     }
 
     @Override
-    public void putStringUTF(int offset, String value) {
+    public void putStringUTF(int offset, @Nonnull String value) {
         byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
         int len = bytes.length;
         // we must check for offset might be negative
@@ -204,7 +202,7 @@ class SizedDirectMemory extends DirectMemory {
     }
 
     @Override
-    public void putString16(int offset, String value) {
+    public void putString16(int offset, @Nonnull String value) {
         checkIndex(offset, value.length() + 1, Character.BYTES);
         super.putString16(offset, value);
     }

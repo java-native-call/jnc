@@ -46,32 +46,26 @@ namespace jnc_type_traits {
     template<class T> struct is_pointer<T *> : true_type {
     };
 
-#if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)
+#if defined(__clang__) && defined(__has_feature)
+#define COMPILER_HAS_IS_ENUM __has_feature(is_enum)
+#elif defined(__GNUC__)
+#define COMPILER_HAS_IS_ENUM ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
+#endif // __GNUC__
 
-    template<class T> struct is_enum : bool_constant<__is_enum(T) > {
-    };
-
-#elif defined(__clang__) && defined(__has_feature)
-#if __has_feature(is_enum)
+#if COMPILER_HAS_IS_ENUM
 
     template<class T> struct is_enum : bool_constant<__is_enum(T)> {
     };
+
 #else
 
-    template<class> struct is_enum : false_type {
-    };
-#endif
-#else
-
-    template<class> struct is_enum : false_type {
-    };
-#endif
-
-    /*
-     * must implement this, for std::numeric_limits::is_signed is false on enum
-     * use -1<1 rather -1<0 to avoid compiler warning.
+    /** It seems we only need to process type `clockid_t` on darwin,
+     * just leave false for other cases. 
      */
-    template<class T> struct is_signed : bool_constant<T(-1) < T(1)> { };
+    template<class> struct is_enum : false_type {
+    };
+
+#endif
 
     template<class> struct is_integral : false_type {
     };
@@ -81,6 +75,7 @@ namespace jnc_type_traits {
     DEF_INTEGRAL(char);
     DEF_INTEGRAL(signed char);
     DEF_INTEGRAL(unsigned char);
+    // DEF_INTEGRAL(char8_t);
     DEF_INTEGRAL(char16_t);
     DEF_INTEGRAL(char32_t);
     DEF_INTEGRAL(wchar_t);
@@ -94,24 +89,35 @@ namespace jnc_type_traits {
     DEF_INTEGRAL(unsigned long long);
 #undef DEF_INTEGRAL
 
+    /*
+     * std::is_signed is false on enum, but we should work with will test that
+     * use -1<1 rather -1<0 to avoid compiler warning.
+     */
+    template<class T, bool = is_enum<T>::value || is_integral<T>::value> struct is_signed;
+
+    template<class T> struct is_signed<T, true> : bool_constant<T(-1) < T(1)> { };
+
+    template<class T> struct is_signed<T, false> : false_type {
+    };
+
 }
 
 using namespace jnc_type_traits;
 
 template<size_t, size_t, bool> struct integral_matcher;
 
-#define DEF_MATCHER(T, v) template<> \
+#define DEFINE_MATCHER(T, v) template<> \
 struct integral_matcher<sizeof(T), alignof(T), is_signed<T>::value> : \
         integral_constant<int, JNC_TYPE(v)> {}
-DEF_MATCHER(uint8_t, UINT8);
-DEF_MATCHER(int8_t, SINT8);
-DEF_MATCHER(uint16_t, UINT16);
-DEF_MATCHER(int16_t, SINT16);
-DEF_MATCHER(uint32_t, UINT32);
-DEF_MATCHER(int32_t, SINT32);
-DEF_MATCHER(uint64_t, UINT64);
-DEF_MATCHER(int64_t, SINT64);
-#undef DEF_MATCHER
+DEFINE_MATCHER(uint8_t, UINT8);
+DEFINE_MATCHER(int8_t, SINT8);
+DEFINE_MATCHER(uint16_t, UINT16);
+DEFINE_MATCHER(int16_t, SINT16);
+DEFINE_MATCHER(uint32_t, UINT32);
+DEFINE_MATCHER(int32_t, SINT32);
+DEFINE_MATCHER(uint64_t, UINT64);
+DEFINE_MATCHER(int64_t, SINT64);
+#undef DEFINE_MATCHER
 
 template<class T, bool = is_enum<T>::value || is_integral<T>::value, bool = is_pointer<T>::value>
 struct ffi_value;

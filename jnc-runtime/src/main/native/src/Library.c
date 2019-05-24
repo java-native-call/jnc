@@ -94,7 +94,7 @@ Java_jnc_foreign_internal_NativeMethods_dlopen
         ret = dlopen(NULL, RTLD_LAZY);
 #endif
     } else {
-        DO_WITH_PLATFORM_STRING(env, path, buf, ret = dlopen((DLOPEN_PARAM_TYPE)(void*)buf, JNC2RTLD(mode)), 0);
+        DO_WITH_PLATFORM_STRING(env, path, buf, len, ret = dlopen((DLOPEN_PARAM_TYPE) (void*) buf, JNC2RTLD(mode)), 0);
     }
     if (unlikely(NULL == ret)) {
         throwByLastError(env, UnsatisfiedLink);
@@ -114,7 +114,7 @@ Java_jnc_foreign_internal_NativeMethods_dlsym
     checkNullPointer(env, hModule, 0);
     checkNullPointer(env, symbol, 0);
     jlong ret = 0;
-    DO_WITH_STRING_UTF(env, symbol, psymbol, ret = p2j(dlsym(hModule, psymbol)), 0);
+    DO_WITH_STRING_UTF(env, symbol, psymbol, len, ret = p2j(dlsym(hModule, psymbol)), 0);
     if (unlikely(ret == 0)) {
         throwByLastError(env, UnsatisfiedLink);
     }

@@ -102,6 +102,11 @@ ExternalProject_Add(libffi
         INSTALL_COMMAND true
         WORKING_DIRECTORY <BINARY_DIR>)
 
+ExternalProject_Add_Step(libffi autogen
+        COMMAND env NOCONFIGURE=1 ./autogen.sh
+        DEPENDEES patch DEPENDERS configure
+        WORKING_DIRECTORY <SOURCE_DIR>)
+
 if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
 
     set(LIBFFI_STATICS)
@@ -145,7 +150,6 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ARCH_FLAGS}")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARCH_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ARCH_FLAGS}")
-    set(LDFLAGS "${LDFLAGS} ${ARCH_FLAGS}")
 else ()
     if (CMAKE_C_COMPILER_TARGET)
         set(HOST_CONFIG "--host" "${CMAKE_C_COMPILER_TARGET}")
@@ -170,11 +174,6 @@ else ()
 endif ()
 
 ExternalProject_Get_Property(libffi BINARY_DIR)
-
-ExternalProject_Add_Step(libffi autogen
-        COMMAND env NOCONFIGURE=1 ./autogen.sh
-        DEPENDEES patch DEPENDERS configure
-        WORKING_DIRECTORY <SOURCE_DIR>)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_STRIP} ${STRIP_ARGS} "${CMAKE_BINARY_DIR}/${TARGET_FILE_NAME}")

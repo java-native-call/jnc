@@ -32,20 +32,20 @@
 
 #define throwByName(env, name, msg)             \
 do {                                            \
-    jclass _jc = CALLJNI(env, FindClass, name); \
-    CALLJNI(env, ThrowNew, _jc, msg);           \
-    CALLJNI(env, DeleteLocalRef, _jc);          \
+    jclass jc_ = CALLJNI(env, FindClass, name); \
+    CALLJNI(env, ThrowNew, jc_, msg);           \
+    CALLJNI(env, DeleteLocalRef, jc_);          \
 } while(false)
 #define throwByNameA(key, sig, env, name, value)                            \
 do {                                                                        \
-    jclass _jc = CALLJNI(env, FindClass, name);                             \
-    jmethodID _jm = CALLJNI(env, GetMethodID, _jc, "<init>", "(" sig ")V"); \
-    jvalue _jv;                                                             \
-    _jv.key = value;                                                        \
-    jobject _jo = CALLJNI(env, NewObjectA, _jc, _jm, &_jv);                 \
-    CALLJNI(env, Throw, _jo);                                               \
-    CALLJNI(env, DeleteLocalRef, _jo);                                      \
-    CALLJNI(env, DeleteLocalRef, _jc);                                      \
+    jclass jc_ = CALLJNI(env, FindClass, name);                             \
+    jmethodID _jm = CALLJNI(env, GetMethodID, jc_, "<init>", "(" sig ")V"); \
+    jvalue jv_;                                                             \
+    jv_.key = value;                                                        \
+    jobject jo_ = CALLJNI(env, NewObjectA, jc_, _jm, &jv_);                 \
+    CALLJNI(env, Throw, jo_);                                               \
+    CALLJNI(env, DeleteLocalRef, jo_);                                      \
+    CALLJNI(env, DeleteLocalRef, jc_);                                      \
 } while(false)
 #define throwByNameS(...) throwByNameA(l, SIG_STRING, __VA_ARGS__)
 #define checkError(type, env, name, ret)    \
@@ -67,15 +67,28 @@ do {                                                    \
 #define checkNullPointer(...)   checkError(NullPointer, __VA_ARGS__)
 #define checkOutOfMemory(...)   checkError(OutOfMemory, __VA_ARGS__)
 
-#define DO_WITH_STRING_UTF(env, jstring, name, stat, ret)       \
-do {                                                            \
-    jsize _len = CALLJNI(env, GetStringUTFLength, jstring);     \
-    char* name = (char*) malloc(_len + 1);                      \
-    checkOutOfMemory(env, name, ret);                           \
-    CALLJNI(env, GetStringUTFRegion, jstring, 0, _len, name);   \
-    name[_len] = 0;                                             \
-    stat;                                                       \
-    free(name);                                                 \
+/* GetStringChars is not guaranteed to be null terminated
+   especially on old jdk */
+#define DO_WITH_STRING_16(env, jstring, name, length, stat, ret)      \
+do {                                                                  \
+    jsize length = CALLJNI(env, GetStringLength, jstring);            \
+    jchar* name = (jchar*) malloc((length + 1) * sizeof (jchar));     \
+    checkOutOfMemory(env, name, ret);                                 \
+    CALLJNI(env, GetStringRegion, jstring, 0, length, (jchar*) name); \
+    name[length] = 0;                                                 \
+    stat;                                                             \
+    free(name);                                                       \
+} while(false)
+
+#define DO_WITH_STRING_UTF(env, jstring, name, length, stat, ret) \
+do {                                                              \
+    jsize length = CALLJNI(env, GetStringUTFLength, jstring);     \
+    char* name = (char*) malloc(length + 1);                      \
+    checkOutOfMemory(env, name, ret);                             \
+    CALLJNI(env, GetStringUTFRegion, jstring, 0, length, name);   \
+    name[length] = 0;                                             \
+    stat;                                                         \
+    free(name);                                                   \
 } while(false)
 
 #ifdef UNUSED
@@ -127,16 +140,3 @@ CHECK_JNC_FFI(POINTER)
 #undef CHECK_JNC_FFI
 
 #define JNC_CALL(type) jnc_foreign_internal_NativeMethods_CONVENTION_##type
-
-/* GetStringChars is not guaranteed to be null terminated
-   especially on old jdk */
-#define DO_WITH_STRING_16(env, jstring, name, stat, ret)               \
-do {                                                                \
-    jsize _len = CALLJNI(env, GetStringLength, jstring);             \
-    jchar* name = (jchar*) malloc((_len + 1) * sizeof (jchar));   \
-    checkOutOfMemory(env, name, ret);                               \
-    CALLJNI(env, GetStringRegion, jstring, 0, _len, (jchar*) name);  \
-    name[_len] = 0;                                                 \
-    stat;                                                           \
-    free(name);                                                     \
-} while(false)

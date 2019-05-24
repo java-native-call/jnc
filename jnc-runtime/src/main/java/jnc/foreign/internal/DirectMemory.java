@@ -157,7 +157,7 @@ class DirectMemory extends AbstractMemory implements NativeObject, Pointer {
     }
 
     @Override
-    public void putStringUTF(int offset, String value) {
+    public void putStringUTF(int offset, @Nonnull String value) {
         nm.putStringUTF(address + offset, value);
     }
 
@@ -168,7 +168,7 @@ class DirectMemory extends AbstractMemory implements NativeObject, Pointer {
     }
 
     @Override
-    public void putString16(int offset, String value) {
+    public void putString16(int offset, @Nonnull String value) {
         nm.putStringChar16(address + offset, value);
     }
 

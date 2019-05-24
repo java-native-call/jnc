@@ -1,5 +1,6 @@
 package jnc.foreign.internal;
 
+import javax.annotation.Nonnull;
 import jnc.foreign.Foreign;
 import jnc.foreign.ForeignProvider;
 
@@ -11,10 +12,11 @@ public class DefaultForeignProvider implements ForeignProvider {
 
     private final Foreign foreign;
 
-    DefaultForeignProvider() {
+    private DefaultForeignProvider() {
         foreign = new ForeignImpl(this);
     }
 
+    @Nonnull
     @Override
     public Foreign getForeign() {
         return foreign;
