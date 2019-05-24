@@ -275,12 +275,6 @@ class NativeMethods {
 
     native int pageSize();
 
-    // size_t
-    native int strlen(long address);
-
-    // size_t
-    native int wcslen(long address);
-
     native int sizeof_ffi_cif();
 
     native void prepareInvoke(long cif, int abi, int len, long retType, long atypes);
