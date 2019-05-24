@@ -12,7 +12,7 @@ class TypeHandlers {
     private static final ConcurrentWeakIdentityHashMap<Class<?>, InternalTypeHandler<?>> TYPE_HANDLERS = new ConcurrentWeakIdentityHashMap<>(40);
 
     static InternalType findReturnType(Class<?> returnType, Typedef annotation) {
-        if (Pointer.class.isAssignableFrom(returnType)) {
+        if (Pointer.class == returnType) {
             return BuiltinType.POINTER;
         } else if (annotation != null) {
             return BuiltinTypeHelper.findByAlias(annotation);
