@@ -38,7 +38,7 @@ public class StructTest {
             out.println("    Objects.requireNonNull(array, \"array\");");
             out.println("    return wrapperArrayCreation(array, arr -> {");
             out.println("        for (int i = 0, len = arr.length; i < len; ++i) {");
-            out.println("            array[i] = new " + s + "();");
+            out.println("            arr[i] = new " + s + "();");
             out.println("        }");
             out.println("    });");
             out.println("}");

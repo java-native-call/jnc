@@ -161,7 +161,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new int8_t();
+                arr[i] = new int8_t();
             }
         });
     }
@@ -171,7 +171,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new int16_t();
+                arr[i] = new int16_t();
             }
         });
     }
@@ -181,7 +181,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new int32_t();
+                arr[i] = new int32_t();
             }
         });
     }
@@ -191,7 +191,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new int64_t();
+                arr[i] = new int64_t();
             }
         });
     }
@@ -201,7 +201,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new uint8_t();
+                arr[i] = new uint8_t();
             }
         });
     }
@@ -211,7 +211,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new uint16_t();
+                arr[i] = new uint16_t();
             }
         });
     }
@@ -221,7 +221,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new uint32_t();
+                arr[i] = new uint32_t();
             }
         });
     }
@@ -231,7 +231,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new uint64_t();
+                arr[i] = new uint64_t();
             }
         });
     }
@@ -241,7 +241,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new bool();
+                arr[i] = new bool();
             }
         });
     }
@@ -251,7 +251,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new Address();
+                arr[i] = new Address();
             }
         });
     }
@@ -261,7 +261,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new Pointer();
+                arr[i] = new Pointer();
             }
         });
     }
@@ -271,7 +271,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new size_t();
+                arr[i] = new size_t();
             }
         });
     }
@@ -281,7 +281,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new uintptr_t();
+                arr[i] = new uintptr_t();
             }
         });
     }
@@ -291,7 +291,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new intptr_t();
+                arr[i] = new intptr_t();
             }
         });
     }
@@ -301,7 +301,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new clong();
+                arr[i] = new clong();
             }
         });
     }
@@ -311,7 +311,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new Float32();
+                arr[i] = new Float32();
             }
         });
     }
@@ -321,7 +321,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new Float64();
+                arr[i] = new Float64();
             }
         });
     }
@@ -331,7 +331,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new BYTE();
+                arr[i] = new BYTE();
             }
         });
     }
@@ -341,7 +341,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new WBOOL();
+                arr[i] = new WBOOL();
             }
         });
     }
@@ -351,7 +351,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new WORD();
+                arr[i] = new WORD();
             }
         });
     }
@@ -361,7 +361,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new DWORD();
+                arr[i] = new DWORD();
             }
         });
     }
@@ -371,7 +371,7 @@ public class Struct {
         Objects.requireNonNull(array, "array");
         return wrapperArrayCreation(array, arr -> {
             for (int i = 0, len = arr.length; i < len; ++i) {
-                array[i] = new DWORDLONG();
+                arr[i] = new DWORDLONG();
             }
         });
     }
