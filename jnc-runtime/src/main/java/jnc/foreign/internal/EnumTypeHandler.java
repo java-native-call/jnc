@@ -13,8 +13,8 @@ import static jnc.foreign.NativeType.UINT64;
 import static jnc.foreign.NativeType.UINT8;
 import jnc.foreign.Pointer;
 import jnc.foreign.annotation.Continuously;
-import jnc.foreign.annotation.EnumMappingErrorAction;
-import jnc.foreign.annotation.UnmappableNativeValueException;
+import jnc.foreign.enums.EnumMappingErrorAction;
+import jnc.foreign.exception.UnmappableNativeValueException;
 
 class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
 

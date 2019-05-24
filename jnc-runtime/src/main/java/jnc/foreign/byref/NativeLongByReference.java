@@ -3,6 +3,7 @@ package jnc.foreign.byref;
 import jnc.foreign.Foreign;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
+import jnc.foreign.enums.TypeAlias;
 
 public class NativeLongByReference implements ByReference {
 
@@ -35,7 +36,7 @@ public class NativeLongByReference implements ByReference {
 
     @Override
     public Type componentType(Foreign foreign) {
-        return foreign.findType("long");
+        return foreign.findType(TypeAlias.clong);
     }
 
 }

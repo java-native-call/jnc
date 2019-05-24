@@ -1,12 +1,14 @@
 package jnc.foreign.internal;
 
+import jnc.foreign.enums.TypeAlias;
+
 class Alias implements InternalType {
 
-    private final String name;
+    private final TypeAlias typeAlias;
     private final BuiltinType delegate;
 
-    Alias(String name, BuiltinType delegate) {
-        this.name = name;
+    Alias(TypeAlias typeAlias, BuiltinType delegate) {
+        this.typeAlias = typeAlias;
         this.delegate = delegate;
     }
 
@@ -34,13 +36,13 @@ class Alias implements InternalType {
         return delegate.isSigned();
     }
 
-    public String getName() {
-        return name;
+    public TypeAlias getTypeAlias() {
+        return typeAlias;
     }
 
     @Override
     public String toString() {
-        return "Alias(" + name + ",target=" + delegate + ")";
+        return "Alias(" + typeAlias + ",target=" + delegate + ")";
     }
 
 }

@@ -8,14 +8,15 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import jnc.foreign.NativeType;
-import jnc.foreign.typedef.Typedef;
+import jnc.foreign.annotation.Typedef;
+import jnc.foreign.enums.TypeAlias;
 
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 class TypeHelper {
 
-    static Alias findAlias(String name) {
-        Objects.requireNonNull(name, "name");
-        return AliasMapHolder.find(name);
+    static Alias findByAlias(TypeAlias typeAlias) {
+        Objects.requireNonNull(typeAlias, "type alias");
+        return AliasMapHolder.find(typeAlias);
     }
 
     static InternalType findByNativeType(NativeType nativeType) {
@@ -29,10 +30,6 @@ class TypeHelper {
 
     static BuiltinType findByPrimaryType(Class<?> type) {
         return PrimitivesMapHolder.getByType(type);
-    }
-
-    static Alias findByAlias(Typedef alias) {
-        return findAlias(alias.value());
     }
 
     static TypeInfo getTypeInfo(int type) {
@@ -64,7 +61,7 @@ class TypeHelper {
                 if (ti != null) {
                     return ti;
                 }
-            } catch (IndexOutOfBoundsException ex) {
+            } catch (IndexOutOfBoundsException ignored) {
             }
             throw new IllegalArgumentException("unsupported type " + type);
         }
@@ -73,19 +70,40 @@ class TypeHelper {
 
     private static class AliasMapHolder {
 
-        private static final Map<String, Alias> MAP;
+        private static final Map<TypeAlias, Alias> MAP;
 
         static {
             Map<Integer, BuiltinType> builtinTypes = EnumSet.allOf(BuiltinType.class)
                     .stream().collect(Collectors.toMap(BuiltinType::type, Function.identity()));
             HashMap<String, Integer> nativeAliasMap = new HashMap<>(50);
             NativeMethods.getInstance().initAlias(nativeAliasMap);
-            MAP = nativeAliasMap.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey,
-                            entry -> new Alias(entry.getKey(), builtinTypes.get(entry.getValue()))));
+            EnumMap<TypeAlias, Alias> map = new EnumMap<>(TypeAlias.class);
+            for (Map.Entry<String, Integer> entry : nativeAliasMap.entrySet()) {
+                String key = entry.getKey();
+                Integer value = entry.getValue();
+                TypeAlias typeAlias = toTypeAlias(key);
+                if (typeAlias != null) {
+                    map.put(typeAlias, new Alias(typeAlias, builtinTypes.get(value)));
+                }
+            }
+            MAP = map;
         }
 
-        static Alias find(String name) {
+        private static TypeAlias toTypeAlias(String name) {
+            try {
+                return TypeAlias.valueOf(name);
+            } catch (IllegalArgumentException ex) {
+                // ok might be int,long,pointer
+            }
+            if (name.equals("int")) {
+                return TypeAlias.cint;
+            } else if (name.equals("long")) {
+                return TypeAlias.clong;
+            }
+            return null;
+        }
+
+        static Alias find(TypeAlias name) {
             Alias alias = MAP.get(name);
             if (alias == null) {
                 throw new IllegalArgumentException("unsupported alias " + name);

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import jnc.foreign.annotation.Typedef;
+import jnc.foreign.enums.TypeAlias;
 
 public class TypedefTest {
 
@@ -85,13 +87,13 @@ public class TypedefTest {
         list.add("user_ssize_t");
         list.add("user_time_t");
         list.add("user_ulong_t");
-        String pkg = Typedef.class.getPackage().getName();
-        for (String string : list) {
-            String className = string;
-            if ("int".equals(className) || "long".equals(className)) {
-                className = "c" + className;
+        String pkg = size_t.class.getPackage().getName();
+        for (String cname : list) {
+            String jName = cname;
+            if ("int".equals(jName) || "long".equals(jName)) {
+                jName = "c" + jName;
             }
-            File file = new File("src/main/java/" + pkg.replace(".", "/") + "/" + className + ".java");
+            File file = new File("src/main/java/" + pkg.replace(".", "/") + "/" + jName + ".java");
             try (PrintWriter pw = new PrintWriter(file, "UTF-8")) {
                 pw.println("package " + pkg + ";");
                 pw.println();
@@ -99,11 +101,13 @@ public class TypedefTest {
                 pw.println("import java.lang.annotation.Retention;");
                 pw.println("import java.lang.annotation.RetentionPolicy;");
                 pw.println("import java.lang.annotation.Target;");
+                pw.println("import " + Typedef.class.getName() + ";");
+                pw.println("import " + TypeAlias.class.getName() + ";");
                 pw.println();
                 pw.println("@Retention(RetentionPolicy.RUNTIME)");
                 pw.println("@Target({ElementType.METHOD, ElementType.PARAMETER})");
-                pw.println("@" + Typedef.class.getSimpleName() + "(\"" + string + "\")");
-                pw.println("public @interface " + className + " {");
+                pw.println("@Typedef(TypeAlias." + jName + ")");
+                pw.println("public @interface " + jName + " {");
                 pw.println("}");
             }
         }

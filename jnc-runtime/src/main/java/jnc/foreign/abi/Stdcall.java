@@ -4,6 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import jnc.foreign.annotation.CallingConvention;
 
 /**
  * This annotation only work on windows x86, ignored on other platform or

@@ -3,8 +3,8 @@ package jnc.foreign.internal;
 import jnc.foreign.Pointer;
 import jnc.foreign.Struct;
 import jnc.foreign.annotation.Continuously;
+import jnc.foreign.annotation.Typedef;
 import jnc.foreign.byref.ByReference;
-import jnc.foreign.typedef.Typedef;
 
 @SuppressWarnings({"UtilityClassWithoutPrivateConstructor", "NestedAssignment"})
 class TypeHandlers {
@@ -15,7 +15,7 @@ class TypeHandlers {
         if (Pointer.class == returnType) {
             return BuiltinType.POINTER;
         } else if (annotation != null) {
-            return TypeHelper.findByAlias(annotation);
+            return TypeHelper.findByAlias(annotation.value());
         } else {
             return findType(returnType);
         }
@@ -29,7 +29,7 @@ class TypeHandlers {
         } else if (ByReference.class.isAssignableFrom(parameterType)) {
             return BuiltinType.POINTER;
         } else if (annotation != null) {
-            return TypeHelper.findByAlias(annotation);
+            return TypeHelper.findByAlias(annotation.value());
         } else if (Void.class == parameterType) {
             return BuiltinType.POINTER;
         } else {

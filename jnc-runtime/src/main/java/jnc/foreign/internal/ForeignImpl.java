@@ -11,6 +11,7 @@ import jnc.foreign.NativeType;
 import jnc.foreign.Platform;
 import jnc.foreign.Type;
 import jnc.foreign.TypeHandler;
+import jnc.foreign.enums.TypeAlias;
 
 class ForeignImpl implements Foreign {
 
@@ -49,8 +50,8 @@ class ForeignImpl implements Foreign {
 
     @Nonnull
     @Override
-    public Type findType(String alias) {
-        return TypeHelper.findAlias(alias);
+    public Type findType(TypeAlias alias) {
+        return TypeHelper.findByAlias(alias);
     }
 
     @Nonnull

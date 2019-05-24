@@ -2,6 +2,7 @@ package jnc.foreign.internal;
 
 import jnc.foreign.TestLibs;
 import jnc.foreign.abi.CallingMode;
+import jnc.foreign.enums.TypeAlias;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -32,8 +33,8 @@ public class ffi_cifTest {
         log.info("test memcpy");
         NativeLibrary libc = NativeLibrary.open(LIBC, 0);
         long function = libc.dlsym("memcpy");
-        Alias sizeT = TypeHelper.findAlias("size_t");
-        Alias uIntPtr = TypeHelper.findAlias("uintptr_t");
+        Alias sizeT = TypeHelper.findByAlias(TypeAlias.size_t);
+        Alias uIntPtr = TypeHelper.findByAlias(TypeAlias.uintptr_t);
         ffi_cif cif = new ffi_cif(CallingMode.DEFAULT, uIntPtr, uIntPtr, uIntPtr, sizeT);
         CallContext p = cif.newCallContext();
         DirectMemory a = AllocatedMemory.allocate(20);

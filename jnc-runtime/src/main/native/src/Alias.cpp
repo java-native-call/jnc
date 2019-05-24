@@ -145,8 +145,6 @@ extern "C"
 JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_initAlias
 (JNIEnv *env, jobject UNUSED(self), jobject obj) {
     checkNullPointer(env, obj, /*void*/);
-    typedef void *pointer;
-
     const struct {
         const char *name;
         int8_t v;
@@ -172,7 +170,6 @@ JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_initAlias
         DEFINE(mode_t)
         DEFINE(off_t)
         DEFINE(pid_t)
-        DEFINE(pointer) // should not be used, just for test
         DEFINE(ptrdiff_t)
         // DEFINE(rsize_t)
         DEFINE(size_t)

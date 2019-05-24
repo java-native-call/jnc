@@ -4,9 +4,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import jnc.foreign.annotation.Typedef;
+import jnc.foreign.enums.TypeAlias;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})
-@Typedef("clock_t")
+@Typedef(TypeAlias.clock_t)
 public @interface clock_t {
 }

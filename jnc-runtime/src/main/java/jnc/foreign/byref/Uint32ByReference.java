@@ -3,6 +3,7 @@ package jnc.foreign.byref;
 import jnc.foreign.Foreign;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
+import jnc.foreign.enums.TypeAlias;
 
 public class Uint32ByReference implements ByReference {
 
@@ -35,7 +36,7 @@ public class Uint32ByReference implements ByReference {
 
     @Override
     public Type componentType(Foreign foreign) {
-        return foreign.findType("uint32_t");
+        return foreign.findType(TypeAlias.uint32_t);
     }
 
 }

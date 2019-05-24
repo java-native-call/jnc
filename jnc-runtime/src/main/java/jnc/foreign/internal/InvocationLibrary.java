@@ -8,9 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import jnc.foreign.LoadOptions;
 import jnc.foreign.Pointer;
-import jnc.foreign.abi.CallingConvention;
 import jnc.foreign.abi.CallingMode;
-import jnc.foreign.typedef.Typedef;
+import jnc.foreign.annotation.CallingConvention;
+import jnc.foreign.annotation.Typedef;
 
 class InvocationLibrary {
 

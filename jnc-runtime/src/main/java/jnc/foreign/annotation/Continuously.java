@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import jnc.foreign.NativeType;
+import jnc.foreign.enums.EnumMappingErrorAction;
 
 /**
  * Indicate how to convert this enum to native or from native. Enums without

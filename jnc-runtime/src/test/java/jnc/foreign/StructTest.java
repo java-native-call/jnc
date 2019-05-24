@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import jnc.foreign.annotation.Continuously;
+import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uint32_t;
 import jnc.foreign.typedef.uintptr_t;
@@ -53,7 +54,7 @@ public class StructTest {
         log.info("size");
         SizeTStruct instance = new SizeTStruct();
         SizeTStruct tmp = new SizeTStruct();
-        Type expResult = ForeignProviders.getDefault().findType("size_t");
+        Type expResult = ForeignProviders.getDefault().findType(TypeAlias.size_t);
         final long mask;
         switch (expResult.size()) {
             case 1:

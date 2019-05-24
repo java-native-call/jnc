@@ -6,7 +6,8 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import jnc.foreign.annotation.Pack;
-import jnc.foreign.annotation.UnmappableNativeValueException;
+import jnc.foreign.enums.TypeAlias;
+import jnc.foreign.exception.UnmappableNativeValueException;
 import jnc.foreign.internal.AnnotationUtil;
 
 @SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess", "unused"})
@@ -790,7 +791,7 @@ public class Struct {
         private static final long serialVersionUID = 0L;
 
         public size_t() {
-            super(getForeign().findType("size_t"));
+            super(getForeign().findType(TypeAlias.size_t));
         }
 
         @Override
@@ -804,7 +805,7 @@ public class Struct {
         private static final long serialVersionUID = 0L;
 
         public uintptr_t() {
-            super(getForeign().findType("uintptr_t"));
+            super(getForeign().findType(TypeAlias.uintptr_t));
         }
 
         @Override
@@ -818,7 +819,7 @@ public class Struct {
         private static final long serialVersionUID = 0L;
 
         public intptr_t() {
-            super(getForeign().findType("intptr_t"));
+            super(getForeign().findType(TypeAlias.intptr_t));
         }
 
         @Override
@@ -832,7 +833,7 @@ public class Struct {
         private static final long serialVersionUID = 0L;
 
         public clong() {
-            super(getForeign().findType("long"));
+            super(getForeign().findType(TypeAlias.clong));
         }
 
         @Override

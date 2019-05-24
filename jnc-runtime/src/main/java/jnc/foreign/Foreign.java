@@ -2,6 +2,7 @@ package jnc.foreign;
 
 import java.io.Closeable;
 import javax.annotation.Nonnull;
+import jnc.foreign.enums.TypeAlias;
 
 public interface Foreign extends Closeable {
 
@@ -15,7 +16,7 @@ public interface Foreign extends Closeable {
     Platform getPlatform();
 
     @Nonnull
-    Type findType(String alias) throws IllegalArgumentException;
+    Type findType(TypeAlias alias) throws IllegalArgumentException;
 
     @Nonnull
     Type findType(NativeType nativeType) throws IllegalArgumentException;
