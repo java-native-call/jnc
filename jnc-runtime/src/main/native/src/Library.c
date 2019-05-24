@@ -34,13 +34,8 @@ static void throwByLastError(JNIEnv * env, const char * type) {
     if (likely(len > 0 && lpMsgBuf[len - 1] == '\r'))--len;
     jstring string = CALLJNI(env, NewString, (jchar*) lpMsgBuf, len);
     LocalFree(lpMsgBuf);
-    if (likely(NULL != string)) {
-        throwByNameS(env, type, string);
-        CALLJNI(env, DeleteLocalRef, string);
-    } else if (!CALLJNI(env, ExceptionCheck)) {
-        /* out of memory? */
-        throwByName(env, OutOfMemory, NULL);
-    }
+    if (CALLJNI(env, ExceptionCheck)) return;
+    throwByNameS(env, type, string);
 }
 
 #else /* _WIN32 */

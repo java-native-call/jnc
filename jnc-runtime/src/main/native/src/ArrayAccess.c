@@ -18,7 +18,7 @@ Java_jnc_foreign_internal_NativeMethods_get##fname          \
     checkNullPointer(env, addr, /*void*/);                  \
     if (unlikely(checkNullAndRange(env, array, off, len)))  \
         return;                                             \
-    (*env)->Set##jni##ArrayRegion(env, array, off,          \
+    CALLJNI(env, Set##jni##ArrayRegion, array, off,         \
         len, addr);                                         \
 }                                                           \
 JNIEXPORT void JNICALL                                      \
@@ -29,7 +29,7 @@ Java_jnc_foreign_internal_NativeMethods_put##fname          \
     checkNullPointer(env, addr, /*void*/);                  \
     if (unlikely(checkNullAndRange(env, array, off, len)))  \
         return;                                             \
-    (*env)->Get##jni##ArrayRegion(env,                      \
+    CALLJNI(env, Get##jni##ArrayRegion,                     \
         array, off, len, addr);                             \
 }
 ACCESS_ADDRESS_ARRAY(jbyte, Byte, Bytes);

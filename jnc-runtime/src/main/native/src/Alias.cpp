@@ -261,12 +261,10 @@ JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_initAlias
         args[0].l = name;
         args[1].l = value;
         jobject result = env->CallObjectMethodA(obj, put, args);
+        if (unlikely(env->ExceptionCheck())) return;
         if (unlikely(result != NULL)) env->DeleteLocalRef(result);
-        if (unlikely(env->ExceptionCheck())) return;
         env->DeleteLocalRef(name);
-        if (unlikely(env->ExceptionCheck())) return;
         env->DeleteLocalRef(value);
-        if (unlikely(env->ExceptionCheck())) return;
     }
 
 }

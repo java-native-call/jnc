@@ -30,19 +30,23 @@
 #define CALLJNI(env, action, ...) (*env)->action(env, ##__VA_ARGS__)
 #endif
 
-#define throwByName(env, name, msg)             \
-do {                                            \
-    jclass jc_ = CALLJNI(env, FindClass, name); \
-    CALLJNI(env, ThrowNew, jc_, msg);           \
-    CALLJNI(env, DeleteLocalRef, jc_);          \
+#define throwByName(env, name, msg)                    \
+do {                                                   \
+    jclass jc_ = CALLJNI(env, FindClass, name);        \
+    if (unlikely(CALLJNI(env, ExceptionCheck))) break; \
+    CALLJNI(env, ThrowNew, jc_, msg);                  \
+    CALLJNI(env, DeleteLocalRef, jc_);                 \
 } while(false)
 #define throwByNameA(key, sig, env, name, value)                            \
 do {                                                                        \
     jclass jc_ = CALLJNI(env, FindClass, name);                             \
+    if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
     jmethodID _jm = CALLJNI(env, GetMethodID, jc_, "<init>", "(" sig ")V"); \
+    if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
     jvalue jv_;                                                             \
     jv_.key = value;                                                        \
     jobject jo_ = CALLJNI(env, NewObjectA, jc_, _jm, &jv_);                 \
+    if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
     CALLJNI(env, Throw, jo_);                                               \
     CALLJNI(env, DeleteLocalRef, jo_);                                      \
     CALLJNI(env, DeleteLocalRef, jc_);                                      \
@@ -72,9 +76,11 @@ do {                                                    \
 #define DO_WITH_STRING_16(env, jstring, name, length, stat, ret)      \
 do {                                                                  \
     jsize length = CALLJNI(env, GetStringLength, jstring);            \
+    if (unlikely(CALLJNI(env, ExceptionCheck))) return ret;           \
     jchar* name = (jchar*) malloc((length + 1) * sizeof (jchar));     \
     checkOutOfMemory(env, name, ret);                                 \
     CALLJNI(env, GetStringRegion, jstring, 0, length, (jchar*) name); \
+    if (unlikely(CALLJNI(env, ExceptionCheck))) return ret;           \
     name[length] = 0;                                                 \
     stat;                                                             \
     free(name);                                                       \
@@ -83,9 +89,11 @@ do {                                                                  \
 #define DO_WITH_STRING_UTF(env, jstring, name, length, stat, ret) \
 do {                                                              \
     jsize length = CALLJNI(env, GetStringUTFLength, jstring);     \
+    if (unlikely(CALLJNI(env, ExceptionCheck))) return ret;       \
     char* name = (char*) malloc(length + 1);                      \
     checkOutOfMemory(env, name, ret);                             \
     CALLJNI(env, GetStringUTFRegion, jstring, 0, length, name);   \
+    if (unlikely(CALLJNI(env, ExceptionCheck))) return ret;       \
     name[length] = 0;                                             \
     stat;                                                         \
     free(name);                                                   \

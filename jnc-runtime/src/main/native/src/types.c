@@ -16,10 +16,10 @@ JNIEXPORT jobjectArray JNICALL Java_jnc_foreign_internal_NativeMethods_getTypes
         F(uint32), F(sint32), F(uint64), F(sint64),
 #undef F
     };
-    jclass longArray = (*env)->FindClass(env, "[J");
-    if (unlikely((*env)->ExceptionCheck(env))) return NULL;
-    jobjectArray res = (*env)->NewObjectArray(env, FFI_TYPE_LAST + 1, longArray, NULL);
-    if (unlikely((*env)->ExceptionCheck(env))) return NULL;
+    jclass longArray = CALLJNI(env, FindClass, "[J");
+    if (unlikely(CALLJNI(env, ExceptionCheck))) return NULL;
+    jobjectArray res = CALLJNI(env, NewObjectArray, FFI_TYPE_LAST + 1, longArray, NULL);
+    if (unlikely(CALLJNI(env, ExceptionCheck))) return NULL;
 
     // require c99 if defined in for loop
     size_t i = 0;
@@ -27,15 +27,14 @@ JNIEXPORT jobjectArray JNICALL Java_jnc_foreign_internal_NativeMethods_getTypes
         ffi_type *p = addr[i];
         unsigned short type = p->type;
         jlong info = ((jlong) p->size << 32) | (p->alignment << 16) | type;
-        jlongArray arr = (*env)->NewLongArray(env, 2);
-        if (unlikely((*env)->ExceptionCheck(env))) return NULL;
+        jlongArray arr = CALLJNI(env, NewLongArray, 2);
+        if (unlikely(CALLJNI(env, ExceptionCheck))) return NULL;
         jlong region[2] = {p2j(p), info};
-        (*env)->SetLongArrayRegion(env, arr, 0, 2, region);
-        if (unlikely((*env)->ExceptionCheck(env))) return NULL;
-        (*env)->SetObjectArrayElement(env, res, type, arr);
-        if (unlikely((*env)->ExceptionCheck(env))) return NULL;
-        (*env)->DeleteLocalRef(env, arr);
-        if (unlikely((*env)->ExceptionCheck(env))) return NULL;
+        CALLJNI(env, SetLongArrayRegion, arr, 0, 2, region);
+        if (unlikely(CALLJNI(env, ExceptionCheck))) return NULL;
+        CALLJNI(env, SetObjectArrayElement, res, type, arr);
+        if (unlikely(CALLJNI(env, ExceptionCheck))) return NULL;
+        CALLJNI(env, DeleteLocalRef, arr);
     }
     return res;
 }

@@ -47,12 +47,15 @@ JNIEXPORT void JNICALL JNI_OnUnload
     JNIEnv *env;
     if (likely((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) == JNI_OK)) {
         jclass class = CALLJNI(env, FindClass, "jnc/foreign/internal/NativeMethods");
-        if (likely(class != NULL)) {
-            jmethodID methodId = CALLJNI(env, GetStaticMethodID, class, "onUnload", "()V");
-            if (likely(methodId != NULL)) {
-                CALLJNI(env, CallStaticVoidMethodA, class, methodId, NULL);
-            }
-            CALLJNI(env, DeleteLocalRef, class);
+        if (unlikely(class == NULL)) {
+            CALLJNI(env, ExceptionClear);
+            return;
         }
+        jmethodID methodId = CALLJNI(env, GetStaticMethodID, class, "onUnload", "()V");
+        if (unlikely(methodId == NULL)) {
+            CALLJNI(env, ExceptionClear);
+            return;
+        }
+        CALLJNI(env, CallStaticVoidMethodA, class, methodId, NULL);
     }
 }
