@@ -203,6 +203,19 @@ class SizedDirectMemory extends DirectMemory {
         return nm.getStringUTFN(address() + offset, size);
     }
 
+    @Override
+    public void putString16(int offset, String value) {
+        checkIndex(offset, value.length() + 1, Character.BYTES);
+        super.putString16(offset, value);
+    }
+
+    @Nonnull
+    @Override
+    public String getString16(int offset) {
+        checkIndex(offset, 1);
+        return nm.getStringChar16N(address() + offset, size);
+    }
+
     @Nonnull
     @Override
     public Pointer slice(int offset, int size) {

@@ -12,7 +12,8 @@ public interface Pointer {
 
     /**
      * @param offset
-     * @return treat specified offset of this pointer as address value and read the data.
+     * @return treat specified offset of this pointer as address value and read
+     * the data.
      */
     long getAddress(int offset);
 
@@ -77,7 +78,12 @@ public interface Pointer {
     @Nonnull
     String getStringUTF(int offset);
 
-    void putStringUTF(int offset, String value);
+    void putStringUTF(int offset, @Nonnull String value);
+
+    @Nonnull
+    String getString16(int offset);
+
+    void putString16(int offset, @Nonnull String value);
 
     boolean getBoolean(int offset, Type type);
 

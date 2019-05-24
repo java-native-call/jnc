@@ -167,6 +167,17 @@ class DirectMemory extends AbstractMemory implements NativeObject, Pointer {
         return nm.getStringUTF(address + offset);
     }
 
+    @Override
+    public void putString16(int offset, String value) {
+        nm.putStringChar16(address + offset, value);
+    }
+
+    @Nonnull
+    @Override
+    public String getString16(int offset) {
+        return nm.getStringChar16(address + offset);
+    }
+
     @Nullable
     @Override
     public Pointer getPointer(int offset) {
