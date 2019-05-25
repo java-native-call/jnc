@@ -210,7 +210,7 @@ class SizedDirectMemory extends DirectMemory {
     @Nonnull
     @Override
     public String getString16(int offset) {
-        checkIndex(offset, 1);
+        checkIndex(offset, Character.BYTES);
         return nm.getStringChar16N(address() + offset, size);
     }
 
