@@ -8,14 +8,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <wchar.h>
+#include "exception.h"
 
-#define JAVA_LANG_STR(name)     "java/lang/" #name
-#define ArrayIndexOutOfBounds   JAVA_LANG_STR(ArrayIndexOutOfBoundsException)
-#define IllegalArgument         JAVA_LANG_STR(IllegalArgumentException)
-#define NullPointer             JAVA_LANG_STR(NullPointerException)
-#define OutOfMemory             JAVA_LANG_STR(OutOfMemoryError)
-#define UnknownError            JAVA_LANG_STR(UnknownError)
-#define UnsatisfiedLink         JAVA_LANG_STR(UnsatisfiedLinkError)
 #define SIG_STRING              "L" JAVA_LANG_STR(String) ";"
 
 #define PP_THIRD_ARG(a, b, c, ...) c
