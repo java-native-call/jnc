@@ -130,7 +130,6 @@ do {                                                              \
 #define CHECK_JNC_FFI(type) (JNC_TYPE(type) != FFI_TYPE_##type)
 #if \
 CHECK_JNC_FFI(VOID) || \
-CHECK_JNC_FFI(INT) || \
 CHECK_JNC_FFI(FLOAT) || \
 CHECK_JNC_FFI(DOUBLE) || \
 CHECK_JNC_FFI(UINT8) || \

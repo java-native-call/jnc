@@ -14,7 +14,6 @@
 #define PUT_ALL(ptr, addr, value)                       \
 switch (ptr->type) {                                    \
     case JNC_TYPE(VOID): break;                         \
-    PUT_BY_TYPE(addr, INT, int, value)                  \
     PUT_BY_TYPE(addr, FLOAT, float, value)              \
     PUT_BY_TYPE(addr, DOUBLE, double, value)            \
     PUT_BY_TYPE(addr, UINT8, uint8_t, value)            \
@@ -44,7 +43,6 @@ switch (ptr->type) {                                    \
 #define RET(cast, me, atype, addr)                  \
 switch (atype->type) {                              \
     case JNC_TYPE(VOID): return cast(0);            \
-    RET_BY_TYPE(cast, INT, int, addr)               \
     RET_BY_TYPE(cast, FLOAT, float, addr)           \
     RET_BY_TYPE(cast, DOUBLE, double, addr)         \
     RET_BY_TYPE(cast, UINT8, uint8_t, addr)         \

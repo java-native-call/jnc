@@ -29,8 +29,6 @@ class NativeMethods {
     @Native
     static final int TYPE_VOID = 0;
     @Native
-    static final int TYPE_INT = 1;
-    @Native
     static final int TYPE_FLOAT = 2;
     @Native
     static final int TYPE_DOUBLE = 3;
