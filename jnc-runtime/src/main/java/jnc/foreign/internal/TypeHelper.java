@@ -1,70 +1,90 @@
 package jnc.foreign.internal;
 
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import jnc.foreign.NativeType;
 import jnc.foreign.enums.TypeAlias;
+import static jnc.foreign.internal.TypeInfo.MASK_FLOATING;
+import static jnc.foreign.internal.TypeInfo.MASK_INTEGRAL;
+import static jnc.foreign.internal.TypeInfo.MASK_SIGNED;
 
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 class TypeHelper {
 
+
+    private static final EnumMap<NativeType, TypeInfo> MAP;
+    private static final Map<Integer, TypeInfo> TYPE_INFOS;
+    private static final HashMap<Class<?>, TypeInfo> PRIMITIVE_MAP;
+
+    static final TypeInfo TYPE_POINTER;
+
+    static {
+        long[][] types = NativeMethods.getInstance().getTypes();
+        Map<Integer, TypeInfo> typeInfos = new HashMap<>(types.length * 3 / 4);
+        EnumMap<NativeType, TypeInfo> map = new EnumMap<>(NativeType.class);
+        HashMap<Class<?>, TypeInfo> primitiveMap = new HashMap<>(16);
+
+        add(types, NativeType.VOID, void.class, NativeMethods.TYPE_VOID, 0, typeInfos, map, primitiveMap);
+        add(types, NativeType.FLOAT, float.class, NativeMethods.TYPE_FLOAT, MASK_SIGNED | MASK_FLOATING, typeInfos, map, primitiveMap);
+        add(types, NativeType.DOUBLE, double.class, NativeMethods.TYPE_DOUBLE, MASK_SIGNED | MASK_FLOATING, typeInfos, map, primitiveMap);
+        add(types, NativeType.UINT8, null, NativeMethods.TYPE_UINT8, MASK_INTEGRAL, typeInfos, map, primitiveMap);
+        add(types, NativeType.SINT8, byte.class, NativeMethods.TYPE_SINT8, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
+        add(types, NativeType.UINT16, char.class, NativeMethods.TYPE_UINT16, MASK_INTEGRAL, typeInfos, map, primitiveMap);
+        add(types, NativeType.SINT16, short.class, NativeMethods.TYPE_SINT16, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
+        add(types, NativeType.UINT32, null, NativeMethods.TYPE_UINT32, MASK_INTEGRAL, typeInfos, map, primitiveMap);
+        add(types, NativeType.SINT32, int.class, NativeMethods.TYPE_SINT32, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
+        add(types, NativeType.UINT64, null, NativeMethods.TYPE_UINT64, MASK_INTEGRAL, typeInfos, map, primitiveMap);
+        add(types, NativeType.SINT64, long.class, NativeMethods.TYPE_SINT64, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
+        add(types, NativeType.ADDRESS, null, NativeMethods.TYPE_POINTER, MASK_INTEGRAL, typeInfos, map, primitiveMap);
+
+        MAP = map;
+        TYPE_INFOS = typeInfos;
+        PRIMITIVE_MAP = primitiveMap;
+
+        TYPE_POINTER = map.get(NativeType.ADDRESS);
+    }
     static Alias findByAlias(TypeAlias typeAlias) {
         Objects.requireNonNull(typeAlias, "type alias");
         return AliasMapHolder.find(typeAlias);
     }
 
+    private static void add(long[][] types, NativeType nativeType, Class<?> primaryClass, int type, int attr,
+                            Map<Integer, TypeInfo> typeInfos,
+                            Map<NativeType, TypeInfo> nativeTypeMap,
+                            Map<Class<?>, TypeInfo> primitiveMap) {
+        long[] arr = types[type];
+        long address = arr[0];
+        long info = arr[1];
+
+        TypeInfo typeInfo = new TypeInfo(address, info, attr);
+        nativeTypeMap.put(nativeType, typeInfo);
+        typeInfos.put(type, typeInfo);
+        if (primaryClass != null) {
+            primitiveMap.put(primaryClass, typeInfo);
+        }
+    }
+
+    static TypeInfo findByType(int type) {
+        TypeInfo ti = TYPE_INFOS.get(type);
+        if (ti == null) {
+            throw new IllegalArgumentException("unsupported type " + type);
+        }
+        return ti;
+    }
+
     static InternalType findByNativeType(NativeType nativeType) {
         Objects.requireNonNull(nativeType, "native type");
-        InternalType internalType = NativeMapHolder.MAP.get(nativeType);
+        InternalType internalType = MAP.get(nativeType);
         if (internalType == null) {
             throw new IllegalArgumentException("unsupported native type " + nativeType);
         }
         return internalType;
     }
 
-    static BuiltinType findByPrimaryType(Class<?> type) {
-        return PrimitivesMapHolder.getByType(type);
-    }
-
-    static TypeInfo getTypeInfo(int type) {
-        return TypesHolder.get(type);
-    }
-
-    private static class TypesHolder {
-
-        private static final TypeInfo[] TYPE_INFOS;
-
-        static {
-            long[][] types = NativeMethods.getInstance().getTypes();
-            int len = types.length;
-            TypeInfo[] typeInfos = new TypeInfo[len];
-            for (int i = 0; i < len; ++i) {
-                long[] arr = types[i];
-                if (arr != null) {
-                    long address = arr[0];
-                    long info = arr[1];
-                    typeInfos[i] = new TypeInfo(address, info);
-                }
-            }
-            TYPE_INFOS = typeInfos;
-        }
-
-        private static TypeInfo get(int type) {
-            try {
-                TypeInfo ti = TYPE_INFOS[type];
-                if (ti != null) {
-                    return ti;
-                }
-            } catch (IndexOutOfBoundsException ignored) {
-            }
-            throw new IllegalArgumentException("unsupported type " + type);
-        }
-
+    static InternalType findByPrimaryType(Class<?> type) {
+        return PRIMITIVE_MAP.get(Primitives.unwrap(type));
     }
 
     private static class AliasMapHolder {
@@ -72,17 +92,16 @@ class TypeHelper {
         private static final Map<TypeAlias, Alias> MAP;
 
         static {
-            Map<Integer, BuiltinType> builtinTypes = EnumSet.allOf(BuiltinType.class)
-                    .stream().collect(Collectors.toMap(BuiltinType::type, Function.identity()));
             HashMap<String, Integer> nativeAliasMap = new HashMap<>(50);
             NativeMethods.getInstance().initAlias(nativeAliasMap);
             EnumMap<TypeAlias, Alias> map = new EnumMap<>(TypeAlias.class);
             for (Map.Entry<String, Integer> entry : nativeAliasMap.entrySet()) {
                 String key = entry.getKey();
-                Integer value = entry.getValue();
+                int type = entry.getValue();
                 TypeAlias typeAlias = toTypeAlias(key);
                 if (typeAlias != null) {
-                    map.put(typeAlias, new Alias(typeAlias, builtinTypes.get(value)));
+                    TypeInfo typeInfo = TypeHelper.findByType(type);
+                    map.put(typeAlias, new Alias(typeAlias, typeInfo));
                 }
             }
             MAP = map;
@@ -109,41 +128,6 @@ class TypeHelper {
             }
             return alias;
         }
-    }
-
-    private static class PrimitivesMapHolder {
-
-        private static final Map<Class<?>, BuiltinType> MAP;
-
-        static {
-            Map<Class<?>, BuiltinType> map = new HashMap<>(16);
-            put(map, void.class, BuiltinType.VOID);
-            put(map, boolean.class, BuiltinType.UINT8);
-            put(map, byte.class, BuiltinType.SINT8);
-            put(map, short.class, BuiltinType.SINT16);
-            put(map, char.class, BuiltinType.UINT16);
-            put(map, int.class, BuiltinType.SINT32);
-            put(map, long.class, BuiltinType.SINT64);
-            put(map, float.class, BuiltinType.FLOAT);
-            put(map, double.class, BuiltinType.DOUBLE);
-            MAP = map;
-        }
-
-        private static void put(Map<Class<?>, BuiltinType> map, Class<?> klass, BuiltinType builtinType) {
-            map.put(klass, builtinType);
-        }
-
-        private static BuiltinType getByType(Class<?> type) {
-            return MAP.get(Primitives.unwrap(type));
-        }
-
-    }
-
-    private interface NativeMapHolder {
-
-        EnumMap<NativeType, InternalType> MAP = EnumSet.allOf(BuiltinType.class).stream()
-                .collect(Collectors.toMap(BuiltinType::getNativeType, Function.identity(),
-                        (a, b) -> b, () -> new EnumMap<>(NativeType.class)));
     }
 
 }

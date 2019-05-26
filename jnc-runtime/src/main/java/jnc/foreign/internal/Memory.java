@@ -18,83 +18,13 @@ abstract class Memory implements Pointer {
     }
 
     @Override
-    public final void putByte(int offset, byte value) {
-        putInt(offset, BuiltinType.SINT8, value);
-    }
-
-    @Override
-    public final void putChar(int offset, char value) {
-        putInt(offset, BuiltinType.UINT16, value);
-    }
-
-    @Override
-    public final void putShort(int offset, short value) {
-        putInt(offset, BuiltinType.SINT16, value);
-    }
-
-    @Override
-    public final void putInt(int offset, int value) {
-        putInt(offset, BuiltinType.SINT32, value);
-    }
-
-    @Override
-    public final void putLong(int offset, long value) {
-        putLong(offset, BuiltinType.SINT64, value);
-    }
-
-    @Override
-    public final void putFloat(int offset, float value) {
-        putFloat(offset, BuiltinType.FLOAT, value);
-    }
-
-    @Override
-    public final void putDouble(int offset, double value) {
-        putDouble(offset, BuiltinType.DOUBLE, value);
-    }
-
-    @Override
     public final void putAddress(int offset, long value) {
-        putLong(offset, BuiltinType.POINTER, value);
-    }
-
-    @Override
-    public final byte getByte(int offset) {
-        return (byte) getInt(offset, BuiltinType.SINT8);
-    }
-
-    @Override
-    public final short getShort(int offset) {
-        return (short) getInt(offset, BuiltinType.SINT16);
-    }
-
-    @Override
-    public final char getChar(int offset) {
-        return (char) getInt(offset, BuiltinType.UINT16);
-    }
-
-    @Override
-    public final int getInt(int offset) {
-        return getInt(offset, BuiltinType.SINT32);
-    }
-
-    @Override
-    public final long getLong(int offset) {
-        return getLong(offset, BuiltinType.SINT64);
-    }
-
-    @Override
-    public final float getFloat(int offset) {
-        return getFloat(offset, BuiltinType.FLOAT);
-    }
-
-    @Override
-    public final double getDouble(int offset) {
-        return getDouble(offset, BuiltinType.DOUBLE);
+        putLong(offset, TypeHelper.TYPE_POINTER, value);
     }
 
     @Override
     public final long getAddress(int offset) {
-        return getLong(offset, BuiltinType.POINTER);
+        return getLong(offset, TypeHelper.TYPE_POINTER);
     }
 
     private InternalType toInternalType(Type type) {

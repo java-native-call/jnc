@@ -15,4 +15,11 @@ interface InternalType extends Type, NativeObject {
     @Override
     long address();
 
+    // for testing
+    boolean isSigned();
+
+    boolean isFloatingPoint();
+
+    boolean isIntegral();
+
 }

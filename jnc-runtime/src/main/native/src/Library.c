@@ -16,10 +16,28 @@
 #define DLOPEN_PARAM_TYPE LPWSTR
 #endif /* WCHAR_MAX != UINT16_MAX */
 
+#define SIG_STRING "L" JAVA_LANG_STR(String) ";"
+
+#define throwByNameA(key, sig, env, name, value)                            \
+do {                                                                        \
+    jclass jc_ = CALLJNI(env, FindClass, name);                             \
+    if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
+    jmethodID _jm = CALLJNI(env, GetMethodID, jc_, "<init>", "(" sig ")V"); \
+    if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
+    jvalue jv_;                                                             \
+    jv_.key = value;                                                        \
+    jobject jo_ = CALLJNI(env, NewObjectA, jc_, _jm, &jv_);                 \
+    if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
+    CALLJNI(env, Throw, jo_);                                               \
+    CALLJNI(env, DeleteLocalRef, jo_);                                      \
+    CALLJNI(env, DeleteLocalRef, jc_);                                      \
+} while(false)
+#define throwByNameS(...) throwByNameA(l, SIG_STRING, __VA_ARGS__)
+
 static void throwByLastError(JNIEnv * env, const char * type) {
     DWORD dw = GetLastError();
     LPWSTR lpMsgBuf = NULL;
-    FormatMessageW(
+    if (unlikely(!FormatMessageW(
             FORMAT_MESSAGE_ALLOCATE_BUFFER |
             FORMAT_MESSAGE_FROM_SYSTEM |
             FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -27,14 +45,18 @@ static void throwByLastError(JNIEnv * env, const char * type) {
             dw,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
             (LPWSTR) & lpMsgBuf,
-            0, NULL);
-    checkOutOfMemory(env, lpMsgBuf, /*void*/);
+            0, NULL))) {
+        throwByName(env, OutOfMemory, NULL);
+        return;
+    }
+    // trust system call return value
+    // assume lpMsgBuf is not NULL
     size_t len = wcslen(lpMsgBuf);
     if (likely(len > 0 && lpMsgBuf[len - 1] == '\n'))--len;
     if (likely(len > 0 && lpMsgBuf[len - 1] == '\r'))--len;
     jstring string = CALLJNI(env, NewString, (jchar*) lpMsgBuf, len);
     LocalFree(lpMsgBuf);
-    if (CALLJNI(env, ExceptionCheck)) return;
+    if (unlikely(CALLJNI(env, ExceptionCheck))) return;
     throwByNameS(env, type, string);
 }
 

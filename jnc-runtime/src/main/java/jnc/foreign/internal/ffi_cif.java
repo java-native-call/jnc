@@ -24,7 +24,7 @@ class ffi_cif implements NativeObject {
     ffi_cif(CallingMode callingMode, InternalType resultType, InternalType... params) {
         int count = params.length;
         int size = 0;
-        int pointerSize = BuiltinType.POINTER.size();
+        int pointerSize = TypeHelper.TYPE_POINTER.size();
         int alignment = pointerSize;
         long[] offs = new long[count];
         for (int i = 0; i < count; ++i) {

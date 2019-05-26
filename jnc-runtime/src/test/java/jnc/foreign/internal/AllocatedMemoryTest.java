@@ -16,21 +16,25 @@ public class AllocatedMemoryTest {
             AllocatedMemory.allocate(-1);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException ex) {
+            // ok
         }
         try {
             AllocatedMemory.allocate(-1, 1);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException ex) {
+            // ok
         }
         try {
             AllocatedMemory.allocate(1, -1);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException ex) {
+            // ok
         }
         try {
             AllocatedMemory.allocate(-1, -1);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException ex) {
+            // ok
         }
         AllocatedMemory.allocate(0, 0);
     }
@@ -41,11 +45,13 @@ public class AllocatedMemoryTest {
             AllocatedMemory.allocate(Long.MAX_VALUE);
             fail("should throw OutOfMemoryError");
         } catch (OutOfMemoryError ex) {
+            // ok
         }
         try {
             AllocatedMemory.allocate(Integer.MAX_VALUE, Integer.MAX_VALUE);
             fail("should throw OutOfMemoryError");
         } catch (OutOfMemoryError ex) {
+            // ok
         }
     }
 

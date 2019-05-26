@@ -29,6 +29,76 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
     }
 
     @Override
+    public final void putByte(int offset, byte value) {
+        getMemoryAccessor().putByte(offset, value);
+    }
+
+    @Override
+    public final void putChar(int offset, char value) {
+        getMemoryAccessor().putShort(offset, (short) value);
+    }
+
+    @Override
+    public final void putShort(int offset, short value) {
+        getMemoryAccessor().putShort(offset, value);
+    }
+
+    @Override
+    public final void putInt(int offset, int value) {
+        getMemoryAccessor().putInt(offset, value);
+    }
+
+    @Override
+    public final void putLong(int offset, long value) {
+        getMemoryAccessor().putLong(offset, value);
+    }
+
+    @Override
+    public final void putFloat(int offset, float value) {
+        getMemoryAccessor().putFloat(offset, value);
+    }
+
+    @Override
+    public final void putDouble(int offset, double value) {
+        getMemoryAccessor().putDouble(offset, value);
+    }
+
+    @Override
+    public final byte getByte(int offset) {
+        return getMemoryAccessor().getByte(offset);
+    }
+
+    @Override
+    public final short getShort(int offset) {
+        return getMemoryAccessor().getShort(offset);
+    }
+
+    @Override
+    public final char getChar(int offset) {
+        return (char) getMemoryAccessor().getShort(offset);
+    }
+
+    @Override
+    public final int getInt(int offset) {
+        return getMemoryAccessor().getInt(offset);
+    }
+
+    @Override
+    public final long getLong(int offset) {
+        return getMemoryAccessor().getLong(offset);
+    }
+
+    @Override
+    public final float getFloat(int offset) {
+        return getMemoryAccessor().getFloat(offset);
+    }
+
+    @Override
+    public final double getDouble(int offset) {
+        return getMemoryAccessor().getDouble(offset);
+    }
+
+    @Override
     void putBoolean(int offset, InternalType internalType, boolean value) {
         getMemoryAccessor().putBoolean(offset, internalType, value);
     }

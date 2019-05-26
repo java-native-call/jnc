@@ -50,6 +50,7 @@ public class SizedDirectMemoryTest {
             instance.getByte(8);
             fail("should throw IndexOutOfBoundsException");
         } catch (IndexOutOfBoundsException ex) {
+            // ok
         }
     }
 

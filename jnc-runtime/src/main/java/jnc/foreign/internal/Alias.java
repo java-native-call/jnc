@@ -5,35 +5,46 @@ import jnc.foreign.enums.TypeAlias;
 class Alias implements InternalType {
 
     private final TypeAlias typeAlias;
-    private final BuiltinType delegate;
+    private final TypeInfo typeInfo;
 
-    Alias(TypeAlias typeAlias, BuiltinType delegate) {
+    Alias(TypeAlias typeAlias, TypeInfo typeInfo) {
         this.typeAlias = typeAlias;
-        this.delegate = delegate;
+        this.typeInfo = typeInfo;
     }
 
     @Override
     public long address() {
-        return delegate.address();
+        return typeInfo.address();
     }
 
     @Override
     public int size() {
-        return delegate.size();
+        return typeInfo.size();
     }
 
     @Override
     public int alignment() {
-        return delegate.alignment();
+        return typeInfo.alignment();
     }
 
     @Override
     public int type() {
-        return delegate.type();
+        return typeInfo.type();
     }
 
-    boolean isSigned() {
-        return delegate.isSigned();
+    @Override
+    public boolean isFloatingPoint() {
+        return typeInfo.isFloatingPoint();
+    }
+
+    @Override
+    public boolean isIntegral() {
+        return typeInfo.isIntegral();
+    }
+
+    @Override
+    public boolean isSigned() {
+        return typeInfo.isSigned();
     }
 
     public TypeAlias getTypeAlias() {
@@ -42,7 +53,7 @@ class Alias implements InternalType {
 
     @Override
     public String toString() {
-        return "Alias(" + typeAlias + ",target=" + delegate + ")";
+        return "Alias(" + typeAlias + ",target=" + typeInfo + ")";
     }
 
 }

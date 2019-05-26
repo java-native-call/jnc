@@ -14,8 +14,8 @@ enum ByReferenceTypeHandler implements InternalTypeHandler<ByReference> {
     }
 
     @Override
-    public BuiltinType getInternalType() {
-        return BuiltinType.POINTER;
+    public InternalType getInternalType() {
+        return TypeHelper.TYPE_POINTER;
     }
 
     @Override

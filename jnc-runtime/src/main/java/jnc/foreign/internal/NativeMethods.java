@@ -175,6 +175,30 @@ class NativeMethods {
 
     native int getJniVersion();
 
+    native byte getRawByte(long address);
+
+    native void putRawByte(long address, byte value);
+
+    native short getRawShort(long address);
+
+    native void putRawShort(long address, short value);
+
+    native int getRawInt(long address);
+
+    native void putRawInt(long address, int value);
+
+    native long getRawLong(long address);
+
+    native void putRawLong(long address, long value);
+
+    native float getRawFloat(long address);
+
+    native void putRawFloat(long address, float value);
+
+    native double getRawDouble(long address);
+
+    native void putRawDouble(long address, double value);
+
     native void putInt(long address, long type, int value);
 
     native void putLong(long address, long type, long value);

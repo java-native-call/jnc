@@ -30,6 +30,90 @@ class SizedDirectMemory extends Memory {
     }
 
     @Override
+    public final void putByte(int offset, byte value) {
+        getMemoryAccessor().checkIndex(offset, size, Byte.BYTES)
+                .putByte(offset, value);
+    }
+
+    @Override
+    public final void putChar(int offset, char value) {
+        getMemoryAccessor().checkIndex(offset, size, Character.BYTES)
+                .putShort(offset, (short) value);
+    }
+
+    @Override
+    public final void putShort(int offset, short value) {
+        getMemoryAccessor().checkIndex(offset, size, Short.BYTES)
+                .putShort(offset, value);
+    }
+
+    @Override
+    public final void putInt(int offset, int value) {
+        getMemoryAccessor().checkIndex(offset, size, Integer.BYTES)
+                .putInt(offset, value);
+    }
+
+    @Override
+    public final void putLong(int offset, long value) {
+        getMemoryAccessor().checkIndex(offset, size, Long.BYTES)
+                .putLong(offset, value);
+    }
+
+    @Override
+    public final void putFloat(int offset, float value) {
+        getMemoryAccessor().checkIndex(offset, size, Float.BYTES)
+                .putFloat(offset, value);
+    }
+
+    @Override
+    public final void putDouble(int offset, double value) {
+        getMemoryAccessor().checkIndex(offset, size, Double.BYTES)
+                .putDouble(offset, value);
+    }
+
+    @Override
+    public final byte getByte(int offset) {
+        return getMemoryAccessor().checkIndex(offset, size, Byte.BYTES)
+                .getByte(offset);
+    }
+
+    @Override
+    public final short getShort(int offset) {
+        return getMemoryAccessor().checkIndex(offset, size, Short.BYTES)
+                .getShort(offset);
+    }
+
+    @Override
+    public final char getChar(int offset) {
+        return (char) getMemoryAccessor().checkIndex(offset, size, Character.BYTES)
+                .getShort(offset);
+    }
+
+    @Override
+    public final int getInt(int offset) {
+        return getMemoryAccessor().checkIndex(offset, size, Integer.BYTES)
+                .getInt(offset);
+    }
+
+    @Override
+    public final long getLong(int offset) {
+        return getMemoryAccessor().checkIndex(offset, size, Long.BYTES)
+                .getLong(offset);
+    }
+
+    @Override
+    public final float getFloat(int offset) {
+        return getMemoryAccessor().checkIndex(offset, size, Float.BYTES)
+                .getFloat(offset);
+    }
+
+    @Override
+    public final double getDouble(int offset) {
+        return getMemoryAccessor().checkIndex(offset, size, Double.BYTES)
+                .getDouble(offset);
+    }
+
+    @Override
     final void putDouble(int offset, InternalType internalType, double value) {
         getMemoryAccessor().checkIndex(offset, size, internalType.size())
                 .putDouble(offset, internalType, value);
@@ -181,15 +265,16 @@ class SizedDirectMemory extends Memory {
         MemoryAccessor ma = getMemoryAccessor();
         ma.checkIndex(offset, size, len + 1)
                 // call ma.put* without range check
-                .putInt(offset + len, BuiltinType.SINT8, 0);
+                .putByte(offset + len, (byte) 0);
         ma.putBytes(offset, bytes, 0, len);
     }
 
     @Nonnull
     @Override
     public final String getStringUTF(int offset) {
-        return getMemoryAccessor().checkIndex(offset, size, 1)
-                .getStringUTFN(getMemoryAccessor().address() + offset, size);
+        MemoryAccessor ma = getMemoryAccessor();
+        return ma.checkIndex(offset, size, 1)
+                .getStringUTFN(ma.address() + offset, size);
     }
 
     @Override
@@ -201,8 +286,9 @@ class SizedDirectMemory extends Memory {
     @Nonnull
     @Override
     public final String getString16(int offset) {
-        return getMemoryAccessor().checkIndex(offset, size, Character.BYTES)
-                .getStringChar16N(getMemoryAccessor().address() + offset, size);
+        MemoryAccessor ma = getMemoryAccessor();
+        return ma.checkIndex(offset, size, Character.BYTES)
+                .getStringChar16N(ma.address() + offset, size);
     }
 
     @Nonnull

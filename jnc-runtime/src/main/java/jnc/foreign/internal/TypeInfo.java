@@ -19,30 +19,55 @@ package jnc.foreign.internal;
  *
  * @author zhanhb
  */
-class TypeInfo {
+class TypeInfo implements InternalType {
+
+    static final int MASK_SIGNED = 1;
+    static final int MASK_INTEGRAL = 2;
+    static final int MASK_FLOATING = 4;
 
     private final long address;
     private final long info;
+    private final int attr;
 
-    TypeInfo(long address, long info) {
+    TypeInfo(long address, long info, int attr) {
         this.address = address;
         this.info = info;
+        this.attr = attr;
     }
 
-    final long address() {
+    @Override
+    public final long address() {
         return address;
     }
 
-    final int size() {
+    @Override
+    public final int size() {
         return (int) (info >>> 32);
     }
 
-    final int alignment() {
+    @Override
+    public final int alignment() {
         return (int) (info >> 16) & 0xFFFF;
     }
 
-    final int type() {
+    @Override
+    public final int type() {
         return (int) info & 0xFFFF;
+    }
+
+    @Override
+    public final boolean isSigned() {
+        return (attr & MASK_SIGNED) != 0;
+    }
+
+    @Override
+    public final boolean isFloatingPoint() {
+        return (attr & MASK_FLOATING) != 0;
+    }
+
+    @Override
+    public final boolean isIntegral() {
+        return (attr & MASK_INTEGRAL) != 0;
     }
 
 }

@@ -13,7 +13,7 @@ class TypeHandlers {
 
     static InternalType findReturnType(Class<?> returnType, Typedef annotation) {
         if (Pointer.class == returnType) {
-            return BuiltinType.POINTER;
+            return TypeHelper.TYPE_POINTER;
         } else if (annotation != null) {
             return TypeHelper.findByAlias(annotation.value());
         } else {
@@ -23,15 +23,15 @@ class TypeHandlers {
 
     static InternalType findParameterType(Class<?> parameterType, Typedef annotation) {
         if (Struct.class.isAssignableFrom(parameterType) || Pointer.class.isAssignableFrom(parameterType)) {
-            return BuiltinType.POINTER;
+            return TypeHelper.TYPE_POINTER;
         } else if (parameterType.isArray() && parameterType.getComponentType().isPrimitive()) {
-            return BuiltinType.POINTER;
+            return TypeHelper.TYPE_POINTER;
         } else if (ByReference.class.isAssignableFrom(parameterType)) {
-            return BuiltinType.POINTER;
+            return TypeHelper.TYPE_POINTER;
         } else if (annotation != null) {
             return TypeHelper.findByAlias(annotation.value());
         } else if (Void.class == parameterType) {
-            return BuiltinType.POINTER;
+            return TypeHelper.TYPE_POINTER;
         } else {
             return findType(parameterType);
         }

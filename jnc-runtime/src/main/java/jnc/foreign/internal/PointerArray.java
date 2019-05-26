@@ -5,7 +5,7 @@ class PointerArray implements NativeObject {
     private final static int SHIFT;
 
     static {
-        int size = BuiltinType.POINTER.size();
+        int size = TypeHelper.TYPE_POINTER.size();
         if (Integer.bitCount(size) != 1) {
             throw new AssertionError("Illegal pointer size");
         }

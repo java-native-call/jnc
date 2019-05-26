@@ -10,61 +10,6 @@
 #include <wchar.h>
 #include "exception.h"
 
-#define SIG_STRING              "L" JAVA_LANG_STR(String) ";"
-
-#define PP_THIRD_ARG(a, b, c, ...) c
-#define VA_OPT_SUPPORTED_I(...) PP_THIRD_ARG(__VA_OPT__(,),true,false,)
-#define VA_OPT_SUPPORTED VA_OPT_SUPPORTED_I(?)
-
-#ifdef __cplusplus
-#define CALLJNI(env, action, ...) env->action(__VA_ARGS__)
-#elif VA_OPT_SUPPORTED
-#define CALLJNI(env, action, ...) (*env)->action(env __VA_OPT__(,) __VA_ARGS__)
-#else
-#define CALLJNI(env, action, ...) (*env)->action(env, ##__VA_ARGS__)
-#endif
-
-#define throwByName(env, name, msg)                    \
-do {                                                   \
-    jclass jc_ = CALLJNI(env, FindClass, name);        \
-    if (unlikely(CALLJNI(env, ExceptionCheck))) break; \
-    CALLJNI(env, ThrowNew, jc_, msg);                  \
-    CALLJNI(env, DeleteLocalRef, jc_);                 \
-} while(false)
-#define throwByNameA(key, sig, env, name, value)                            \
-do {                                                                        \
-    jclass jc_ = CALLJNI(env, FindClass, name);                             \
-    if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
-    jmethodID _jm = CALLJNI(env, GetMethodID, jc_, "<init>", "(" sig ")V"); \
-    if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
-    jvalue jv_;                                                             \
-    jv_.key = value;                                                        \
-    jobject jo_ = CALLJNI(env, NewObjectA, jc_, _jm, &jv_);                 \
-    if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
-    CALLJNI(env, Throw, jo_);                                               \
-    CALLJNI(env, DeleteLocalRef, jo_);                                      \
-    CALLJNI(env, DeleteLocalRef, jc_);                                      \
-} while(false)
-#define throwByNameS(...) throwByNameA(l, SIG_STRING, __VA_ARGS__)
-#define checkError(type, env, name, ret)    \
-do {                                        \
-    if (unlikely(NULL == name)) {           \
-        throwByName(env, type, NULL);       \
-        return ret;                         \
-    }                                       \
-} while(false)
-
-#define checkIllegalArgument(env, condition, ret)       \
-do {                                                    \
-    if (unlikely(!(condition))) {                       \
-        throwByName(env, IllegalArgument, #condition);  \
-        return ret;                                     \
-    }                                                   \
-} while(false)
-
-#define checkNullPointer(...)   checkError(NullPointer, __VA_ARGS__)
-#define checkOutOfMemory(...)   checkError(OutOfMemory, __VA_ARGS__)
-
 /* GetStringChars is not guaranteed to be null terminated
    especially on old jdk */
 #define DO_WITH_STRING_16(env, jstring, name, length, stat, ret)      \
@@ -111,14 +56,6 @@ do {                                                              \
 #define j2vp(x) j2c(x, void)
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
-
-#ifdef __GNUC__
-#define likely(x) __builtin_expect(!!(x), 1)
-#define unlikely(x) __builtin_expect(!!(x), 0)
-#else
-#define likely(x) (x)
-#define unlikely(x) (x)
-#endif
 
 #define JNC_TYPE(type) jnc_foreign_internal_NativeMethods_TYPE_##type
 #define CHECK_JNC_FFI(type) (JNC_TYPE(type) != FFI_TYPE_##type)

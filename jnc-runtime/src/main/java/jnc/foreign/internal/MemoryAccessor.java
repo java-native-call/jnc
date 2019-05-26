@@ -38,6 +38,54 @@ final class MemoryAccessor {
         return address;
     }
 
+    byte getByte(int offset) {
+        return nm.getRawByte(address + offset);
+    }
+
+    void putByte(int offset, byte value) {
+        nm.putRawByte(address + offset, value);
+    }
+
+    short getShort(int offset) {
+        return nm.getRawShort(address + offset);
+    }
+
+    void putShort(int offset, short value) {
+        nm.putRawShort(address + offset, value);
+    }
+
+    int getInt(int offset) {
+        return nm.getRawInt(address + offset);
+    }
+
+    void putInt(int offset, int value) {
+        nm.putRawInt(address + offset, value);
+    }
+
+    long getLong(int offset) {
+        return nm.getRawLong(address + offset);
+    }
+
+    void putLong(int offset, long value) {
+        nm.putRawLong(address + offset, value);
+    }
+
+    float getFloat(int offset) {
+        return nm.getRawFloat(address + offset);
+    }
+
+    void putFloat(int offset, float value) {
+        nm.putRawFloat(address + offset, value);
+    }
+
+    double getDouble(int offset) {
+        return nm.getRawDouble(address + offset);
+    }
+
+    void putDouble(int offset, double value) {
+        nm.putRawDouble(address + offset, value);
+    }
+
     void putBoolean(int offset, InternalType internalType, boolean value) {
         nm.putInt(address + offset, internalType.address(), value ? 0 : 1);
     }
