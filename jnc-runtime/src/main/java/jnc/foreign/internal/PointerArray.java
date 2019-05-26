@@ -28,11 +28,11 @@ class PointerArray implements NativeObject {
         }
     }
 
-    static PointerArray wrap(DirectMemory directMemory, int length) {
-        return new PointerArray(directMemory, length);
+    static PointerArray wrap(Memory memory, int length) {
+        return new PointerArray(memory, length);
     }
 
-    private final DirectMemory memory;
+    private final Memory memory;
     private final int length;
 
     private PointerArray(int length) {
@@ -40,7 +40,7 @@ class PointerArray implements NativeObject {
         this.length = length;
     }
 
-    private PointerArray(DirectMemory memory, int length) {
+    private PointerArray(Memory memory, int length) {
         this.memory = memory;
         this.length = length;
     }

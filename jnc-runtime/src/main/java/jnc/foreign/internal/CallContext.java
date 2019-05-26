@@ -15,7 +15,7 @@ class CallContext implements NativeObject {
 
     CallContext(int parameterSize, int parameterAlign, long base, long[] offsets, PointerArray types) {
         int count = offsets.length;
-        DirectMemory p = AllocatedMemory.allocate(parameterSize, parameterAlign);
+        Memory p = AllocatedMemory.allocate(parameterSize, parameterAlign);
         PointerArray v = PointerArray.wrap(p, count);
         PointerArray.init(v, p.address() + base, offsets);
         this.types = types;

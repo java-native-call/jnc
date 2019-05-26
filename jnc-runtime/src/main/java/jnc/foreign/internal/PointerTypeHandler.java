@@ -15,7 +15,7 @@ enum PointerTypeHandler implements InternalTypeHandler<Pointer> {
     @Override
     public Invoker<Pointer> getInvoker() {
         return (long cif, long function, long avalues)
-                -> DirectMemory.of(NativeMethods.getInstance().invokeLong(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID));
+                -> UnboundedDirectMemory.of(NativeMethods.getInstance().invokeLong(cif, function, avalues, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID));
     }
 
     @Override

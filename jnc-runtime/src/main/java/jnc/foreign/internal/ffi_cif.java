@@ -14,7 +14,7 @@ class ffi_cif implements NativeObject {
         return NativeMethods.CONVENTION_DEFAULT;
     }
 
-    private final DirectMemory ffi_cif;
+    private final Memory ffi_cif;
     private final PointerArray argumentTypes;
     private final long base;
     private final long[] offsets;
@@ -36,7 +36,7 @@ class ffi_cif implements NativeObject {
             size += param.size();
         }
         size = Aligns.alignUp(size, alignment);
-        DirectMemory cif = AllocatedMemory.allocate(1, SIZE_OF_FFI_CIF);
+        Memory cif = AllocatedMemory.allocate(1, SIZE_OF_FFI_CIF);
         PointerArray atypes = PointerArray.allocate(params);
         int offset = Aligns.alignUp(count * pointerSize, alignment);
         nm.prepareInvoke(cif.address(), convention(callingMode), count, resultType.address(), atypes.address());

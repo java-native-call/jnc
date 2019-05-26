@@ -2,20 +2,22 @@ package jnc.foreign.internal;
 
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
-import jnc.foreign.Pointer;
 
-class SizedDirectMemory extends DirectMemory {
-
-    private static final NativeMethods nm = NativeMethods.getInstance();
+class SizedDirectMemory extends Memory {
 
     private final long size;
 
     SizedDirectMemory(long address, long size) {
-        super(address);
+        super(new MemoryAccessor(address));
         this.size = size;
     }
 
-    public long size() {
+    @Override
+    public final long address() {
+        return getMemoryAccessor().address();
+    }
+
+    public final long size() {
         return size;
     }
 
@@ -23,205 +25,191 @@ class SizedDirectMemory extends DirectMemory {
      * Do not rely on the String presentation, maybe changed in the future.
      */
     @Override
-    public String toString() {
+    public final String toString() {
         return "[" + getClass().getSimpleName() + "#" + Long.toHexString(address()) + ",size=" + size + "]";
     }
 
-    void checkIndex(int offset, int len) {
-        if (offset < 0 || offset > this.size - len) {
-            throw new IndexOutOfBoundsException();
-        }
-    }
-
-    private void checkIndex(int offset, int len, int size) {
-        if (offset < 0 || offset > this.size - (long) len * size) {
-            throw new IndexOutOfBoundsException();
-        }
+    @Override
+    final void putDouble(int offset, InternalType internalType, double value) {
+        getMemoryAccessor().checkIndex(offset, size, internalType.size())
+                .putDouble(offset, internalType, value);
     }
 
     @Override
-    void putDouble(int offset, InternalType internalType, double value) {
-        checkIndex(offset, internalType.size());
-        super.putDouble(offset, internalType, value);
+    final void putFloat(int offset, InternalType internalType, float value) {
+        getMemoryAccessor().checkIndex(offset, size, internalType.size())
+                .putFloat(offset, internalType, value);
     }
 
     @Override
-    void putFloat(int offset, InternalType internalType, float value) {
-        checkIndex(offset, internalType.size());
-        super.putFloat(offset, internalType, value);
+    final void putBoolean(int offset, InternalType internalType, boolean value) {
+        getMemoryAccessor().checkIndex(offset, size, internalType.size())
+                .putBoolean(offset, internalType, value);
     }
 
     @Override
-    void putBoolean(int offset, InternalType internalType, boolean value) {
-        checkIndex(offset, internalType.size());
-        super.putBoolean(offset, internalType, value);
+    final void putInt(int offset, InternalType internalType, int value) {
+        getMemoryAccessor().checkIndex(offset, size, internalType.size())
+                .putInt(offset, internalType, value);
     }
 
     @Override
-    void putInt(int offset, InternalType internalType, int value) {
-        checkIndex(offset, internalType.size());
-        super.putInt(offset, internalType, value);
+    final void putLong(int offset, InternalType internalType, long value) {
+        getMemoryAccessor().checkIndex(offset, size, internalType.size())
+                .putLong(offset, internalType, value);
     }
 
     @Override
-    void putLong(int offset, InternalType internalType, long value) {
-        checkIndex(offset, internalType.size());
-        super.putLong(offset, internalType, value);
+    final double getDouble(int offset, InternalType internalType) {
+        return getMemoryAccessor().checkIndex(offset, size, internalType.size())
+                .getDouble(offset, internalType);
     }
 
     @Override
-    double getDouble(int offset, InternalType internalType) {
-        checkIndex(offset, internalType.size());
-        return super.getDouble(offset, internalType);
+    final float getFloat(int offset, InternalType internalType) {
+        return getMemoryAccessor().checkIndex(offset, size, internalType.size())
+                .getFloat(offset, internalType);
     }
 
     @Override
-    float getFloat(int offset, InternalType internalType) {
-        checkIndex(offset, internalType.size());
-        return super.getFloat(offset, internalType);
+    final long getLong(int offset, InternalType internalType) {
+        return getMemoryAccessor().checkIndex(offset, size, internalType.size())
+                .getLong(offset, internalType);
     }
 
     @Override
-    long getLong(int offset, InternalType internalType) {
-        checkIndex(offset, internalType.size());
-        return super.getLong(offset, internalType);
+    final int getInt(int offset, InternalType internalType) {
+        return getMemoryAccessor().checkIndex(offset, size, internalType.size())
+                .getInt(offset, internalType);
     }
 
     @Override
-    int getInt(int offset, InternalType internalType) {
-        checkIndex(offset, internalType.size());
-        return super.getInt(offset, internalType);
+    final boolean getBoolean(int offset, InternalType internalType) {
+        return getMemoryAccessor().checkIndex(offset, size, internalType.size())
+                .getBoolean(offset, internalType);
     }
 
     @Override
-    boolean getBoolean(int offset, InternalType internalType) {
-        checkIndex(offset, internalType.size());
-        return super.getBoolean(offset, internalType);
+    public final void putBytes(int offset, byte[] bytes, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len)
+                .putBytes(offset, bytes, off, len);
     }
 
     @Override
-    public void putBytes(int offset, byte[] bytes, int off, int len) {
-        checkIndex(offset, len);
-        super.putBytes(offset, bytes, off, len);
+    public final void getBytes(int offset, byte[] bytes, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len)
+                .getBytes(offset, bytes, off, len);
     }
 
     @Override
-    public void getBytes(int offset, byte[] bytes, int off, int len) {
-        checkIndex(offset, len);
-        super.getBytes(offset, bytes, off, len);
+    public final void getShortArray(int offset, short[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Short.BYTES)
+                .getShortArray(offset, array, off, len);
     }
 
     @Override
-    public void getShortArray(int offset, short[] array, int off, int len) {
-        checkIndex(offset, len, Short.BYTES);
-        super.getShortArray(offset, array, off, len);
+    public final void putShortArray(int offset, short[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Short.BYTES)
+                .putShortArray(offset, array, off, len);
     }
 
     @Override
-    public void putShortArray(int offset, short[] array, int off, int len) {
-        checkIndex(offset, len, Short.BYTES);
-        super.putShortArray(offset, array, off, len);
+    public final void putCharArray(int offset, char[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Character.BYTES)
+                .putCharArray(offset, array, off, len);
     }
 
     @Override
-    public void putCharArray(int offset, char[] array, int off, int len) {
-        checkIndex(offset, len, Character.BYTES);
-        super.putCharArray(offset, array, off, len);
+    public final void getCharArray(int offset, char[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Character.BYTES)
+                .getCharArray(offset, array, off, len);
     }
 
     @Override
-    public void getCharArray(int offset, char[] array, int off, int len) {
-        checkIndex(offset, len, Character.BYTES);
-        super.getCharArray(offset, array, off, len);
+    public final void putIntArray(int offset, int[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Integer.BYTES)
+                .putIntArray(offset, array, off, len);
     }
 
     @Override
-    public void putIntArray(int offset, int[] array, int off, int len) {
-        checkIndex(offset, len, Integer.BYTES);
-        super.putIntArray(offset, array, off, len);
+    public final void getIntArray(int offset, int[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Integer.BYTES)
+                .getIntArray(offset, array, off, len);
     }
 
     @Override
-    public void getIntArray(int offset, int[] array, int off, int len) {
-        checkIndex(offset, len, Integer.BYTES);
-        super.getIntArray(offset, array, off, len);
+    public final void putLongArray(int offset, long[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Long.BYTES)
+                .putLongArray(offset, array, off, len);
     }
 
     @Override
-    public void putLongArray(int offset, long[] array, int off, int len) {
-        checkIndex(offset, len, Long.BYTES);
-        super.putLongArray(offset, array, off, len);
+    public final void getLongArray(int offset, long[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Long.BYTES)
+                .getLongArray(offset, array, off, len);
     }
 
     @Override
-    public void getLongArray(int offset, long[] array, int off, int len) {
-        checkIndex(offset, len, Long.BYTES);
-        super.getLongArray(offset, array, off, len);
+    public final void putFloatArray(int offset, float[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Float.BYTES)
+                .putFloatArray(offset, array, off, len);
     }
 
     @Override
-    public void putFloatArray(int offset, float[] array, int off, int len) {
-        checkIndex(offset, len, Float.BYTES);
-        super.putFloatArray(offset, array, off, len);
+    public final void getFloatArray(int offset, float[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Float.BYTES)
+                .getFloatArray(offset, array, off, len);
     }
 
     @Override
-    public void getFloatArray(int offset, float[] array, int off, int len) {
-        checkIndex(offset, len, Float.BYTES);
-        super.getFloatArray(offset, array, off, len);
+    public final void putDoubleArray(int offset, double[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Double.BYTES)
+                .putDoubleArray(offset, array, off, len);
     }
 
     @Override
-    public void putDoubleArray(int offset, double[] array, int off, int len) {
-        checkIndex(offset, len, Double.BYTES);
-        super.putDoubleArray(offset, array, off, len);
+    public final void getDoubleArray(int offset, double[] array, int off, int len) {
+        getMemoryAccessor().checkIndex(offset, size, len, Double.BYTES)
+                .getDoubleArray(offset, array, off, len);
     }
 
     @Override
-    public void getDoubleArray(int offset, double[] array, int off, int len) {
-        checkIndex(offset, len, Double.BYTES);
-        super.getDoubleArray(offset, array, off, len);
-    }
-
-    @Override
-    public void putStringUTF(int offset, @Nonnull String value) {
+    public final void putStringUTF(int offset, @Nonnull String value) {
         byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
         int len = bytes.length;
         // we must check for offset might be negative
-        checkIndex(offset, len + 1);
-        // call super.put* without range check
-        super.putInt(offset + len, BuiltinType.SINT8, 0);
-        super.putBytes(offset, bytes, 0, len);
+        MemoryAccessor ma = getMemoryAccessor();
+        ma.checkIndex(offset, size, len + 1)
+                // call ma.put* without range check
+                .putInt(offset + len, BuiltinType.SINT8, 0);
+        ma.putBytes(offset, bytes, 0, len);
     }
 
     @Nonnull
     @Override
-    public String getStringUTF(int offset) {
-        checkIndex(offset, 1);
-        return nm.getStringUTFN(address() + offset, size);
+    public final String getStringUTF(int offset) {
+        return getMemoryAccessor().checkIndex(offset, size, 1)
+                .getStringUTFN(getMemoryAccessor().address() + offset, size);
     }
 
     @Override
-    public void putString16(int offset, @Nonnull String value) {
-        checkIndex(offset, value.length() + 1, Character.BYTES);
-        super.putString16(offset, value);
-    }
-
-    @Nonnull
-    @Override
-    public String getString16(int offset) {
-        checkIndex(offset, Character.BYTES);
-        return nm.getStringChar16N(address() + offset, size);
+    public final void putString16(int offset, @Nonnull String value) {
+        getMemoryAccessor().checkIndex(offset, size, value.length() + 1, Character.BYTES)
+                .putString16(offset, value);
     }
 
     @Nonnull
     @Override
-    public Pointer slice(int offset, int size) {
-        if (size < 0) {
-            throw new IllegalArgumentException();
-        }
-        checkIndex(offset, size);
-        return new Slice(this, offset, size);
+    public final String getString16(int offset) {
+        return getMemoryAccessor().checkIndex(offset, size, Character.BYTES)
+                .getStringChar16N(getMemoryAccessor().address() + offset, size);
+    }
+
+    @Nonnull
+    @Override
+    public Slice slice(int offset, int count) {
+        getMemoryAccessor().checkIndex(offset, size, count);
+        return new Slice(this, offset, count);
     }
 
 }

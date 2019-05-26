@@ -104,7 +104,7 @@ public class NativeMethodsTest {
 
     @Test
     public void testStringUTF() {
-        DirectMemory hello = AllocatedMemory.allocate(10);
+        Memory hello = AllocatedMemory.allocate(10);
         String str = "hello!123";
         hello.putStringUTF(0, str);
         assertEquals(str, hello.getStringUTF(0));

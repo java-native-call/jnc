@@ -115,6 +115,6 @@ public interface Pointer {
     void putPointer(int offset, @Nullable Pointer pointer);
 
     @Nonnull
-    Pointer slice(int offset, int size);
+    Pointer slice(int offset, int count);
 
 }

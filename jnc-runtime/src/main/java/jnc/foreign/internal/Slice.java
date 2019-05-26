@@ -4,20 +4,20 @@ import javax.annotation.Nonnull;
 
 class Slice extends SizedDirectMemory {
 
-    private final DirectMemory parent;
+    private final Memory outer;
     private final int offset;
 
-    Slice(DirectMemory parent, int offset, int size) {
-        super(parent.address() + offset, size);
-        this.parent = parent;
+    Slice(Memory outer, int offset, int size) {
+        super(outer.address() + offset, size);
+        this.outer = outer;
         this.offset = offset;
     }
 
     @Nonnull
     @Override
-    public DirectMemory slice(int offset, int size) {
-        checkIndex(offset, size);
-        return new Slice(parent, this.offset + offset, size);
+    public final Slice slice(int offset, int count) {
+        getMemoryAccessor().checkIndex(offset, size(), count);
+        return new Slice(outer, this.offset + offset, count);
     }
 
 }

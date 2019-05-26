@@ -37,7 +37,7 @@ public class ffi_cifTest {
         Alias uIntPtr = TypeHelper.findByAlias(TypeAlias.uintptr_t);
         ffi_cif cif = new ffi_cif(CallingMode.DEFAULT, uIntPtr, uIntPtr, uIntPtr, sizeT);
         CallContext p = cif.newCallContext();
-        DirectMemory a = AllocatedMemory.allocate(20);
+        Memory a = AllocatedMemory.allocate(20);
         AllocatedMemory b = AllocatedMemory.allocate(20);
         String str = "memory copy test";
         b.putStringUTF(0, str);

@@ -1,201 +1,177 @@
+/*
+ * Copyright 2019 zhanhb.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package jnc.foreign.internal;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import jnc.foreign.Pointer;
 
-class DirectMemory extends AbstractMemory implements NativeObject, Pointer {
+/**
+ *
+ * @author zhanhb
+ */
+final class MemoryAccessor {
 
     private static final NativeMethods nm = NativeMethods.getInstance();
 
-    static Pointer of(long address) {
-        return address == 0 ? null : new DirectMemory(address);
-    }
+    private long address;
 
-    private final long address;
-
-    DirectMemory(long address) {
+    MemoryAccessor(long address) {
         if (address == 0) {
             throw new NullPointerException();
         }
         this.address = address;
     }
 
-    @Override
-    public final long address() {
+    long address() {
         return address;
     }
 
-    /**
-     * Do not rely on the String presentation, maybe changed in the future.
-     *
-     * @return
-     */
-    @Override
-    public String toString() {
-        return "[" + getClass().getSimpleName() + "@" + Long.toHexString(address) + ",]";
-    }
-
-    @Override
     void putBoolean(int offset, InternalType internalType, boolean value) {
         nm.putInt(address + offset, internalType.address(), value ? 0 : 1);
     }
 
-    @Override
     void putInt(int offset, InternalType internalType, int value) {
         nm.putInt(address + offset, internalType.address(), value);
     }
 
-    @Override
     void putLong(int offset, InternalType internalType, long value) {
         nm.putLong(address + offset, internalType.address(), value);
     }
 
-    @Override
     void putFloat(int offset, InternalType internalType, float value) {
         nm.putFloat(address + offset, internalType.address(), value);
     }
 
-    @Override
     void putDouble(int offset, InternalType internalType, double value) {
         nm.putDouble(address + offset, internalType.address(), value);
     }
 
-    @Override
     boolean getBoolean(int offset, InternalType internalType) {
         return nm.getBoolean(address + offset, internalType.address());
     }
 
-    @Override
     int getInt(int offset, InternalType internalType) {
         return nm.getInt(address + offset, internalType.address());
     }
 
-    @Override
     long getLong(int offset, InternalType internalType) {
         return nm.getLong(address + offset, internalType.address());
     }
 
-    @Override
     float getFloat(int offset, InternalType internalType) {
         return nm.getFloat(address + offset, internalType.address());
     }
 
-    @Override
     double getDouble(int offset, InternalType internalType) {
         return nm.getDouble(address + offset, internalType.address());
     }
 
-    @Override
-    public void putBytes(int offset, byte[] bytes, int off, int len) {
+    void putBytes(int offset, byte[] bytes, int off, int len) {
         nm.putBytes(address + offset, bytes, off, len);
     }
 
-    @Override
-    public void getBytes(int offset, byte[] bytes, int off, int len) {
+    void getBytes(int offset, byte[] bytes, int off, int len) {
         nm.getBytes(address + offset, bytes, off, len);
     }
 
-    @Override
-    public void getShortArray(int offset, short[] array, int off, int len) {
+    void getShortArray(int offset, short[] array, int off, int len) {
         nm.getShortArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void putShortArray(int offset, short[] array, int off, int len) {
+    void putShortArray(int offset, short[] array, int off, int len) {
         nm.putShortArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void getCharArray(int offset, char[] array, int off, int len) {
+    void getCharArray(int offset, char[] array, int off, int len) {
         nm.getCharArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void putCharArray(int offset, char[] array, int off, int len) {
+    void putCharArray(int offset, char[] array, int off, int len) {
         nm.putCharArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void getIntArray(int offset, int[] array, int off, int len) {
+    void getIntArray(int offset, int[] array, int off, int len) {
         nm.getIntArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void putIntArray(int offset, int[] array, int off, int len) {
+    void putIntArray(int offset, int[] array, int off, int len) {
         nm.putIntArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void getLongArray(int offset, long[] array, int off, int len) {
+    void getLongArray(int offset, long[] array, int off, int len) {
         nm.getLongArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void putLongArray(int offset, long[] array, int off, int len) {
+    void putLongArray(int offset, long[] array, int off, int len) {
         nm.putLongArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void getFloatArray(int offset, float[] array, int off, int len) {
+    void getFloatArray(int offset, float[] array, int off, int len) {
         nm.getFloatArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void putFloatArray(int offset, float[] array, int off, int len) {
+    void putFloatArray(int offset, float[] array, int off, int len) {
         nm.putFloatArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void getDoubleArray(int offset, double[] array, int off, int len) {
+    void getDoubleArray(int offset, double[] array, int off, int len) {
         nm.getDoubleArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void putDoubleArray(int offset, double[] array, int off, int len) {
+    void putDoubleArray(int offset, double[] array, int off, int len) {
         nm.putDoubleArray(address + offset, array, off, len);
     }
 
-    @Override
-    public void putStringUTF(int offset, @Nonnull String value) {
+    void putStringUTF(int offset, @Nonnull String value) {
         nm.putStringUTF(address + offset, value);
     }
 
     @Nonnull
-    @Override
-    public String getStringUTF(int offset) {
+    String getStringUTF(int offset) {
         return nm.getStringUTF(address + offset);
     }
 
-    @Override
-    public void putString16(int offset, @Nonnull String value) {
+    void putString16(int offset, @Nonnull String value) {
         nm.putStringChar16(address + offset, value);
     }
 
     @Nonnull
-    @Override
-    public String getString16(int offset) {
+    String getString16(int offset) {
         return nm.getStringChar16(address + offset);
     }
 
-    @Nullable
-    @Override
-    public Pointer getPointer(int offset) {
-        return of(getAddress(offset));
-    }
-
-    @Override
-    public void putPointer(int offset, @Nullable Pointer pointer) {
-        putAddress(offset, pointer != null ? pointer.address() : 0);
-    }
-
-    @Nonnull
-    @Override
-    public Pointer slice(int offset, int size) {
-        if (size < 0) {
-            throw new IllegalArgumentException();
+    MemoryAccessor checkIndex(int offset, long total, int len) {
+        if (offset < 0 || offset > total - len) {
+            throw new IndexOutOfBoundsException();
         }
-        return new Slice(this, offset, size);
+        return this;
+    }
+
+    MemoryAccessor checkIndex(int offset, long total, int len, int unit) {
+        if (offset < 0 || offset > total - (long) len * unit) {
+            throw new IndexOutOfBoundsException();
+        }
+        return this;
+    }
+
+    String getStringUTFN(long address, long limit) {
+        return nm.getStringUTFN(address, limit);
+    }
+
+    String getStringChar16N(long address, long limit) {
+        return nm.getStringChar16N(address, limit);
     }
 
 }

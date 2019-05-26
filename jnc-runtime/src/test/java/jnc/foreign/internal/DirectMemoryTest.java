@@ -9,12 +9,12 @@ public class DirectMemoryTest {
     private static final boolean LITTLE_ENDIAN = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
 
     /**
-     * Test of address method, of class DirectMemory.
+     * Test of address method, of class Memory.
      */
     @Test
     public void testUnalignedGet() {
         int size = 64;
-        DirectMemory memory = AllocatedMemory.allocate(size);
+        Memory memory = AllocatedMemory.allocate(size);
         for (int i = 0; i < size; ++i) {
             memory.putByte(i, (byte) ((i & 7) + 1));
         }

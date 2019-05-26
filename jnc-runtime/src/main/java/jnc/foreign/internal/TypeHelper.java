@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import jnc.foreign.NativeType;
-import jnc.foreign.annotation.Typedef;
 import jnc.foreign.enums.TypeAlias;
 
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
