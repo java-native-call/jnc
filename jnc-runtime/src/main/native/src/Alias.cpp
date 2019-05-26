@@ -5,15 +5,12 @@
 #include <wctype.h>
 
 // see http://nadeausoftware.com/articles/2012/01/c_c_tip_how_use_compiler_predefined_macros_detect_operating_system
-#if (!defined(_MSC_VER) && defined(_WIN32)) || \
-    defined(__unix) || defined(__unix__) || defined(__MACH__)
 #include <sys/fcntl.h>
 #include <sys/param.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/unistd.h>
-#endif
 
 #ifdef _WIN32
 #include <ws2tcpip.h>
@@ -136,6 +133,13 @@ static constexpr size_t array_size(T(&)[N]) noexcept {
     return N;
 }
 
+// There is no type errno_t on OpenBSD
+// Maybe old MinGW doesn't define this.
+// https://en.cppreference.com/w/cpp/language/typedef
+// typedef redefinition is allowed in C++
+// defined in global scope, compile error if errno_t is not int
+typedef int errno_t;
+
 /*
  * Class:     jnc_foreign_internal_NativeMethods
  * Method:    initAlias
@@ -157,8 +161,9 @@ JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_initAlias
         /* enum on darwin */
         DEFINE(clockid_t)
         DEFINE(dev_t)
-        /* use int instead */
-        // DEFINE(errno_t)
+        DEFINE(errno_t)
+        // fpos_t is struct on linux
+        // DEFINE(fpos_t)
         DEFINE(ino_t)
         // DEFINE(ino64_t)
         DEFINE(int16_t)
@@ -215,7 +220,7 @@ JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_initAlias
         DEFINE(suseconds_t)
         DEFINE(uid_t)
 #ifdef BSD
-        /* BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD). ----------- */
+        /* BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD, Darwin). ----------- */
         DEFINE(register_t)
         DEFINE(segsz_t)
 #endif /* BSD */
@@ -224,7 +229,7 @@ JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_initAlias
         DEFINE(rune_t)
         DEFINE(sae_associd_t)
         DEFINE(sae_connid_t)
-        // DEFINE(swblk_t)
+        DEFINE(swblk_t)
         DEFINE(syscall_arg_t)
         DEFINE(user_addr_t)
         DEFINE(user_long_t)

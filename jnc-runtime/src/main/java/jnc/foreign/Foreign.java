@@ -15,8 +15,12 @@ public interface Foreign extends Closeable {
     @Nonnull
     Platform getPlatform();
 
+    /**
+     *
+     * @throws UnsupportedOperationException if specified type is not supported on current platform
+     */
     @Nonnull
-    Type findType(TypeAlias alias) throws IllegalArgumentException;
+    Type findType(TypeAlias alias) throws UnsupportedOperationException;
 
     @Nonnull
     Type findType(NativeType nativeType) throws IllegalArgumentException;

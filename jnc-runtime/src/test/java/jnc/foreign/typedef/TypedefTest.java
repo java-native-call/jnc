@@ -17,8 +17,10 @@ public class TypedefTest {
         /* enum on darwin */
         list.add("clockid_t");
         list.add("dev_t");
-        /* use int instead */
-        // DEFINE(errno_t)
+        /* Threr */
+        list.add("errno_t");
+        // fpos_t is struct on linux
+        // DEFINE(fpos_t)
         list.add("ino_t");
         // DEFINE(ino64_t)
         list.add("int16_t");
@@ -78,7 +80,7 @@ public class TypedefTest {
         list.add("rune_t");
         list.add("sae_associd_t");
         list.add("sae_connid_t");
-        // DEFINE(swblk_t)
+        list.add("swblk_t");
         list.add("syscall_arg_t");
         list.add("user_addr_t");
         list.add("user_long_t");

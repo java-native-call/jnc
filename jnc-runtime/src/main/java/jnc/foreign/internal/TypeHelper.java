@@ -106,7 +106,7 @@ class TypeHelper {
         static Alias find(TypeAlias name) {
             Alias alias = MAP.get(name);
             if (alias == null) {
-                throw new IllegalArgumentException("unsupported alias " + name);
+                throw new UnsupportedOperationException("type " + name + " is not supported on current platform");
             }
             return alias;
         }

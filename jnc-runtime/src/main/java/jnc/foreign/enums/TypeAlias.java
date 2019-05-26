@@ -1,7 +1,8 @@
 package jnc.foreign.enums;
 
 /**
- * Code should not depends on ordinal of this class, maybe changed in the future.
+ * Code should not depends on ordinal of this class, maybe changed in the
+ * future.
  */
 public enum TypeAlias {
     /* on some platform sizeof(int) = 2 */
@@ -12,8 +13,9 @@ public enum TypeAlias {
     /* enum on darwin */
     clockid_t,
     dev_t,
-    /* use int instead */
-    // errno_t,
+    errno_t,
+    // fpos_t is struct on linux
+    // fpos_t,
     ino_t,
     // ino64_t,
     int16_t,
@@ -77,7 +79,7 @@ public enum TypeAlias {
     rune_t,
     sae_associd_t,
     sae_connid_t,
-    // swblk_t,
+    swblk_t,
     syscall_arg_t,
     user_addr_t,
     user_long_t,
