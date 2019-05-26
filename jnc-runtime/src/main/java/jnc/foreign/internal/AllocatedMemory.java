@@ -98,7 +98,7 @@ class AllocatedMemory extends SizedDirectMemory {
         }
 
         @Override
-        public synchronized void run() {
+        public void run() {
             long addr = UPDATER.getAndSet(this, 0);
             if (addr != 0) {
                 nm.freeMemory(addr);
