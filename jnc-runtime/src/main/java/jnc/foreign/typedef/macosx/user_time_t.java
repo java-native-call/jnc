@@ -1,4 +1,4 @@
-package jnc.foreign.typedef;
+package jnc.foreign.typedef.macosx;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,6 @@ import jnc.foreign.enums.TypeAlias;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})
-@Typedef(TypeAlias.swblk_t)
-public @interface swblk_t {
+@Typedef(TypeAlias.user_time_t)
+public @interface user_time_t {
 }

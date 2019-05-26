@@ -1,4 +1,4 @@
-package jnc.foreign.typedef;
+package jnc.foreign.typedef.macosx;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,6 @@ import jnc.foreign.enums.TypeAlias;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})
-@Typedef(TypeAlias.in_port_t)
-public @interface in_port_t {
+@Typedef(TypeAlias.syscall_arg_t)
+public @interface syscall_arg_t {
 }

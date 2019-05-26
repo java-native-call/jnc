@@ -1,4 +1,4 @@
-package jnc.foreign.typedef;
+package jnc.foreign.typedef.unix;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,6 @@ import jnc.foreign.enums.TypeAlias;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})
-@Typedef(TypeAlias.in_addr_t)
-public @interface in_addr_t {
+@Typedef(TypeAlias.fsfilcnt_t)
+public @interface fsfilcnt_t {
 }

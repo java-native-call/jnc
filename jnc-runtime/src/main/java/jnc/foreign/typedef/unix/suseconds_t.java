@@ -1,4 +1,4 @@
-package jnc.foreign.typedef;
+package jnc.foreign.typedef.unix;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,6 @@ import jnc.foreign.enums.TypeAlias;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})
-@Typedef(TypeAlias.sa_family_t)
-public @interface sa_family_t {
+@Typedef(TypeAlias.suseconds_t)
+public @interface suseconds_t {
 }

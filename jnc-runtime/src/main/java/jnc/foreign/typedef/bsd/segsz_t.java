@@ -1,4 +1,4 @@
-package jnc.foreign.typedef;
+package jnc.foreign.typedef.bsd;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,6 @@ import jnc.foreign.enums.TypeAlias;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})
-@Typedef(TypeAlias.key_t)
-public @interface key_t {
+@Typedef(TypeAlias.segsz_t)
+public @interface segsz_t {
 }
