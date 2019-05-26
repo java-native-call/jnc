@@ -13,11 +13,6 @@ public class LoadOptionsBuilder {
         }
     }
 
-    private static <T> T checkNotNull(T obj) {
-        // Objects.requireNonNull will be retrolambda as Object.getClass
-        return Objects.requireNonNull(obj);
-    }
-
     private CallingMode callingMode;
 
     public LoadOptionsBuilder() {
@@ -33,7 +28,7 @@ public class LoadOptionsBuilder {
 
     public LoadOptionsBuilder callingMode(CallingMode callingMode) {
         checkState(this.callingMode == null, "Calling mode was already set to ''{}''", this.callingMode);
-        this.callingMode = checkNotNull(callingMode);
+        this.callingMode = Objects.requireNonNull(callingMode, "calling mode");
         return this;
     }
 

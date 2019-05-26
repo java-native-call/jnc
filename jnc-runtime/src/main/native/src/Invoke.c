@@ -87,9 +87,6 @@ Java_jnc_foreign_internal_NativeMethods_invoke##name    \
 
 DEFINE_INVOKE(Void, void, /*void*/);
 DEFINE_INVOKE(Boolean, jboolean, 0);
-/* DEFINE_INVOKE(Byte, jbyte, 0); */
-/* DEFINE_INVOKE(Short, jshort, 0); */
-/* DEFINE_INVOKE(Char, jchar, 0); */
 DEFINE_INVOKE(Int, jint, 0);
 DEFINE_INVOKE(Long, jlong, 0);
 DEFINE_INVOKE(Float, jfloat, 0);
