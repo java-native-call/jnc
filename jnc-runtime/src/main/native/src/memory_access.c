@@ -1,6 +1,45 @@
 #include "jnc.h"
 #include "convert.h"
 
+static bool checkNullAndRange(JNIEnv *env, jarray array, jint offset, jint size) {
+    checkNullPointer(env, array, false);
+    if (unlikely(offset < 0 || offset > CALLJNI(env, GetArrayLength, array) - size)) {
+        throwByName(env, ArrayIndexOutOfBounds, NULL);
+        return false;
+    }
+    return true;
+}
+
+#define ADDRESS_ARRAY_ACCESS(atype, jni, fname)             \
+JNIEXPORT void JNICALL                                      \
+Java_jnc_foreign_internal_NativeMethods_get##fname          \
+(JNIEnv * env, jobject UNUSED(self), jlong laddr,           \
+        atype##Array array, jint off, jint len) {           \
+    atype * addr = j2c(laddr, atype);                       \
+    checkNullPointer(env, addr, /*void*/);                  \
+    if (likely(checkNullAndRange(env, array, off, len)))    \
+        CALLJNI(env, Set##jni##ArrayRegion, array, off,     \
+            len, addr);                                     \
+}                                                           \
+JNIEXPORT void JNICALL                                      \
+Java_jnc_foreign_internal_NativeMethods_put##fname          \
+(JNIEnv * env, jobject UNUSED(self), jlong laddr,           \
+        atype##Array array, jint off, jint len) {           \
+    atype * addr = j2c(laddr, atype);                       \
+    checkNullPointer(env, addr, /*void*/);                  \
+    if (likely(checkNullAndRange(env, array, off, len)))    \
+        CALLJNI(env, Get##jni##ArrayRegion,                 \
+            array, off, len, addr);                         \
+}
+
+ADDRESS_ARRAY_ACCESS(jbyte, Byte, Bytes);
+ADDRESS_ARRAY_ACCESS(jshort, Short, ShortArray);
+ADDRESS_ARRAY_ACCESS(jchar, Char, CharArray);
+ADDRESS_ARRAY_ACCESS(jint, Int, IntArray);
+ADDRESS_ARRAY_ACCESS(jlong, Long, LongArray);
+ADDRESS_ARRAY_ACCESS(jfloat, Float, FloatArray);
+ADDRESS_ARRAY_ACCESS(jdouble, Double, DoubleArray);
+
 #define DEFINE_PUTTER(name, jtype)                  \
 JNIEXPORT void JNICALL                              \
 Java_jnc_foreign_internal_NativeMethods_put##name   \
