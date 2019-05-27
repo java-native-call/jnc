@@ -5,7 +5,7 @@ import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import jnc.foreign.TestLibs;
-import jnc.foreign.abi.CallingMode;
+import jnc.foreign.enums.CallingConvention;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -114,7 +114,7 @@ public class NativeMethodsTest {
     public void testFfi_call() throws Exception {
         Library lib = Library.open(LIBC, 0);
         long toupper = lib.dlsym("toupper");
-        ffi_cif cif = new ffi_cif(CallingMode.DEFAULT, BuiltinType.SINT32, BuiltinType.SINT32);
+        ffi_cif cif = new ffi_cif(CallingConvention.DEFAULT, BuiltinType.SINT32, BuiltinType.SINT32);
         CallContext p = cif.newCallContext();
         int param = 'a';
         p.putInt(0, param);

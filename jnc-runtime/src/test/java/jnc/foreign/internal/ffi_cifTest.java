@@ -1,7 +1,7 @@
 package jnc.foreign.internal;
 
 import jnc.foreign.TestLibs;
-import jnc.foreign.abi.CallingMode;
+import jnc.foreign.enums.CallingConvention;
 import jnc.foreign.enums.TypeAlias;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -21,7 +21,7 @@ public class ffi_cifTest {
         Library libm = Library.open(LIBM, 0);
 
         long function = libm.dlsym("acos");
-        ffi_cif cif = new ffi_cif(CallingMode.DEFAULT, BuiltinType.DOUBLE, BuiltinType.DOUBLE);
+        ffi_cif cif = new ffi_cif(CallingConvention.DEFAULT, BuiltinType.DOUBLE, BuiltinType.DOUBLE);
         CallContext ctx = cif.newCallContext();
         ctx.putDouble(0, -1);
         double result = nm.invokeDouble(cif.address(), function, ctx.address(), null, 0);
@@ -35,7 +35,7 @@ public class ffi_cifTest {
         long function = libc.dlsym("memcpy");
         Alias sizeT = TypeHelper.findByAlias(TypeAlias.size_t);
         Alias uIntPtr = TypeHelper.findByAlias(TypeAlias.uintptr_t);
-        ffi_cif cif = new ffi_cif(CallingMode.DEFAULT, uIntPtr, uIntPtr, uIntPtr, sizeT);
+        ffi_cif cif = new ffi_cif(CallingConvention.DEFAULT, uIntPtr, uIntPtr, uIntPtr, sizeT);
         CallContext p = cif.newCallContext();
         Memory a = AllocatedMemory.allocate(20);
         AllocatedMemory b = AllocatedMemory.allocate(20);

@@ -1,6 +1,6 @@
 package jnc.foreign;
 
-import jnc.foreign.abi.CallingMode;
+import jnc.foreign.enums.CallingConvention;
 
 public final class LoadOptions {
 
@@ -8,14 +8,14 @@ public final class LoadOptions {
         return Singleton.DEFAULT;
     }
 
-    private final CallingMode callingMode;
+    private final CallingConvention callingConvention;
 
-    LoadOptions(CallingMode callingMode) {
-        this.callingMode = callingMode;
+    LoadOptions(CallingConvention callingConvention) {
+        this.callingConvention = callingConvention;
     }
 
-    public CallingMode getCallingMode() {
-        return callingMode;
+    public CallingConvention getCallingConvention() {
+        return callingConvention;
     }
 
     private interface Singleton {

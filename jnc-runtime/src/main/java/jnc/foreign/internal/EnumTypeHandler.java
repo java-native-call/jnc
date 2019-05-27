@@ -18,21 +18,21 @@ import jnc.foreign.exception.UnmappableNativeValueException;
 
 class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
 
+    private static final Continuously defaultContinuously = new ProxyBuilder()
+            .useObjectMethods()
+            .otherwise((proxy, method, args) -> method.getDefaultValue())
+            .toInstance(Continuously.class);
+
     private static final EnumSet<NativeType> ALLOWED_NATIVE_TYPES = EnumSet.of(
             UINT8, UINT16, UINT32, UINT64,
             SINT8, SINT16, SINT32, SINT64
     );
 
     static <T extends Enum<T>> EnumTypeHandler<T> newInstance(Class<T> type, AnnotationContext ac) {
-        NativeType nativeType = NativeType.UINT32;
-        int start = 0;
-        EnumMappingErrorAction onUnmappable = EnumMappingErrorAction.NULL_WHEN_ZERO;
-        Continuously annotation = ac.getAnnotation(Continuously.class);
-        if (annotation != null) {
-            nativeType = annotation.type();
-            start = annotation.start();
-            onUnmappable = annotation.onUnmappable();
-        }
+        Continuously annotation = ac.getAnnotationOrDefault(Continuously.class, defaultContinuously);
+        NativeType nativeType = annotation.type();
+        int start = annotation.start();
+        EnumMappingErrorAction onUnmappable = annotation.onUnmappable();
         if (!ALLOWED_NATIVE_TYPES.contains(nativeType)) {
             throw new IllegalStateException("Only integral type allowed on enum, but found "
                     + nativeType + " on " + type.getName());

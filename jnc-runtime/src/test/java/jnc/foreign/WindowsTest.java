@@ -4,7 +4,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import jnc.foreign.abi.Stdcall;
+import jnc.foreign.annotation.Stdcall;
 import jnc.foreign.byref.IntByReference;
 import jnc.foreign.typedef.int32_t;
 import jnc.foreign.typedef.uintptr_t;

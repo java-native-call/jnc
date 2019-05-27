@@ -1,14 +1,14 @@
 package jnc.foreign.internal;
 
-import jnc.foreign.abi.CallingMode;
+import jnc.foreign.enums.CallingConvention;
 
 class ffi_cif implements NativeObject {
 
     private static final NativeMethods nm = NativeMethods.getInstance();
     private static final int SIZE_OF_FFI_CIF = nm.sizeof_ffi_cif();
 
-    private static int convention(CallingMode callingMode) {
-        if (callingMode == CallingMode.STDCALL) {
+    private static int convention(CallingConvention callingConvention) {
+        if (callingConvention == CallingConvention.STDCALL) {
             return NativeMethods.CONVENTION_STDCALL;
         }
         return NativeMethods.CONVENTION_DEFAULT;
@@ -21,7 +21,7 @@ class ffi_cif implements NativeObject {
     private final int parameterSize;
     private final int parameterAlign;
 
-    ffi_cif(CallingMode callingMode, InternalType resultType, InternalType... params) {
+    ffi_cif(CallingConvention callingConvention, InternalType resultType, InternalType... params) {
         int count = params.length;
         int size = 0;
         int pointerSize = TypeHelper.TYPE_POINTER.size();
@@ -39,7 +39,7 @@ class ffi_cif implements NativeObject {
         Memory cif = AllocatedMemory.allocate(1, SIZE_OF_FFI_CIF);
         PointerArray atypes = PointerArray.allocate(params);
         int offset = Aligns.alignUp(count * pointerSize, alignment);
-        nm.prepareInvoke(cif.address(), convention(callingMode), count, resultType.address(), atypes.address());
+        nm.prepareInvoke(cif.address(), convention(callingConvention), count, resultType.address(), atypes.address());
         this.offsets = offs;
         this.ffi_cif = cif;
         this.argumentTypes = atypes;

@@ -3,8 +3,9 @@ package jnc.foreign;
 import java.text.MessageFormat;
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import jnc.foreign.abi.CallingMode;
+import jnc.foreign.enums.CallingConvention;
 
+@SuppressWarnings("WeakerAccess")
 public class LoadOptionsBuilder {
 
     private static void checkState(boolean condition, String msg, Object... args) {
@@ -13,29 +14,29 @@ public class LoadOptionsBuilder {
         }
     }
 
-    private CallingMode callingMode;
+    private CallingConvention callingConvention;
 
     public LoadOptionsBuilder() {
     }
 
     public LoadOptionsBuilder stdcall() {
-        return callingMode(CallingMode.STDCALL);
+        return callingConvention(CallingConvention.STDCALL);
     }
 
     public LoadOptionsBuilder cdecl() {
-        return callingMode(CallingMode.DEFAULT);
+        return callingConvention(CallingConvention.DEFAULT);
     }
 
-    public LoadOptionsBuilder callingMode(CallingMode callingMode) {
-        checkState(this.callingMode == null, "Calling mode was already set to ''{}''", this.callingMode);
-        this.callingMode = Objects.requireNonNull(callingMode, "calling mode");
+    public LoadOptionsBuilder callingConvention(CallingConvention callingConvention) {
+        checkState(this.callingConvention == null, "Calling convention was already set to ''{}''", this.callingConvention);
+        this.callingConvention = Objects.requireNonNull(callingConvention, "calling mode");
         return this;
     }
 
     @Nonnull
     public LoadOptions create() {
-        CallingMode cm = callingMode;
-        return new LoadOptions(cm != null ? cm : CallingMode.DEFAULT);
+        CallingConvention cc = callingConvention;
+        return new LoadOptions(cc != null ? cc : CallingConvention.DEFAULT);
     }
 
 }

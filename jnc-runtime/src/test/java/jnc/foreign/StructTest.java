@@ -122,8 +122,13 @@ public class StructTest {
     public void testEnum() {
         Struct1 struct1 = new Struct1();
         assertEquals(1, struct1.size());
-        struct1.setSeason(StructTest.Season.Winter);
-        assertEquals(StructTest.Season.Winter, struct1.getSeason());
+        struct1.setSeason(Season1.Winter);
+        assertEquals(Season1.Winter, struct1.getSeason());
+
+        Struct2 struct2 = new Struct2();
+        assertEquals(4, struct2.size());
+        struct2.setSeason(Season2.Winter);
+        assertEquals(Season2.Winter, struct2.getSeason());
     }
 
     @Test
@@ -236,13 +241,27 @@ public class StructTest {
 
     private static class Struct1 extends Struct {
 
-        private final EnumField<Season> season = enumField(Season.class);
+        private final EnumField<Season1> season = enumField(Season1.class);
 
-        public Season getSeason() {
+        public Season1 getSeason() {
             return season.get();
         }
 
-        public void setSeason(Season field) {
+        public void setSeason(Season1 field) {
+            this.season.set(field);
+        }
+
+    }
+
+    private static class Struct2 extends Struct {
+
+        private final EnumField<Season2> season = enumField(Season2.class);
+
+        public Season2 getSeason() {
+            return season.get();
+        }
+
+        public void setSeason(Season2 field) {
             this.season.set(field);
         }
 
@@ -287,7 +306,11 @@ public class StructTest {
     }
 
     @Continuously(type = NativeType.SINT8)
-    private enum Season {
+    private enum Season1 {
+        Spring, Summer, Autumn, Winter
+    }
+
+    private enum Season2 {
         Spring, Summer, Autumn, Winter
     }
 

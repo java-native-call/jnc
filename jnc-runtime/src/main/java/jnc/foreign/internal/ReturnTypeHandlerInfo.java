@@ -69,9 +69,9 @@ abstract class ReturnTypeHandlerInfo<T> {
 
         @Override
         public InternalType getInternalType(AnnotationContext ac) {
-            Typedef annotation = ac.getAnnotation(Typedef.class);
-            if (annotation != null) {
-                return TypeHelper.findByAlias(annotation.value());
+            Typedef typedef = ac.getAnnotation(Typedef.class);
+            if (typedef != null) {
+                return TypeHelper.findByAlias(typedef.value());
             }
             return super.getInternalType();
         }

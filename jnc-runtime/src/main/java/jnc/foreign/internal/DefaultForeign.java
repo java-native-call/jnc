@@ -1,7 +1,5 @@
 package jnc.foreign.internal;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import javax.annotation.Nonnull;
 import jnc.foreign.Foreign;
 import jnc.foreign.ForeignProvider;
@@ -25,11 +23,7 @@ class DefaultForeign implements Foreign {
     @Nonnull
     @Override
     public <T> T load(Class<T> interfaceClass, String libname, LoadOptions loadOptions) {
-        InvocationLibrary library = new InvocationLibrary(interfaceClass, Library.open(libname, 0), loadOptions, typeHandlerRegistry);
-        return interfaceClass.cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(),
-                new Class<?>[]{interfaceClass},
-                (Object proxy, Method method, Object[] args)
-                -> library.findMethodInvoker(method).invoke(proxy, method, args)));
+        return InvocationLibrary.create(interfaceClass, Library.open(libname, 0), loadOptions, typeHandlerRegistry);
     }
 
     @Nonnull

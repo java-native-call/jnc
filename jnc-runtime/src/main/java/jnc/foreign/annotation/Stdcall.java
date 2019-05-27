@@ -1,10 +1,9 @@
-package jnc.foreign.abi;
+package jnc.foreign.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import jnc.foreign.annotation.CallingConvention;
 
 /**
  * This annotation only work on windows x86, ignored on other platform or
@@ -12,8 +11,8 @@ import jnc.foreign.annotation.CallingConvention;
  *
  * @author zhanhb
  */
+@CallingConvention(jnc.foreign.enums.CallingConvention.STDCALL)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PACKAGE, ElementType.TYPE, ElementType.METHOD})
-@CallingConvention(CallingMode.STDCALL)
 public @interface Stdcall {
 }

@@ -26,4 +26,12 @@ interface AnnotationContext {
     @Nullable
     <T extends Annotation> T getAnnotation(Class<T> klass);
 
+    /**
+     * Don't use equals, hashCode or toString, for it's same as Object does.
+     */
+    default <T extends Annotation> T getAnnotationOrDefault(Class<T> klass, T defaultValue) {
+        T annotation = getAnnotation(klass);
+        return annotation != null ? annotation : defaultValue;
+    }
+
 }
