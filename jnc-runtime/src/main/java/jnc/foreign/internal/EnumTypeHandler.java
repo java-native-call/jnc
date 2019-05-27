@@ -23,10 +23,11 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
             SINT8, SINT16, SINT32, SINT64
     );
 
-    static <T extends Enum<T>> EnumTypeHandler<T> newInstance(Class<T> type, Continuously annotation) {
+    static <T extends Enum<T>> EnumTypeHandler<T> newInstance(Class<T> type, AnnotationContext ac) {
         NativeType nativeType = NativeType.UINT32;
         int start = 0;
         EnumMappingErrorAction onUnmappable = EnumMappingErrorAction.NULL_WHEN_ZERO;
+        Continuously annotation = ac.getAnnotation(Continuously.class);
         if (annotation != null) {
             nativeType = annotation.type();
             start = annotation.start();
@@ -43,24 +44,24 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
     private final E[] values;
     private final Class<E> type;
     private final NativeType nativeType;
-    private final InternalType internalType;
+    private final InternalType defaultType;
     private final int start;
     private final EnumMappingErrorAction onUnmappable;
     private FieldAccessor fieldAccessor;
 
-    private EnumTypeHandler(Class<E> type, NativeType nativeType, InternalType internalType, int start,
+    private EnumTypeHandler(Class<E> type, NativeType nativeType, InternalType defaultType, int start,
             EnumMappingErrorAction onUnmappable) {
         this.values = type.getEnumConstants();
         this.type = type;
         this.nativeType = nativeType;
-        this.internalType = internalType;
+        this.defaultType = defaultType;
         this.start = start;
         this.onUnmappable = onUnmappable;
     }
 
     @Override
-    public InternalType getInternalType() {
-        return internalType;
+    public InternalType getDefaultType() {
+        return defaultType;
     }
 
     @Override
@@ -90,8 +91,7 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
 
     @Override
     public Invoker<E> getInvoker() {
-        return (long cif, long function, long avalues)
-                -> mapInt(PrimaryTypeHandler.invokeInt(cif, function, avalues));
+        return (long cif, long function, long avalues) -> mapInt(Invokers.invokeInt(cif, function, avalues));
     }
 
     @Override
@@ -108,12 +108,12 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
 
         @Override
         public E get(Pointer memory, int offset) {
-            return mapInt(memory.getInt(offset, internalType));
+            return mapInt(memory.getInt(offset, defaultType));
         }
 
         @Override
         public void set(Pointer memory, int offset, E value) {
-            memory.putInt(offset, internalType, value != null ? start + value.ordinal() : 0);
+            memory.putInt(offset, defaultType, value != null ? start + value.ordinal() : 0);
         }
     }
 

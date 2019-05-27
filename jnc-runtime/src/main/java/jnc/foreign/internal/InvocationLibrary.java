@@ -7,21 +7,22 @@ import java.lang.reflect.Proxy;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import jnc.foreign.LoadOptions;
-import jnc.foreign.Pointer;
 import jnc.foreign.abi.CallingMode;
 import jnc.foreign.annotation.CallingConvention;
-import jnc.foreign.annotation.Typedef;
 
 class InvocationLibrary {
 
     private final Library library;
     private final CallingMode callingMode;
     private final ConcurrentMap<Method, InvocationHandler> map = new ConcurrentHashMap<>(4);
+    private final TypeHandlerRegistry typeHandlerRegistry;
 
-    InvocationLibrary(Class<?> interfaceClass, Library library, LoadOptions loadOptions) {
+    InvocationLibrary(Class<?> interfaceClass, Library library, LoadOptions loadOptions, TypeHandlerRegistry typeHandlerRegistry) {
         this.library = library;
-        CallingConvention callingConvention = AnnotationUtil.getClassAnnotation(interfaceClass, CallingConvention.class);
+        ClassAnnotationContext cac = new ClassAnnotationContext(interfaceClass);
+        CallingConvention callingConvention = cac.getAnnotation(CallingConvention.class);
         this.callingMode = callingConvention != null ? callingConvention.value() : loadOptions.getCallingMode();
+        this.typeHandlerRegistry = typeHandlerRegistry;
     }
 
     InvocationHandler findMethodInvoker(Method method) {
@@ -57,21 +58,24 @@ class InvocationLibrary {
         } else {
             String name = method.getName();
             long function = library.dlsym(name);
-            InternalType retType = TypeHandlerRegistry.findReturnType(method.getReturnType(), AnnotationUtil.getMethodAnnotation(method, Typedef.class));
+            MethodAnnotationContext mac = new MethodAnnotationContext(method);
+            ReturnTypeHandlerInfo<?> returnTypeInfo = typeHandlerRegistry.findReturnTypeInfo(method.getReturnType());
+            InternalType retType = returnTypeInfo.getInternalType(mac);
+            Invoker<?> invoker = returnTypeInfo.getInvoker();
             Class<?>[] parameterTypes = method.getParameterTypes();
             Annotation[][] annotations = method.getParameterAnnotations();
             int len = parameterTypes.length;
             InternalType[] ptypes = new InternalType[len];
-            Invoker<?> invoker = TypeHandlerRegistry.getInvoker(method.getReturnType());
             @SuppressWarnings("rawtypes")
             ParameterHandler<?>[] handlers = new ParameterHandler[len];
             for (int i = 0; i < len; ++i) {
                 Class<?> type = parameterTypes[i];
-                Typedef aliasA = AnnotationUtil.getAnnotation(annotations[i], Typedef.class);
-                ptypes[i] = TypeHandlerRegistry.findParameterType(type, aliasA);
-                handlers[i] = TypeHandlerRegistry.getParameterHandler(type);
+                MethodParameterAnnotationContext mpac = new MethodParameterAnnotationContext(annotations[i]);
+                ParameterHandlerInfo<?> handlerInfo = typeHandlerRegistry.findParameterTypeInfo(type);
+                ptypes[i] = handlerInfo.getType(mpac);
+                handlers[i] = handlerInfo.getHandler();
             }
-            CallingConvention annotation = AnnotationUtil.getMethodAnnotation(method, CallingConvention.class);
+            CallingConvention annotation = mac.getAnnotation(CallingConvention.class);
             ffi_cif cif = new ffi_cif(annotation != null ? annotation.value() : callingMode, retType, ptypes);
             handler = (Object proxy, Method m, Object[] args) -> {
                 @SuppressWarnings("unchecked")
@@ -86,18 +90,12 @@ class InvocationLibrary {
                     context.finish();
                     return result;
                 } else {
-                    return invoker.invoke(cif.address(), function, NoParameter.NOMEMORY.address());
+                    return invoker.invoke(cif.address(), function, EmptyMemoryHolder.NOMEMORY.address());
                 }
             };
         }
         InvocationHandler ih = map.putIfAbsent(method, handler);
         return ih != null ? ih : handler;
-    }
-
-    private interface NoParameter {
-
-        Pointer NOMEMORY = AllocatedMemory.allocate(0);
-
     }
 
 }

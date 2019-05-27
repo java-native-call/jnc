@@ -25,7 +25,7 @@ class DefaultForeign implements Foreign {
     @Nonnull
     @Override
     public <T> T load(Class<T> interfaceClass, String libname, LoadOptions loadOptions) {
-        InvocationLibrary library = new InvocationLibrary(interfaceClass, Library.open(libname, 0), loadOptions);
+        InvocationLibrary library = new InvocationLibrary(interfaceClass, Library.open(libname, 0), loadOptions, typeHandlerRegistry);
         return interfaceClass.cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(),
                 new Class<?>[]{interfaceClass},
                 (Object proxy, Method method, Object[] args)
@@ -62,8 +62,8 @@ class DefaultForeign implements Foreign {
     }
 
     @Override
-    public <T> TypeHandler<T> findTypeHandler(Class<T> clazz) throws UnsupportedOperationException {
-        return TypeHandlerRegistry.findByType(clazz);
+    public <T> TypeHandler<T> findTypeHandler(Class<T> type) throws UnsupportedOperationException {
+        return typeHandlerRegistry.findHandler(type);
     }
 
     @Nonnull

@@ -1,10 +1,13 @@
 package jnc.foreign;
 
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicBoolean;
 import jnc.foreign.annotation.Continuously;
 import jnc.foreign.byref.IntByReference;
 import jnc.foreign.typedef.int32_t;
 import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uintptr_t;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -31,11 +34,31 @@ public class InvokeTest {
         IntByReference reference = new IntByReference();
         assertEquals(0, reference.getValue());
         Libc.INSTANCE.memcpy(reference, struct1, 4);
+        Libc.INSTANCE.memcpy(reference, (Struct) struct1, 4);
+    }
+
+    @Test
+    public void testPrimitiveArray() {
+        byte[] bytes = "abcde".getBytes(StandardCharsets.UTF_8);
+        Pointer memory = ForeignProviders.getDefault().getMemoryManager().allocate(20);
+        assertEquals(memory.address(), Libc.INSTANCE.memcpy(memory, bytes, 3).address());
+        assertEquals("abc", memory.getStringUTF(0));
+
+        Libc.INSTANCE.memcpy(bytes, memory, 4);
+        byte[] expect = "abc\000e".getBytes(StandardCharsets.UTF_8);
+        assertArrayEquals(expect, bytes);
+
+        boolean[] bools = new boolean[4];
+        boolean[] expectBooleans = {true, true, true, false};
+        Libc.INSTANCE.memcpy(bools, bytes, 4);
+        assertArrayEquals(expectBooleans, bools);
     }
 
     @Test
     public void testDefaultMethod() {
-        assertEquals(0x123456, Libc.INSTANCE.memcpy());
+        AtomicBoolean bool = new AtomicBoolean();
+        assertEquals(0x123456, Libc.INSTANCE.memcpy(bool));
+        assertTrue(bool.get());
     }
 
     @Test
@@ -79,17 +102,29 @@ public class InvokeTest {
         long memcpy(@uintptr_t long dst, @uintptr_t long src, @size_t long n);
 
         @uintptr_t
+        long memcpy(IntByReference dst, Struct1 src, @size_t long n);
+
+        @uintptr_t
         long memcpy(IntByReference dst, Struct src, @size_t long n);
 
         @uintptr_t
         void memcpy(Void dst, @uintptr_t long src, @size_t long n);
+
+        @uintptr_t
+        long memcpy(byte[] dst, Pointer src, @size_t long n);
+
+        @uintptr_t
+        long memcpy(boolean[] dst, byte[] src, @size_t long n);
+
+        Pointer memcpy(Pointer dst, byte[] src, @size_t long n);
 
         @int32_t
         boolean isalpha(Char ch);
 
         Char toupper(int ch);
 
-        default int memcpy() {
+        default int memcpy(AtomicBoolean atomic) {
+            atomic.set(true);
             return 0x123456;
         }
 
