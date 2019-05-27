@@ -149,6 +149,7 @@ extern "C"
 JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_initAlias
 (JNIEnv *env, jobject UNUSED(self), jobject obj) {
     checkNullPointer(env, obj, /*void*/);
+
     const struct {
         const char *name;
         int8_t v;
@@ -253,20 +254,55 @@ JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_initAlias
     jmethodID valueOf = env->GetStaticMethodID(integer, "valueOf", "(I)Ljava/lang/Integer;");
     if (unlikely(env->ExceptionCheck())) return;
 
-    for (size_t i = 0; i < array_size(tuples); ++i) {
+    for (auto &&tuple : tuples) {
         jvalue args[2];
-        args[0].i = tuples[i].v;
+        args[0].i = tuple.v;
         jobject value = env->CallStaticObjectMethodA(integer, valueOf, args);
         if (unlikely(env->ExceptionCheck())) return;
-        jobject name = env->NewStringUTF(tuples[i].name);
+        jobject name = env->NewStringUTF(tuple.name);
         if (unlikely(env->ExceptionCheck())) return;
         args[0].l = name;
         args[1].l = value;
         jobject result = env->CallObjectMethodA(obj, put, args);
         if (unlikely(env->ExceptionCheck())) return;
-        if (unlikely(result != NULL)) env->DeleteLocalRef(result);
+        if (unlikely(result != nullptr)) env->DeleteLocalRef(result);
         env->DeleteLocalRef(name);
         env->DeleteLocalRef(value);
     }
 
+}
+
+/*
+ * Class:     jnc_foreign_internal_NativeMethods
+ * Method:    getTypes
+ * Signature: ()[[J
+ */
+extern "C"
+JNIEXPORT jobjectArray JNICALL Java_jnc_foreign_internal_NativeMethods_getTypes
+(JNIEnv *env, jobject UNUSED(self)) {
+#define F(value) &ffi_type_##value
+    ffi_type * addrs[] = {
+        F(void), F(float), F(double), F(pointer),
+        F(uint8), F(sint8), F(uint16), F(sint16),
+        F(uint32), F(sint32), F(uint64), F(sint64),
+#undef F
+    };
+    jclass longArray = env->FindClass("[J");
+    if (unlikely(env->ExceptionCheck())) return nullptr;
+    jobjectArray res = env->NewObjectArray(FFI_TYPE_LAST + 1, longArray, nullptr);
+    if (unlikely(env->ExceptionCheck())) return nullptr;
+
+    for (auto &&p : addrs) {
+        unsigned short type = p->type;
+        jlong info = ((jlong) p->size << 32) | (p->alignment << 16) | type;
+        jlongArray arr = env->NewLongArray(2);
+        if (unlikely(env->ExceptionCheck())) return nullptr;
+        jlong region[2] = {p2j(p), info};
+        env->SetLongArrayRegion(arr, 0, 2, region);
+        if (unlikely(env->ExceptionCheck())) return nullptr;
+        env->SetObjectArrayElement(res, type, arr);
+        if (unlikely(env->ExceptionCheck())) return nullptr;
+        env->DeleteLocalRef(arr);
+    }
+    return res;
 }
