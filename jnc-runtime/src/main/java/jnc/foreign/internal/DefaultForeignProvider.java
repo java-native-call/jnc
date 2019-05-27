@@ -13,7 +13,7 @@ public class DefaultForeignProvider implements ForeignProvider {
     private final Foreign foreign;
 
     private DefaultForeignProvider() {
-        foreign = new ForeignImpl(this);
+        foreign = new DefaultForeign(this);
     }
 
     @Nonnull

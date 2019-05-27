@@ -14,12 +14,12 @@ import jnc.foreign.annotation.Typedef;
 
 class InvocationLibrary {
 
-    private final NativeLibrary library;
+    private final Library library;
     private final CallingMode callingMode;
     private final ConcurrentMap<Method, InvocationHandler> map = new ConcurrentHashMap<>(4);
 
-    InvocationLibrary(Class<?> interfaceClass, NativeLibrary nativeLibrary, LoadOptions loadOptions) {
-        this.library = nativeLibrary;
+    InvocationLibrary(Class<?> interfaceClass, Library library, LoadOptions loadOptions) {
+        this.library = library;
         CallingConvention callingConvention = AnnotationUtil.getClassAnnotation(interfaceClass, CallingConvention.class);
         this.callingMode = callingConvention != null ? callingConvention.value() : loadOptions.getCallingMode();
     }
@@ -57,19 +57,19 @@ class InvocationLibrary {
         } else {
             String name = method.getName();
             long function = library.dlsym(name);
-            InternalType retType = TypeHandlers.findReturnType(method.getReturnType(), AnnotationUtil.getMethodAnnotation(method, Typedef.class));
+            InternalType retType = TypeHandlerRegistry.findReturnType(method.getReturnType(), AnnotationUtil.getMethodAnnotation(method, Typedef.class));
             Class<?>[] parameterTypes = method.getParameterTypes();
             Annotation[][] annotations = method.getParameterAnnotations();
             int len = parameterTypes.length;
             InternalType[] ptypes = new InternalType[len];
-            Invoker<?> invoker = TypeHandlers.getInvoker(method.getReturnType());
+            Invoker<?> invoker = TypeHandlerRegistry.getInvoker(method.getReturnType());
             @SuppressWarnings("rawtypes")
             ParameterHandler<?>[] handlers = new ParameterHandler[len];
             for (int i = 0; i < len; ++i) {
                 Class<?> type = parameterTypes[i];
                 Typedef aliasA = AnnotationUtil.getAnnotation(annotations[i], Typedef.class);
-                ptypes[i] = TypeHandlers.findParameterType(type, aliasA);
-                handlers[i] = TypeHandlers.getParameterHandler(type);
+                ptypes[i] = TypeHandlerRegistry.findParameterType(type, aliasA);
+                handlers[i] = TypeHandlerRegistry.getParameterHandler(type);
             }
             CallingConvention annotation = AnnotationUtil.getMethodAnnotation(method, CallingConvention.class);
             ffi_cif cif = new ffi_cif(annotation != null ? annotation.value() : callingMode, retType, ptypes);

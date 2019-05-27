@@ -33,7 +33,7 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
             onUnmappable = annotation.onUnmappable();
         }
         if (!ALLOWED_NATIVE_TYPES.contains(nativeType)) {
-            throw new IllegalStateException("Only integral type allowd on enum, but found "
+            throw new IllegalStateException("Only integral type allowed on enum, but found "
                     + nativeType + " on " + type.getName());
         }
         InternalType internalType = TypeHelper.findByNativeType(nativeType);
@@ -45,7 +45,6 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
     private final NativeType nativeType;
     private final InternalType internalType;
     private final int start;
-    private final int end;
     private final EnumMappingErrorAction onUnmappable;
     private FieldAccessor fieldAccessor;
 
@@ -56,7 +55,6 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
         this.nativeType = nativeType;
         this.internalType = internalType;
         this.start = start;
-        end = start + values.length;
         this.onUnmappable = onUnmappable;
     }
 
@@ -79,8 +77,9 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
 
     @Nullable
     private E mapInt(int intVal) {
-        if (start <= intVal && intVal < end) {
-            return values[intVal - start];
+        int index = intVal - start;
+        if (0 <= index && index < values.length) {
+            return values[index];
         }
         if (onUnmappable == EnumMappingErrorAction.SET_TO_NULL
                 || intVal == 0 && onUnmappable == EnumMappingErrorAction.NULL_WHEN_ZERO) {

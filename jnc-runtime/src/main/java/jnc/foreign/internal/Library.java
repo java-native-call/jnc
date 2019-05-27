@@ -6,15 +6,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
-class NativeLibrary implements NativeObject, Closeable {
+class Library implements NativeObject, Closeable {
 
     private static final NativeMethods nm = NativeMethods.getInstance();
     // maybe the classloader is finalized before the lib, meanwhile the native lib is also finalized
-    // let it call our method finalizeAll to make sure we are closed before it's unloaded.
+    // let it call our method onUnload to make sure we are closed before it's unloaded.
     // There is no issue with java builtin object.
     private static final Set<Runnable> SET = nm.onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(16)));
 
-    static NativeLibrary open(String libname, int mode) {
+    static Library open(String libname, int mode) {
         long addr;
         try {
             addr = nm.dlopen(libname, mode);
@@ -29,7 +29,7 @@ class NativeLibrary implements NativeObject, Closeable {
         Dlclose dlclose = null;
         try {
             dlclose = new Dlclose(addr);
-            NativeLibrary library = new NativeLibrary(addr, dlclose);
+            Library library = new Library(addr, dlclose);
             SET.add(dlclose);
             success = true;
             return library;
@@ -47,7 +47,7 @@ class NativeLibrary implements NativeObject, Closeable {
     private final long address;
     private final Dlclose dlclose;
 
-    private NativeLibrary(long address, Dlclose dlclose) {
+    private Library(long address, Dlclose dlclose) {
         this.address = address;
         this.dlclose = dlclose;
     }

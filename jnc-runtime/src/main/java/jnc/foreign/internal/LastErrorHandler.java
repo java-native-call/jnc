@@ -9,7 +9,7 @@ interface LastErrorHandler {
 
     void handle(int error);
 
-    @SuppressWarnings("PackageVisibleInnerClass")
+    @SuppressWarnings({"PackageVisibleInnerClass", "UtilityClassWithoutPrivateConstructor"})
     class Companion {
 
         static final long METHOD_ID;

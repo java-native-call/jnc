@@ -92,15 +92,6 @@ public class Struct {
         return align(size, alignment);
     }
 
-    final int sizeInternal() {
-        return size;
-    }
-
-    // access from Union
-    final void setSize(int size) {
-        this.size = size;
-    }
-
     public final int alignment() {
         advance(State.FIELDS_FINISHED);
         return alignment;

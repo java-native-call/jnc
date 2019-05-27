@@ -7,7 +7,7 @@ import jnc.foreign.annotation.Typedef;
 import jnc.foreign.byref.ByReference;
 
 @SuppressWarnings({"UtilityClassWithoutPrivateConstructor", "NestedAssignment"})
-class TypeHandlers {
+final class TypeHandlerRegistry {
 
     private static final ConcurrentWeakIdentityHashMap<Class<?>, InternalTypeHandler<?>> TYPE_HANDLERS = new ConcurrentWeakIdentityHashMap<>(40);
 
@@ -61,7 +61,7 @@ class TypeHandlers {
 
     @SuppressWarnings("unchecked")
     static <T> InternalTypeHandler<T> findByType(Class<T> type) {
-        return (InternalTypeHandler<T>) TYPE_HANDLERS.computeIfAbsent(type, TypeHandlers::findByType0);
+        return (InternalTypeHandler<T>) TYPE_HANDLERS.computeIfAbsent(type, TypeHandlerRegistry::findByType0);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

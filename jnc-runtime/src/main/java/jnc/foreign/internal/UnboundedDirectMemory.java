@@ -9,7 +9,7 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
         return address == 0 ? null : new UnboundedDirectMemory(address);
     }
 
-    UnboundedDirectMemory(long address) {
+    private UnboundedDirectMemory(long address) {
         super(new MemoryAccessor(address));
     }
 
@@ -20,8 +20,6 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
 
     /**
      * Do not rely on the String presentation, maybe changed in the future.
-     *
-     * @return
      */
     @Override
     public String toString() {

@@ -13,18 +13,19 @@ import jnc.foreign.Type;
 import jnc.foreign.TypeHandler;
 import jnc.foreign.enums.TypeAlias;
 
-class ForeignImpl implements Foreign {
+class DefaultForeign implements Foreign {
 
     private final ForeignProvider provider;
+    private final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
 
-    ForeignImpl(ForeignProvider provider) {
+    DefaultForeign(ForeignProvider provider) {
         this.provider = provider;
     }
 
     @Nonnull
     @Override
     public <T> T load(Class<T> interfaceClass, String libname, LoadOptions loadOptions) {
-        InvocationLibrary library = new InvocationLibrary(interfaceClass, NativeLibrary.open(libname, 0), loadOptions);
+        InvocationLibrary library = new InvocationLibrary(interfaceClass, Library.open(libname, 0), loadOptions);
         return interfaceClass.cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(),
                 new Class<?>[]{interfaceClass},
                 (Object proxy, Method method, Object[] args)
@@ -62,7 +63,7 @@ class ForeignImpl implements Foreign {
 
     @Override
     public <T> TypeHandler<T> findTypeHandler(Class<T> clazz) throws UnsupportedOperationException {
-        return TypeHandlers.findByType(clazz);
+        return TypeHandlerRegistry.findByType(clazz);
     }
 
     @Nonnull

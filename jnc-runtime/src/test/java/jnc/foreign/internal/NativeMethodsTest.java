@@ -39,13 +39,13 @@ public class NativeMethodsTest {
         log.info("test not found");
         String path = System.mapLibraryName("not_exists_lib");
         try {
-            NativeLibrary.open(path, 0);
+            Library.open(path, 0);
             fail("should throw a UnsatisfiedLinkError");
         } catch (UnsatisfiedLinkError ex) {
             log.info(ex.getMessage());
             assertNotEquals(0, ex.getMessage().length());
         }
-        NativeLibrary libm = NativeLibrary.open(LIBM, 0);
+        Library libm = Library.open(LIBM, 0);
         try {
             libm.dlsym("not_exists_function");
             fail("should throw a UnsatisfiedLinkError");
@@ -64,7 +64,7 @@ public class NativeMethodsTest {
         } catch (NullPointerException ex) {
             // ok
         }
-        NativeLibrary libm = NativeLibrary.open(LIBM, 0);
+        Library libm = Library.open(LIBM, 0);
         try {
             libm.dlsym(null);
             fail("should throw a NullPointerException");
@@ -82,7 +82,7 @@ public class NativeMethodsTest {
     @Test
     public void testDlopen() {
         for (int i = 0; i < 10; ++i) {
-            NativeLibrary.open(null, 0);
+            Library.open(null, 0);
         }
     }
 
@@ -112,7 +112,7 @@ public class NativeMethodsTest {
 
     @Test
     public void testFfi_call() throws Exception {
-        NativeLibrary lib = NativeLibrary.open(LIBC, 0);
+        Library lib = Library.open(LIBC, 0);
         long toupper = lib.dlsym("toupper");
         ffi_cif cif = new ffi_cif(CallingMode.DEFAULT, BuiltinType.SINT32, BuiltinType.SINT32);
         CallContext p = cif.newCallContext();

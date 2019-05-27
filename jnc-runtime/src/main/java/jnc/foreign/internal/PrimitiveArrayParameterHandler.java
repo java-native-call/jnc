@@ -19,6 +19,15 @@ class PrimitiveArrayParameterHandler {
         put(map, long[].class, Pointer::putLongArray, Pointer::getLongArray, Long.BYTES);
         put(map, float[].class, Pointer::putFloatArray, Pointer::getFloatArray, Float.BYTES);
         put(map, double[].class, Pointer::putDoubleArray, Pointer::getDoubleArray, Double.BYTES);
+        put(map, boolean[].class, (memory, offset, array, off, len) -> {
+            for (int i = off; i < len; i++) {
+                memory.putByte(offset + i, (byte) (array[i] ? 1 : 0));
+            }
+        }, (memory, offset, array, off, len) -> {
+            for (int i = off; i < len; i++) {
+                array[i] = memory.getByte(offset + i) != 0;
+            }
+        }, Byte.BYTES);
         MAP = map;
     }
 
@@ -42,11 +51,7 @@ class PrimitiveArrayParameterHandler {
     static <T> ParameterHandler<T> getInstance(Class<T> type) {
         @SuppressWarnings("unchecked")
         ParameterHandler<T> handler = (ParameterHandler<T>) MAP.get(type);
-        if (handler != null) {
-            return handler;
-        }
-        // boolean array
-        throw new UnsupportedOperationException("Not supported yet.");
+        return handler;
     }
 
     private interface ArrayParameterHandler<T> {

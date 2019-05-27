@@ -13,7 +13,6 @@ import static jnc.foreign.internal.TypeInfo.MASK_SIGNED;
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 class TypeHelper {
 
-
     private static final EnumMap<NativeType, TypeInfo> MAP;
     private static final Map<Integer, TypeInfo> TYPE_INFOS;
     private static final HashMap<Class<?>, TypeInfo> PRIMITIVE_MAP;
@@ -45,15 +44,16 @@ class TypeHelper {
 
         TYPE_POINTER = map.get(NativeType.ADDRESS);
     }
+
     static Alias findByAlias(TypeAlias typeAlias) {
         Objects.requireNonNull(typeAlias, "type alias");
         return AliasMapHolder.find(typeAlias);
     }
 
     private static void add(long[][] types, NativeType nativeType, Class<?> primaryClass, int type, int attr,
-                            Map<Integer, TypeInfo> typeInfos,
-                            Map<NativeType, TypeInfo> nativeTypeMap,
-                            Map<Class<?>, TypeInfo> primitiveMap) {
+            Map<Integer, TypeInfo> typeInfos,
+            Map<NativeType, TypeInfo> nativeTypeMap,
+            Map<Class<?>, TypeInfo> primitiveMap) {
         long[] arr = types[type];
         long address = arr[0];
         long info = arr[1];
@@ -66,7 +66,7 @@ class TypeHelper {
         }
     }
 
-    static TypeInfo findByType(int type) {
+    private static TypeInfo findByType(int type) {
         TypeInfo ti = TYPE_INFOS.get(type);
         if (ti == null) {
             throw new IllegalArgumentException("unsupported type " + type);
@@ -111,7 +111,7 @@ class TypeHelper {
             try {
                 return TypeAlias.valueOf(name);
             } catch (IllegalArgumentException ex) {
-                // ok might be int,long,pointer
+                // ok might be int,long
             }
             if (name.equals("int")) {
                 return TypeAlias.cint;
