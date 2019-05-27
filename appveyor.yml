@@ -22,4 +22,7 @@ test_script:
 cache:
   - '%USERPROFILE%\.m2'
 after_test:
+  - 'SET PATH=C:\Python34;C:\Python34\Scripts;%PATH%'
+  - pip install codecov
+  - codecov -X gcov -f jnc-runtime/target/site/jacoco/jacoco.xml
   - mvnw build-helper:remove-project-artifact

@@ -11,7 +11,6 @@ public interface Pointer {
     long address();
 
     /**
-     * @param offset
      * @return treat specified offset of this pointer as address value and read
      * the data.
      */

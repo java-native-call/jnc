@@ -21,3 +21,5 @@ matrix:
 sudo: required
 install: chmod +x manager && ./manager os-fix dependency
 script: ./manager install
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
