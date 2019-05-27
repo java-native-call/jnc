@@ -22,9 +22,9 @@ interface InvocationLibrary {
                     String name = method.getName();
                     long function = library.dlsym(name);
                     MethodAnnotationContext mac = new MethodAnnotationContext(method);
-                    ReturnTypeHandlerInfo<?> returnTypeInfo = typeHandlerRegistry.findReturnTypeInfo(method.getReturnType());
-                    InternalType retType = returnTypeInfo.getInternalType(mac);
-                    Invoker<?> invoker = returnTypeInfo.getInvoker();
+                    TypeHandlerInfo<? extends Invoker<?>> returnTypeInfo = typeHandlerRegistry.findReturnTypeInfo(method.getReturnType());
+                    InternalType retType = returnTypeInfo.getType(mac);
+                    Invoker<?> invoker = returnTypeInfo.getHandler();
                     Class<?>[] parameterTypes = method.getParameterTypes();
                     Annotation[][] annotations = method.getParameterAnnotations();
                     int len = parameterTypes.length;
@@ -34,9 +34,9 @@ interface InvocationLibrary {
                     for (int i = 0; i < len; ++i) {
                         Class<?> type = parameterTypes[i];
                         MethodParameterAnnotationContext mpac = new MethodParameterAnnotationContext(annotations[i]);
-                        ParameterHandlerInfo<?> handlerInfo = typeHandlerRegistry.findParameterTypeInfo(type);
-                        ptypes[i] = handlerInfo.getType(mpac);
-                        handlers[i] = handlerInfo.getHandler();
+                        TypeHandlerInfo<? extends ParameterHandler<?>> typeHandlerInfo = typeHandlerRegistry.findParameterTypeInfo(type);
+                        ptypes[i] = typeHandlerInfo.getType(mpac);
+                        handlers[i] = typeHandlerInfo.getHandler();
                     }
                     jnc.foreign.annotation.CallingConvention methodConvention = mac.getAnnotation(jnc.foreign.annotation.CallingConvention.class);
                     ffi_cif cif = new ffi_cif(methodConvention != null ? methodConvention.value() : classConvention, retType, ptypes);

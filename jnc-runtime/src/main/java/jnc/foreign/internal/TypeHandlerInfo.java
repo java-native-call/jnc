@@ -20,20 +20,20 @@ import jnc.foreign.annotation.Typedef;
 /**
  * @author zhanhb
  */
-abstract class ParameterHandlerInfo<T> {
+abstract class TypeHandlerInfo<T> {
 
-    static <T> ParameterHandlerInfo<T> acFirst(InternalType internalType, ParameterHandler<T> invoker) {
-        return new AnnotationContextFirst<>(internalType, invoker);
+    static <T> TypeHandlerInfo<T> acFirst(InternalType type, T handler) {
+        return new AnnotationContextFirst<>(type, handler);
     }
 
-    static <T> ParameterHandlerInfo<T> always(InternalType internalType, ParameterHandler<T> invoker) {
-        return new Always<>(internalType, invoker);
+    static <T> TypeHandlerInfo<T> always(InternalType type, T invoker) {
+        return new Always<>(type, invoker);
     }
 
     private final InternalType type;
-    private final ParameterHandler<T> handler;
+    private final T handler;
 
-    ParameterHandlerInfo(InternalType type, ParameterHandler<T> handler) {
+    TypeHandlerInfo(InternalType type, T handler) {
         this.type = type;
         this.handler = handler;
     }
@@ -44,13 +44,13 @@ abstract class ParameterHandlerInfo<T> {
 
     public abstract InternalType getType(AnnotationContext ac);
 
-    public ParameterHandler<T> getHandler() {
+    public T getHandler() {
         return handler;
     }
 
-    private static class Always<T> extends ParameterHandlerInfo<T> {
+    private static class Always<T> extends TypeHandlerInfo<T> {
 
-        private Always(InternalType type, ParameterHandler<T> handler) {
+        private Always(InternalType type, T handler) {
             super(type, handler);
         }
 
@@ -61,9 +61,9 @@ abstract class ParameterHandlerInfo<T> {
 
     }
 
-    private static class AnnotationContextFirst<T> extends ParameterHandlerInfo<T> {
+    private static class AnnotationContextFirst<T> extends TypeHandlerInfo<T> {
 
-        private AnnotationContextFirst(InternalType type, ParameterHandler<T> handler) {
+        private AnnotationContextFirst(InternalType type, T handler) {
             super(type, handler);
         }
 
