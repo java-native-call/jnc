@@ -85,7 +85,7 @@ public class TypedefTest {
                 "register_t",
                 "segsz_t"
         );
-        write("macosx",
+        write("osx",
                 "ct_rune_t",
                 "rune_t",
                 "sae_associd_t",

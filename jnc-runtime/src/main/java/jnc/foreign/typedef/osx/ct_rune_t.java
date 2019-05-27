@@ -1,4 +1,4 @@
-package jnc.foreign.typedef.macosx;
+package jnc.foreign.typedef.osx;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,6 @@ import jnc.foreign.enums.TypeAlias;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})
-@Typedef(TypeAlias.user_long_t)
-public @interface user_long_t {
+@Typedef(TypeAlias.ct_rune_t)
+public @interface ct_rune_t {
 }

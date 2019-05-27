@@ -1,4 +1,4 @@
-package jnc.foreign.typedef.macosx;
+package jnc.foreign.typedef.osx;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package jnc.foreign.typedef.macosx;
+package jnc.foreign.typedef.osx;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,6 @@ import jnc.foreign.enums.TypeAlias;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.PARAMETER})
-@Typedef(TypeAlias.sae_associd_t)
-public @interface sae_associd_t {
+@Typedef(TypeAlias.user_ssize_t)
+public @interface user_ssize_t {
 }
