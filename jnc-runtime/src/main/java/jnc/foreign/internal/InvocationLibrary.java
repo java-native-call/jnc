@@ -11,7 +11,8 @@ interface InvocationLibrary {
             TypeHandlerRegistry typeHandlerRegistry) {
         ClassAnnotationContext cac = new ClassAnnotationContext(interfaceClass);
         jnc.foreign.annotation.CallingConvention classConventionAnnotation = cac.getAnnotation(jnc.foreign.annotation.CallingConvention.class);
-        final CallingConvention classConvention = classConventionAnnotation != null ? classConventionAnnotation.value() : loadOptions.getCallingConvention();
+        CallingConvention optionConvention = loadOptions.getCallingConvention();
+        final CallingConvention classConvention = optionConvention != null ? optionConvention : classConventionAnnotation != null ? classConventionAnnotation.value() : CallingConvention.DEFAULT;
         return new ProxyBuilder()
                 .useProxyMethods()
                 .useDefaultMethod()

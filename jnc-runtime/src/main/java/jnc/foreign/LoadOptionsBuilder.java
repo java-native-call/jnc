@@ -8,12 +8,6 @@ import jnc.foreign.enums.CallingConvention;
 @SuppressWarnings("WeakerAccess")
 public class LoadOptionsBuilder {
 
-    private static void checkState(boolean condition, String msg, Object... args) {
-        if (!condition) {
-            throw new IllegalStateException(MessageFormat.format(msg, args));
-        }
-    }
-
     private CallingConvention callingConvention;
 
     public LoadOptionsBuilder() {
@@ -27,16 +21,22 @@ public class LoadOptionsBuilder {
         return callingConvention(CallingConvention.DEFAULT);
     }
 
+    public LoadOptionsBuilder unsetCallingConvention() {
+        this.callingConvention = null;
+        return this;
+    }
+
     public LoadOptionsBuilder callingConvention(CallingConvention callingConvention) {
-        checkState(this.callingConvention == null, "Calling convention was already set to ''{}''", this.callingConvention);
-        this.callingConvention = Objects.requireNonNull(callingConvention, "calling mode");
+        if (this.callingConvention != null) {
+            throw new IllegalStateException(MessageFormat.format("Calling convention was already set to ''{0}''", this.callingConvention));
+        }
+        this.callingConvention = Objects.requireNonNull(callingConvention, "calling convention");
         return this;
     }
 
     @Nonnull
     public LoadOptions create() {
-        CallingConvention cc = callingConvention;
-        return new LoadOptions(cc != null ? cc : CallingConvention.DEFAULT);
+        return new LoadOptions(callingConvention);
     }
 
 }

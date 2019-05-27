@@ -1,12 +1,9 @@
 package jnc.foreign;
 
+import javax.annotation.Nullable;
 import jnc.foreign.enums.CallingConvention;
 
 public final class LoadOptions {
-
-    public static LoadOptions defaultOptions() {
-        return Singleton.DEFAULT;
-    }
 
     private final CallingConvention callingConvention;
 
@@ -14,14 +11,12 @@ public final class LoadOptions {
         this.callingConvention = callingConvention;
     }
 
+    /**
+     * @return null if not specified in {@code this} load options.
+     */
+    @Nullable
     public CallingConvention getCallingConvention() {
         return callingConvention;
-    }
-
-    private interface Singleton {
-
-        LoadOptions DEFAULT = new LoadOptionsBuilder().create();
-
     }
 
 }
