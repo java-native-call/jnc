@@ -173,9 +173,7 @@ public class NativeMethodsTest {
             String string = nm.getStringUTF(address);
             assertEquals("", string);
         } finally {
-            if (address != 0) {
-                nm.freeMemory(address);
-            }
+            nm.freeMemory(address);
         }
     }
 
@@ -190,7 +188,8 @@ public class NativeMethodsTest {
     }
 
     /**
-     * Test of putStringChar16/getStringChar16/getStringChar16N methods, of class NativeMethods.
+     * Test of putStringChar16/getStringChar16/getStringChar16N methods, of
+     * class NativeMethods.
      */
     @Test
     public void testStringChar16() {

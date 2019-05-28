@@ -128,11 +128,6 @@ template<class T> struct ffi_value<T, true, false> : integral_matcher<sizeof (T)
 
 #define DEFINE(type) {#type, ffi_value<type>::value},
 
-template<class T, size_t N>
-static constexpr size_t array_size(T(&)[N]) noexcept {
-    return N;
-}
-
 // There is no type errno_t on OpenBSD
 // Maybe old MinGW doesn't define this.
 // https://en.cppreference.com/w/cpp/language/typedef
