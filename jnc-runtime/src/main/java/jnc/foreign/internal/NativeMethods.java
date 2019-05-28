@@ -108,42 +108,39 @@ class NativeMethods {
     }
 
     private static String getLibPath() {
-        String prefix = NativeMethods.class.getPackage().getName().replace(".", "/").concat("/native/");
+        StringBuilder sb = new StringBuilder(NativeMethods.class.getPackage().getName().replace(".", "/")).append("/native/");
         Platform platform = DefaultPlatform.INSTANCE;
         Platform.OS os = platform.getOS();
-        String osPrefix;
         switch (os) {
             case WINDOWS:
-                osPrefix = "win32";
+                sb.append("win32");
                 break;
             case DARWIN:
-                return prefix + "darwin/libjnc.jnilib";
+                return sb.append("darwin/libjnc.jnilib").toString();
             case UNKNOWN:
                 throw new UnsupportedOperationException("unsupported operation system");
             default:
-                osPrefix = os.name().toLowerCase(Locale.US);
+                sb.append(os.name().toLowerCase(Locale.US));
                 break;
         }
+        sb.append('/');
         Platform.Arch arch = platform.getArch();
-        String archName;
         switch (arch) {
             case I386:
             case X86_64:
-                archName = arch.name().toLowerCase(Locale.US);
-                break;
+                return sb.append(System.mapLibraryName("jnc-" + arch.name().toLowerCase(Locale.US))).toString();
             default:
                 throw new UnsupportedOperationException("unsupported operation system arch");
         }
-        return prefix + osPrefix + "/" + System.mapLibraryName("jnc-" + archName);
     }
 
     // access by native method
     @SuppressWarnings({"unused", "CollectionsToArray"})
     private static void onUnload() {
-        Runnable[] array;
+        Runnable[] array = {};
         lock.lock();
         try {
-            array = ON_UNLOAD.toArray(new Runnable[ON_UNLOAD.size()]);
+            array = ON_UNLOAD.toArray(array);
         } finally {
             lock.unlock();
         }
