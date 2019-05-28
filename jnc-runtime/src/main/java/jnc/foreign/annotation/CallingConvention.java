@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Calling Convention searching order: method annotation, load options, class annotation,
- * enclosing class annotation.
+ * interfaces this interface is extending.
  *
  * @author zhanhb
  */

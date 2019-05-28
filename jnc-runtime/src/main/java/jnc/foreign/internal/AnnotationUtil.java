@@ -33,9 +33,15 @@ public class AnnotationUtil {
         T anno;
         for (Class<?> tmp = klass;
                 tmp != null;
-                tmp = tmp.getEnclosingClass()) {
+                tmp = tmp.getSuperclass()) {
             if ((anno = tmp.getAnnotation(type)) != null
                     || (anno = getAnnotation0(tmp.getAnnotations(), type)) != null) {
+                return anno;
+            }
+        }
+        for (Class<?> iface : klass.getInterfaces()) {
+            if ((anno = iface.getAnnotation(type)) != null
+                    || (anno = getAnnotation0(iface.getAnnotations(), type)) != null) {
                 return anno;
             }
         }
