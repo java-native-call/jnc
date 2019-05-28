@@ -31,7 +31,7 @@ public class WindowsTest {
     public void testGetCurrentProcess() {
         log.info("GetCurrentProcess");
         long current = Kernel32.INSTANCE.GetCurrentProcess();
-        if (Platform.getNativePlatform().getArch() == Arch.I386) {
+        if (Platform.getNativePlatform().getArch() == Platform.Arch.I386) {
             assertEquals(0xFFFFFFFFL, current);
         } else {
             assertEquals(-1, current);

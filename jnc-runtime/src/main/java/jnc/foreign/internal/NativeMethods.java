@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nullable;
-import jnc.foreign.Arch;
-import jnc.foreign.OS;
 import jnc.foreign.Platform;
 
 class NativeMethods {
@@ -112,7 +110,7 @@ class NativeMethods {
     private static String getLibPath() {
         String prefix = NativeMethods.class.getPackage().getName().replace(".", "/").concat("/native/");
         Platform platform = DefaultPlatform.getInstance();
-        OS os = platform.getOS();
+        Platform.OS os = platform.getOS();
         String osPrefix;
         switch (os) {
             case WINDOWS:
@@ -127,7 +125,7 @@ class NativeMethods {
                 osPrefix = os.name().toLowerCase(Locale.US);
                 break;
         }
-        Arch arch = platform.getArch();
+        Platform.Arch arch = platform.getArch();
         String archName;
         switch (arch) {
             case I386:

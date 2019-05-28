@@ -1,8 +1,6 @@
 package jnc.foreign.internal;
 
 import javax.annotation.Nonnull;
-import jnc.foreign.Arch;
-import jnc.foreign.OS;
 import jnc.foreign.Platform;
 
 class DefaultPlatform extends Platform {
