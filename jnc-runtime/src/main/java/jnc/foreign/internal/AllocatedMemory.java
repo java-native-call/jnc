@@ -19,8 +19,11 @@ class AllocatedMemory extends SizedDirectMemory {
             return memory;
         } finally {
             if (!success) {
-                free.run();
-                SET.remove(free);
+                try {
+                    free.run();
+                } finally {
+                    SET.remove(free);
+                }
             }
         }
     }

@@ -42,8 +42,11 @@ class NativeLibrary implements Library {
             return library;
         } finally {
             if (!success) {
-                dlclose.run();
-                SET.remove(dlclose);
+                try {
+                    dlclose.run();
+                } finally {
+                    SET.remove(dlclose);
+                }
             }
         }
     }
