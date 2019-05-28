@@ -171,6 +171,11 @@ static jstring returnNewString(JNIEnv *env, const jchar *addr, size_t len) {
 }
 
 static jstring copyNewString(JNIEnv *env, const jchar *addr, size_t len) {
+    if (unlikely(len > INT32_MAX)) {
+        // can't find a presentation for this length
+        throwByName(env, OutOfMemory, NULL);
+        return NULL;
+    }
     jchar *tmp = (jchar *) malloc(len * sizeof (jchar));
     checkOutOfMemory(env, tmp, NULL);
     memcpy(tmp, addr, len * sizeof (jchar));
