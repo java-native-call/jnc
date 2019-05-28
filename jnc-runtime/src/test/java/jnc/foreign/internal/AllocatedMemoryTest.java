@@ -3,8 +3,8 @@ package jnc.foreign.internal;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 
 @SuppressWarnings("ResultOfObjectAllocationIgnored")
@@ -12,57 +12,33 @@ public class AllocatedMemoryTest {
 
     @Test
     public void testIllegalArgument() {
-        try {
-            AllocatedMemory.allocate(-1);
-            fail("should throw IllegalArgumentException");
-        } catch (IllegalArgumentException ex) {
-            // ok
-        }
-        try {
-            AllocatedMemory.allocate(-1, 1);
-            fail("should throw IllegalArgumentException");
-        } catch (IllegalArgumentException ex) {
-            // ok
-        }
-        try {
-            AllocatedMemory.allocate(1, -1);
-            fail("should throw IllegalArgumentException");
-        } catch (IllegalArgumentException ex) {
-            // ok
-        }
-        try {
-            AllocatedMemory.allocate(-1, -1);
-            fail("should throw IllegalArgumentException");
-        } catch (IllegalArgumentException ex) {
-            // ok
-        }
+        assertThatThrownBy(() -> AllocatedMemory.allocate(-1))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> AllocatedMemory.allocate(-1, 1))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> AllocatedMemory.allocate(1, -1))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> AllocatedMemory.allocate(-1, -1))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> AllocatedMemory.allocate(0, -1))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> AllocatedMemory.allocate(-1, 0))
+                .isInstanceOf(IllegalArgumentException.class);
         AllocatedMemory.allocate(0, 0);
     }
 
     @Test
     public void testOutOfMemory() {
-        try {
-            AllocatedMemory.allocate(Long.MAX_VALUE);
-            fail("should throw OutOfMemoryError");
-        } catch (OutOfMemoryError ex) {
-            // ok
-        }
-        try {
-            AllocatedMemory.allocate(Integer.MAX_VALUE, Integer.MAX_VALUE);
-            fail("should throw OutOfMemoryError");
-        } catch (OutOfMemoryError ex) {
-            // ok
-        }
+        assertThatThrownBy(() -> AllocatedMemory.allocate(Long.MAX_VALUE))
+                .isInstanceOf(OutOfMemoryError.class);
+        assertThatThrownBy(() -> AllocatedMemory.allocate(Integer.MAX_VALUE, Integer.MAX_VALUE))
+                .isInstanceOf(OutOfMemoryError.class);
     }
 
     @Test
     public void testIndexOfRange() {
-        try {
-            AllocatedMemory.allocate(3).putInt(2, 2);
-            fail("should throw IndexOutOfBoundsException");
-        } catch (IndexOutOfBoundsException ex) {
-            // ok
-        }
+        AllocatedMemory memory = AllocatedMemory.allocate(3);
+        assertThatThrownBy(() -> memory.putInt(2, 2)).isInstanceOf(IndexOutOfBoundsException.class);
     }
 
     @Test

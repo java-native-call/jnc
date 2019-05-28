@@ -16,6 +16,7 @@
 package jnc.foreign.internal;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -78,13 +79,17 @@ public class ProxyBuilderTest {
         // toString must be implemented for junit require this to display error message if failed
         ProxyBuilder builder = new ProxyBuilder().useProxyToString();
         Closeable closeable = builder.toInstance(Closeable.class);
-        assertThatThrownBy(closeable::close).isExactlyInstanceOf(AbstractMethodError.class).hasMessage("close");
+        assertThatThrownBy(closeable::close).isInstanceOf(AbstractMethodError.class).hasMessage("close");
 
         closeable = builder.orThrow(method -> new UnsupportedOperationException(method.getName())).toInstance(Closeable.class);
-        assertThatThrownBy(closeable::close).isExactlyInstanceOf(UnsupportedOperationException.class).hasMessage("close");
+        assertThatThrownBy(closeable::close).isInstanceOf(UnsupportedOperationException.class).hasMessage("close");
+
+        closeable = builder.orThrow(method -> new IOException(method.getName())).toInstance(Closeable.class);
+        assertThatThrownBy(closeable::close).isInstanceOf(IOException.class).hasMessage("close");
 
         closeable = builder.orThrow(method -> new Exception(method.getName())).toInstance(Closeable.class);
-        assertThatThrownBy(closeable::close).isExactlyInstanceOf(UndeclaredThrowableException.class).hasCauseExactlyInstanceOf(Exception.class);
+        assertThatThrownBy(closeable::close).isInstanceOf(UndeclaredThrowableException.class)
+                .hasCauseExactlyInstanceOf(Exception.class);
     }
 
 }

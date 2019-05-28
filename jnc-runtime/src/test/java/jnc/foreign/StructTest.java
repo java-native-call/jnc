@@ -9,11 +9,11 @@ import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uint32_t;
 import jnc.foreign.typedef.uintptr_t;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,12 +110,8 @@ public class StructTest {
     public void testAdvance() {
         Struct struct = new Struct();
         struct.size();
-        try {
-            struct.new size_t();
-            fail("should throw IllegalStateException");
-        } catch (IllegalStateException ex) {
-            // ok
-        }
+        assertThatThrownBy(() -> struct.new size_t())
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -143,22 +139,22 @@ public class StructTest {
         assertEquals(Long.MIN_VALUE, struct.getAsLong()); // value truncated
     }
 
-    @Test(expected = OutOfMemoryError.class)
+    @Test
     public void testStructSizeTooLarge() {
-        new Struct() {
+        assertThatThrownBy(() -> new Struct() {
             {
                 padding(Integer.MAX_VALUE);
             }
-        };
+        }).isInstanceOf(OutOfMemoryError.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIllegalSize() {
-        new Struct() {
+        assertThatThrownBy(() -> new Struct() {
             {
                 padding(Integer.MIN_VALUE);
             }
-        };
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 
     private static class Wrapper extends Struct {

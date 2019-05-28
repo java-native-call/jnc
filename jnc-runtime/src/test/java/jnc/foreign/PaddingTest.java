@@ -15,34 +15,28 @@
  */
 package jnc.foreign;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
- *
  * @author zhanhb
  */
 public class PaddingTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testIllegal1() {
-        Padding padding = new Padding(0);
-    }
-
     @Test
-    public void testSuccess() {
+    public void testNew() {
+        assertThatThrownBy(() -> new Padding(0))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new Padding(3, 3))
+                .isInstanceOf(IllegalArgumentException.class);
         Padding padding = new Padding(1);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testIllegal2() {
-        Padding padding = new Padding(3, 3);
     }
 
     @Test
     public void testPaddingInStruct() {
         class A extends Struct {
-           private final Padding padding = padding(9, 2);
+            private final Padding padding = padding(9, 2);
         }
         assertEquals(10, new A().size());
     }

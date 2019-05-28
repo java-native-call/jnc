@@ -2,8 +2,7 @@ package jnc.foreign;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +25,9 @@ public class ForeignProvidersTest {
         log.info("new ForeignProviders");
         Constructor<ForeignProviders> constructor = ForeignProviders.class.getDeclaredConstructor();
         constructor.setAccessible(true);
-        try {
-            constructor.newInstance();
-            fail("should throw InvocationTargetException");
-        } catch (InvocationTargetException ex) {
-            assertTrue(ex.getCause() instanceof AssertionError);
-        }
+        assertThatThrownBy(constructor::newInstance)
+                .isInstanceOf(InvocationTargetException.class)
+                .hasCauseInstanceOf(AssertionError.class);
     }
 
 }

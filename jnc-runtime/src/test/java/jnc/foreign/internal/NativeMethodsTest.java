@@ -6,11 +6,10 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 import jnc.foreign.TestLibs;
 import jnc.foreign.enums.CallingConvention;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.AssumptionViolatedException;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -38,45 +37,26 @@ public class NativeMethodsTest {
     public void testNotFound() {
         log.info("test not found");
         String path = System.mapLibraryName("not_exists_lib");
-        try {
-            Library.open(path, 0);
-            fail("should throw a UnsatisfiedLinkError");
-        } catch (UnsatisfiedLinkError ex) {
-            log.info(ex.getMessage());
-            assertNotEquals(0, ex.getMessage().length());
-        }
+        assertThatThrownBy(() -> Library.open(path, 0))
+                .isInstanceOf(UnsatisfiedLinkError.class)
+                .matches(ex -> ex.getMessage().length() > 0, "message won't be empty");
+
         Library libm = Library.open(LIBM, 0);
-        try {
-            libm.dlsym("not_exists_function");
-            fail("should throw a UnsatisfiedLinkError");
-        } catch (UnsatisfiedLinkError ex) {
-            log.info(ex.getMessage());
-            assertNotEquals(0, ex.getMessage().length());
-        }
+        assertThatThrownBy(() -> libm.dlsym("not_exists_function"))
+                .isInstanceOf(UnsatisfiedLinkError.class)
+                .matches(ex -> ex.getMessage().length() > 0, "message won't be empty");
     }
 
     @Test
     public void testNullPointer() {
         log.info("test null pointer");
-        try {
-            nm.dlsym(0, "not_exists_function");
-            fail("should throw a NullPointerException");
-        } catch (NullPointerException ex) {
-            // ok
-        }
+        assertThatThrownBy(() -> nm.dlsym(0, "not_exists_function"))
+                .isInstanceOf(NullPointerException.class);
         Library libm = Library.open(LIBM, 0);
-        try {
-            libm.dlsym(null);
-            fail("should throw a NullPointerException");
-        } catch (NullPointerException ex) {
-            // ok
-        }
-        try {
-            nm.dlclose(0);
-            fail("should throw a NullPointerException");
-        } catch (NullPointerException ex) {
-            // ok
-        }
+        assertThatThrownBy(() -> libm.dlsym(null))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> nm.dlclose(0))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -89,12 +69,8 @@ public class NativeMethodsTest {
     @Test
     public void testInitAlias() {
         log.info("initAlias");
-        try {
-            nm.initAlias(null);
-            fail("should throw NullPointerException");
-        } catch (NullPointerException ex) {
-            // ok
-        }
+        assertThatThrownBy(() -> nm.initAlias(null))
+                .isInstanceOf(NullPointerException.class);
         HashMap<String, Integer> map = new HashMap<>(50);
         nm.initAlias(map);
         log.info("map={}", map);
@@ -197,18 +173,13 @@ public class NativeMethodsTest {
         AllocatedMemory memory = AllocatedMemory.allocate(40);
         long address = memory.address();
         String value = "\u0102\u0304\u0506\u0708\u0000\u0807\u0000";
-        try {
-            nm.putStringChar16(address, null);
-            fail("should throw NullPointerException");
-        } catch (NullPointerException ex) {
-            // ok
-        }
-        try {
-            nm.putStringChar16(0, value);
-            fail("should throw NullPointerException");
-        } catch (NullPointerException ex) {
-            // ok
-        }
+
+        assertThatThrownBy(() -> nm.putStringChar16(address, null))
+                .isInstanceOf(NullPointerException.class);
+
+        assertThatThrownBy(() -> nm.putStringChar16(0, value))
+                .isInstanceOf(NullPointerException.class);
+
         nm.putStringChar16(address, value);
 
         char[] arr1 = new char[4], arr2 = "\u0102\u0304\u0506\u0708".toCharArray();
