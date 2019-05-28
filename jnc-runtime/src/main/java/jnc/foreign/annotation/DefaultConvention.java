@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @CallingConvention(jnc.foreign.enums.CallingConvention.DEFAULT)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PACKAGE, ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface DefaultConvention {
 }

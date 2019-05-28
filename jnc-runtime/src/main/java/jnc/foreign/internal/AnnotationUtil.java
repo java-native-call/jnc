@@ -39,14 +39,6 @@ public class AnnotationUtil {
                 return anno;
             }
         }
-        Package pkg = klass.getPackage();
-        if (pkg != null) {
-            anno = pkg.getAnnotation(type);
-            if (anno != null) {
-                return anno;
-            }
-            return getAnnotation0(pkg.getAnnotations(), type);
-        }
         return null;
     }
 

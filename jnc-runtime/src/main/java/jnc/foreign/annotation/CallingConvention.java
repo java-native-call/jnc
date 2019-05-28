@@ -7,12 +7,12 @@ import java.lang.annotation.Target;
 
 /**
  * Calling Convention searching order: method annotation, load options, class annotation,
- * enclosing class annotation, package annotation.
+ * enclosing class annotation.
  *
  * @author zhanhb
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PACKAGE, ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface CallingConvention {
 
     jnc.foreign.enums.CallingConvention value();

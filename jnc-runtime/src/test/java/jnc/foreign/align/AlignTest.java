@@ -15,8 +15,8 @@ public class AlignTest {
 
     @Test
     public void testAlign() {
-        assertSizeAndAlign(new jnc.foreign.align.align2.Sample(), 6, 2);
-        assertSizeAndAlign(new jnc.foreign.align.align4.Sample(), 8, 4);
+        assertSizeAndAlign(new Aligned2(), 6, 2);
+        assertSizeAndAlign(new Aligned4(), 8, 4);
     }
 
     @Test
@@ -34,6 +34,22 @@ public class AlignTest {
 
         private final uint8_t c = new uint8_t();
         private final int32_t i = new int32_t();
+
+    }
+
+    @Pack(2)
+    private static class Aligned2 extends Struct {
+
+        private final Struct.int32_t a = new int32_t();
+        private final Struct.int8_t b = new int8_t();
+
+    }
+
+    @Pack(4)
+    private static class Aligned4 extends Struct {
+
+        private final Struct.int32_t a = new int32_t();
+        private final Struct.int8_t b = new int8_t();
 
     }
 

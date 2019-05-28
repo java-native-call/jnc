@@ -13,6 +13,6 @@ import java.lang.annotation.Target;
  */
 @CallingConvention(jnc.foreign.enums.CallingConvention.STDCALL)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PACKAGE, ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Stdcall {
 }
