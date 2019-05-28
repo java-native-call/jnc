@@ -22,9 +22,9 @@ enum DefaultPlatform implements Platform {
     }
 
     private static Arch getArchByName(String archName) {
-        if (archName.matches("^(x(86[_-])?64|amd64|em64t)$")) {
+        if (archName.matches("^(?i)(?:x(86[_-])?64|amd64|em64t)$")) {
             return Arch.X86_64;
-        } else if (archName.matches("^(i[3-6]86|x86|pentium)$")) {
+        } else if (archName.matches("^(?i)(?:i[3-6]86|x86|pentium)$")) {
             return Arch.I386;
         } else {
             return Arch.UNKNOWN;
