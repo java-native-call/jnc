@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import jnc.foreign.Platform;
 
 /**
  * @author zhanhb
@@ -36,8 +37,9 @@ class NativeLibrary implements Library {
         try {
             addr = nm.dlopen(libname, mode);
         } catch (UnsatisfiedLinkError error) {
-            if (!"c".equals(libname) && !"libc.so".equals(libname)
-                    || !DefaultPlatform.INSTANCE.getOS().isELF()) {
+            DefaultPlatform platform = DefaultPlatform.INSTANCE;
+            Platform.OS os = platform.getOS();
+            if (!os.isELF() || !"c".equals(libname) && !platform.getLibcName().equals(libname)) {
                 throw error;
             }
             addr = nm.dlopen(null, 0);

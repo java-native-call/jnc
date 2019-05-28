@@ -55,19 +55,19 @@ public class InvocationLibraryTest {
      * Test of find method, of class InvocationLibrary.
      */
     @Test
-    public void testFind() throws Exception {
-        LoadOptions noConvenctionOptions = new LoadOptionsBuilder().unsetCallingConvention().create();
+    public void testFind() {
+        LoadOptions noConventionOptions = new LoadOptionsBuilder().unsetCallingConvention().create();
         LoadOptions stdcallOptions = new LoadOptionsBuilder().stdcall().create();
         LoadOptions cdeclOptions = new LoadOptionsBuilder().cdecl().create();
 
         {
-            test(NoConvention.class, noConvenctionOptions, function -> {
+            test(NoConvention.class, noConventionOptions, function -> {
                 assertThat(function.apply("stdcall").getCallingConvention()).isEqualTo(CallingConvention.STDCALL);
                 assertThat(function.apply("cdecl").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
                 assertThat(function.apply("noConvention").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
             });
 
-            test(StdcallConvention.class, noConvenctionOptions, function -> {
+            test(StdcallConvention.class, noConventionOptions, function -> {
                 assertThat(function.apply("stdcall").getCallingConvention()).isEqualTo(CallingConvention.STDCALL);
                 assertThat(function.apply("cdecl").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
                 assertThat(function.apply("noConvention").getCallingConvention()).isEqualTo(CallingConvention.STDCALL);
