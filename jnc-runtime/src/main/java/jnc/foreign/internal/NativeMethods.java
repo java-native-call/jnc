@@ -288,17 +288,17 @@ class NativeMethods {
 
     native void prepareInvoke(long cif, int abi, int len, long retType, long atypes);
 
-    native boolean invokeBoolean(long cif, long function, long base, int[] offsets, Object obj, long methodId);
+    native boolean invokeBoolean(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
 
-    native int invokeInt(long cif, long function, long base, int[] offsets, Object obj, long methodId);
+    native int invokeInt(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
 
-    native void invokeVoid(long cif, long function, long base, int[] offsets, Object obj, long methodId);
+    native void invokeVoid(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
 
-    native long invokeLong(long cif, long function, long base, int[] offsets, Object obj, long methodId);
+    native long invokeLong(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
 
-    native double invokeDouble(long cif, long function, long base, int[] offsets, Object obj, long methodId);
+    native double invokeDouble(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
 
-    native void invokeStruct(long cif, long function, long base, int[] offsets, long struct, Object obj, long methodId);
+    native void invokeStruct(long cif, long function, long base, @Nullable int[] offsets, long struct, Object obj, long methodId);
 
     native long getMethodId(Method method);
 

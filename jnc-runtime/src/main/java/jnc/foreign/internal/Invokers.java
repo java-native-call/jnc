@@ -15,6 +15,7 @@
  */
 package jnc.foreign.internal;
 
+import javax.annotation.Nullable;
 import jnc.foreign.Pointer;
 
 /**
@@ -25,43 +26,43 @@ class Invokers {
 
     private static final NativeMethods nm = NativeMethods.getInstance();
 
-    static Pointer invokePointer(long cif, long function, long base, int[] offsets) {
+    static Pointer invokePointer(long cif, long function, long base, @Nullable int[] offsets) {
         return UnboundedDirectMemory.of(invokeLong(cif, function, base, offsets));
     }
 
-    static long invokeLong(long cif, long function, long base, int[] offsets) {
+    static long invokeLong(long cif, long function, long base, @Nullable int[] offsets) {
         return nm.invokeLong(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
-    static int invokeInt(long cif, long function, long base, int[] offsets) {
+    static int invokeInt(long cif, long function, long base, @Nullable int[] offsets) {
         return nm.invokeInt(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
-    static boolean invokeBoolean(long cif, long function, long base, int[] offsets) {
+    static boolean invokeBoolean(long cif, long function, long base, @Nullable int[] offsets) {
         return nm.invokeBoolean(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
-    static byte invokeByte(long cif, long function, long base, int[] offsets) {
+    static byte invokeByte(long cif, long function, long base, @Nullable int[] offsets) {
         return (byte) nm.invokeInt(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
-    static char invokeChar(long cif, long function, long base, int[] offsets) {
+    static char invokeChar(long cif, long function, long base, @Nullable int[] offsets) {
         return (char) nm.invokeInt(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
-    static short invokeShort(long cif, long function, long base, int[] offsets) {
+    static short invokeShort(long cif, long function, long base, @Nullable int[] offsets) {
         return (short) nm.invokeInt(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
-    static float invokeFloat(long cif, long function, long base, int[] offsets) {
+    static float invokeFloat(long cif, long function, long base, @Nullable int[] offsets) {
         return (float) nm.invokeDouble(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
-    static double invokeDouble(long cif, long function, long base, int[] offsets) {
+    static double invokeDouble(long cif, long function, long base, @Nullable int[] offsets) {
         return nm.invokeDouble(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
-    static Void invokeVoid(long cif, long function, long base, int[] offsets) {
+    static Void invokeVoid(long cif, long function, long base, @Nullable int[] offsets) {
         nm.invokeVoid(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
         return null;
     }

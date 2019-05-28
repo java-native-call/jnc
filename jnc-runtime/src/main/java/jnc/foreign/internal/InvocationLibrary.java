@@ -100,7 +100,7 @@ class InvocationLibrary<T> {
                 context.finish();
                 return result;
             } else {
-                return invoker.invoke(cif.getCifAddress(), function, EmptyMemoryHolder.NOMEMORY.address(), new int[0]);
+                return invoker.invoke(cif.getCifAddress(), function, 0, null);
             }
         }
     }

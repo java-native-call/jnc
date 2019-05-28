@@ -97,7 +97,7 @@ class EnumTypeHandler<E extends Enum<E>> {
     }
 
     Invoker<E> getInvoker() {
-        return (long cif, long function, long base, int[] offsets) -> mapInt(Invokers.invokeInt(cif, function, base, offsets));
+        return (long cif, long function, long base, @Nullable int[] offsets) -> mapInt(Invokers.invokeInt(cif, function, base, offsets));
     }
 
     FieldAccessor getFieldAccessor() {
