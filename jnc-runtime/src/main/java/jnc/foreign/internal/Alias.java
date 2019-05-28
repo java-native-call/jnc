@@ -1,8 +1,9 @@
 package jnc.foreign.internal;
 
+import jnc.foreign.NativeType;
 import jnc.foreign.enums.TypeAlias;
 
-class Alias implements InternalType {
+final class Alias implements InternalType {
 
     private final TypeAlias typeAlias;
     private final TypeInfo typeInfo;
@@ -10,6 +11,11 @@ class Alias implements InternalType {
     Alias(TypeAlias typeAlias, TypeInfo typeInfo) {
         this.typeAlias = typeAlias;
         this.typeInfo = typeInfo;
+    }
+
+    @Override
+    public NativeType nativeType() {
+        return typeInfo.nativeType();
     }
 
     @Override
@@ -54,6 +60,11 @@ class Alias implements InternalType {
     @Override
     public String toString() {
         return "Alias(" + typeAlias + ",target=" + typeInfo + ")";
+    }
+
+    @Deprecated
+    @Override
+    public void do_not_implement_this_for_its_used_internally() {
     }
 
 }

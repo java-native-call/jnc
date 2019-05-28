@@ -4,13 +4,9 @@ import javax.annotation.Nonnull;
 import jnc.foreign.MemoryManager;
 import jnc.foreign.Pointer;
 
-class NativeMemoryManager implements MemoryManager {
+enum DefaultMemoryManager implements MemoryManager {
 
-    private static final NativeMemoryManager INSTANCE = new NativeMemoryManager();
-
-    public static NativeMemoryManager getInstance() {
-        return INSTANCE;
-    }
+    INSTANCE;
 
     @Nonnull
     @Override

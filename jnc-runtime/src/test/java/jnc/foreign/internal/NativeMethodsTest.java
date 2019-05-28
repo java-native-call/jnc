@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public class NativeMethodsTest {
 
     private static final Logger log = LoggerFactory.getLogger(NativeMethodsTest.class);
-    private static final String LIBC = DefaultPlatform.getInstance().getLibcName();
+    private static final String LIBC = DefaultPlatform.INSTANCE.getLibcName();
     private static final String LIBM = TestLibs.getStandardMath();
     private static final NativeMethods nm = NativeMethods.getInstance();
 

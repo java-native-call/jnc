@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class ffi_cifTest {
 
     private static final Logger log = LoggerFactory.getLogger(ffi_cifTest.class);
-    private static final String LIBC = DefaultPlatform.getInstance().getLibcName();
+    private static final String LIBC = DefaultPlatform.INSTANCE.getLibcName();
     private static final String LIBM = TestLibs.getStandardMath();
     private static final NativeMethods nm = NativeMethods.getInstance();
 

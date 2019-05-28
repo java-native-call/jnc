@@ -26,7 +26,7 @@ public class LibraryLoader<T> {
 
     @Nonnull
     public T load(String libname) {
-        return ForeignProviders.getDefault().load(interfaceClass, libname, loadOptionsBuilder.create());
+        return Foreign.getDefault().load(interfaceClass, libname, loadOptionsBuilder.create());
     }
 
 }

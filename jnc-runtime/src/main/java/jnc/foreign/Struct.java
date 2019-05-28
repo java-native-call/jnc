@@ -98,7 +98,7 @@ public class Struct {
     }
 
     public final Foreign getForeign() {
-        return ForeignProviders.getDefault();
+        return ForeignProvider.getDefault().getForeign();
     }
 
     public final jnc.foreign.Pointer getMemory() {
@@ -844,9 +844,9 @@ public class Struct {
 
         EnumField(Class<E> type) {
             this.type = type;
-            TypeHandler<E> typeHandler = getForeign().findTypeHandler(type);
-            this.fieldAccessor = typeHandler.getFieldAccessor();
-            this.field = new BaseField(typeHandler.nativeType());
+            FieldAccessor<E> fa = getForeign().getEnumFieldAccessor(type);
+            this.fieldAccessor = fa;
+            this.field = new BaseField(fa.type());
         }
 
         public final E get() {

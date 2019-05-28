@@ -40,7 +40,7 @@ public class InvokeTest {
     @Test
     public void testPrimitiveArray() {
         byte[] bytes = "abcde".getBytes(StandardCharsets.UTF_8);
-        Pointer memory = ForeignProviders.getDefault().getMemoryManager().allocate(20);
+        Pointer memory = Foreign.getDefault().getMemoryManager().allocate(20);
         assertEquals(memory.address(), Libc.INSTANCE.memcpy(memory, bytes, 3).address());
         assertEquals("abc", memory.getStringUTF(0));
 

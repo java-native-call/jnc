@@ -3,6 +3,7 @@ package jnc.foreign.internal;
 import java.lang.reflect.Array;
 import javax.annotation.Nullable;
 import jnc.foreign.Foreign;
+import jnc.foreign.ForeignProvider;
 import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.Struct;
@@ -14,7 +15,7 @@ final class TypeHandlerRegistry {
         if (obj == null) {
             context.putLong(index, 0);
         } else {
-            Foreign foreign = DefaultForeignProvider.getInstance().getForeign();
+            Foreign foreign = ForeignProvider.getDefault().getForeign();
             Pointer memory = AllocatedMemory.allocate(obj.componentType(foreign).size());
             obj.toNative(foreign, memory);
             context.onFinish(() -> obj.fromNative(foreign, memory)).putLong(index, memory.address());
@@ -51,7 +52,6 @@ final class TypeHandlerRegistry {
         };
     }
 
-    private final ConcurrentWeakIdentityHashMap<Class<?>, InternalTypeHandler<?>> typeHandlerMap = new ConcurrentWeakIdentityHashMap<>(32);
     private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> exactReturnTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
     private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> inheritedReturnTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
     private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> exactParameterTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
@@ -114,6 +114,7 @@ final class TypeHandlerRegistry {
         exactReturnTypeMap.putIfAbsent(returnType, returnTypeHandlerInfo);
     }
 
+    @SuppressWarnings("unused")
     private <T> void addInheritedReturnTypeHandler(Class<T> returnType, InternalType defaultType, Invoker<T> invoker) {
         addInheritedReturnTypeHandler(returnType, TypeHandlerInfo.acFirst(defaultType, invoker));
     }
@@ -158,37 +159,35 @@ final class TypeHandlerRegistry {
         return null;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     <T> TypeHandlerInfo<Invoker<T>> findReturnTypeInfo(Class<T> returnType) {
         TypeHandlerInfo<Invoker<T>> typeHandlerInfo = extractFromMap(exactReturnTypeMap, inheritedReturnTypeMap, returnType);
         if (typeHandlerInfo != null) {
             return typeHandlerInfo;
         }
-        InternalTypeHandler<T> typeHandler = findHandler(returnType);
+        EnumTypeHandler typeHandler = findEnumHandler(returnType);
         Invoker<T> invoker = typeHandler.getInvoker();
         TypeHandlerInfo<Invoker<T>> rthi = TypeHandlerInfo.acFirst(typeHandler.getDefaultType(), invoker);
         addExactReturnTypeHandler(returnType, rthi);
         return rthi;
     }
 
-    @SuppressWarnings("unchecked")
-    <T> InternalTypeHandler<T> findHandler(Class<T> type) {
-        return (InternalTypeHandler<T>) typeHandlerMap.computeIfAbsent(type, this::findByType0);
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private EnumTypeHandler findEnumHandler(Class type) {
+        try {
+            return EnumTypeHandler.getInstance(type);
+        } catch (IllegalArgumentException ex) {
+            throw new UnsupportedOperationException("no type handler for type '" + type.getName() + "'");
+        }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private InternalTypeHandler<?> findByType0(Class<?> type) {
-        if (type.isEnum() && type != Enum.class) {
-            return EnumTypeHandler.newInstance((Class) type, new ClassAnnotationContext(type));
-        }
-        throw new UnsupportedOperationException("no type handler for type '" + type.getName() + "'");
-    }
-
     <T> TypeHandlerInfo<ParameterHandler<T>> findParameterTypeInfo(Class<T> type) {
         TypeHandlerInfo<ParameterHandler<T>> typeHandlerInfo = extractFromMap(exactParameterTypeMap, inheritedParameterTypeMap, type);
         if (typeHandlerInfo != null) {
             return typeHandlerInfo;
         }
-        InternalTypeHandler<T> typeHandler = findHandler(type);
+        EnumTypeHandler typeHandler = findEnumHandler(type);
         ParameterHandler<T> parameterHandler = typeHandler.getParameterHandler();
         InternalType internalType = typeHandler.getDefaultType();
         TypeHandlerInfo<ParameterHandler<T>> phi = TypeHandlerInfo.acFirst(internalType, parameterHandler);

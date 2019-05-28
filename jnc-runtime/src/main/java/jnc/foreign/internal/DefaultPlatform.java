@@ -3,11 +3,9 @@ package jnc.foreign.internal;
 import javax.annotation.Nonnull;
 import jnc.foreign.Platform;
 
-class DefaultPlatform extends Platform {
+enum DefaultPlatform implements Platform {
 
-    public static Platform getInstance() {
-        return Singleton.INSTANCE;
-    }
+    INSTANCE;
 
     private static boolean startsWith(String string, String other) {
         return string.regionMatches(true, 0, other, 0, other.length());
@@ -17,7 +15,7 @@ class DefaultPlatform extends Platform {
     private final Arch arch;
     private final String libc;
 
-    private DefaultPlatform() {
+    DefaultPlatform() {
         String osName = System.getProperty("os.name", "unknown");
         if (startsWith(osName, "mac") || startsWith(osName, "darwin")) {
             os = OS.DARWIN;
@@ -65,12 +63,6 @@ class DefaultPlatform extends Platform {
     @Override
     public String getLibcName() {
         return libc;
-    }
-
-    private interface Singleton {
-
-        Platform INSTANCE = new DefaultPlatform();
-
     }
 
 }

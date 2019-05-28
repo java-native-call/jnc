@@ -13,4 +13,7 @@ public interface ForeignProvider {
     @Nonnull
     Foreign getForeign();
 
+    @Nonnull
+    Platform getPlatform();
+
 }

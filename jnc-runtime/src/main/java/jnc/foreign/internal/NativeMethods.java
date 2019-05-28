@@ -109,7 +109,7 @@ class NativeMethods {
 
     private static String getLibPath() {
         String prefix = NativeMethods.class.getPackage().getName().replace(".", "/").concat("/native/");
-        Platform platform = DefaultPlatform.getInstance();
+        Platform platform = DefaultPlatform.INSTANCE;
         Platform.OS os = platform.getOS();
         String osPrefix;
         switch (os) {

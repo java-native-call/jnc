@@ -20,7 +20,7 @@ class Library implements NativeObject, Closeable {
             addr = nm.dlopen(libname, mode);
         } catch (UnsatisfiedLinkError error) {
             if (!"c".equals(libname) && !"libc.so".equals(libname)
-                    || !DefaultPlatform.getInstance().getOS().isELF()) {
+                    || !DefaultPlatform.INSTANCE.getOS().isELF()) {
                 throw error;
             }
             addr = nm.dlopen(null, 0);

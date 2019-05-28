@@ -3,29 +3,26 @@ package jnc.foreign.internal;
 import javax.annotation.Nonnull;
 import jnc.foreign.Foreign;
 import jnc.foreign.ForeignProvider;
+import jnc.foreign.Platform;
 
-public class DefaultForeignProvider implements ForeignProvider {
+public enum DefaultForeignProvider implements ForeignProvider {
+
+    INSTANCE;
 
     public static ForeignProvider getInstance() {
-        return Singleton.INSTANCE;
-    }
-
-    private final Foreign foreign;
-
-    private DefaultForeignProvider() {
-        foreign = new DefaultForeign(this);
+        return INSTANCE;
     }
 
     @Nonnull
     @Override
     public Foreign getForeign() {
-        return foreign;
+        return DefaultForeign.INSTANCE;
     }
 
-    private interface Singleton {
-
-        DefaultForeignProvider INSTANCE = new DefaultForeignProvider();
-
+    @Nonnull
+    @Override
+    public Platform getPlatform() {
+        return DefaultPlatform.INSTANCE;
     }
 
 }

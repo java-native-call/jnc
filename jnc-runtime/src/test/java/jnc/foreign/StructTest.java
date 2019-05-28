@@ -49,7 +49,7 @@ public class StructTest {
         log.info("size");
         SizeTStruct instance = new SizeTStruct();
         SizeTStruct tmp = new SizeTStruct();
-        Type expResult = ForeignProviders.getDefault().findType(TypeAlias.size_t);
+        Type expResult = Foreign.getDefault().findType(TypeAlias.size_t);
         final long mask;
         switch (expResult.size()) {
             case 1:

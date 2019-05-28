@@ -7,17 +7,19 @@ import jnc.foreign.enums.TypeAlias;
 public interface Foreign extends Closeable {
 
     @Nonnull
+    static Foreign getDefault() {
+        return ForeignProvider.getDefault().getForeign();
+    }
+
+    @Nonnull
     ForeignProvider provider();
 
     @Nonnull
     <T> T load(Class<T> interfaceClass, String libname, LoadOptions loadOptions);
 
-    @Nonnull
-    Platform getPlatform();
-
     /**
-     *
-     * @throws UnsupportedOperationException if specified type is not supported on current platform
+     * @throws UnsupportedOperationException if specified type is not supported
+     * on current platform.
      */
     @Nonnull
     Type findType(TypeAlias alias) throws UnsupportedOperationException;
@@ -25,7 +27,8 @@ public interface Foreign extends Closeable {
     @Nonnull
     Type findType(NativeType nativeType) throws IllegalArgumentException;
 
-    <T> TypeHandler<T> findTypeHandler(Class<T> clazz) throws UnsupportedOperationException;
+    @Nonnull
+    <E extends Enum<E>> FieldAccessor<E> getEnumFieldAccessor(Class<E> type);
 
     @Nonnull
     MemoryManager getMemoryManager();

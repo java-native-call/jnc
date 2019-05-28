@@ -1,35 +1,31 @@
 package jnc.foreign.internal;
 
 import javax.annotation.Nonnull;
+import jnc.foreign.FieldAccessor;
 import jnc.foreign.Foreign;
 import jnc.foreign.ForeignProvider;
 import jnc.foreign.LoadOptions;
 import jnc.foreign.MemoryManager;
 import jnc.foreign.NativeType;
-import jnc.foreign.Platform;
 import jnc.foreign.Type;
-import jnc.foreign.TypeHandler;
 import jnc.foreign.enums.TypeAlias;
 
-class DefaultForeign implements Foreign {
+enum DefaultForeign implements Foreign {
 
-    private final ForeignProvider provider;
+    INSTANCE;
+
     private final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
 
-    DefaultForeign(ForeignProvider provider) {
-        this.provider = provider;
+    @Nonnull
+    @Override
+    public ForeignProvider provider() {
+        return DefaultForeignProvider.INSTANCE;
     }
 
     @Nonnull
     @Override
     public <T> T load(Class<T> interfaceClass, String libname, LoadOptions loadOptions) {
         return InvocationLibrary.create(interfaceClass, Library.open(libname, 0), loadOptions, typeHandlerRegistry);
-    }
-
-    @Nonnull
-    @Override
-    public Platform getPlatform() {
-        return DefaultPlatform.getInstance();
     }
 
     @Override
@@ -40,7 +36,7 @@ class DefaultForeign implements Foreign {
     @Nonnull
     @Override
     public MemoryManager getMemoryManager() {
-        return NativeMemoryManager.getInstance();
+        return DefaultMemoryManager.INSTANCE;
     }
 
     @Nonnull
@@ -55,15 +51,10 @@ class DefaultForeign implements Foreign {
         return TypeHelper.findByNativeType(nativeType);
     }
 
-    @Override
-    public <T> TypeHandler<T> findTypeHandler(Class<T> type) throws UnsupportedOperationException {
-        return typeHandlerRegistry.findHandler(type);
-    }
-
     @Nonnull
     @Override
-    public ForeignProvider provider() {
-        return provider;
+    public <E extends Enum<E>> FieldAccessor<E> getEnumFieldAccessor(Class<E> type) {
+        return EnumTypeHandler.getInstance(type).getFieldAccessor();
     }
 
     @Override

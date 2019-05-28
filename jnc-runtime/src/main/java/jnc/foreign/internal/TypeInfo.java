@@ -15,11 +15,13 @@
  */
 package jnc.foreign.internal;
 
+import jnc.foreign.NativeType;
+
 /**
  *
  * @author zhanhb
  */
-class TypeInfo implements InternalType {
+final class TypeInfo implements InternalType {
 
     static final int MASK_SIGNED = 1;
     static final int MASK_INTEGRAL = 2;
@@ -27,47 +29,59 @@ class TypeInfo implements InternalType {
 
     private final long address;
     private final long info;
+    private final NativeType nativeType;
     private final int attr;
 
-    TypeInfo(long address, long info, int attr) {
+    TypeInfo(long address, long info, NativeType nativeType, int attr) {
         this.address = address;
         this.info = info;
+        this.nativeType = nativeType;
         this.attr = attr;
     }
 
     @Override
-    public final long address() {
+    public NativeType nativeType() {
+        return nativeType;
+    }
+
+    @Override
+    public long address() {
         return address;
     }
 
     @Override
-    public final int size() {
+    public int size() {
         return (int) (info >>> 32);
     }
 
     @Override
-    public final int alignment() {
+    public int alignment() {
         return (int) (info >> 16) & 0xFFFF;
     }
 
     @Override
-    public final int type() {
+    public int type() {
         return (int) info & 0xFFFF;
     }
 
     @Override
-    public final boolean isSigned() {
+    public boolean isSigned() {
         return (attr & MASK_SIGNED) != 0;
     }
 
     @Override
-    public final boolean isFloatingPoint() {
+    public boolean isFloatingPoint() {
         return (attr & MASK_FLOATING) != 0;
     }
 
     @Override
-    public final boolean isIntegral() {
+    public boolean isIntegral() {
         return (attr & MASK_INTEGRAL) != 0;
+    }
+
+    @Deprecated
+    @Override
+    public void do_not_implement_this_for_its_used_internally() {
     }
 
 }

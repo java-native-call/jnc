@@ -1,12 +1,13 @@
 package jnc.foreign.internal;
 
-class ThreadLocalError implements LastErrorHandler {
+enum ThreadLocalError implements LastErrorHandler {
+
+    INSTANCE;
 
     /**
      * Use Integer to avoid memory leak.
      */
     private static final ThreadLocal<Integer> THREAD_LOCAL = new ThreadLocal<>();
-    private static final ThreadLocalError INSTANCE = new ThreadLocalError();
 
     static int get() {
         Integer i = THREAD_LOCAL.get();

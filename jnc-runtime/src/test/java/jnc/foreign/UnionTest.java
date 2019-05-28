@@ -8,7 +8,7 @@ public class UnionTest {
 
     @Test
     public void testSize() {
-        int int64Align = ForeignProviders.getDefault().findType(NativeType.SINT64).alignment();
+        int int64Align = Foreign.getDefault().findType(NativeType.SINT64).alignment();
         // https://en.wikipedia.org/wiki/Data_structure_alignment#Typical_alignment_of_C_structs_on_x86
         // https://msdn.microsoft.com/en-us/library/45t0s5f4.aspx
         switch (int64Align) {

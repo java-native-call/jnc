@@ -31,7 +31,7 @@ public class WindowsTest {
     public void testGetCurrentProcess() {
         log.info("GetCurrentProcess");
         long current = Kernel32.INSTANCE.GetCurrentProcess();
-        if (Platform.getNativePlatform().getArch() == Platform.Arch.I386) {
+        if (Platform.getNativePlatform().getArch().sizeOfPointer() == 4) {
             assertEquals(0xFFFFFFFFL, current);
         } else {
             assertEquals(-1, current);
@@ -78,7 +78,7 @@ public class WindowsTest {
                 try {
                     IntByReference dwExitCode = new IntByReference();
                     assertFalse(Kernel32.INSTANCE.GetExitCodeProcess(0, dwExitCode));
-                    assertEquals(6, ForeignProviders.getDefault().getLastError());
+                    assertEquals(6, Foreign.getDefault().getLastError());
                 } catch (Throwable t) {
                     atomic.compareAndSet(null, t);
                 }

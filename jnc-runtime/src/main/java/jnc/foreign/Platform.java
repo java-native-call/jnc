@@ -3,27 +3,27 @@ package jnc.foreign;
 import javax.annotation.Nonnull;
 
 @SuppressWarnings("PublicInnerClass")
-public abstract class Platform {
+public interface Platform {
 
     @Nonnull
-    public static Platform getNativePlatform() {
-        return ForeignProviders.getDefault().getPlatform();
+    static Platform getNativePlatform() {
+        return ForeignProvider.getDefault().getPlatform();
     }
 
     @Nonnull
-    public abstract String getLibcName();
+    String getLibcName();
 
     @Nonnull
-    public abstract OS getOS();
+    OS getOS();
 
     @Nonnull
-    public abstract Arch getArch();
+    Arch getArch();
 
-    public enum Arch {
+    enum Arch {
 
         UNKNOWN(0),
-        I386(32),
-        X86_64(64);
+        I386(4),
+        X86_64(8);
 
         private final int size;
 
@@ -31,13 +31,13 @@ public abstract class Platform {
             this.size = size;
         }
 
-        public int pointerSize() {
+        public int sizeOfPointer() {
             return size;
         }
 
     }
 
-    public enum OS {
+    enum OS {
 
         UNKNOWN(OS.FLAG_NONE),
         WINDOWS(OS.FLAG_WINDOWS),
@@ -45,9 +45,9 @@ public abstract class Platform {
         FREEBSD(OS.FLAG_UNIX | OS.FLAG_BSD | OS.FLAG_ELF),
         OPENBSD(OS.FLAG_UNIX | OS.FLAG_BSD | OS.FLAG_ELF),
         DARWIN(OS.FLAG_UNIX | OS.FLAG_BSD), /*
-    AIX(OS.FLAG_UNIX),
-    HPUX(OS.FLAG_UNIX | OS.FLAG_ELF),
-    OPENVMS(OS.FLAG_UNIX | OS.FLAG_ELF)
+        AIX(OS.FLAG_UNIX),
+        HPUX(OS.FLAG_UNIX | OS.FLAG_ELF),
+        OPENVMS(OS.FLAG_UNIX | OS.FLAG_ELF)
          */;
 
         private static final int FLAG_NONE = 0;

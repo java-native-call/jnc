@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nullable;
 import jnc.foreign.NativeType;
 import jnc.foreign.enums.TypeAlias;
 import static jnc.foreign.internal.TypeInfo.MASK_FLOATING;
@@ -50,7 +51,8 @@ class TypeHelper {
         return AliasMapHolder.find(typeAlias);
     }
 
-    private static void add(long[][] types, NativeType nativeType, Class<?> primaryClass, int type, int attr,
+    private static void add(long[][] types, NativeType nativeType,
+            @Nullable Class<?> primaryClass, int type, int attr,
             Map<Integer, TypeInfo> typeInfos,
             Map<NativeType, TypeInfo> nativeTypeMap,
             Map<Class<?>, TypeInfo> primitiveMap) {
@@ -58,7 +60,7 @@ class TypeHelper {
         long address = arr[0];
         long info = arr[1];
 
-        TypeInfo typeInfo = new TypeInfo(address, info, attr);
+        TypeInfo typeInfo = new TypeInfo(address, info, nativeType, attr);
         nativeTypeMap.put(nativeType, typeInfo);
         typeInfos.put(type, typeInfo);
         if (primaryClass != null) {

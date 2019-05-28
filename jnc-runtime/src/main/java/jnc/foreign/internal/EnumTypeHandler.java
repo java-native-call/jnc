@@ -12,11 +12,15 @@ import static jnc.foreign.NativeType.UINT32;
 import static jnc.foreign.NativeType.UINT64;
 import static jnc.foreign.NativeType.UINT8;
 import jnc.foreign.Pointer;
+import jnc.foreign.Type;
 import jnc.foreign.annotation.Continuously;
 import jnc.foreign.enums.EnumMappingErrorAction;
 import jnc.foreign.exception.UnmappableNativeValueException;
 
-class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
+class EnumTypeHandler<E extends Enum<E>> {
+
+    private static final ConcurrentWeakIdentityHashMap<Class<? extends Enum<?>>, EnumTypeHandler<?>> cache
+            = new ConcurrentWeakIdentityHashMap<>(32);
 
     // method annotationType is not implemented, got null if invoked
     // equals, hashCode, toString is same as class {@code Object} does
@@ -30,8 +34,20 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
             SINT8, SINT16, SINT32, SINT64
     );
 
-    static <T extends Enum<T>> EnumTypeHandler<T> newInstance(Class<T> type, AnnotationContext ac) {
-        Continuously annotation = ac.getAnnotationOrDefault(Continuously.class, defaultContinuously);
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static <T extends Enum<T>> EnumTypeHandler<T> getInstance(Class<T> type) {
+        // Must do the cast, or will got COMPILATION ERROR: incomparable types
+        //noinspection RedundantCast
+        if (!type.isEnum() || type == (Class) Enum.class) {
+            throw new IllegalArgumentException("Illegal type '" + type + "'");
+        }
+        return (EnumTypeHandler<T>) cache.computeIfAbsent(type, EnumTypeHandler::newInstance);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static <T extends Enum<T>> EnumTypeHandler<T> newInstance(Class<?> type) {
+        ClassAnnotationContext cac = new ClassAnnotationContext(type);
+        Continuously annotation = cac.getAnnotationOrDefault(Continuously.class, defaultContinuously);
         NativeType nativeType = annotation.type();
         int start = annotation.start();
         EnumMappingErrorAction onUnmappable = annotation.onUnmappable();
@@ -40,42 +56,31 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
                     + nativeType + " on " + type.getName());
         }
         InternalType internalType = TypeHelper.findByNativeType(nativeType);
-        return new EnumTypeHandler<>(type, nativeType, internalType, start, onUnmappable);
+        return new EnumTypeHandler(type, internalType, start, onUnmappable);
     }
 
     private final E[] values;
     private final Class<E> type;
-    private final NativeType nativeType;
     private final InternalType defaultType;
     private final int start;
     private final EnumMappingErrorAction onUnmappable;
     private FieldAccessor fieldAccessor;
 
-    private EnumTypeHandler(Class<E> type, NativeType nativeType, InternalType defaultType, int start,
+    private EnumTypeHandler(Class<E> type, InternalType defaultType, int start,
             EnumMappingErrorAction onUnmappable) {
         this.values = type.getEnumConstants();
         this.type = type;
-        this.nativeType = nativeType;
         this.defaultType = defaultType;
         this.start = start;
         this.onUnmappable = onUnmappable;
     }
 
-    @Override
-    public InternalType getDefaultType() {
+    InternalType getDefaultType() {
         return defaultType;
     }
 
-    @Override
-    public NativeType nativeType() {
-        return nativeType;
-    }
-
-    @Override
-    public ParameterHandler<E> getParameterHandler() {
-        return (CallContext context, int index, E obj) -> {
-            context.putInt(index, obj != null ? start + obj.ordinal() : 0);
-        };
+    ParameterHandler<E> getParameterHandler() {
+        return (CallContext context, int index, E obj) -> context.putInt(index, obj != null ? start + obj.ordinal() : 0);
     }
 
     @Nullable
@@ -91,13 +96,11 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
         throw new UnmappableNativeValueException(type, intVal);
     }
 
-    @Override
-    public Invoker<E> getInvoker() {
+    Invoker<E> getInvoker() {
         return (long cif, long function, long avalues) -> mapInt(Invokers.invokeInt(cif, function, avalues));
     }
 
-    @Override
-    public FieldAccessor getFieldAccessor() {
+    FieldAccessor getFieldAccessor() {
         FieldAccessor fa = this.fieldAccessor;
         if (fa == null) {
             fa = new FieldAccessor();
@@ -107,6 +110,11 @@ class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
     }
 
     private class FieldAccessor implements jnc.foreign.FieldAccessor<E> {
+
+        @Override
+        public Type type() {
+            return defaultType;
+        }
 
         @Override
         public E get(Pointer memory, int offset) {
