@@ -69,15 +69,14 @@ class InvocationLibrary<T> {
 
         private final CallingConvention callingConvention;
         private final ParameterHandler<?>[] handlers;
-        private final ffi_cif cif;
+        private final CifContainer container;
         private final Invoker<?> invoker;
         private final long function;
 
         MethodInvocation(ParameterHandler<?>[] handlers, CallingConvention callingConvention, Invoker<?> invoker, long function, InternalType retType, InternalType[] ptypes) {
-            ffi_cif cif = new ffi_cif(callingConvention, retType, ptypes);
             this.callingConvention = callingConvention;
             this.handlers = handlers;
-            this.cif = cif;
+            this.container = CifContainer.create(callingConvention, retType, ptypes);
             this.invoker = invoker;
             this.function = function;
         }
@@ -92,15 +91,13 @@ class InvocationLibrary<T> {
             ParameterHandler<Object>[] h = (ParameterHandler<Object>[]) handlers;
             int length = h.length;
             if (length != 0) {
-                CallContext context = cif.newCallContext();
+                CallContext context = container.newCallContext();
                 for (int i = 0; i < length; i++) {
                     h[i].handle(context, i, args[i]);
                 }
-                Object result = invoker.invoke(cif.getCifAddress(), function, context.parameterBaseAddress(),context.offsets());
-                context.finish();
-                return result;
+                return context.invoke(invoker, function);
             } else {
-                return invoker.invoke(cif.getCifAddress(), function, 0, null);
+                return invoker.invoke(container.getCifAddress(), function, 0, null);
             }
         }
     }

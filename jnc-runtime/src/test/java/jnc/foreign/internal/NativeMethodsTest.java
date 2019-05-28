@@ -90,12 +90,11 @@ public class NativeMethodsTest {
     public void testFfi_call() throws Exception {
         Library lib = NativeLibrary.open(LIBC, 0);
         long toupper = lib.dlsym("toupper");
-        ffi_cif cif = new ffi_cif(CallingConvention.DEFAULT, BuiltinType.SINT32, BuiltinType.SINT32);
-        CallContext p = cif.newCallContext();
+        CifContainer container = CifContainer.create(CallingConvention.DEFAULT, BuiltinType.SINT32, BuiltinType.SINT32);
+        CallContext context = container.newCallContext();
         int param = 'a';
-        p.putInt(0, param);
-        long addr = p.parameterBaseAddress();
-        long result = nm.invokeInt(cif.getCifAddress(), toupper, addr, p.offsets(), null, 0);
+        context.putInt(0, param);
+        long result = context.invoke(Invokers::invokeInt, toupper);
         log.info("result = " + result);
         assertEquals('A', result);
     }

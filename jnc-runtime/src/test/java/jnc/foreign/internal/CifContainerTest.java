@@ -1,5 +1,6 @@
 package jnc.foreign.internal;
 
+import jnc.foreign.Platform;
 import jnc.foreign.TestLibs;
 import jnc.foreign.enums.CallingConvention;
 import jnc.foreign.enums.TypeAlias;
@@ -8,9 +9,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ffi_cifTest {
+public class CifContainerTest {
 
-    private static final Logger log = LoggerFactory.getLogger(ffi_cifTest.class);
+    private static final Logger log = LoggerFactory.getLogger(CifContainerTest.class);
     private static final String LIBC = DefaultPlatform.INSTANCE.getLibcName();
     private static final String LIBM = TestLibs.getStandardMath();
     private static final NativeMethods nm = NativeMethods.getInstance();
@@ -21,10 +22,10 @@ public class ffi_cifTest {
         Library libm = NativeLibrary.open(LIBM, 0);
 
         long function = libm.dlsym("acos");
-        ffi_cif cif = new ffi_cif(CallingConvention.DEFAULT, BuiltinType.DOUBLE, BuiltinType.DOUBLE);
-        CallContext ctx = cif.newCallContext();
+        CifContainer container = CifContainer.create(CallingConvention.DEFAULT, BuiltinType.DOUBLE, BuiltinType.DOUBLE);
+        CallContext ctx = container.newCallContext();
         ctx.putDouble(0, -1);
-        double result = nm.invokeDouble(cif.getCifAddress(), function, ctx.parameterBaseAddress(), ctx.offsets(), null, 0);
+        double result = ctx.invoke(Invokers::invokeDouble, function);
         assertEquals(Math.PI, result, 1e-10);
     }
 
@@ -35,8 +36,8 @@ public class ffi_cifTest {
         long function = libc.dlsym("memcpy");
         Alias sizeT = TypeHelper.findByAlias(TypeAlias.size_t);
         Alias uIntPtr = TypeHelper.findByAlias(TypeAlias.uintptr_t);
-        ffi_cif cif = new ffi_cif(CallingConvention.DEFAULT, uIntPtr, uIntPtr, uIntPtr, sizeT);
-        CallContext p = cif.newCallContext();
+        CifContainer container = CifContainer.create(CallingConvention.DEFAULT, uIntPtr, uIntPtr, uIntPtr, sizeT);
+        CallContext p = container.newCallContext();
         Memory a = AllocatedMemory.allocate(20);
         AllocatedMemory b = AllocatedMemory.allocate(20);
         String str = "memory copy test";
@@ -45,9 +46,30 @@ public class ffi_cifTest {
         p.putLong(1, b.address());
         p.putLong(2, b.size());
         assertEquals("", a.getStringUTF(0));
-        long addr = nm.invokeLong(cif.getCifAddress(), function, p.parameterBaseAddress(), p.offsets(), null, 0);
+        long addr = p.invoke(Invokers::invokeLong, function);
         assertEquals(a.address(), addr);
         assertEquals(str, a.getStringUTF(0));
+    }
+
+    @Test
+    public void testGetpid() {
+        log.info("test get pid");
+        Library libc;
+        long function;
+        InternalType returnType;
+        if (Platform.getNativePlatform().getOS().isWindows()) {
+            libc = NativeLibrary.open("kernel32", 0);
+            function = libc.dlsym("GetCurrentProcessId");
+            returnType = TypeHelper.findByAlias(TypeAlias.uint32_t);
+        } else {
+            libc = NativeLibrary.open(LIBC, 0);
+            function = libc.dlsym("getpid");
+            returnType = TypeHelper.findByAlias(TypeAlias.pid_t);
+        }
+        long pid = CifContainer.create(CallingConvention.DEFAULT, returnType)
+                .newCallContext()
+                .invoke(Invokers::invokeLong, function);
+        log.info("pid={}", pid);
     }
 
 }
