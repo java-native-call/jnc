@@ -32,33 +32,18 @@ class NativeLibrary implements Library {
     // There is no issue with java builtin object.
     private static final Set<Runnable> SET = nm.onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(16)));
 
-    static NativeLibrary open(String libname, int mode) {
-        long addr;
-        try {
-            addr = nm.dlopen(libname, mode);
-        } catch (UnsatisfiedLinkError error) {
-            DefaultPlatform platform = DefaultPlatform.INSTANCE;
-            Platform.OS os = platform.getOS();
-            if (!os.isELF() || !"c".equals(libname) && !platform.getLibcName().equals(libname)) {
-                throw error;
-            }
-            addr = nm.dlopen(null, 0);
-        }
+    static NativeLibrary open(String libName, int mode) {
+        Dlclose dlclose = new Dlclose(libName, mode);
         boolean success = false;
-        Dlclose dlclose = null;
         try {
-            dlclose = new Dlclose(addr);
-            NativeLibrary library = new NativeLibrary(addr, dlclose);
+            NativeLibrary library = new NativeLibrary(dlclose);
             SET.add(dlclose);
             success = true;
             return library;
         } finally {
             if (!success) {
-                if (dlclose != null) {
-                    dlclose.run();
-                } else {
-                    nm.dlclose(addr);
-                }
+                dlclose.run();
+                SET.remove(dlclose);
             }
         }
     }
@@ -66,8 +51,8 @@ class NativeLibrary implements Library {
     private final long address;
     private final Dlclose dlclose;
 
-    private NativeLibrary(long address, Dlclose dlclose) {
-        this.address = address;
+    private NativeLibrary(Dlclose dlclose) {
+        this.address = dlclose.getAddress();
         this.dlclose = dlclose;
     }
 
@@ -105,11 +90,29 @@ class NativeLibrary implements Library {
 
         private static final AtomicLongFieldUpdater<Dlclose> UPDATER
                 = AtomicLongFieldUpdater.newUpdater(Dlclose.class, "address");
+
+        private static long openImpl(String libName, int mode) {
+            try {
+                return nm.dlopen(libName, mode);
+            } catch (UnsatisfiedLinkError error) {
+                DefaultPlatform platform = DefaultPlatform.INSTANCE;
+                Platform.OS os = platform.getOS();
+                if (!os.isELF() || !"c".equals(libName) && !platform.getLibcName().equals(libName)) {
+                    throw error;
+                }
+                return nm.dlopen(null, 0);
+            }
+        }
+
         @SuppressWarnings("unused")
         private volatile long address;
 
-        Dlclose(long addr) {
-            this.address = addr;
+        Dlclose(String libname, int mode) {
+            this.address = openImpl(libname, mode);
+        }
+
+        long getAddress() {
+            return address;
         }
 
         @Override

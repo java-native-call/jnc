@@ -7,26 +7,20 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 class AllocatedMemory extends SizedDirectMemory {
 
-    private static final NativeMethods nm = NativeMethods.getInstance();
-    private static final Set<Runnable> SET = nm.onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(32)));
+    private static final Set<Runnable> SET = NativeMethods.getInstance().onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(32)));
 
     private static AllocatedMemory allocateImpl(int size) {
-        long addr = nm.allocateMemory(size);
+        Free free = new Free(size);
         boolean success = false;
-        Free free = null;
         try {
-            free = new Free(addr);
-            AllocatedMemory memory = new AllocatedMemory(addr, size, free);
+            AllocatedMemory memory = new AllocatedMemory(size, free);
             SET.add(free);
             success = true;
             return memory;
         } finally {
             if (!success) {
-                if (free != null) {
-                    free.run();
-                } else {
-                    nm.freeMemory(addr);
-                }
+                free.run();
+                SET.remove(free);
             }
         }
     }
@@ -56,8 +50,8 @@ class AllocatedMemory extends SizedDirectMemory {
 
     private final Free free;
 
-    private AllocatedMemory(long addr, int size, Free free) {
-        super(addr, size);
+    private AllocatedMemory(int size, Free free) {
+        super(free.getAddress(), size);
         this.free = free;
     }
 
@@ -78,13 +72,18 @@ class AllocatedMemory extends SizedDirectMemory {
 
     private static final class Free implements Runnable {
 
+        private static final NativeMethods nm = NativeMethods.getInstance();
         private static final AtomicLongFieldUpdater<Free> UPDATER
                 = AtomicLongFieldUpdater.newUpdater(Free.class, "address");
         @SuppressWarnings("unused")
         private volatile long address;
 
-        Free(long addr) {
-            this.address = addr;
+        Free(int size) {
+            this.address = nm.allocateMemory(size);
+        }
+
+        long getAddress() {
+            return address;
         }
 
         @Override
