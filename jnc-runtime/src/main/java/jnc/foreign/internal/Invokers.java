@@ -43,19 +43,19 @@ class Invokers {
     }
 
     static byte invokeByte(long cif, long function, long base, @Nullable int[] offsets) {
-        return (byte) nm.invokeInt(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
+        return (byte) invokeInt(cif, function, base, offsets);
     }
 
     static char invokeChar(long cif, long function, long base, @Nullable int[] offsets) {
-        return (char) nm.invokeInt(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
+        return (char) invokeInt(cif, function, base, offsets);
     }
 
     static short invokeShort(long cif, long function, long base, @Nullable int[] offsets) {
-        return (short) nm.invokeInt(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
+        return (short) invokeInt(cif, function, base, offsets);
     }
 
     static float invokeFloat(long cif, long function, long base, @Nullable int[] offsets) {
-        return (float) nm.invokeDouble(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
+        return (float) invokeDouble(cif, function, base, offsets);
     }
 
     static double invokeDouble(long cif, long function, long base, @Nullable int[] offsets) {
