@@ -94,8 +94,8 @@ public class NativeMethodsTest {
         CallContext p = cif.newCallContext();
         int param = 'a';
         p.putInt(0, param);
-        long addr = p.address();
-        long result = nm.invokeInt(cif.address(), toupper, addr, null, 0);
+        long addr = p.parameterBaseAddress();
+        long result = nm.invokeInt(cif.getCifAddress(), toupper, addr, p.offsets(), null, 0);
         log.info("result = " + result);
         assertEquals('A', result);
     }

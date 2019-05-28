@@ -1,60 +1,45 @@
 package jnc.foreign.internal;
 
+import jnc.foreign.Struct;
 import jnc.foreign.enums.CallingConvention;
 
-class ffi_cif implements NativeObject {
+class ffi_cif {
 
-    private static final NativeMethods nm = NativeMethods.getInstance();
-    private static final int SIZE_OF_FFI_CIF = nm.sizeof_ffi_cif();
-
-    private static int convention(CallingConvention callingConvention) {
-        if (callingConvention == CallingConvention.STDCALL) {
-            return NativeMethods.CONVENTION_STDCALL;
-        }
-        return NativeMethods.CONVENTION_DEFAULT;
-    }
-
-    private final Memory ffi_cif;
-    private final PointerArray argumentTypes;
-    private final long base;
-    private final long[] offsets;
+    private final CifStruct cifStruct;
+    private final int[] offsets;
     private final int parameterSize;
     private final int parameterAlign;
 
     ffi_cif(CallingConvention callingConvention, InternalType resultType, InternalType... params) {
         int count = params.length;
-        int size = 0;
-        int pointerSize = TypeHelper.TYPE_POINTER.size();
-        int alignment = pointerSize;
-        long[] offs = new long[count];
-        for (int i = 0; i < count; ++i) {
-            InternalType param = params[i];
-            int align = Math.max(param.alignment(), pointerSize);
-            alignment = Math.max(align, alignment);
-            size = Aligns.alignUp(size, align);
-            offs[i] = size;
-            size += param.size();
-        }
-        size = Aligns.alignUp(size, alignment);
-        Memory cif = AllocatedMemory.allocate(1, SIZE_OF_FFI_CIF);
-        PointerArray atypes = PointerArray.allocate(params);
-        int offset = Aligns.alignUp(count * pointerSize, alignment);
-        nm.prepareInvoke(cif.address(), convention(callingConvention), count, resultType.address(), atypes.address());
+        int[] offs = new int[count];
+        ParameterTemplate parameterTemplate = new ParameterTemplate(params, offs);
+        CifStruct struct = new CifStruct(params);
+        struct.prepareInvoke(callingConvention, resultType);
+        this.cifStruct = struct;
         this.offsets = offs;
-        this.ffi_cif = cif;
-        this.argumentTypes = atypes;
-        this.parameterSize = offset + size;
-        this.parameterAlign = alignment;
-        this.base = offset;
+        this.parameterSize = parameterTemplate.size();
+        this.parameterAlign = parameterTemplate.alignment();
     }
 
     CallContext newCallContext() {
-        return new CallContext(parameterSize, parameterAlign, base, offsets, argumentTypes);
+        return new CallContext(parameterSize, parameterAlign, offsets, cifStruct);
     }
 
-    @Override
-    public long address() {
-        return ffi_cif.address();
+    long getCifAddress() {
+        return cifStruct.getCif().getMemory().address();
+    }
+
+    private static class ParameterTemplate extends Struct {
+
+        ParameterTemplate(InternalType[] params, int[] offs) {
+            for (int i = 0; i < params.length; i++) {
+                InternalType param = params[i];
+                Struct.Enclosing enclosing = padding(param.size(), param.alignment()).getEnclosing();
+                assert enclosing != null;
+                offs[i] = enclosing.getOffset();
+            }
+        }
     }
 
 }

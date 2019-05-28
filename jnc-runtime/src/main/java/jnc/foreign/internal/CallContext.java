@@ -5,26 +5,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-class CallContext implements NativeObject {
+class CallContext {
 
     private static final NativeMethods nm = NativeMethods.getInstance();
 
-    private final PointerArray types;
-    private final PointerArray values;
+    private final CifStruct cifStruct;
+    private final AllocatedMemory parameter;
     private List<Runnable> onFinish;
+    private final int[] offsets;
 
-    CallContext(int parameterSize, int parameterAlign, long base, long[] offsets, PointerArray types) {
-        int count = offsets.length;
-        Memory p = AllocatedMemory.allocate(parameterSize, parameterAlign);
-        PointerArray v = PointerArray.wrap(p, count);
-        PointerArray.init(v, p.address() + base, offsets);
-        this.types = types;
-        this.values = v;
+    CallContext(int parameterSize, int parameterAlign, int[] offsets, CifStruct cifStruct) {
+        this.cifStruct = cifStruct;
+        this.parameter = AllocatedMemory.allocate(1, parameterSize);
+        this.offsets = offsets;
     }
 
-    @Override
-    public long address() {
-        return values.address();
+    public long parameterBaseAddress() {
+        return parameter.address();
+    }
+
+    @SuppressWarnings("ReturnOfCollectionOrArrayField")
+    public int[] offsets() {
+        return offsets;
     }
 
     public void putBoolean(int i, boolean value) {
@@ -44,26 +46,26 @@ class CallContext implements NativeObject {
     }
 
     public void putInt(int i, int value) {
-        nm.putInt(values.get(i), types.get(i), value);
+        nm.putInt(parameter.address() + offsets[i], cifStruct.get(i), value);
     }
 
     public void putLong(int i, long value) {
-        nm.putLong(values.get(i), types.get(i), value);
+        nm.putLong(parameter.address() + offsets[i], cifStruct.get(i), value);
     }
 
     public void putFloat(int i, float value) {
-        nm.putFloat(values.get(i), types.get(i), value);
+        nm.putFloat(parameter.address() + offsets[i], cifStruct.get(i), value);
     }
 
     public void putDouble(int i, double value) {
-        nm.putDouble(values.get(i), types.get(i), value);
+        nm.putDouble(parameter.address() + offsets[i], cifStruct.get(i), value);
     }
 
     CallContext onFinish(Runnable r) {
         Objects.requireNonNull(r);
         List<Runnable> finish = this.onFinish;
         if (finish == null) {
-            finish = new ArrayList<>(values.length());
+            finish = new ArrayList<>(offsets.length);
             this.onFinish = finish;
         }
         finish.add(r);

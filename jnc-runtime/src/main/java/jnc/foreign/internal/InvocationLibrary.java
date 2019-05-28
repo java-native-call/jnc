@@ -96,11 +96,11 @@ class InvocationLibrary<T> {
                 for (int i = 0; i < length; i++) {
                     h[i].handle(context, i, args[i]);
                 }
-                Object result = invoker.invoke(cif.address(), function, context.address());
+                Object result = invoker.invoke(cif.getCifAddress(), function, context.parameterBaseAddress(),context.offsets());
                 context.finish();
                 return result;
             } else {
-                return invoker.invoke(cif.address(), function, EmptyMemoryHolder.NOMEMORY.address());
+                return invoker.invoke(cif.getCifAddress(), function, EmptyMemoryHolder.NOMEMORY.address(), new int[0]);
             }
         }
     }

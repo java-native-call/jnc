@@ -281,26 +281,24 @@ class NativeMethods {
 
     native int pageSize();
 
-    native int sizeof_ffi_cif();
+    /*
+     * align:32,size:32
+     */
+    native long getCifInfo();
 
     native void prepareInvoke(long cif, int abi, int len, long retType, long atypes);
 
-    native boolean invokeBoolean(long cif, long function, long params, Object obj, long methodId);
+    native boolean invokeBoolean(long cif, long function, long base, int[] offsets, Object obj, long methodId);
 
-    //native byte invokeByte(long cif, long function, long params,Object obj,long methodId);
-    //native short invokeShort(long cif, long function, long params,Object obj,long methodId);
-    //native char invokeChar(long cif, long function, long params,Object obj,long methodId);
-    native int invokeInt(long cif, long function, long params, Object obj, long methodId);
+    native int invokeInt(long cif, long function, long base, int[] offsets, Object obj, long methodId);
 
-    native void invokeVoid(long cif, long function, long params, Object obj, long methodId);
+    native void invokeVoid(long cif, long function, long base, int[] offsets, Object obj, long methodId);
 
-    native long invokeLong(long cif, long function, long params, Object obj, long methodId);
+    native long invokeLong(long cif, long function, long base, int[] offsets, Object obj, long methodId);
 
-    native float invokeFloat(long cif, long function, long params, Object obj, long methodId);
+    native double invokeDouble(long cif, long function, long base, int[] offsets, Object obj, long methodId);
 
-    native double invokeDouble(long cif, long function, long params, Object obj, long methodId);
-
-    native void invokeStruct(long cif, long function, long params, long struct, Object obj, long methodId);
+    native void invokeStruct(long cif, long function, long base, int[] offsets, long struct, Object obj, long methodId);
 
     native long getMethodId(Method method);
 

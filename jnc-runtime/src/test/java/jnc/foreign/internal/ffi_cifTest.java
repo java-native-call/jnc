@@ -24,7 +24,7 @@ public class ffi_cifTest {
         ffi_cif cif = new ffi_cif(CallingConvention.DEFAULT, BuiltinType.DOUBLE, BuiltinType.DOUBLE);
         CallContext ctx = cif.newCallContext();
         ctx.putDouble(0, -1);
-        double result = nm.invokeDouble(cif.address(), function, ctx.address(), null, 0);
+        double result = nm.invokeDouble(cif.getCifAddress(), function, ctx.parameterBaseAddress(), ctx.offsets(), null, 0);
         assertEquals(Math.PI, result, 1e-10);
     }
 
@@ -45,7 +45,7 @@ public class ffi_cifTest {
         p.putLong(1, b.address());
         p.putLong(2, b.size());
         assertEquals("", a.getStringUTF(0));
-        long addr = nm.invokeLong(cif.address(), function, p.address(), null, 0);
+        long addr = nm.invokeLong(cif.getCifAddress(), function, p.parameterBaseAddress(), p.offsets(), null, 0);
         assertEquals(a.address(), addr);
         assertEquals(str, a.getStringUTF(0));
     }

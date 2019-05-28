@@ -1,5 +1,6 @@
 package jnc.foreign.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -51,9 +52,12 @@ public class SizedDirectMemoryTest {
         log.info("getStringUTF");
         int offset = 0;
         SizedDirectMemory instance = AllocatedMemory.allocate(8);
-        assertEquals("", instance.getStringUTF(offset));
+        Slice slice = instance.slice(0, 6);
+        assertThat(instance.getStringUTF(offset)).isEmpty();
         instance.putLong(offset, 0x2020202020202020L);
-        assertEquals("        ", instance.getStringUTF(offset));
+        assertThat(instance.getStringUTF(offset)).isEqualTo("        ");
+        assertThat(slice.address()).isEqualTo(instance.address());
+        assertThat(slice.getStringUTF(offset)).isEqualTo("      ");
     }
 
 }

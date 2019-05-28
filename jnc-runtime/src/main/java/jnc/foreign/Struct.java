@@ -117,10 +117,9 @@ public class Struct {
     }
 
     @Nullable
-    public final Struct getEnclosing() {
+    public final Enclosing getEnclosing() {
         advance(State.FIELDS_FINISHED);
-        Enclosing enclose = enclosing;
-        return enclose != null ? enclosing.getStruct() : null;
+        return enclosing;
     }
 
     final void setEnclosing(Struct enclosing, int offset) {
@@ -290,7 +289,7 @@ public class Struct {
         return inner(new StructArray<>(constructor, length));
     }
 
-    private static final class Enclosing {
+    public static final class Enclosing {
 
         private final Struct struct;
         private final int offset;
@@ -308,7 +307,7 @@ public class Struct {
             return offset;
         }
 
-        public final jnc.foreign.Pointer getMemory(int size) {
+        final jnc.foreign.Pointer getMemory(int size) {
             return struct.getMemory().slice(offset, size);
         }
     }
