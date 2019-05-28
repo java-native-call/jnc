@@ -146,7 +146,7 @@ class ProxyBuilder {
         return new InvocationHandlerImpl(map, useDefaultMethod, otherwise, orThrow);
     }
 
-    public <T> T toInstance(Class<T> klass) {
+    public <T> T newInstance(Class<T> klass) {
         return newInstance(klass, toInvocationHandler());
     }
 

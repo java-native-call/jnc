@@ -52,10 +52,10 @@ public class ProxyBuilderTest {
     public void testHashCode() {
         // toString must be implemented for junit require this to display error message if failed
         ProxyBuilder builder = new ProxyBuilder().useObjectHashCode().useProxyToString();
-        Serializable serializable = builder.toInstance(Serializable.class);
+        Serializable serializable = builder.newInstance(Serializable.class);
         assertEquals(System.identityHashCode(serializable), serializable.hashCode());
 
-        serializable = builder.useProxyHashCode().toInstance(Serializable.class);
+        serializable = builder.useProxyHashCode().newInstance(Serializable.class);
         assertEquals(System.identityHashCode(Proxy.getInvocationHandler(serializable)), serializable.hashCode());
     }
 
@@ -63,12 +63,12 @@ public class ProxyBuilderTest {
     public void testToString() {
         ProxyBuilder builder = new ProxyBuilder().useObjectToString();
 
-        Serializable serializable = builder.toInstance(Serializable.class);
+        Serializable serializable = builder.newInstance(Serializable.class);
         assertThat(serializable.toString())
                 .contains(Long.toHexString(System.identityHashCode(serializable)))
                 .contains(serializable.getClass().getName());
 
-        serializable = builder.useProxyToString().toInstance(Serializable.class);
+        serializable = builder.useProxyToString().newInstance(Serializable.class);
         assertThat(serializable.toString())
                 .doesNotContain(Long.toHexString(System.identityHashCode(serializable)))
                 .contains(serializable.getClass().getName());
@@ -78,16 +78,16 @@ public class ProxyBuilderTest {
     public void testThrow() {
         // toString must be implemented for junit require this to display error message if failed
         ProxyBuilder builder = new ProxyBuilder().useProxyToString();
-        Closeable closeable = builder.toInstance(Closeable.class);
+        Closeable closeable = builder.newInstance(Closeable.class);
         assertThatThrownBy(closeable::close).isInstanceOf(AbstractMethodError.class).hasMessage("close");
 
-        closeable = builder.orThrow(method -> new UnsupportedOperationException(method.getName())).toInstance(Closeable.class);
+        closeable = builder.orThrow(method -> new UnsupportedOperationException(method.getName())).newInstance(Closeable.class);
         assertThatThrownBy(closeable::close).isInstanceOf(UnsupportedOperationException.class).hasMessage("close");
 
-        closeable = builder.orThrow(method -> new IOException(method.getName())).toInstance(Closeable.class);
+        closeable = builder.orThrow(method -> new IOException(method.getName())).newInstance(Closeable.class);
         assertThatThrownBy(closeable::close).isInstanceOf(IOException.class).hasMessage("close");
 
-        closeable = builder.orThrow(method -> new Exception(method.getName())).toInstance(Closeable.class);
+        closeable = builder.orThrow(method -> new Exception(method.getName())).newInstance(Closeable.class);
         assertThatThrownBy(closeable::close).isInstanceOf(UndeclaredThrowableException.class)
                 .hasCauseExactlyInstanceOf(Exception.class);
     }

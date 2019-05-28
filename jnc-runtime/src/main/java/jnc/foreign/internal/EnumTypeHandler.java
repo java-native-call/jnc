@@ -18,10 +18,12 @@ import jnc.foreign.exception.UnmappableNativeValueException;
 
 class EnumTypeHandler<E extends Enum<E>> implements InternalTypeHandler<E> {
 
+    // method annotationType is not implemented, got null if invoked
+    // equals, hashCode, toString is same as class {@code Object} does
     private static final Continuously defaultContinuously = new ProxyBuilder()
             .useObjectMethods()
             .otherwise((proxy, method, args) -> method.getDefaultValue())
-            .toInstance(Continuously.class);
+            .newInstance(Continuously.class);
 
     private static final EnumSet<NativeType> ALLOWED_NATIVE_TYPES = EnumSet.of(
             UINT8, UINT16, UINT32, UINT64,
