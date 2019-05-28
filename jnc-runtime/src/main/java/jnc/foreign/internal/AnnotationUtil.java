@@ -39,10 +39,12 @@ public class AnnotationUtil {
                 return anno;
             }
         }
-        for (Class<?> iface : klass.getInterfaces()) {
-            if ((anno = iface.getAnnotation(type)) != null
-                    || (anno = getAnnotation0(iface.getAnnotations(), type)) != null) {
-                return anno;
+        if (klass.isInterface()) {
+            for (Class<?> iface : klass.getInterfaces()) {
+                if ((anno = iface.getAnnotation(type)) != null
+                        || (anno = getAnnotation0(iface.getAnnotations(), type)) != null) {
+                    return anno;
+                }
             }
         }
         return null;

@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import jnc.foreign.annotation.Continuously;
 import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uint32_t;
@@ -115,19 +114,6 @@ public class StructTest {
     }
 
     @Test
-    public void testEnum() {
-        Struct1 struct1 = new Struct1();
-        assertEquals(1, struct1.size());
-        struct1.setSeason(Season1.Winter);
-        assertEquals(Season1.Winter, struct1.getSeason());
-
-        Struct2 struct2 = new Struct2();
-        assertEquals(4, struct2.size());
-        struct2.setSeason(Season2.Winter);
-        assertEquals(Season2.Winter, struct2.getSeason());
-    }
-
-    @Test
     public void testConvertFromDouble() {
         DoubleStruct struct = new DoubleStruct();
         assertEquals(8, struct.size());
@@ -235,34 +221,6 @@ public class StructTest {
 
     }
 
-    private static class Struct1 extends Struct {
-
-        private final EnumField<Season1> season = enumField(Season1.class);
-
-        public Season1 getSeason() {
-            return season.get();
-        }
-
-        public void setSeason(Season1 field) {
-            this.season.set(field);
-        }
-
-    }
-
-    private static class Struct2 extends Struct {
-
-        private final EnumField<Season2> season = enumField(Season2.class);
-
-        public Season2 getSeason() {
-            return season.get();
-        }
-
-        public void setSeason(Season2 field) {
-            this.season.set(field);
-        }
-
-    }
-
     private static class DoubleStruct extends Struct {
 
         Float64 d = new Float64();
@@ -299,15 +257,6 @@ public class StructTest {
         @uintptr_t
         long memcpy(Pointer dst, Struct src, @size_t long n);
 
-    }
-
-    @Continuously(type = NativeType.SINT8)
-    private enum Season1 {
-        Spring, Summer, Autumn, Winter
-    }
-
-    private enum Season2 {
-        Spring, Summer, Autumn, Winter
     }
 
 }

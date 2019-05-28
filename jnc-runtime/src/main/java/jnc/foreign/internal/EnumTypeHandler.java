@@ -39,7 +39,7 @@ class EnumTypeHandler<E extends Enum<E>> {
         // Must do the cast, or will got COMPILATION ERROR: incomparable types
         //noinspection RedundantCast
         if (!type.isEnum() || type == (Class) Enum.class) {
-            throw new IllegalArgumentException("Illegal type '" + type + "'");
+            throw new IllegalArgumentException("Illegal type '" + type.getName() + "'");
         }
         return (EnumTypeHandler<T>) cache.computeIfAbsent(type, EnumTypeHandler::newInstance);
     }

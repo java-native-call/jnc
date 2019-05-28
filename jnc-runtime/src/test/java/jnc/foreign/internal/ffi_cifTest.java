@@ -18,7 +18,7 @@ public class ffi_cifTest {
     @Test
     public void testAcos() {
         log.info("test acos");
-        Library libm = Library.open(LIBM, 0);
+        Library libm = NativeLibrary.open(LIBM, 0);
 
         long function = libm.dlsym("acos");
         ffi_cif cif = new ffi_cif(CallingConvention.DEFAULT, BuiltinType.DOUBLE, BuiltinType.DOUBLE);
@@ -31,7 +31,7 @@ public class ffi_cifTest {
     @Test
     public void testMemcpy() {
         log.info("test memcpy");
-        Library libc = Library.open(LIBC, 0);
+        Library libc = NativeLibrary.open(LIBC, 0);
         long function = libc.dlsym("memcpy");
         Alias sizeT = TypeHelper.findByAlias(TypeAlias.size_t);
         Alias uIntPtr = TypeHelper.findByAlias(TypeAlias.uintptr_t);

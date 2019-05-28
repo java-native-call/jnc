@@ -2,9 +2,7 @@ package jnc.foreign;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
-import jnc.foreign.annotation.Continuously;
 import jnc.foreign.byref.IntByReference;
-import jnc.foreign.typedef.int32_t;
 import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uintptr_t;
 import static org.junit.Assert.assertArrayEquals;
@@ -66,16 +64,6 @@ public class InvokeTest {
         Libc.INSTANCE.memcpy(null, 0, 0);
     }
 
-    @Test
-    public void testEnumParameter() {
-        assertTrue(Libc.INSTANCE.isalpha(Char.A));
-    }
-
-    @Test
-    public void testEnumReturnValue() {
-        assertEquals(Char.A, Libc.INSTANCE.toupper('a'));
-    }
-
     private static class Struct1 extends Struct {
 
         private final int32_t value = new int32_t();
@@ -87,11 +75,6 @@ public class InvokeTest {
         public int getValue() {
             return value.get();
         }
-    }
-
-    @Continuously(start = 'A')
-    public enum Char {
-        A, B
     }
 
     public interface Libc {
@@ -117,11 +100,6 @@ public class InvokeTest {
         long memcpy(boolean[] dst, byte[] src, @size_t long n);
 
         Pointer memcpy(Pointer dst, byte[] src, @size_t long n);
-
-        @int32_t
-        boolean isalpha(Char ch);
-
-        Char toupper(int ch);
 
         default int memcpy(AtomicBoolean atomic) {
             atomic.set(true);

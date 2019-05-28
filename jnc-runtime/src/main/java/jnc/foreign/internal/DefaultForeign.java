@@ -25,7 +25,7 @@ enum DefaultForeign implements Foreign {
     @Nonnull
     @Override
     public <T> T load(Class<T> interfaceClass, String libname, LoadOptions loadOptions) {
-        return InvocationLibrary.create(interfaceClass, Library.open(libname, 0), loadOptions, typeHandlerRegistry);
+        return InvocationLibrary.create(interfaceClass, NativeLibrary.open(libname, 0), loadOptions, typeHandlerRegistry);
     }
 
     @Override

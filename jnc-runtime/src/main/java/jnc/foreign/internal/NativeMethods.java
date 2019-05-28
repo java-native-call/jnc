@@ -120,7 +120,6 @@ class NativeMethods {
                 return prefix + "darwin/libjnc.jnilib";
             case UNKNOWN:
                 throw new UnsupportedOperationException("unsupported operation system");
-            case LINUX:
             default:
                 osPrefix = os.name().toLowerCase(Locale.US);
                 break;
