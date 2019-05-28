@@ -313,6 +313,25 @@ public class Struct {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
+    protected static final class Padding extends Struct {
+
+        Padding(int size) {
+            this(size, 1);
+        }
+
+        Padding(int size, int alignment) {
+            if ((alignment & alignment - 1) != 0) {
+                throw new IllegalArgumentException("Illegal alignment " + alignment);
+            }
+            if (size < alignment) {
+                throw new IllegalArgumentException("size is smaller than alignment: size=" + size + ",align=" + alignment);
+            }
+            addField(size, alignment);
+        }
+
+    }
+
     private enum State {
 
         INITIAL,

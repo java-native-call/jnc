@@ -24,21 +24,24 @@ import org.junit.Test;
  */
 public class PaddingTest {
 
-    @Test
-    public void testNew() {
-        assertThatThrownBy(() -> new Padding(0))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new Padding(3, 3))
-                .isInstanceOf(IllegalArgumentException.class);
-        Padding padding = new Padding(1);
+    Struct withPadding(int size, int alignment) {
+        return new Struct() {
+            private final Struct.Padding padding = padding(size, alignment);
+        };
+    }
+
+    Struct withPadding(int size) {
+        return new Struct() {
+            private final Struct.Padding padding = padding(size);
+        };
     }
 
     @Test
-    public void testPaddingInStruct() {
-        class A extends Struct {
-            private final Padding padding = padding(9, 2);
-        }
-        assertEquals(10, new A().size());
+    public void test() {
+        assertThatThrownBy(() -> withPadding(0)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> withPadding(3, 3)).isInstanceOf(IllegalArgumentException.class);
+        assertEquals(1, withPadding(1).size());
+        assertEquals(10, withPadding(9, 2).size());
     }
 
 }
