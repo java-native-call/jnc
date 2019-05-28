@@ -50,7 +50,6 @@ do {                                                              \
 
 #define NOOP(...) __VA_ARGS__
 #define p2j(x) ((jlong)(uintptr_t)(x))
-#define c2j(x) p2j(&x)
 #define j2p(x, type) ((type)(uintptr_t)(x))
 #define j2c(x, type) j2p(x, type*)
 #define j2vp(x) j2c(x, void)
@@ -58,21 +57,22 @@ do {                                                              \
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 
 #define JNC_TYPE(type) jnc_foreign_internal_NativeMethods_TYPE_##type
-#define CHECK_JNC_FFI(type) (JNC_TYPE(type) != FFI_TYPE_##type)
+#define CHECK_JNC_FFI(type) (JNC_TYPE(type) == FFI_TYPE_##type)
 #if \
-CHECK_JNC_FFI(VOID) || \
-CHECK_JNC_FFI(FLOAT) || \
-CHECK_JNC_FFI(DOUBLE) || \
-CHECK_JNC_FFI(UINT8) || \
-CHECK_JNC_FFI(SINT8) || \
-CHECK_JNC_FFI(UINT16) || \
-CHECK_JNC_FFI(SINT16) || \
-CHECK_JNC_FFI(UINT32) || \
-CHECK_JNC_FFI(SINT32) || \
-CHECK_JNC_FFI(UINT64) || \
-CHECK_JNC_FFI(SINT64) || \
-CHECK_JNC_FFI(STRUCT) || \
+CHECK_JNC_FFI(VOID) && \
+CHECK_JNC_FFI(FLOAT) && \
+CHECK_JNC_FFI(DOUBLE) && \
+CHECK_JNC_FFI(UINT8) && \
+CHECK_JNC_FFI(SINT8) && \
+CHECK_JNC_FFI(UINT16) && \
+CHECK_JNC_FFI(SINT16) && \
+CHECK_JNC_FFI(UINT32) && \
+CHECK_JNC_FFI(SINT32) && \
+CHECK_JNC_FFI(UINT64) && \
+CHECK_JNC_FFI(SINT64) && \
+CHECK_JNC_FFI(STRUCT) && \
 CHECK_JNC_FFI(POINTER)
+#else
 #error out of sync with ffi.h
 #endif
 #undef CHECK_JNC_FFI
