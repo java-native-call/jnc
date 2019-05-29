@@ -6,9 +6,9 @@ import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import jnc.foreign.NativeType;
-import static jnc.foreign.NativeType.ADDRESS;
 import static jnc.foreign.NativeType.DOUBLE;
 import static jnc.foreign.NativeType.FLOAT;
+import static jnc.foreign.NativeType.POINTER;
 import static jnc.foreign.NativeType.SINT16;
 import static jnc.foreign.NativeType.SINT32;
 import static jnc.foreign.NativeType.SINT64;
@@ -61,13 +61,13 @@ class TypeHelper {
         add(types, SINT32, int.class, TYPE_SINT32, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
         add(types, UINT64, null, TYPE_UINT64, MASK_INTEGRAL, typeInfos, map, primitiveMap);
         add(types, SINT64, long.class, TYPE_SINT64, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
-        add(types, ADDRESS, null, TYPE_POINTER, MASK_INTEGRAL, typeInfos, map, primitiveMap);
+        add(types, POINTER, null, TYPE_POINTER, 0, typeInfos, map, primitiveMap);
 
         MAP = map;
         TYPE_INFOS = typeInfos;
         PRIMITIVE_MAP = primitiveMap;
 
-        TYPE_INFO_POINTER = map.get(NativeType.ADDRESS);
+        TYPE_INFO_POINTER = map.get(NativeType.POINTER);
     }
 
     static Alias findByAlias(TypeAlias typeAlias) {

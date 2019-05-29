@@ -35,11 +35,6 @@ class EnumTypeHandler<E extends Enum<E>> {
             .otherwise((proxy, method, args) -> method.getDefaultValue())
             .newInstance(Continuously.class);
 
-    private static final EnumSet<NativeType> ALLOWED_NATIVE_TYPES = EnumSet.of(
-            UINT8, UINT16, UINT32, UINT64,
-            SINT8, SINT16, SINT32, SINT64
-    );
-
     static {
         EnumMap<NativeType, NativeType> toSigned = new EnumMap<>(NativeType.class);
         EnumMap<NativeType, NativeType> toUnsigned = new EnumMap<>(NativeType.class);
@@ -76,13 +71,13 @@ class EnumTypeHandler<E extends Enum<E>> {
         long start = continuously.start();
         NativeType nativeType = continuously.type();
         EnumMappingErrorAction onUnmappable = continuously.onUnmappable();
-        if (!ALLOWED_NATIVE_TYPES.contains(nativeType)) {
+        NativeType mapped = (start < 0 ? signedMap : unsignedMap).getOrDefault(nativeType, nativeType);
+        InternalType internalType = TypeHelper.findByNativeType(mapped);
+        if (!internalType.isIntegral()) {
             throw new IllegalArgumentException("Only integral type allowed on enum, but found "
                     + nativeType + " on " + type.getName());
         }
         T[] values = (T[]) type.getEnumConstants();
-        NativeType mapped = (start < 0 ? signedMap : unsignedMap).getOrDefault(nativeType, nativeType);
-        InternalType internalType = TypeHelper.findByNativeType(mapped);
         int size = internalType.size();
         if (size < 8) {
             long max = 1L << (size << 3) - (internalType.isSigned() ? 1 : 0);
@@ -132,7 +127,7 @@ class EnumTypeHandler<E extends Enum<E>> {
     }
 
     Invoker<E> getInvoker() {
-        return (long cif, long function, long base, @Nullable int[] offsets) -> mapLong(Invokers.invokeInt(cif, function, base, offsets));
+        return (long cif, long function, long base, @Nullable int[] offsets) -> mapLong(Invokers.invokeLong(cif, function, base, offsets));
     }
 
     FieldAccessor getFieldAccessor() {
@@ -153,7 +148,7 @@ class EnumTypeHandler<E extends Enum<E>> {
 
         @Override
         public E get(Pointer memory, int offset) {
-            return mapLong(memory.getInt(offset, defaultType));
+            return mapLong(memory.getLong(offset, defaultType));
         }
 
         @Override

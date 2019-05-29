@@ -659,7 +659,7 @@ public class Struct {
         private static final long serialVersionUID = 0L;
 
         public Address() {
-            super(NativeType.ADDRESS);
+            super(NativeType.POINTER);
         }
 
         @Override

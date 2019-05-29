@@ -31,5 +31,5 @@ interface BuiltinType {
     InternalType UINT64 = TypeHelper.findByNativeType(NativeType.UINT64);
 
     InternalType DOUBLE = TypeHelper.findByNativeType(NativeType.DOUBLE);
-    InternalType POINTER = TypeHelper.findByNativeType(NativeType.ADDRESS);
+    InternalType POINTER = TypeHelper.findByNativeType(NativeType.POINTER);
 }

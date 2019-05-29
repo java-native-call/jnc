@@ -59,8 +59,8 @@ final class AnnotationContext {
 
     @Nullable
     @SuppressWarnings({"unchecked", "WeakerAccess"})
-    public <T extends Annotation> T getAnnotation(Class<T> klass) {
-        return (T) annotations.get(klass);
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return (T) annotations.get(annotationClass);
     }
 
 }

@@ -143,7 +143,7 @@ public class EnumTypeHandlerTest {
 
     }
 
-    @Continuously(type = NativeType.ADDRESS)
+    @Continuously(type = NativeType.POINTER)
     private enum Test1 {
     }
 

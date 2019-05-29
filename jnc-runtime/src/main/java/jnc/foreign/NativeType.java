@@ -13,6 +13,6 @@ public enum NativeType {
     SINT32,
     UINT64,
     SINT64,
-    ADDRESS
+    POINTER
 
 }

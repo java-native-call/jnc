@@ -36,7 +36,7 @@ public class AddressByReference implements ByReference {
 
     @Override
     public Type componentType(Foreign foreign) {
-        return foreign.findType(NativeType.ADDRESS);
+        return foreign.findType(NativeType.POINTER);
     }
 
 }
