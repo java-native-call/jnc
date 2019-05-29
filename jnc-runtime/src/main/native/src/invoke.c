@@ -53,37 +53,37 @@ Java_jnc_foreign_internal_NativeMethods_prepareInvoke
     }
 }
 
-#define DEFINE_INVOKE(name, jtype, ret)                         \
-JNIEXPORT jtype JNICALL                                         \
-Java_jnc_foreign_internal_NativeMethods_invoke##name            \
-(JNIEnv * env, jobject UNUSED(self), jlong lcif, jlong jfun,    \
-        jlong base, jintArray offsets, jobject obj,             \
-        jlong methodId) {                                       \
-    ffi_cif *pcif = j2c(lcif, ffi_cif);                         \
-    void (*pfunction)(void) = FFI_FN(j2vp(jfun));               \
-    checkNullPointer(env, pcif, ret);                           \
-    checkNullPointer(env, pfunction, ret);                      \
-    jsize cnt = base && offsets ?                               \
-        CALLJNI(env, GetArrayLength, offsets) : 0;              \
-    void ** pavalues;                                           \
-    if (likely(cnt != 0)) {                                     \
-        pavalues = alloca(cnt * sizeof (void*));                \
-        jint* joff = alloca(cnt * sizeof (jint));               \
-        CALLJNI(env, GetIntArrayRegion, offsets, 0, cnt, joff); \
-        jsize i = 0;                                            \
-        for (; i != cnt; ++i) {                                 \
-            pavalues[i] = j2c(base + joff[i], void*);           \
-        }                                                       \
-    } else {                                                    \
-        pavalues = NULL;                                        \
-    }                                                           \
-    ffi_type * rtype = pcif->rtype;                             \
-    uint64_t res = 0;                                           \
-    void * retAddr = likely(rtype->size <= sizeof (res))        \
-            ? &res : alloca(rtype->size);                       \
-    ffi_call(pcif, pfunction, retAddr, pavalues);               \
-    saveLastError(env, obj, methodId, GetLastError());          \
-    RET_##jtype(rtype, retAddr);                                \
+#define DEFINE_INVOKE(name, jtype, ret)                             \
+JNIEXPORT jtype JNICALL                                             \
+Java_jnc_foreign_internal_NativeMethods_invoke##name                \
+(JNIEnv * env, jobject UNUSED(self), jlong lcif, jlong jfun,        \
+        jlong base, jintArray offsets, jobject obj,                 \
+        jlong methodId) {                                           \
+    ffi_cif *pcif = j2c(lcif, ffi_cif);                             \
+    void (*pfunction)(void) = FFI_FN(j2vp(jfun));                   \
+    checkNullPointer(env, pcif, ret);                               \
+    checkNullPointer(env, pfunction, ret);                          \
+    uint32_t cnt = base && offsets ?                                \
+        CALLJNI(env, GetArrayLength, offsets) : 0;                  \
+    void ** pavalues;                                               \
+    if (likely(cnt != 0)) {                                         \
+        pavalues = alloca(cnt * (sizeof (void *)) + sizeof (jint)); \
+        jint* joff = (jint*) (void*) &pavalues[cnt];                \
+        CALLJNI(env, GetIntArrayRegion, offsets, 0, cnt, joff);     \
+        uint32_t i = 0;                                             \
+        for (; i != cnt; ++i) {                                     \
+            pavalues[i] = j2c(base + joff[i], void*);               \
+        }                                                           \
+    } else {                                                        \
+        pavalues = NULL;                                            \
+    }                                                               \
+    ffi_type * rtype = pcif->rtype;                                 \
+    uint64_t res = 0;                                               \
+    void * retAddr = likely(rtype->size <= sizeof (res))            \
+            ? &res : alloca(rtype->size);                           \
+    ffi_call(pcif, pfunction, retAddr, pavalues);                   \
+    saveLastError(env, obj, methodId, GetLastError());              \
+    RET_##jtype(rtype, retAddr);                                    \
 }
 
 DEFINE_INVOKE(Void, void, /*void*/);
