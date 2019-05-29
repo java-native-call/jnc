@@ -46,11 +46,12 @@ class EnumTypeHandler<E extends Enum<E>> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static <T extends Enum<T>> EnumTypeHandler<T> newInstance(Class<?> type) {
-        AnnotatedElementContext aec = new AnnotatedElementContext(type);
-        Continuously annotation = aec.getAnnotationOrDefault(Continuously.class, defaultContinuously);
-        NativeType nativeType = annotation.type();
-        int start = annotation.start();
-        EnumMappingErrorAction onUnmappable = annotation.onUnmappable();
+        @Nullable
+        Continuously annotation = type.getAnnotation(Continuously.class);
+        Continuously continuously = annotation != null ? annotation : defaultContinuously;
+        NativeType nativeType = continuously.type();
+        int start = continuously.start();
+        EnumMappingErrorAction onUnmappable = continuously.onUnmappable();
         if (!ALLOWED_NATIVE_TYPES.contains(nativeType)) {
             throw new IllegalStateException("Only integral type allowed on enum, but found "
                     + nativeType + " on " + type.getName());

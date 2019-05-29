@@ -22,8 +22,9 @@ class InvocationLibrary<T> {
     // visible for test
     InvocationLibrary(Class<T> interfaceClass, Library library, LoadOptions options, TypeHandlerRegistry typeHandlerRegistry) {
         this.interfaceClass = interfaceClass;
-        AnnotatedElementContext aec = new AnnotatedElementContext(interfaceClass);
-        jnc.foreign.annotation.CallingConvention classConventionAnnotation = aec.getAnnotation(jnc.foreign.annotation.CallingConvention.class);
+        jnc.foreign.annotation.CallingConvention classConventionAnnotation
+                = AnnotationContext.newContext(interfaceClass)
+                        .getAnnotation(jnc.foreign.annotation.CallingConvention.class);
         this.library = library;
         this.classConvention = classConventionAnnotation != null ? classConventionAnnotation.value() : options.getCallingConvention();
         this.typeHandlerRegistry = typeHandlerRegistry;
@@ -41,24 +42,23 @@ class InvocationLibrary<T> {
         }
         String name = method.getName();
         long function = library.dlsym(name);
-        AnnotatedElementContext mac = new AnnotatedElementContext(method);
+        AnnotationContext ac = AnnotationContext.newContext(method);
         TypeHandlerInfo<? extends Invoker<?>> returnTypeInfo = typeHandlerRegistry.findReturnTypeInfo(method.getReturnType());
-        InternalType retType = returnTypeInfo.getType(mac);
+        InternalType retType = returnTypeInfo.getType(ac);
         Invoker<?> invoker = returnTypeInfo.getHandler();
         Class<?>[] parameterTypes = method.getParameterTypes();
-        Annotation[][] annotations = method.getParameterAnnotations();
+        AnnotationContext[] mpacs = AnnotationContext.newMethodParameterContexts(method);
         int len = parameterTypes.length;
         InternalType[] ptypes = new InternalType[len];
         @SuppressWarnings("rawtypes")
         ParameterHandler<?>[] handlers = new ParameterHandler[len];
         for (int i = 0; i < len; ++i) {
             Class<?> type = parameterTypes[i];
-            MethodParameterAnnotationContext mpac = new MethodParameterAnnotationContext(annotations[i]);
             TypeHandlerInfo<? extends ParameterHandler<?>> typeHandlerInfo = typeHandlerRegistry.findParameterTypeInfo(type);
-            ptypes[i] = typeHandlerInfo.getType(mpac);
+            ptypes[i] = typeHandlerInfo.getType(mpacs[i]);
             handlers[i] = typeHandlerInfo.getHandler();
         }
-        jnc.foreign.annotation.CallingConvention methodConvention = mac.getAnnotation(jnc.foreign.annotation.CallingConvention.class);
+        jnc.foreign.annotation.CallingConvention methodConvention = ac.getAnnotation(jnc.foreign.annotation.CallingConvention.class);
         return new MethodInvocation(handlers, methodConvention != null ? methodConvention.value() : classConvention, invoker, function, retType, ptypes);
     }
 

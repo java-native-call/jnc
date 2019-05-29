@@ -16,11 +16,8 @@
 package jnc.foreign.internal;
 
 import java.lang.reflect.Method;
-import javax.annotation.Nonnull;
-import jnc.foreign.annotation.Continuously;
 import jnc.foreign.annotation.In;
 import jnc.foreign.annotation.Typedef;
-import jnc.foreign.enums.EnumMappingErrorAction;
 import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uint8_t;
@@ -33,70 +30,51 @@ import org.slf4j.LoggerFactory;
 /**
  * @author zhanhb
  */
-public class AnnotationUtilTest {
+public class AnnotationContextTest {
 
-    private static final Logger log = LoggerFactory.getLogger(AnnotationUtilTest.class);
+    private static final Logger log = LoggerFactory.getLogger(AnnotationContextTest.class);
 
     /**
-     * Test of getMethodAnnotation method, of class AnnotationUtil.
+     * Test of newContext method, of class AnnotationContext.
      */
     @Test
-    public void testGetMethodAnnotation() throws NoSuchMethodException {
-        log.info("getMethodAnnotation");
+    public void testNewContext() throws NoSuchMethodException {
+        log.info("newContext");
         Method method = Class1.class.getMethod("method");
-        Nonnull nonnull = AnnotationUtil.getAnnotation(method, Nonnull.class);
-        assertNotNull("@Nonnull not found on " + method, nonnull);
-
-        Typedef typedef = AnnotationUtil.getAnnotation(method, Typedef.class);
+        Typedef typedef = AnnotationContext.newContext(method)
+                .getAnnotation(Typedef.class);
         assertNotNull("@Typedef not found on " + method, typedef);
         assertEquals(TypeAlias.size_t, typedef.value());
     }
 
     /**
-     * Test of getClassAnnotation method, of class AnnotationUtil.
+     * Test of newMethodParameterContexts method, of class AnnotationContext.
      */
     @Test
-    public void testGetClassAnnotation() {
-        log.info("getClassAnnotation");
-        EnumMappingErrorAction expect = EnumMappingErrorAction.REPORT_ALL;
-        Continuously continuously = AnnotationUtil.getAnnotation(Enum1.class, Continuously.class);
-        assertNotNull(continuously);
-        EnumMappingErrorAction onUnmappable = continuously.onUnmappable();
-        assertEquals(expect, onUnmappable);
-    }
-
-    /**
-     * Test of getAnnotation method, of class AnnotationUtil.
-     */
-    @Test
-    public void testGetAnnotation() throws NoSuchMethodException {
-        log.info("getAnnotation");
+    public void testNewMethodParameterContexts() throws NoSuchMethodException {
+        log.info("newMethodParameterContexts");
         Method method = Class1.class.getMethod("method2", int.class);
 
-        Typedef typedef = AnnotationUtil.getAnnotation(method.getParameterAnnotations()[0], Typedef.class);
+        AnnotationContext ac = AnnotationContext.newMethodParameterContexts(method)[0];
+        Typedef typedef = ac.getAnnotation(Typedef.class);
         assertNotNull("@Typedef not found on parameter of " + method, typedef);
         assertEquals(TypeAlias.uint8_t, typedef.value());
 
-        In in = AnnotationUtil.getAnnotation(method.getParameterAnnotations()[0], In.class);
+        In in = ac.getAnnotation(In.class);
         assertNotNull("@In not found on parameter of " + method, in);
     }
 
     @SuppressWarnings({"WeakerAccess", "unused"})
     private static class Class1 {
 
-        @Nonnull
         @size_t
         public Object method() {
-            return new Object();
+            return null;
         }
 
         public void method2(@uint8_t @In int parameter) {
         }
 
-    }
-
-    @Continuously(onUnmappable = EnumMappingErrorAction.REPORT_ALL)
-    private enum Enum1 {
     }
 
 }

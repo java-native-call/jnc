@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import jnc.foreign.annotation.Pack;
 import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.exception.UnmappableNativeValueException;
-import jnc.foreign.internal.AnnotationUtil;
 
 @SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess", "unused"})
 public class Struct {
@@ -31,7 +30,7 @@ public class Struct {
 
     // visible for testing
     private static int getPack(Class<?> type) {
-        Pack pack = AnnotationUtil.getAnnotation(type, Pack.class);
+        Pack pack = type.getAnnotation(Pack.class);
         if (pack != null) {
             int value = pack.value();
             if (value > 0) {
