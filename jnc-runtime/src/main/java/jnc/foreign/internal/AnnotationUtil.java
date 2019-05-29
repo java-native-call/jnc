@@ -1,7 +1,10 @@
 package jnc.foreign.internal;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Arrays;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
@@ -24,7 +27,13 @@ public class AnnotationUtil {
         if (annotation != null) {
             return annotation;
         }
-        return getAnnotation0(element.getAnnotations(), type);
+        Target target = type.getAnnotation(Target.class);
+        if (target != null) {
+            if (Arrays.asList(target.value()).contains(ElementType.ANNOTATION_TYPE)) {
+                return getAnnotation0(element.getAnnotations(), type);
+            }
+        }
+        return null;
     }
 
     @Nullable
