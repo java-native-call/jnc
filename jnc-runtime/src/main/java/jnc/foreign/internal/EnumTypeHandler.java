@@ -46,8 +46,8 @@ class EnumTypeHandler<E extends Enum<E>> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static <T extends Enum<T>> EnumTypeHandler<T> newInstance(Class<?> type) {
-        ClassAnnotationContext cac = new ClassAnnotationContext(type);
-        Continuously annotation = cac.getAnnotationOrDefault(Continuously.class, defaultContinuously);
+        AnnotatedElementContext aec = new AnnotatedElementContext(type);
+        Continuously annotation = aec.getAnnotationOrDefault(Continuously.class, defaultContinuously);
         NativeType nativeType = annotation.type();
         int start = annotation.start();
         EnumMappingErrorAction onUnmappable = annotation.onUnmappable();

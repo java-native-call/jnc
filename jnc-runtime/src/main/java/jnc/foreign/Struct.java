@@ -31,7 +31,7 @@ public class Struct {
 
     // visible for testing
     private static int getPack(Class<?> type) {
-        Pack pack = AnnotationUtil.getClassAnnotation(type, Pack.class);
+        Pack pack = AnnotationUtil.getAnnotation(type, Pack.class);
         if (pack != null) {
             int value = pack.value();
             if (value > 0) {

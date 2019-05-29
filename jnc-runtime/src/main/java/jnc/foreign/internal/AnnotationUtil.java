@@ -1,7 +1,7 @@
 package jnc.foreign.internal;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.lang.reflect.AnnotatedElement;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
@@ -19,35 +19,12 @@ public class AnnotationUtil {
     }
 
     @Nullable
-    static <T extends Annotation> T getMethodAnnotation(Method method, Class<T> type) {
-        T annotation = method.getAnnotation(type);
+    public static <T extends Annotation> T getAnnotation(AnnotatedElement element, Class<T> type) {
+        T annotation = element.getAnnotation(type);
         if (annotation != null) {
             return annotation;
         }
-        return getAnnotation0(method.getAnnotations(), type);
-    }
-
-    @Nullable
-    @SuppressWarnings("NestedAssignment")
-    public static <T extends Annotation> T getClassAnnotation(Class<?> klass, Class<T> type) {
-        T anno;
-        for (Class<?> tmp = klass;
-                tmp != null;
-                tmp = tmp.getSuperclass()) {
-            if ((anno = tmp.getAnnotation(type)) != null
-                    || (anno = getAnnotation0(tmp.getAnnotations(), type)) != null) {
-                return anno;
-            }
-        }
-        if (klass.isInterface()) {
-            for (Class<?> iface : klass.getInterfaces()) {
-                if ((anno = iface.getAnnotation(type)) != null
-                        || (anno = getAnnotation0(iface.getAnnotations(), type)) != null) {
-                    return anno;
-                }
-            }
-        }
-        return null;
+        return getAnnotation0(element.getAnnotations(), type);
     }
 
     @Nullable

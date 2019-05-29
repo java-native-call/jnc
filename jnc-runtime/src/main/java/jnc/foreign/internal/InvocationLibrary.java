@@ -22,8 +22,8 @@ class InvocationLibrary<T> {
     // visible for test
     InvocationLibrary(Class<T> interfaceClass, Library library, LoadOptions loadOptions, TypeHandlerRegistry typeHandlerRegistry) {
         this.interfaceClass = interfaceClass;
-        ClassAnnotationContext cac = new ClassAnnotationContext(interfaceClass);
-        jnc.foreign.annotation.CallingConvention classConventionAnnotation = cac.getAnnotation(jnc.foreign.annotation.CallingConvention.class);
+        AnnotatedElementContext aec = new AnnotatedElementContext(interfaceClass);
+        jnc.foreign.annotation.CallingConvention classConventionAnnotation = aec.getAnnotation(jnc.foreign.annotation.CallingConvention.class);
         CallingConvention optionConvention = loadOptions.getCallingConvention();
         this.library = library;
         this.classConvention = optionConvention != null ? optionConvention : classConventionAnnotation != null ? classConventionAnnotation.value() : CallingConvention.DEFAULT;
@@ -42,7 +42,7 @@ class InvocationLibrary<T> {
         }
         String name = method.getName();
         long function = library.dlsym(name);
-        MethodAnnotationContext mac = new MethodAnnotationContext(method);
+        AnnotatedElementContext mac = new AnnotatedElementContext(method);
         TypeHandlerInfo<? extends Invoker<?>> returnTypeInfo = typeHandlerRegistry.findReturnTypeInfo(method.getReturnType());
         InternalType retType = returnTypeInfo.getType(mac);
         Invoker<?> invoker = returnTypeInfo.getHandler();

@@ -16,20 +16,21 @@
 package jnc.foreign.internal;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import javax.annotation.Nullable;
 
-class ClassAnnotationContext implements AnnotationContext {
+class AnnotatedElementContext implements AnnotationContext {
 
-    private final Class<?> type;
+    private final AnnotatedElement element;
 
-    ClassAnnotationContext(Class<?> type) {
-        this.type = type;
+    AnnotatedElementContext(AnnotatedElement element) {
+        this.element = element;
     }
 
     @Nullable
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> klass) {
-        return AnnotationUtil.getClassAnnotation(type, klass);
+        return AnnotationUtil.getAnnotation(element, klass);
     }
 
 }

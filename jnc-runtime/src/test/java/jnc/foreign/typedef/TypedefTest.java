@@ -120,6 +120,7 @@ public class TypedefTest {
         try (PrintWriter pw = new PrintWriter(dir.resolve(jName + ".java").toFile(), "UTF-8")) {
             pw.println("package " + pkg + ";");
             pw.println();
+            pw.println("import java.lang.annotation.Documented;");
             pw.println("import java.lang.annotation.ElementType;");
             pw.println("import java.lang.annotation.Retention;");
             pw.println("import java.lang.annotation.RetentionPolicy;");
@@ -127,6 +128,7 @@ public class TypedefTest {
             pw.println("import " + Typedef.class.getName() + ";");
             pw.println("import " + TypeAlias.class.getName() + ";");
             pw.println();
+            pw.println("@Documented");
             pw.println("@Retention(RetentionPolicy.RUNTIME)");
             pw.println("@Target({ElementType.METHOD, ElementType.PARAMETER})");
             pw.println("@Typedef(TypeAlias." + jName + ")");

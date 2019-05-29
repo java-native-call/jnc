@@ -44,10 +44,10 @@ public class AnnotationUtilTest {
     public void testGetMethodAnnotation() throws NoSuchMethodException {
         log.info("getMethodAnnotation");
         Method method = Class1.class.getMethod("method");
-        Nonnull nonnull = AnnotationUtil.getMethodAnnotation(method, Nonnull.class);
+        Nonnull nonnull = AnnotationUtil.getAnnotation(method, Nonnull.class);
         assertNotNull("@Nonnull not found on " + method, nonnull);
 
-        Typedef typedef = AnnotationUtil.getMethodAnnotation(method, Typedef.class);
+        Typedef typedef = AnnotationUtil.getAnnotation(method, Typedef.class);
         assertNotNull("@Typedef not found on " + method, typedef);
         assertEquals(TypeAlias.size_t, typedef.value());
     }
@@ -59,7 +59,7 @@ public class AnnotationUtilTest {
     public void testGetClassAnnotation() {
         log.info("getClassAnnotation");
         EnumMappingErrorAction expect = EnumMappingErrorAction.REPORT_ALL;
-        Continuously continuously = AnnotationUtil.getClassAnnotation(Enum1.class, Continuously.class);
+        Continuously continuously = AnnotationUtil.getAnnotation(Enum1.class, Continuously.class);
         assertNotNull(continuously);
         EnumMappingErrorAction onUnmappable = continuously.onUnmappable();
         assertEquals(expect, onUnmappable);
