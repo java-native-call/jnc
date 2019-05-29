@@ -1,5 +1,7 @@
 package jnc.foreign.internal;
 
+import java.lang.reflect.Method;
+
 enum ThreadLocalError implements LastErrorHandler {
 
     INSTANCE;
@@ -16,6 +18,15 @@ enum ThreadLocalError implements LastErrorHandler {
 
     static Object getInstance() {
         return INSTANCE;
+    }
+
+    static long getMethodId() {
+        try {
+            Method method = LastErrorHandler.class.getMethod("handle", int.class);
+            return NativeMethods.getInstance().getMethodId(method);
+        } catch (NoSuchMethodException ex) {
+            throw new AssertionError(ex);
+        }
     }
 
     @Override
