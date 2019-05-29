@@ -64,8 +64,6 @@ class NativeMethods {
     static final int CONVENTION_DEFAULT = 0;
     @Native
     static final int CONVENTION_STDCALL = 1;
-    @Native
-    static final int CONVENTION_SYSV = 2;
 
     private static final ReentrantLock lock = new ReentrantLock();
     private static final List<Runnable> ON_UNLOAD = new ArrayList<>(4);

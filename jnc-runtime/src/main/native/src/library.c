@@ -16,8 +16,6 @@
 #define DLOPEN_PARAM_TYPE LPWSTR
 #endif /* WCHAR_MAX != UINT16_MAX */
 
-#define SIG_STRING "L" JAVA_LANG_STR(String) ";"
-
 #define throwByNameA(key, sig, env, name, value)                            \
 do {                                                                        \
     jclass jc_ = CALLJNI(env, FindClass, name);                             \
@@ -32,7 +30,8 @@ do {                                                                        \
     CALLJNI(env, DeleteLocalRef, jo_);                                      \
     CALLJNI(env, DeleteLocalRef, jc_);                                      \
 } while(false)
-#define throwByNameS(...) throwByNameA(l, SIG_STRING, __VA_ARGS__)
+
+#define throwByNameString(...) throwByNameA(l, "Ljava/lang/String;", __VA_ARGS__)
 
 static void throwByLastError(JNIEnv * env, const char * type) {
     DWORD dw = GetLastError();
@@ -57,7 +56,7 @@ static void throwByLastError(JNIEnv * env, const char * type) {
     jstring string = CALLJNI(env, NewString, (jchar*) lpMsgBuf, len);
     LocalFree(lpMsgBuf);
     if (unlikely(CALLJNI(env, ExceptionCheck))) return;
-    throwByNameS(env, type, string);
+    throwByNameString(env, type, string);
 }
 
 #else /* _WIN32 */

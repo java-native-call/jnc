@@ -8,7 +8,7 @@
 #define GetLastError() errno
 #endif
 
-static inline void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int error) {
+static void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int error) {
     if (likely(obj != NULL && methodId != 0)) {
         jmethodID method = j2p(methodId, jmethodID);
         jvalue v;
@@ -18,7 +18,7 @@ static inline void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int e
 }
 
 #if defined(_WIN32) && !defined(_WIN64)
-#define GET_ABI(x) ((x == JNC_CALL(STDCALL)) ? FFI_STDCALL : FFI_SYSV)
+#define GET_ABI(x) ((x == JNC_CALL(STDCALL)) ? FFI_STDCALL : FFI_DEFAULT_ABI)
 #else
 #define GET_ABI(x) ((x & 0) | FFI_DEFAULT_ABI)
 #endif
