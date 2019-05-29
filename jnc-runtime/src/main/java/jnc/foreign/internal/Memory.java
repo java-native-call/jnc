@@ -19,12 +19,12 @@ abstract class Memory implements Pointer {
 
     @Override
     public final void putAddress(int offset, long value) {
-        putLong(offset, TypeHelper.TYPE_POINTER, value);
+        putLong(offset, TypeHelper.TYPE_INFO_POINTER, value);
     }
 
     @Override
     public final long getAddress(int offset) {
-        return getLong(offset, TypeHelper.TYPE_POINTER);
+        return getLong(offset, TypeHelper.TYPE_INFO_POINTER);
     }
 
     private InternalType toInternalType(Type type) {

@@ -22,8 +22,8 @@ import jnc.foreign.annotation.Typedef;
  */
 abstract class TypeHandlerInfo<T> {
 
-    static <T> TypeHandlerInfo<T> acFirst(InternalType type, T handler) {
-        return new AnnotationContextFirst<>(type, handler);
+    static <T> TypeHandlerInfo<T> typedefFirst(InternalType type, T handler) {
+        return new TypedefFirst<>(type, handler);
     }
 
     static <T> TypeHandlerInfo<T> always(InternalType type, T invoker) {
@@ -61,9 +61,9 @@ abstract class TypeHandlerInfo<T> {
 
     }
 
-    private static class AnnotationContextFirst<T> extends TypeHandlerInfo<T> {
+    private static class TypedefFirst<T> extends TypeHandlerInfo<T> {
 
-        private AnnotationContextFirst(InternalType type, T handler) {
+        private TypedefFirst(InternalType type, T handler) {
             super(type, handler);
         }
 

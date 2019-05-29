@@ -6,7 +6,31 @@ import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import jnc.foreign.NativeType;
+import static jnc.foreign.NativeType.ADDRESS;
+import static jnc.foreign.NativeType.DOUBLE;
+import static jnc.foreign.NativeType.FLOAT;
+import static jnc.foreign.NativeType.SINT16;
+import static jnc.foreign.NativeType.SINT32;
+import static jnc.foreign.NativeType.SINT64;
+import static jnc.foreign.NativeType.SINT8;
+import static jnc.foreign.NativeType.UINT16;
+import static jnc.foreign.NativeType.UINT32;
+import static jnc.foreign.NativeType.UINT64;
+import static jnc.foreign.NativeType.UINT8;
+import static jnc.foreign.NativeType.VOID;
 import jnc.foreign.enums.TypeAlias;
+import static jnc.foreign.internal.NativeMethods.TYPE_DOUBLE;
+import static jnc.foreign.internal.NativeMethods.TYPE_FLOAT;
+import static jnc.foreign.internal.NativeMethods.TYPE_POINTER;
+import static jnc.foreign.internal.NativeMethods.TYPE_SINT16;
+import static jnc.foreign.internal.NativeMethods.TYPE_SINT32;
+import static jnc.foreign.internal.NativeMethods.TYPE_SINT64;
+import static jnc.foreign.internal.NativeMethods.TYPE_SINT8;
+import static jnc.foreign.internal.NativeMethods.TYPE_UINT16;
+import static jnc.foreign.internal.NativeMethods.TYPE_UINT32;
+import static jnc.foreign.internal.NativeMethods.TYPE_UINT64;
+import static jnc.foreign.internal.NativeMethods.TYPE_UINT8;
+import static jnc.foreign.internal.NativeMethods.TYPE_VOID;
 import static jnc.foreign.internal.TypeInfo.MASK_FLOATING;
 import static jnc.foreign.internal.TypeInfo.MASK_INTEGRAL;
 import static jnc.foreign.internal.TypeInfo.MASK_SIGNED;
@@ -18,7 +42,7 @@ class TypeHelper {
     private static final Map<Integer, TypeInfo> TYPE_INFOS;
     private static final HashMap<Class<?>, TypeInfo> PRIMITIVE_MAP;
 
-    static final TypeInfo TYPE_POINTER;
+    static final TypeInfo TYPE_INFO_POINTER;
 
     static {
         long[][] types = NativeMethods.getInstance().getTypes();
@@ -26,24 +50,24 @@ class TypeHelper {
         EnumMap<NativeType, TypeInfo> map = new EnumMap<>(NativeType.class);
         HashMap<Class<?>, TypeInfo> primitiveMap = new HashMap<>(16);
 
-        add(types, NativeType.VOID, void.class, NativeMethods.TYPE_VOID, 0, typeInfos, map, primitiveMap);
-        add(types, NativeType.FLOAT, float.class, NativeMethods.TYPE_FLOAT, MASK_SIGNED | MASK_FLOATING, typeInfos, map, primitiveMap);
-        add(types, NativeType.DOUBLE, double.class, NativeMethods.TYPE_DOUBLE, MASK_SIGNED | MASK_FLOATING, typeInfos, map, primitiveMap);
-        add(types, NativeType.UINT8, null, NativeMethods.TYPE_UINT8, MASK_INTEGRAL, typeInfos, map, primitiveMap);
-        add(types, NativeType.SINT8, byte.class, NativeMethods.TYPE_SINT8, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
-        add(types, NativeType.UINT16, char.class, NativeMethods.TYPE_UINT16, MASK_INTEGRAL, typeInfos, map, primitiveMap);
-        add(types, NativeType.SINT16, short.class, NativeMethods.TYPE_SINT16, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
-        add(types, NativeType.UINT32, null, NativeMethods.TYPE_UINT32, MASK_INTEGRAL, typeInfos, map, primitiveMap);
-        add(types, NativeType.SINT32, int.class, NativeMethods.TYPE_SINT32, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
-        add(types, NativeType.UINT64, null, NativeMethods.TYPE_UINT64, MASK_INTEGRAL, typeInfos, map, primitiveMap);
-        add(types, NativeType.SINT64, long.class, NativeMethods.TYPE_SINT64, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
-        add(types, NativeType.ADDRESS, null, NativeMethods.TYPE_POINTER, MASK_INTEGRAL, typeInfos, map, primitiveMap);
+        add(types, VOID, void.class, TYPE_VOID, 0, typeInfos, map, primitiveMap);
+        add(types, FLOAT, float.class, TYPE_FLOAT, MASK_SIGNED | MASK_FLOATING, typeInfos, map, primitiveMap);
+        add(types, DOUBLE, double.class, TYPE_DOUBLE, MASK_SIGNED | MASK_FLOATING, typeInfos, map, primitiveMap);
+        add(types, UINT8, null, TYPE_UINT8, MASK_INTEGRAL, typeInfos, map, primitiveMap);
+        add(types, SINT8, byte.class, TYPE_SINT8, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
+        add(types, UINT16, char.class, TYPE_UINT16, MASK_INTEGRAL, typeInfos, map, primitiveMap);
+        add(types, SINT16, short.class, TYPE_SINT16, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
+        add(types, UINT32, null, TYPE_UINT32, MASK_INTEGRAL, typeInfos, map, primitiveMap);
+        add(types, SINT32, int.class, TYPE_SINT32, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
+        add(types, UINT64, null, TYPE_UINT64, MASK_INTEGRAL, typeInfos, map, primitiveMap);
+        add(types, SINT64, long.class, TYPE_SINT64, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
+        add(types, ADDRESS, null, TYPE_POINTER, MASK_INTEGRAL, typeInfos, map, primitiveMap);
 
         MAP = map;
         TYPE_INFOS = typeInfos;
         PRIMITIVE_MAP = primitiveMap;
 
-        TYPE_POINTER = map.get(NativeType.ADDRESS);
+        TYPE_INFO_POINTER = map.get(NativeType.ADDRESS);
     }
 
     static Alias findByAlias(TypeAlias typeAlias) {

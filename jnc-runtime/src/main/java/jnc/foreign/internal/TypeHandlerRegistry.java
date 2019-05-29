@@ -58,7 +58,7 @@ final class TypeHandlerRegistry {
     private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> inheritedParameterTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
 
     TypeHandlerRegistry() {
-        TypeInfo pointer = TypeHelper.TYPE_POINTER;
+        TypeInfo pointer = TypeHelper.TYPE_INFO_POINTER;
         addExactReturnTypeHandler(Pointer.class, TypeHandlerInfo.always(pointer, Invokers::invokePointer));
 
         addPrimaryTypeHandler(void.class, NativeType.VOID, (context, index, __) -> context.putLong(index, 0), Invokers::invokeVoid);
@@ -87,7 +87,7 @@ final class TypeHandlerRegistry {
 
     private <T> void addPrimitiveArrayParameterTypeHandler(Class<T> primitiveArrayType, ArrayParameterHandler<T> toNative, ArrayParameterHandler<T> fromNative, int size) {
         ParameterHandler<T> parameterHandler = toParameterHandler(toNative, fromNative, size);
-        addExactParameterTypeHandler(primitiveArrayType, TypeHandlerInfo.always(TypeHelper.TYPE_POINTER, parameterHandler));
+        addExactParameterTypeHandler(primitiveArrayType, TypeHandlerInfo.always(TypeHelper.TYPE_INFO_POINTER, parameterHandler));
     }
 
     private <T> void addPrimaryTypeHandler(Class<T> primitiveType, NativeType nativeType,
@@ -102,12 +102,12 @@ final class TypeHandlerRegistry {
             addExactParameterTypeHandler(wrapType, defaultType, parameterHandler);
         } else {
             // parameter type should not be void, maybe user want to define a pointer type.
-            addExactParameterTypeHandler(wrapType, TypeHelper.TYPE_POINTER, parameterHandler);
+            addExactParameterTypeHandler(wrapType, TypeHelper.TYPE_INFO_POINTER, parameterHandler);
         }
     }
 
     private <T> void addExactReturnTypeHandler(Class<T> returnType, InternalType defaultType, Invoker<T> invoker) {
-        addExactReturnTypeHandler(returnType, TypeHandlerInfo.acFirst(defaultType, invoker));
+        addExactReturnTypeHandler(returnType, TypeHandlerInfo.typedefFirst(defaultType, invoker));
     }
 
     private <T> void addExactReturnTypeHandler(Class<T> returnType, TypeHandlerInfo<Invoker<T>> returnTypeHandlerInfo) {
@@ -116,7 +116,7 @@ final class TypeHandlerRegistry {
 
     @SuppressWarnings("unused")
     private <T> void addInheritedReturnTypeHandler(Class<T> returnType, InternalType defaultType, Invoker<T> invoker) {
-        addInheritedReturnTypeHandler(returnType, TypeHandlerInfo.acFirst(defaultType, invoker));
+        addInheritedReturnTypeHandler(returnType, TypeHandlerInfo.typedefFirst(defaultType, invoker));
     }
 
     private <T> void addInheritedReturnTypeHandler(Class<T> returnType, TypeHandlerInfo<Invoker<T>> returnTypeHandlerInfo) {
@@ -124,7 +124,7 @@ final class TypeHandlerRegistry {
     }
 
     private <T> void addExactParameterTypeHandler(Class<T> parameterType, InternalType defaultType, ParameterHandler<T> parameterHandler) {
-        addExactParameterTypeHandler(parameterType, TypeHandlerInfo.acFirst(defaultType, parameterHandler));
+        addExactParameterTypeHandler(parameterType, TypeHandlerInfo.typedefFirst(defaultType, parameterHandler));
     }
 
     private <T> void addExactParameterTypeHandler(Class<T> parameterType, TypeHandlerInfo<ParameterHandler<T>> typeHandlerInfo) {
@@ -167,7 +167,7 @@ final class TypeHandlerRegistry {
         }
         EnumTypeHandler typeHandler = findEnumHandler(returnType);
         Invoker<T> invoker = typeHandler.getInvoker();
-        TypeHandlerInfo<Invoker<T>> rthi = TypeHandlerInfo.acFirst(typeHandler.getDefaultType(), invoker);
+        TypeHandlerInfo<Invoker<T>> rthi = TypeHandlerInfo.typedefFirst(typeHandler.getDefaultType(), invoker);
         addExactReturnTypeHandler(returnType, rthi);
         return rthi;
     }
@@ -190,7 +190,7 @@ final class TypeHandlerRegistry {
         EnumTypeHandler typeHandler = findEnumHandler(type);
         ParameterHandler<T> parameterHandler = typeHandler.getParameterHandler();
         InternalType internalType = typeHandler.getDefaultType();
-        TypeHandlerInfo<ParameterHandler<T>> phi = TypeHandlerInfo.acFirst(internalType, parameterHandler);
+        TypeHandlerInfo<ParameterHandler<T>> phi = TypeHandlerInfo.typedefFirst(internalType, parameterHandler);
         addExactParameterTypeHandler(type, phi);
         return phi;
     }
