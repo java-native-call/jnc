@@ -1,9 +1,9 @@
 package jnc.foreign.byref;
 
 import jnc.foreign.Foreign;
-import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
+import jnc.foreign.enums.TypeAlias;
 
 public class AddressByReference implements ByReference {
 
@@ -26,17 +26,17 @@ public class AddressByReference implements ByReference {
 
     @Override
     public void fromNative(Foreign foreign, Pointer pointer) {
-        value = pointer.getAddress(0);
+        value = pointer.getLong(0, foreign.findType(TypeAlias.uintptr_t));
     }
 
     @Override
     public void toNative(Foreign foreign, Pointer pointer) {
-        pointer.putAddress(0, value);
+        pointer.putLong(0, foreign.findType(TypeAlias.uintptr_t), value);
     }
 
     @Override
     public Type componentType(Foreign foreign) {
-        return foreign.findType(NativeType.POINTER);
+        return foreign.findType(TypeAlias.uintptr_t);
     }
 
 }

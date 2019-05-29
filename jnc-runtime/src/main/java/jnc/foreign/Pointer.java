@@ -10,12 +10,6 @@ public interface Pointer {
      */
     long address();
 
-    /**
-     * @return treat specified offset of this pointer as address value and read
-     * the data.
-     */
-    long getAddress(int offset);
-
     byte getByte(int offset);
 
     char getChar(int offset);
@@ -29,8 +23,6 @@ public interface Pointer {
     long getLong(int offset);
 
     short getShort(int offset);
-
-    void putAddress(int offset, long value);
 
     void putByte(int offset, byte value);
 

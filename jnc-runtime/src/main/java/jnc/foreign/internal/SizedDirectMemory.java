@@ -2,6 +2,8 @@ package jnc.foreign.internal;
 
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import jnc.foreign.Pointer;
 
 class SizedDirectMemory extends Memory {
 
@@ -296,6 +298,23 @@ class SizedDirectMemory extends Memory {
     public Slice slice(int offset, int count) {
         getMemoryAccessor().checkIndex(offset, size, count);
         return new Slice(this, offset, count);
+    }
+
+    @Nullable
+    @Override
+    public final Pointer getPointer(int offset) {
+        return UnboundedDirectMemory.of(
+                getMemoryAccessor()
+                        .checkIndex(offset, size, TypeHelper.TYPE_INFO_POINTER.size())
+                        .getAddress(offset)
+        );
+    }
+
+    @Override
+    public final void putPointer(int offset, @Nullable Pointer pointer) {
+        getMemoryAccessor()
+                .checkIndex(offset, size, TypeHelper.TYPE_INFO_POINTER.size())
+                .putAddress(offset, pointer != null ? pointer.address() : 0);
     }
 
 }

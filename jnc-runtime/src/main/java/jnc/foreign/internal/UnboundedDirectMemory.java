@@ -248,4 +248,14 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
         return new Slice(this, offset, size);
     }
 
+    @Override
+    public Pointer getPointer(int offset) {
+        return UnboundedDirectMemory.of(getMemoryAccessor().getAddress(offset));
+    }
+
+    @Override
+    public void putPointer(int offset, Pointer pointer) {
+        getMemoryAccessor().putAddress(offset, pointer != null ? pointer.address() : 0);
+    }
+
 }

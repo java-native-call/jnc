@@ -438,14 +438,6 @@ public class Struct {
         @Override
         public abstract String toString();
 
-        final jnc.foreign.Pointer getPointer() {
-            return getMemory().getPointer(base.getOffset());
-        }
-
-        final void setPointer(jnc.foreign.Pointer value) {
-            getMemory().putPointer(base.getOffset(), value);
-        }
-
     }
 
     private abstract class AbstractBoolean extends NumberField {
@@ -659,7 +651,7 @@ public class Struct {
         private static final long serialVersionUID = 0L;
 
         public Address() {
-            super(NativeType.POINTER);
+            super(getForeign().findType(TypeAlias.uintptr_t));
         }
 
         @Override
@@ -670,17 +662,18 @@ public class Struct {
 
     protected class Pointer {
 
-        private final Address address = new Address();
+        private final BaseField base;
 
         public Pointer() {
+            base = new BaseField(NativeType.POINTER);
         }
 
-        public final jnc.foreign.Pointer get() {
-            return address.getPointer();
+        public final jnc.foreign.Pointer getPointer() {
+            return getMemory().getPointer(base.getOffset());
         }
 
-        public final void set(jnc.foreign.Pointer value) {
-            address.setPointer(value);
+        public final void setPointer(jnc.foreign.Pointer value) {
+            getMemory().putPointer(base.getOffset(), value);
         }
 
     }

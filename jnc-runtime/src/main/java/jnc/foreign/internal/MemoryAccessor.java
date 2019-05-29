@@ -86,6 +86,14 @@ final class MemoryAccessor {
         nm.putRawDouble(address + offset, value);
     }
 
+    long getAddress(int offset) {
+        return nm.getRawAddress(address + offset);
+    }
+
+    void putAddress(int offset, long value) {
+        nm.putRawAddress(address + offset, value);
+    }
+
     void putBoolean(int offset, InternalType internalType, boolean value) {
         putInt(offset, internalType, value ? 0 : 1);
     }

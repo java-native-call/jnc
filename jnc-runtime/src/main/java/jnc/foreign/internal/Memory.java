@@ -1,7 +1,6 @@
 package jnc.foreign.internal;
 
 import java.util.Objects;
-import javax.annotation.Nullable;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 
@@ -15,16 +14,6 @@ abstract class Memory implements Pointer {
 
     final MemoryAccessor getMemoryAccessor() {
         return ma;
-    }
-
-    @Override
-    public final void putAddress(int offset, long value) {
-        putLong(offset, TypeHelper.TYPE_INFO_POINTER, value);
-    }
-
-    @Override
-    public final long getAddress(int offset) {
-        return getLong(offset, TypeHelper.TYPE_INFO_POINTER);
     }
 
     private InternalType toInternalType(Type type) {
@@ -93,17 +82,6 @@ abstract class Memory implements Pointer {
     @Override
     public final void putDouble(int offset, Type nativeType, double value) {
         putDouble(offset, toInternalType(nativeType), value);
-    }
-
-    @Nullable
-    @Override
-    public final Pointer getPointer(int offset) {
-        return UnboundedDirectMemory.of(getAddress(offset));
-    }
-
-    @Override
-    public final void putPointer(int offset, @Nullable Pointer pointer) {
-        putAddress(offset, pointer != null ? pointer.address() : 0);
     }
 
     abstract void putBoolean(int offset, InternalType internalType, boolean value);
