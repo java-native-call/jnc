@@ -289,7 +289,7 @@ JNIEXPORT jobjectArray JNICALL Java_jnc_foreign_internal_NativeMethods_getTypes
 
     for (auto &&p : addrs) {
         unsigned short type = p->type;
-        jlong info = ((jlong) p->size << 32) | (p->alignment << 16) | type;
+        jlong info = (uint64_t(p->size) << 32) | (p->alignment << 16) | type;
         jlongArray arr = env->NewLongArray(2);
         if (unlikely(env->ExceptionCheck())) return nullptr;
         jlong region[2] = {p2j(p), info};

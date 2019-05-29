@@ -49,10 +49,17 @@ do {                                                              \
 #endif   /* !__GNUC__ && !__LCLINT__ */
 
 #define NOOP(...) __VA_ARGS__
+#ifdef __cplusplus
+#define p2j(x) jlong(reinterpret_cast<uintptr_t>(x))
+#define j2p(x, type) reinterpret_cast<type>(uintptr_t(x))
+#define j2c(x, type) j2p(x, type*)
+#define j2vp(x) j2c(x, void)
+#else
 #define p2j(x) ((jlong)(uintptr_t)(x))
 #define j2p(x, type) ((type)(uintptr_t)(x))
 #define j2c(x, type) j2p(x, type*)
 #define j2vp(x) j2c(x, void)
+#endif
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 
