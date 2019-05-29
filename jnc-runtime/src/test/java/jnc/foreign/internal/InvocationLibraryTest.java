@@ -30,7 +30,7 @@ import org.junit.Test;
 @SuppressWarnings("PackageVisibleInnerClass")
 public class InvocationLibraryTest {
 
-    private static final Library dummy = new ProxyBuilder().useProxyMethods()
+    private static final Library dummy = ProxyBuilder.builder().useProxyMethods()
             .otherwise(method -> "dlsym".equals(method.getName()) ? (proxy, m, args) -> 0L : null)
             .newInstance(Library.class);
     private static final TypeHandlerRegistry THR = new TypeHandlerRegistry();

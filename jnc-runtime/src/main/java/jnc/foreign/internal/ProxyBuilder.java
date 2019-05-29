@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
@@ -58,11 +58,19 @@ class ProxyBuilder {
         }
     }
 
+    public static ProxyBuilder builder() {
+        return new ProxyBuilder();
+    }
+
     // visible for test
     static <T> T newInstance(Class<T> klass, InvocationHandler ih) {
-        Objects.requireNonNull(klass);
-        Objects.requireNonNull(ih);
-        return klass.cast(Proxy.newProxyInstance(klass.getClassLoader(), new Class<?>[]{klass}, ih));
+        return klass.cast(Proxy.newProxyInstance(klass.getClassLoader(),
+                new Class<?>[]{klass}, requireNonNull(ih)));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> RuntimeException throwUnchecked(Throwable throwable) throws T {
+        throw (T) throwable;
     }
 
     private final Map<Method, InvocationHandler> map = new HashMap<>(4);
@@ -70,18 +78,21 @@ class ProxyBuilder {
     private Function<Method, InvocationHandler> otherwise;
     private Function<Method, ? extends Throwable> orThrow = method -> new AbstractMethodError(method.getName());
 
+    private ProxyBuilder() {
+    }
+
     public ProxyBuilder customize(Method method, InvocationHandler handler) {
-        map.put(Objects.requireNonNull(method), Objects.requireNonNull(handler));
+        map.put(requireNonNull(method), requireNonNull(handler));
         return this;
     }
 
     public ProxyBuilder otherwise(Function<Method, InvocationHandler> otherwise) {
-        this.otherwise = Objects.requireNonNull(otherwise);
+        this.otherwise = requireNonNull(otherwise);
         return this;
     }
 
     public ProxyBuilder otherwise(InvocationHandler otherwise) {
-        Objects.requireNonNull(otherwise);
+        requireNonNull(otherwise);
         return otherwise(__ -> otherwise);
     }
 
@@ -130,7 +141,7 @@ class ProxyBuilder {
     }
 
     public ProxyBuilder orThrow(Function<Method, ? extends Throwable> orThrow) {
-        this.orThrow = Objects.requireNonNull(orThrow);
+        this.orThrow = requireNonNull(orThrow);
         return this;
     }
 
@@ -143,51 +154,25 @@ class ProxyBuilder {
     }
 
     public InvocationHandler toInvocationHandler() {
-        return new InvocationHandlerImpl(map, useDefaultMethod, otherwise, orThrow);
+        final ConcurrentMap<Method, InvocationHandler> map = new ConcurrentHashMap<>(this.map);
+        final boolean useDefaultMethod = this.useDefaultMethod;
+        final Function<Method, InvocationHandler> otherwise = this.otherwise;
+        final Function<Method, ? extends Throwable> orThrow = this.orThrow;
+        return (proxy, method, args) -> map.computeIfAbsent(method, m -> {
+            if (useDefaultMethod && m.isDefault()) {
+                return DefaultMethodInvoker.getInstance(m);
+            }
+            final InvocationHandler handler = otherwise != null ? otherwise.apply(m) : null;
+            if (handler == null) {
+                //noinspection RedundantTypeArguments
+                throw ProxyBuilder.<RuntimeException>throwUnchecked(orThrow.apply(m));
+            }
+            return handler;
+        }).invoke(proxy, method, args);
     }
 
-    public <T> T newInstance(Class<T> klass) {
-        return newInstance(klass, toInvocationHandler());
-    }
-
-    private static class InvocationHandlerImpl implements InvocationHandler {
-
-        @SuppressWarnings("unchecked")
-        private static <T extends Throwable> RuntimeException throwUnchecked(Throwable throwable) throws T {
-            throw (T) throwable;
-        }
-
-        private final ConcurrentMap<Method, InvocationHandler> map;
-        private final boolean useDefaultMethod;
-        private final Function<Method, InvocationHandler> otherwise;
-        private final Function<Method, ? extends Throwable> orThrow;
-
-        InvocationHandlerImpl(Map<Method, InvocationHandler> map, boolean useDefaultMethod, Function<Method, InvocationHandler> otherwise, Function<Method, ? extends Throwable> orThrow) {
-            this.map = new ConcurrentHashMap<>(map);
-            this.useDefaultMethod = useDefaultMethod;
-            this.otherwise = otherwise;
-            this.orThrow = orThrow;
-        }
-
-        @SuppressWarnings("RedundantTypeArguments")
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            return map.computeIfAbsent(method, m -> {
-                if (useDefaultMethod && m.isDefault()) {
-                    return DefaultMethodInvoker.getInstance(m);
-                }
-                final InvocationHandler handler;
-                if (otherwise != null) {
-                    handler = otherwise.apply(m);
-                } else {
-                    handler = null;
-                }
-                if (handler == null) {
-                    throw InvocationHandlerImpl.<RuntimeException>throwUnchecked(orThrow.apply(m));
-                }
-                return handler;
-            }).invoke(proxy, method, args);
-        }
+    public <T> T newInstance(Class<T> interfaceClass) {
+        return newInstance(interfaceClass, toInvocationHandler());
     }
 
 }

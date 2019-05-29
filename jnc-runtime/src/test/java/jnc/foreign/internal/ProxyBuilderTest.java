@@ -35,7 +35,7 @@ public class ProxyBuilderTest {
     @Test
     public void testEquals() {
         // toString must be implemented for junit require this to display error message if failed
-        ProxyBuilder builder = new ProxyBuilder().useObjectEquals().useProxyToString();
+        ProxyBuilder builder = ProxyBuilder.builder().useObjectEquals().useProxyToString();
         InvocationHandler handler = builder.toInvocationHandler();
         Serializable instance1 = ProxyBuilder.newInstance(Serializable.class, handler);
         Serializable instance2 = ProxyBuilder.newInstance(Serializable.class, handler);
@@ -51,7 +51,7 @@ public class ProxyBuilderTest {
     @Test
     public void testHashCode() {
         // toString must be implemented for junit require this to display error message if failed
-        ProxyBuilder builder = new ProxyBuilder().useObjectHashCode().useProxyToString();
+        ProxyBuilder builder = ProxyBuilder.builder().useObjectHashCode().useProxyToString();
         Serializable serializable = builder.newInstance(Serializable.class);
         assertEquals(System.identityHashCode(serializable), serializable.hashCode());
 
@@ -61,7 +61,7 @@ public class ProxyBuilderTest {
 
     @Test
     public void testToString() {
-        ProxyBuilder builder = new ProxyBuilder().useObjectToString();
+        ProxyBuilder builder = ProxyBuilder.builder().useObjectToString();
 
         Serializable serializable = builder.newInstance(Serializable.class);
         assertThat(serializable.toString())
@@ -77,7 +77,7 @@ public class ProxyBuilderTest {
     @Test
     public void testThrow() {
         // toString must be implemented for junit require this to display error message if failed
-        ProxyBuilder builder = new ProxyBuilder().useProxyToString();
+        ProxyBuilder builder = ProxyBuilder.builder().useProxyToString();
         Closeable closeable = builder.newInstance(Closeable.class);
         assertThatThrownBy(closeable::close).isInstanceOf(AbstractMethodError.class).hasMessage("close");
 
