@@ -39,6 +39,15 @@ public class EnumTypeHandlerTest {
 
     private static final Logger log = LoggerFactory.getLogger(EnumTypeHandlerTest.class);
 
+    @SuppressWarnings("UnusedReturnValue")
+    private <E extends Enum<E>> Struct newStructWithEnumField(Class<E> klass) {
+        return new Struct() {
+            {
+                enumField(klass);
+            }
+        };
+    }
+
     /**
      * Test of getInstance method, of class EnumTypeHandler.
      */
@@ -52,9 +61,7 @@ public class EnumTypeHandlerTest {
 
     @Test
     public void testNotAllow() {
-        assertThatThrownBy(() -> new Struct() {
-            private final Struct.EnumField<Test1> f = enumField(Test1.class);
-        }).isInstanceOf(IllegalStateException.class).hasMessageContaining(" allowed ");
+        assertThatThrownBy(() -> newStructWithEnumField(Test1.class)).isInstanceOf(IllegalArgumentException.class).hasMessageContaining(" allowed ");
     }
 
     @Test
@@ -87,21 +94,14 @@ public class EnumTypeHandlerTest {
         assertTrue(isSigned);
     }
 
-    @SuppressWarnings("UnusedReturnValue")
-    private <E extends Enum<E>> Struct testTooLarge(Class<E> klass) {
-        return new Struct() {
-            {
-                enumField(klass);
-            }
-        };
-    }
-
     @Test
     public void testTooLarge() {
-        testTooLarge(Large1.class);
-        assertThatThrownBy(() -> testTooLarge(Large2.class)).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> testTooLarge(Large3.class)).isInstanceOf(IllegalArgumentException.class);
-        testTooLarge(Large4.class);
+        newStructWithEnumField(Large1.class);
+        assertThatThrownBy(() -> newStructWithEnumField(Large2.class))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("too large");
+        assertThatThrownBy(() -> newStructWithEnumField(Large3.class))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("too large");
+        newStructWithEnumField(Large4.class);
     }
 
     private static class Struct1 extends Struct {

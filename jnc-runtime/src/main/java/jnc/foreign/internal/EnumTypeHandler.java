@@ -77,7 +77,7 @@ class EnumTypeHandler<E extends Enum<E>> {
         NativeType nativeType = continuously.type();
         EnumMappingErrorAction onUnmappable = continuously.onUnmappable();
         if (!ALLOWED_NATIVE_TYPES.contains(nativeType)) {
-            throw new IllegalStateException("Only integral type allowed on enum, but found "
+            throw new IllegalArgumentException("Only integral type allowed on enum, but found "
                     + nativeType + " on " + type.getName());
         }
         T[] values = (T[]) type.getEnumConstants();
