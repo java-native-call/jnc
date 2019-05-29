@@ -18,7 +18,6 @@ package jnc.foreign.internal;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import jnc.foreign.LoadOptions;
-import jnc.foreign.LoadOptionsBuilder;
 import jnc.foreign.annotation.DefaultConvention;
 import jnc.foreign.annotation.Stdcall;
 import jnc.foreign.enums.CallingConvention;
@@ -56,32 +55,23 @@ public class InvocationLibraryTest {
      */
     @Test
     public void testFind() {
-        LoadOptions noConventionOptions = new LoadOptionsBuilder().unsetCallingConvention().create();
-        LoadOptions stdcallOptions = new LoadOptionsBuilder().stdcall().create();
-        LoadOptions cdeclOptions = new LoadOptionsBuilder().cdecl().create();
+        LoadOptions stdcallOptions = LoadOptions.builder().stdcall().build();
+        LoadOptions defaultCallingConventionOptions = LoadOptions.builder().defaultCallingConvention().build();
 
         {
-            test(NoConvention.class, noConventionOptions, function -> {
+            test(NoConvention.class, defaultCallingConventionOptions, function -> {
                 assertThat(function.apply("stdcall").getCallingConvention()).isEqualTo(CallingConvention.STDCALL);
                 assertThat(function.apply("cdecl").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
                 assertThat(function.apply("noConvention").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
             });
 
-            test(StdcallConvention.class, noConventionOptions, function -> {
+            test(StdcallConvention.class, defaultCallingConventionOptions, function -> {
                 assertThat(function.apply("stdcall").getCallingConvention()).isEqualTo(CallingConvention.STDCALL);
                 assertThat(function.apply("cdecl").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
                 assertThat(function.apply("noConvention").getCallingConvention()).isEqualTo(CallingConvention.STDCALL);
             });
-        }
 
-        {
-            test(NoConvention.class, cdeclOptions, function -> {
-                assertThat(function.apply("stdcall").getCallingConvention()).isEqualTo(CallingConvention.STDCALL);
-                assertThat(function.apply("cdecl").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
-                assertThat(function.apply("noConvention").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
-            });
-
-            test(StdcallConvention.class, cdeclOptions, function -> {
+            test(DefaultConventionLib.class, defaultCallingConventionOptions, function -> {
                 assertThat(function.apply("stdcall").getCallingConvention()).isEqualTo(CallingConvention.STDCALL);
                 assertThat(function.apply("cdecl").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
                 assertThat(function.apply("noConvention").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
@@ -100,10 +90,29 @@ public class InvocationLibraryTest {
                 assertThat(function.apply("cdecl").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
                 assertThat(function.apply("noConvention").getCallingConvention()).isEqualTo(CallingConvention.STDCALL);
             });
+
+            test(DefaultConventionLib.class, stdcallOptions, function -> {
+                assertThat(function.apply("stdcall").getCallingConvention()).isEqualTo(CallingConvention.STDCALL);
+                assertThat(function.apply("cdecl").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
+                assertThat(function.apply("noConvention").getCallingConvention()).isEqualTo(CallingConvention.DEFAULT);
+            });
         }
     }
 
     interface NoConvention {
+
+        @Stdcall
+        void stdcall();
+
+        @DefaultConvention
+        void cdecl();
+
+        void noConvention();
+
+    }
+
+    @DefaultConvention
+    interface DefaultConventionLib {
 
         @Stdcall
         void stdcall();

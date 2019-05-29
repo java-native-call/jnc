@@ -12,7 +12,7 @@ public class LibraryLoader<T> {
     }
 
     private final Class<T> interfaceClass;
-    private final LoadOptionsBuilder loadOptionsBuilder = new LoadOptionsBuilder();
+    private final LoadOptionsBuilder loadOptionsBuilder = LoadOptions.builder();
 
     private LibraryLoader(Class<T> interfaceClass) {
         this.interfaceClass = interfaceClass;
@@ -26,7 +26,7 @@ public class LibraryLoader<T> {
 
     @Nonnull
     public T load(String libname) {
-        return Foreign.getDefault().load(interfaceClass, libname, loadOptionsBuilder.create());
+        return Foreign.getDefault().load(interfaceClass, libname, loadOptionsBuilder.build());
     }
 
 }

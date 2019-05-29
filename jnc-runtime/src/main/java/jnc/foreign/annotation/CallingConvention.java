@@ -7,8 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Calling Convention searching order: method annotation, load options, class annotation,
- * interfaces this interface is extending.
+ * Calling Convention searching order: method annotation, class annotation, load options.
  *
  * @author zhanhb
  */

@@ -20,13 +20,12 @@ class InvocationLibrary<T> {
     private final TypeHandlerRegistry typeHandlerRegistry;
 
     // visible for test
-    InvocationLibrary(Class<T> interfaceClass, Library library, LoadOptions loadOptions, TypeHandlerRegistry typeHandlerRegistry) {
+    InvocationLibrary(Class<T> interfaceClass, Library library, LoadOptions options, TypeHandlerRegistry typeHandlerRegistry) {
         this.interfaceClass = interfaceClass;
         AnnotatedElementContext aec = new AnnotatedElementContext(interfaceClass);
         jnc.foreign.annotation.CallingConvention classConventionAnnotation = aec.getAnnotation(jnc.foreign.annotation.CallingConvention.class);
-        CallingConvention optionConvention = loadOptions.getCallingConvention();
         this.library = library;
-        this.classConvention = optionConvention != null ? optionConvention : classConventionAnnotation != null ? classConventionAnnotation.value() : CallingConvention.DEFAULT;
+        this.classConvention = classConventionAnnotation != null ? classConventionAnnotation.value() : options.getCallingConvention();
         this.typeHandlerRegistry = typeHandlerRegistry;
     }
 
