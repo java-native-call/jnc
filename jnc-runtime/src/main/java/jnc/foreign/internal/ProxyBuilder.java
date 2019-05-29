@@ -28,7 +28,7 @@ import java.util.function.Function;
 /**
  * @author zhanhb
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings("WeakerAccess")
 class ProxyBuilder {
 
     private static final Method OBJECT_TO_STRING;

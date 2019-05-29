@@ -53,6 +53,7 @@ final class Alias implements InternalType {
         return typeInfo.isSigned();
     }
 
+    @SuppressWarnings("WeakerAccess")
     public TypeAlias getTypeAlias() {
         return typeAlias;
     }

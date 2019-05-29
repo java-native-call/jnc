@@ -87,7 +87,7 @@ final class MemoryAccessor {
     }
 
     void putBoolean(int offset, InternalType internalType, boolean value) {
-        nm.putInt(address + offset, internalType.address(), value ? 0 : 1);
+        putInt(offset, internalType, value ? 0 : 1);
     }
 
     void putInt(int offset, InternalType internalType, int value) {

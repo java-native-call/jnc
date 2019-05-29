@@ -159,7 +159,7 @@ final class TypeHandlerRegistry {
         return null;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     <T> TypeHandlerInfo<Invoker<T>> findReturnTypeInfo(Class<T> returnType) {
         TypeHandlerInfo<Invoker<T>> typeHandlerInfo = extractFromMap(exactReturnTypeMap, inheritedReturnTypeMap, returnType);
         if (typeHandlerInfo != null) {
@@ -181,7 +181,7 @@ final class TypeHandlerRegistry {
         }
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"rawtypes", "unchecked"})
     <T> TypeHandlerInfo<ParameterHandler<T>> findParameterTypeInfo(Class<T> type) {
         TypeHandlerInfo<ParameterHandler<T>> typeHandlerInfo = extractFromMap(exactParameterTypeMap, inheritedParameterTypeMap, type);
         if (typeHandlerInfo != null) {
@@ -200,5 +200,12 @@ final class TypeHandlerRegistry {
         void handle(Pointer memory, int offset, T array, int off, int len);
 
     }
+
+    private interface EmptyMemoryHolder {
+
+        Pointer NOMEMORY = AllocatedMemory.allocate(0);
+
+    }
+
 
 }

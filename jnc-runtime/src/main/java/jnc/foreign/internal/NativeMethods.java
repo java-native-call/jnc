@@ -81,7 +81,6 @@ class NativeMethods {
         return theInstance;
     }
 
-    @SuppressWarnings("NestedAssignment")
     private static void load(URL url) {
         try {
             if ("file".equalsIgnoreCase(url.getProtocol())) {

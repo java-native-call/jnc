@@ -27,6 +27,7 @@ import java.util.Set;
  * @author Kevin Bourrillion
  * @since 1.0
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 final class Primitives {
   private Primitives() {}
 

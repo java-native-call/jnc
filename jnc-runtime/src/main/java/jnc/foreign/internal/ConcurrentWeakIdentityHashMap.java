@@ -29,7 +29,7 @@ import java.util.function.Function;
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
  */
-@SuppressWarnings("element-type-mismatch")
+@SuppressWarnings({"element-type-mismatch", "WeakerAccess"})
 class ConcurrentWeakIdentityHashMap<K, V> {
 
     private final ConcurrentMap<Key<K>, V> map;
@@ -57,6 +57,7 @@ class ConcurrentWeakIdentityHashMap<K, V> {
         }
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public V putIfAbsent(K key, V value) {
         purgeKeys();
         return map.putIfAbsent(new Key<>(key, queue), value);

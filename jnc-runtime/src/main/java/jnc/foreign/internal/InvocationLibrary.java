@@ -1,12 +1,10 @@
 package jnc.foreign.internal;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import jnc.foreign.LoadOptions;
 import jnc.foreign.enums.CallingConvention;
 
-@SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 class InvocationLibrary<T> {
 
     static <T> T create(Class<T> interfaceClass, Library library, LoadOptions loadOptions,
@@ -85,7 +83,7 @@ class InvocationLibrary<T> {
         }
 
         @Override
-        public Object invoke(Object proxy, Method m, Object[] args) throws Throwable {
+        public Object invoke(Object proxy, Method m, Object[] args) {
             @SuppressWarnings("unchecked")
             ParameterHandler<Object>[] h = (ParameterHandler<Object>[]) handlers;
             int length = h.length;
