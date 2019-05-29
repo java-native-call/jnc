@@ -136,12 +136,19 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
         set(ARCH_FLAGS "${ARCH_FLAGS} -arch ${arch}")
     endforeach ()
 
-    file(GLOB libffi-darwin-headers ${CMAKE_SOURCE_DIR}/darwin/include/*.h)
+    ExternalProject_Add_Step(libffi include-dir
+            COMMAND ${CMAKE_COMMAND} -E make_directory <BINARY_DIR>/include)
 
-    ExternalProject_Add_Step(libffi copy-darwin-header
-            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/darwin <BINARY_DIR>
-            DEPENDERS install
-            DEPENDS ${libffi-darwin-headers})
+    foreach (name ffi.h ffitarget.h)
+        ExternalProject_Add_Step(libffi generate-${name}
+                COMMAND ${CMAKE_COMMAND} -E echo "#if defined(__x86_64__)" > "<BINARY_DIR>/include/${name}"
+                COMMAND ${CMAKE_COMMAND} -E echo "#include \"../../libffi-build-x86_64/include/${name}\"" >> "<BINARY_DIR>/include/${name}"
+                COMMAND ${CMAKE_COMMAND} -E echo "#elif defined(__i386__)" >> "<BINARY_DIR>/include/${name}"
+                COMMAND ${CMAKE_COMMAND} -E echo "#include \"../../libffi-build-i386/include/${name}\"" >> "<BINARY_DIR>/include/${name}"
+                COMMAND ${CMAKE_COMMAND} -E echo "#endif" >> "<BINARY_DIR>/include/${name}"
+                DEPENDEES include-dir
+                DEPENDERS install)
+    endforeach ()
 
     ExternalProject_Add_Step(libffi merge-static
             COMMAND ${CMAKE_COMMAND} -E make_directory <BINARY_DIR>/.libs
