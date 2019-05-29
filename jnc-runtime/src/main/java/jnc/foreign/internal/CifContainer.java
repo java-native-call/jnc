@@ -80,7 +80,7 @@ final class CifContainer extends Struct {
     }
 
     CallContext newCallContext() {
-        return new CallContextImpl();
+        return new CifCallContext();
     }
 
     long getCifAddress() {
@@ -99,12 +99,12 @@ final class CifContainer extends Struct {
         }
     }
 
-    private final class CallContextImpl implements CallContext {
+    private final class CifCallContext implements CallContext {
 
         private final AllocatedMemory parameter;
         private List<Runnable> onFinish;
 
-        CallContextImpl() {
+        CifCallContext() {
             this.parameter = AllocatedMemory.allocate(1, parameterSize);
         }
 
@@ -129,7 +129,7 @@ final class CifContainer extends Struct {
         }
 
         @Override
-        public CallContextImpl onFinish(Runnable r) {
+        public CifCallContext onFinish(Runnable r) {
             Objects.requireNonNull(r);
             List<Runnable> finish = this.onFinish;
             if (finish == null) {

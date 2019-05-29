@@ -2,7 +2,6 @@ package jnc.foreign.internal;
 
 import java.text.MessageFormat;
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.Map;
 import javax.annotation.Nullable;
 import jnc.foreign.NativeType;
@@ -25,8 +24,8 @@ class EnumTypeHandler<E extends Enum<E>> {
     private static final ConcurrentWeakIdentityHashMap<Class<? extends Enum<?>>, EnumTypeHandler<?>> cache
             = new ConcurrentWeakIdentityHashMap<>(32);
 
-    private static final Map<NativeType, NativeType> signedMap;
-    private static final Map<NativeType, NativeType> unsignedMap;
+    private static final Map<NativeType, NativeType> TO_SIGNED_TPYPE;
+    private static final Map<NativeType, NativeType> TO_UNSIGNED_TYPE;
 
     // method annotationType is not implemented, got null if invoked
     // equals, hashCode, toString is same as class {@code Object} does
@@ -39,18 +38,17 @@ class EnumTypeHandler<E extends Enum<E>> {
         EnumMap<NativeType, NativeType> toSigned = new EnumMap<>(NativeType.class);
         EnumMap<NativeType, NativeType> toUnsigned = new EnumMap<>(NativeType.class);
         add(toSigned, toUnsigned, UINT8, SINT8);
-        add(toSigned, toUnsigned, UINT8, SINT8);
         add(toSigned, toUnsigned, UINT16, SINT16);
         add(toSigned, toUnsigned, UINT32, SINT32);
         add(toSigned, toUnsigned, UINT64, SINT64);
-        signedMap = toSigned;
-        unsignedMap = toUnsigned;
+        TO_SIGNED_TPYPE = toSigned;
+        TO_UNSIGNED_TYPE = toUnsigned;
     }
 
-    private static void add(Map<NativeType, NativeType> forwarding,
-            Map<NativeType, NativeType> reverse, NativeType key, NativeType value) {
-        forwarding.put(key, value);
-        reverse.put(value, key);
+    private static void add(Map<NativeType, NativeType> forward,
+            Map<NativeType, NativeType> backward, NativeType key, NativeType value) {
+        forward.put(key, value);
+        backward.put(value, key);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -71,7 +69,7 @@ class EnumTypeHandler<E extends Enum<E>> {
         long start = continuously.start();
         NativeType nativeType = continuously.type();
         EnumMappingErrorAction onUnmappable = continuously.onUnmappable();
-        NativeType mapped = (start < 0 ? signedMap : unsignedMap).getOrDefault(nativeType, nativeType);
+        NativeType mapped = (start < 0 ? TO_SIGNED_TPYPE : TO_UNSIGNED_TYPE).getOrDefault(nativeType, nativeType);
         InternalType internalType = TypeHelper.findByNativeType(mapped);
         if (!internalType.isIntegral()) {
             throw new IllegalArgumentException("Only integral type allowed on enum, but found "
