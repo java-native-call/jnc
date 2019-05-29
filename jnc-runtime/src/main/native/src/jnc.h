@@ -1,6 +1,7 @@
 #pragma once
 
-#include <jnc_foreign_internal_NativeMethods.h>
+#include "jnc_foreign_internal_NativeAccessor.h"
+#include "jnc_foreign_internal_NativeMethods.h"
 #include <ffi.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -63,7 +64,7 @@ do {                                                              \
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 
-#define JNC_TYPE(type) jnc_foreign_internal_NativeMethods_TYPE_##type
+#define JNC_TYPE(type) jnc_foreign_internal_NativeAccessor_TYPE_##type
 #define CHECK_JNC_FFI(type) (JNC_TYPE(type) == FFI_TYPE_##type)
 #if \
 CHECK_JNC_FFI(VOID) && \
@@ -84,4 +85,4 @@ CHECK_JNC_FFI(POINTER)
 #endif
 #undef CHECK_JNC_FFI
 
-#define JNC_CALL(type) jnc_foreign_internal_NativeMethods_CONVENTION_##type
+#define JNC_CALL(type) jnc_foreign_internal_NativeAccessor_CONVENTION_##type

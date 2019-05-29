@@ -22,6 +22,7 @@ import jnc.foreign.annotation.DefaultConvention;
 import jnc.foreign.annotation.Stdcall;
 import jnc.foreign.enums.CallingConvention;
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -30,13 +31,21 @@ import org.junit.Test;
 @SuppressWarnings("PackageVisibleInnerClass")
 public class InvocationLibraryTest {
 
-    private static final Library dummy = ProxyBuilder.builder().useProxyMethods()
-            .otherwise(method -> "dlsym".equals(method.getName()) ? (proxy, m, args) -> 0L : null)
-            .newInstance(Library.class);
-    private static final TypeHandlerRegistry THR = new TypeHandlerRegistry();
+    private static Library DUMMY_LIB;
+    private static TypeFactory typeFactory;
+    private static TypeHandlerFactory THR;
+
+    @BeforeClass
+    public static void setUpClass() {
+        ProxyBuilder builder = ProxyBuilder.builder().useProxyMethods();
+        DUMMY_LIB = builder.otherwise(method -> "dlsym".equals(method.getName()) ? (proxy, m, args) -> 0L : null)
+                .newInstance(Library.class);
+        typeFactory = DefaultForeign.INSTANCE.getTypeFactory();
+        THR = DefaultForeign.INSTANCE.getTypeHandlerFactory();
+    }
 
     private <T> InvocationLibrary<T> newInvocationLibrary(Class<T> iface, LoadOptions loadOptions) {
-        return new InvocationLibrary<>(iface, dummy, loadOptions, THR);
+        return new InvocationLibrary<>(iface, DUMMY_LIB, loadOptions, typeFactory, THR);
     }
 
     private <T> void test(Class<T> klass, LoadOptions options, Consumer<Function<String, InvocationLibrary.MethodInvocation>> consumer) {

@@ -27,9 +27,9 @@ import jnc.foreign.enums.CallingConvention;
  */
 final class CifContainer extends Struct {
 
-    private static final NativeMethods nm = NativeMethods.getInstance();
+    private static final NativeAccessor NA = NativeLoader.getAccessor();
 
-    private static final long CIF_INFO = nm.getCifInfo();
+    private static final long CIF_INFO = NA.getCifInfo();
     private static final int SIZE_OF_FFI_CIF = (int) CIF_INFO;
     private static final int ALIGN_OF_FFI_CIF = (int) (CIF_INFO >> 32);
     private static final Address[] ARGUMENT_EMPTY = {};
@@ -75,7 +75,7 @@ final class CifContainer extends Struct {
     }
 
     CifContainer prepareInvoke(CallingConvention callingConvention, InternalType resultType) {
-        nm.prepareInvoke(cif.getMemory().address(), convention(callingConvention), params.length, resultType.address(), getMemory().address());
+        NA.prepareInvoke(cif.getMemory().address(), convention(callingConvention), params.length, resultType.address(), getMemory().address());
         return this;
     }
 

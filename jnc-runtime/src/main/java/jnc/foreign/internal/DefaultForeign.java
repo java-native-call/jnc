@@ -14,7 +14,31 @@ enum DefaultForeign implements Foreign {
 
     INSTANCE;
 
-    private final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
+    private final TypeFactory typeFactory;
+    private final TypeHandlerFactory typeHandlerFactory;
+
+    DefaultForeign() {
+        TypeFactory tf;
+        TypeHandlerFactory thf;
+        try {
+            tf = new TypeRegistry();
+            thf = new TypeHandlerRegistry(tf);
+        } catch (Throwable ex) {
+            ProxyBuilder builder = ProxyBuilder.builder().useProxyMethods().orThrow(__ -> ex);
+            tf = builder.newInstance(TypeFactory.class);
+            thf = builder.newInstance(TypeHandlerFactory.class);
+        }
+        typeFactory = tf;
+        typeHandlerFactory = thf;
+    }
+
+    TypeFactory getTypeFactory() {
+        return typeFactory;
+    }
+
+    TypeHandlerFactory getTypeHandlerFactory() {
+        return typeHandlerFactory;
+    }
 
     @Nonnull
     @Override
@@ -25,7 +49,8 @@ enum DefaultForeign implements Foreign {
     @Nonnull
     @Override
     public <T> T load(Class<T> interfaceClass, String libname, LoadOptions loadOptions) {
-        return InvocationLibrary.create(interfaceClass, NativeLibrary.open(libname, 0), loadOptions, typeHandlerRegistry);
+        return InvocationLibrary.create(interfaceClass, NativeLibrary.open(libname, 0),
+                loadOptions, typeFactory, typeHandlerFactory);
     }
 
     @Override
@@ -42,13 +67,13 @@ enum DefaultForeign implements Foreign {
     @Nonnull
     @Override
     public Type findType(TypeAlias alias) {
-        return TypeHelper.findByAlias(alias);
+        return typeFactory.findByAlias(alias);
     }
 
     @Nonnull
     @Override
     public Type findType(NativeType nativeType) {
-        return TypeHelper.findByNativeType(nativeType);
+        return typeFactory.findByNativeType(nativeType);
     }
 
     @Nonnull

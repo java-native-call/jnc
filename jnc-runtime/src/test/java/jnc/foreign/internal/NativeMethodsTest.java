@@ -20,7 +20,7 @@ public class NativeMethodsTest {
     private static final Logger log = LoggerFactory.getLogger(NativeMethodsTest.class);
     private static final String LIBC = DefaultPlatform.INSTANCE.getLibcName();
     private static final String LIBM = TestLibs.getStandardMath();
-    private static final NativeMethods nm = NativeMethods.getInstance();
+    private static final NativeAccessor NA = NativeLoader.getAccessor();
 
     /**
      * Test of getJniVersion method, of class NativeMethods.
@@ -29,7 +29,7 @@ public class NativeMethodsTest {
     public void testGetJniVersion() {
         log.info("getJniVersion");
         int expResult = 0x10006;
-        int result = nm.getJniVersion();
+        int result = NA.getJniVersion();
         assertTrue(result >= expResult);
     }
 
@@ -50,12 +50,12 @@ public class NativeMethodsTest {
     @Test
     public void testNullPointer() {
         log.info("test null pointer");
-        assertThatThrownBy(() -> nm.dlsym(0, "not_exists_function"))
+        assertThatThrownBy(() -> NA.dlsym(0, "not_exists_function"))
                 .isInstanceOf(NullPointerException.class);
         Library libm = NativeLibrary.open(LIBM, 0);
         assertThatThrownBy(() -> libm.dlsym(null))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> nm.dlclose(0))
+        assertThatThrownBy(() -> NA.dlclose(0))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -69,10 +69,10 @@ public class NativeMethodsTest {
     @Test
     public void testInitAlias() {
         log.info("initAlias");
-        assertThatThrownBy(() -> nm.initAlias(null))
+        assertThatThrownBy(() -> NA.initAlias(null))
                 .isInstanceOf(NullPointerException.class);
         HashMap<String, Integer> map = new HashMap<>(50);
-        nm.initAlias(map);
+        NA.initAlias(map);
         log.info("map={}", map);
         assertEquals(Integer.valueOf(BuiltinType.UINT8.type()), map.get("uint8_t"));
         assertEquals(Integer.valueOf(BuiltinType.SINT32.type()), map.get("int32_t"));
@@ -107,8 +107,8 @@ public class NativeMethodsTest {
         log.info("allocateMemory");
         long size = 1000;
         for (int i = 0; i < 10000000; ++i) {
-            long addr = nm.allocateMemory(size);
-            nm.freeMemory(addr);
+            long addr = NA.allocateMemory(size);
+            NA.freeMemory(addr);
         }
     }
 
@@ -118,7 +118,7 @@ public class NativeMethodsTest {
     @Test
     public void testFreeMemory() {
         log.info("freeMemory");
-        nm.freeMemory(0);
+        NA.freeMemory(0);
     }
 
     /**
@@ -137,18 +137,18 @@ public class NativeMethodsTest {
             throw new AssumptionViolatedException("unsafe not present", t);
         }
         log.info("pageSize");
-        int result = nm.pageSize();
+        int result = NA.pageSize();
         assertEquals(expResult, result);
     }
 
     @Test
     public void testGetStringUTFEmpty() {
-        long address = nm.allocateMemory(0);
+        long address = NA.allocateMemory(0);
         try {
-            String string = nm.getStringUTF(address);
+            String string = NA.getStringUTF(address);
             assertEquals("", string);
         } finally {
-            nm.freeMemory(address);
+            NA.freeMemory(address);
         }
     }
 
@@ -173,41 +173,41 @@ public class NativeMethodsTest {
         long address = memory.address();
         String value = "\u0102\u0304\u0506\u0708\u0000\u0807\u0000";
 
-        assertThatThrownBy(() -> nm.putStringChar16(address, null))
+        assertThatThrownBy(() -> NA.putStringChar16(address, null))
                 .isInstanceOf(NullPointerException.class);
 
-        assertThatThrownBy(() -> nm.putStringChar16(0, value))
+        assertThatThrownBy(() -> NA.putStringChar16(0, value))
                 .isInstanceOf(NullPointerException.class);
 
-        nm.putStringChar16(address, value);
+        NA.putStringChar16(address, value);
 
         char[] arr1 = new char[4], arr2 = "\u0102\u0304\u0506\u0708".toCharArray();
         memory.getCharArray(0, arr1, 0, arr1.length);
         assertArrayEquals(arr2, arr1);
 
-        assertHexEquals("aligned access", "\u0102\u0304\u0506\u0708", nm.getStringChar16(address));
+        assertHexEquals("aligned access", "\u0102\u0304\u0506\u0708", NA.getStringChar16(address));
         String expect;
         if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
             expect = "\u0203\u0405\u0607\u0800\u0008\u0700";
         } else {
             expect = "\u0401\u0603\u0805\u0007\u0700\u0008";
         }
-        assertHexEquals("unaligned access", expect, nm.getStringChar16(address + 1));
+        assertHexEquals("unaligned access", expect, NA.getStringChar16(address + 1));
 
-        assertHexEquals("aligned access with limit", "\u0102\u0304\u0506\u0708", nm.getStringChar16N(address, 8));
-        assertHexEquals("aligned access with limit", "\u0102\u0304\u0506", nm.getStringChar16N(address, 7));
+        assertHexEquals("aligned access with limit", "\u0102\u0304\u0506\u0708", NA.getStringChar16N(address, 8));
+        assertHexEquals("aligned access with limit", "\u0102\u0304\u0506", NA.getStringChar16N(address, 7));
         if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
             expect = "\u0203\u0405\u0607\u0800\u0008\u0700";
         } else {
             expect = "\u0401\u0603\u0805\u0007\u0700\u0008";
         }
-        assertHexEquals("unaligned access with limit", expect, nm.getStringChar16N(address + 1, 12));
+        assertHexEquals("unaligned access with limit", expect, NA.getStringChar16N(address + 1, 12));
         if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
             expect = "\u0203\u0405\u0607\u0800\u0008";
         } else {
             expect = "\u0401\u0603\u0805\u0007\u0700";
         }
-        assertHexEquals("unaligned access with limit", expect, nm.getStringChar16N(address + 1, 11));
+        assertHexEquals("unaligned access with limit", expect, NA.getStringChar16N(address + 1, 11));
     }
 
 }

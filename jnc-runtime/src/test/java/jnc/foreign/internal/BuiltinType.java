@@ -21,15 +21,15 @@ import jnc.foreign.NativeType;
  * @author zhanhb
  */
 interface BuiltinType {
-    InternalType UINT8 = TypeHelper.findByNativeType(NativeType.UINT8);
-    InternalType SINT8 = TypeHelper.findByNativeType(NativeType.SINT8);
-    InternalType UINT16 = TypeHelper.findByNativeType(NativeType.UINT16);
-    InternalType SINT16 = TypeHelper.findByNativeType(NativeType.SINT16);
-    InternalType SINT32 = TypeHelper.findByNativeType(NativeType.SINT32);
-    InternalType UINT32 = TypeHelper.findByNativeType(NativeType.UINT32);
-    InternalType SINT64 = TypeHelper.findByNativeType(NativeType.SINT64);
-    InternalType UINT64 = TypeHelper.findByNativeType(NativeType.UINT64);
+    InternalType UINT8 = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.UINT8);
+    InternalType SINT8 = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.SINT8);
+    InternalType UINT16 = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.UINT16);
+    InternalType SINT16 = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.SINT16);
+    InternalType SINT32 = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.SINT32);
+    InternalType UINT32 = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.UINT32);
+    InternalType SINT64 = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.SINT64);
+    InternalType UINT64 = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.UINT64);
 
-    InternalType DOUBLE = TypeHelper.findByNativeType(NativeType.DOUBLE);
-    InternalType POINTER = TypeHelper.findByNativeType(NativeType.POINTER);
+    InternalType DOUBLE = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.DOUBLE);
+    InternalType POINTER = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.POINTER);
 }

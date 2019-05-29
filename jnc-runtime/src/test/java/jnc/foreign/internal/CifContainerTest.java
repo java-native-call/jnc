@@ -14,7 +14,7 @@ public class CifContainerTest {
     private static final Logger log = LoggerFactory.getLogger(CifContainerTest.class);
     private static final String LIBC = DefaultPlatform.INSTANCE.getLibcName();
     private static final String LIBM = TestLibs.getStandardMath();
-    private static final NativeMethods nm = NativeMethods.getInstance();
+    private static final NativeAccessor NA = NativeLoader.getAccessor();
 
     @Test
     public void testAcos() {
@@ -34,8 +34,8 @@ public class CifContainerTest {
         log.info("test memcpy");
         Library libc = NativeLibrary.open(LIBC, 0);
         long function = libc.dlsym("memcpy");
-        Alias sizeT = TypeHelper.findByAlias(TypeAlias.size_t);
-        Alias uIntPtr = TypeHelper.findByAlias(TypeAlias.uintptr_t);
+        Alias sizeT = DefaultForeign.INSTANCE.getTypeFactory().findByAlias(TypeAlias.size_t);
+        Alias uIntPtr = DefaultForeign.INSTANCE.getTypeFactory().findByAlias(TypeAlias.uintptr_t);
         CifContainer container = CifContainer.create(CallingConvention.DEFAULT, uIntPtr, uIntPtr, uIntPtr, sizeT);
         CallContext p = container.newCallContext();
         Memory a = AllocatedMemory.allocate(20);
@@ -60,11 +60,11 @@ public class CifContainerTest {
         if (Platform.getNativePlatform().getOS().isWindows()) {
             libc = NativeLibrary.open("kernel32", 0);
             function = libc.dlsym("GetCurrentProcessId");
-            returnType = TypeHelper.findByAlias(TypeAlias.uint32_t);
+            returnType = DefaultForeign.INSTANCE.getTypeFactory().findByAlias(TypeAlias.uint32_t);
         } else {
             libc = NativeLibrary.open(LIBC, 0);
             function = libc.dlsym("getpid");
-            returnType = TypeHelper.findByAlias(TypeAlias.pid_t);
+            returnType = DefaultForeign.INSTANCE.getTypeFactory().findByAlias(TypeAlias.pid_t);
         }
         long pid = CifContainer.create(CallingConvention.DEFAULT, returnType)
                 .newCallContext()

@@ -24,22 +24,22 @@ import jnc.foreign.Pointer;
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 class Invokers {
 
-    private static final NativeMethods nm = NativeMethods.getInstance();
+    private static final NativeAccessor NA = NativeLoader.getAccessor();
 
     static Pointer invokePointer(long cif, long function, long base, @Nullable int[] offsets) {
         return UnboundedDirectMemory.of(invokeLong(cif, function, base, offsets));
     }
 
     static long invokeLong(long cif, long function, long base, @Nullable int[] offsets) {
-        return nm.invokeLong(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
+        return NA.invokeLong(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     static int invokeInt(long cif, long function, long base, @Nullable int[] offsets) {
-        return nm.invokeInt(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
+        return NA.invokeInt(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     static boolean invokeBoolean(long cif, long function, long base, @Nullable int[] offsets) {
-        return nm.invokeBoolean(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
+        return NA.invokeBoolean(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     static byte invokeByte(long cif, long function, long base, @Nullable int[] offsets) {
@@ -59,11 +59,11 @@ class Invokers {
     }
 
     static double invokeDouble(long cif, long function, long base, @Nullable int[] offsets) {
-        return nm.invokeDouble(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
+        return NA.invokeDouble(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
     static Void invokeVoid(long cif, long function, long base, @Nullable int[] offsets) {
-        nm.invokeVoid(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
+        NA.invokeVoid(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
         return null;
     }
 

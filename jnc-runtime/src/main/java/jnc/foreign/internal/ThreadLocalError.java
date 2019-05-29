@@ -23,7 +23,7 @@ enum ThreadLocalError implements LastErrorHandler {
     static long getMethodId() {
         try {
             Method method = LastErrorHandler.class.getMethod("handle", int.class);
-            return NativeMethods.getInstance().getMethodId(method);
+            return NativeLoader.getAccessor().getMethodId(method);
         } catch (NoSuchMethodException ex) {
             throw new AssertionError(ex);
         }

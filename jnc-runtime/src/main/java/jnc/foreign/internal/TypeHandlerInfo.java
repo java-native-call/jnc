@@ -42,7 +42,7 @@ abstract class TypeHandlerInfo<T> {
         return type;
     }
 
-    public abstract InternalType getType(AnnotationContext ac);
+    public abstract InternalType getType(TypeFactory typeFactory, AnnotationContext ac);
 
     public T getHandler() {
         return handler;
@@ -55,7 +55,7 @@ abstract class TypeHandlerInfo<T> {
         }
 
         @Override
-        public InternalType getType(AnnotationContext ac) {
+        public InternalType getType(TypeFactory typeFactory, AnnotationContext ac) {
             return super.getType();
         }
 
@@ -68,10 +68,10 @@ abstract class TypeHandlerInfo<T> {
         }
 
         @Override
-        public InternalType getType(AnnotationContext ac) {
+        public InternalType getType(TypeFactory typeFactory, AnnotationContext ac) {
             Typedef annotation = ac.getAnnotation(Typedef.class);
             if (annotation != null) {
-                return TypeHelper.findByAlias(annotation.value());
+                return typeFactory.findByAlias(annotation.value());
             }
             return super.getType();
         }

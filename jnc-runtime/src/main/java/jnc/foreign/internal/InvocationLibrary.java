@@ -8,24 +8,27 @@ import jnc.foreign.enums.CallingConvention;
 class InvocationLibrary<T> {
 
     static <T> T create(Class<T> interfaceClass, Library library, LoadOptions loadOptions,
-            TypeHandlerRegistry typeHandlerRegistry) {
-        return new InvocationLibrary<>(interfaceClass, library, loadOptions, typeHandlerRegistry).create();
+            TypeFactory typeFactory, TypeHandlerFactory typeHandlerFactory) {
+        return new InvocationLibrary<>(interfaceClass, library, loadOptions, typeFactory, typeHandlerFactory).create();
     }
 
     private final Class<T> interfaceClass;
     private final Library library;
     private final CallingConvention classConvention;
-    private final TypeHandlerRegistry typeHandlerRegistry;
+    private final TypeHandlerFactory typeHandlerFactory;
+    private final TypeFactory typeFactory;
 
     // visible for test
-    InvocationLibrary(Class<T> interfaceClass, Library library, LoadOptions options, TypeHandlerRegistry typeHandlerRegistry) {
+    InvocationLibrary(Class<T> interfaceClass, Library library, LoadOptions options,
+            TypeFactory typeFactory, TypeHandlerFactory typeHandlerFactory) {
         this.interfaceClass = interfaceClass;
         jnc.foreign.annotation.CallingConvention classConventionAnnotation
                 = AnnotationContext.newContext(interfaceClass)
                         .getAnnotation(jnc.foreign.annotation.CallingConvention.class);
         this.library = library;
         this.classConvention = classConventionAnnotation != null ? classConventionAnnotation.value() : options.getCallingConvention();
-        this.typeHandlerRegistry = typeHandlerRegistry;
+        this.typeFactory = typeFactory;
+        this.typeHandlerFactory = typeHandlerFactory;
     }
 
     private T create() {
@@ -41,8 +44,8 @@ class InvocationLibrary<T> {
         String name = method.getName();
         long function = library.dlsym(name);
         AnnotationContext ac = AnnotationContext.newContext(method);
-        TypeHandlerInfo<? extends Invoker<?>> returnTypeInfo = typeHandlerRegistry.findReturnTypeInfo(method.getReturnType());
-        InternalType retType = returnTypeInfo.getType(ac);
+        TypeHandlerInfo<? extends Invoker<?>> returnTypeInfo = typeHandlerFactory.findReturnTypeInfo(method.getReturnType());
+        InternalType retType = returnTypeInfo.getType(typeFactory, ac);
         Invoker<?> invoker = returnTypeInfo.getHandler();
         Class<?>[] parameterTypes = method.getParameterTypes();
         AnnotationContext[] mpacs = AnnotationContext.newMethodParameterContexts(method);
@@ -52,8 +55,8 @@ class InvocationLibrary<T> {
         ParameterHandler<?>[] handlers = new ParameterHandler[len];
         for (int i = 0; i < len; ++i) {
             Class<?> type = parameterTypes[i];
-            TypeHandlerInfo<? extends ParameterHandler<?>> typeHandlerInfo = typeHandlerRegistry.findParameterTypeInfo(type);
-            ptypes[i] = typeHandlerInfo.getType(mpacs[i]);
+            TypeHandlerInfo<? extends ParameterHandler<?>> typeHandlerInfo = typeHandlerFactory.findParameterTypeInfo(type);
+            ptypes[i] = typeHandlerInfo.getType(typeFactory, mpacs[i]);
             handlers[i] = typeHandlerInfo.getHandler();
         }
         jnc.foreign.annotation.CallingConvention methodConvention = ac.getAnnotation(jnc.foreign.annotation.CallingConvention.class);

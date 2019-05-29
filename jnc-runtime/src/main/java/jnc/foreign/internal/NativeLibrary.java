@@ -26,11 +26,11 @@ import jnc.foreign.Platform;
  */
 class NativeLibrary implements Library {
 
-    private static final NativeMethods nm = NativeMethods.getInstance();
+    private static final NativeAccessor NA = NativeLoader.getAccessor();
     // maybe the classloader is finalized before the lib, meanwhile the native lib is also finalized
     // let it call our method onUnload to make sure we are closed before it's unloaded.
     // There is no issue with java builtin object.
-    private static final Set<Runnable> SET = nm.onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(16)));
+    private static final Set<Runnable> SET = NA.onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(16)));
 
     static NativeLibrary open(String libName, int mode) {
         Dlclose dlclose = new Dlclose(libName, mode);
@@ -66,7 +66,7 @@ class NativeLibrary implements Library {
 
     @Override
     public long dlsym(String name) throws UnsatisfiedLinkError {
-        return nm.dlsym(address, name);
+        return NA.dlsym(address, name);
     }
 
     @Override
@@ -91,19 +91,20 @@ class NativeLibrary implements Library {
 
     private static final class Dlclose implements Runnable {
 
+        private static final NativeAccessor NA = NativeLoader.getAccessor();
         private static final AtomicLongFieldUpdater<Dlclose> UPDATER
                 = AtomicLongFieldUpdater.newUpdater(Dlclose.class, "address");
 
         private static long openImpl(String libName, int mode) {
             try {
-                return nm.dlopen(libName, mode);
+                return NA.dlopen(libName, mode);
             } catch (UnsatisfiedLinkError error) {
                 DefaultPlatform platform = DefaultPlatform.INSTANCE;
                 Platform.OS os = platform.getOS();
                 if (!os.isELF() || !"c".equals(libName) && !platform.getLibcName().equals(libName)) {
                     throw error;
                 }
-                return nm.dlopen(null, 0);
+                return NA.dlopen(null, 0);
             }
         }
 
@@ -132,7 +133,7 @@ class NativeLibrary implements Library {
         public void run() {
             long addr = UPDATER.getAndSet(this, 0);
             if (addr != 0) {
-                nm.dlclose(addr);
+                NA.dlclose(addr);
             }
         }
 

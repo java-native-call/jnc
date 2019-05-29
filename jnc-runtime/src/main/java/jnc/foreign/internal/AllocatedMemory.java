@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 class AllocatedMemory extends SizedDirectMemory {
 
-    private static final Set<Runnable> SET = NativeMethods.getInstance().onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(32)));
+    private static final Set<Runnable> SET = NativeLoader.getAccessor().onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(32)));
 
     private static AllocatedMemory allocateImpl(int size) {
         Free free = new Free(size);
@@ -75,14 +75,14 @@ class AllocatedMemory extends SizedDirectMemory {
 
     private static final class Free implements Runnable {
 
-        private static final NativeMethods nm = NativeMethods.getInstance();
+        private static final NativeAccessor NA = NativeLoader.getAccessor();
         private static final AtomicLongFieldUpdater<Free> UPDATER
                 = AtomicLongFieldUpdater.newUpdater(Free.class, "address");
         @SuppressWarnings("unused")
         private volatile long address;
 
         Free(int size) {
-            this.address = nm.allocateMemory(size);
+            this.address = NA.allocateMemory(size);
         }
 
         long getAddress() {
@@ -103,7 +103,7 @@ class AllocatedMemory extends SizedDirectMemory {
         public void run() {
             long addr = UPDATER.getAndSet(this, 0);
             if (addr != 0) {
-                nm.freeMemory(addr);
+                NA.freeMemory(addr);
             }
         }
     }

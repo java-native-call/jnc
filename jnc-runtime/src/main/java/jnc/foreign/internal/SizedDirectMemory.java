@@ -305,7 +305,7 @@ class SizedDirectMemory extends Memory {
     public final Pointer getPointer(int offset) {
         return UnboundedDirectMemory.of(
                 getMemoryAccessor()
-                        .checkIndex(offset, size, TypeHelper.TYPE_INFO_POINTER.size())
+                        .checkIndex(offset, size, DefaultForeign.INSTANCE.getTypeFactory().getPointerType().size())
                         .getAddress(offset)
         );
     }
@@ -313,7 +313,7 @@ class SizedDirectMemory extends Memory {
     @Override
     public final void putPointer(int offset, @Nullable Pointer pointer) {
         getMemoryAccessor()
-                .checkIndex(offset, size, TypeHelper.TYPE_INFO_POINTER.size())
+                .checkIndex(offset, size, DefaultForeign.INSTANCE.getTypeFactory().getPointerType().size())
                 .putAddress(offset, pointer != null ? pointer.address() : 0);
     }
 

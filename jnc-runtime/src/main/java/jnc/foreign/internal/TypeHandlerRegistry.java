@@ -9,7 +9,7 @@ import jnc.foreign.Pointer;
 import jnc.foreign.Struct;
 import jnc.foreign.byref.ByReference;
 
-final class TypeHandlerRegistry {
+final class TypeHandlerRegistry implements TypeHandlerFactory {
 
     private static void putByReference(CallContext context, int index, ByReference obj) {
         if (obj == null) {
@@ -51,14 +51,16 @@ final class TypeHandlerRegistry {
             }
         };
     }
+    private final TypeFactory typeFactory;
 
     private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> exactReturnTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
     private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> inheritedReturnTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
     private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> exactParameterTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
     private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> inheritedParameterTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
 
-    TypeHandlerRegistry() {
-        TypeInfo pointer = TypeHelper.TYPE_INFO_POINTER;
+    TypeHandlerRegistry(TypeFactory typeFactory) {
+        InternalType pointer = typeFactory.getPointerType();
+        this.typeFactory = typeFactory;
         addExactReturnTypeHandler(Pointer.class, TypeHandlerInfo.always(pointer, Invokers::invokePointer));
 
         addPrimaryTypeHandler(void.class, NativeType.VOID, (context, index, __) -> context.putLong(index, 0), Invokers::invokeVoid);
@@ -87,13 +89,13 @@ final class TypeHandlerRegistry {
 
     private <T> void addPrimitiveArrayParameterTypeHandler(Class<T> primitiveArrayType, ArrayParameterHandler<T> toNative, ArrayParameterHandler<T> fromNative, int size) {
         ParameterHandler<T> parameterHandler = toParameterHandler(toNative, fromNative, size);
-        addExactParameterTypeHandler(primitiveArrayType, TypeHandlerInfo.always(TypeHelper.TYPE_INFO_POINTER, parameterHandler));
+        addExactParameterTypeHandler(primitiveArrayType, TypeHandlerInfo.always(typeFactory.getPointerType(), parameterHandler));
     }
 
     private <T> void addPrimaryTypeHandler(Class<T> primitiveType, NativeType nativeType,
             ParameterHandler<T> parameterHandler, Invoker<T> invoker) {
         Class<T> wrapType = Primitives.wrap(primitiveType);
-        InternalType defaultType = TypeHelper.findByNativeType(nativeType);
+        InternalType defaultType = typeFactory.findByNativeType(nativeType);
 
         addExactReturnTypeHandler(primitiveType, defaultType, invoker);
         addExactReturnTypeHandler(wrapType, defaultType, invoker);
@@ -102,7 +104,7 @@ final class TypeHandlerRegistry {
             addExactParameterTypeHandler(wrapType, defaultType, parameterHandler);
         } else {
             // parameter type should not be void, maybe user want to define a pointer type.
-            addExactParameterTypeHandler(wrapType, TypeHelper.TYPE_INFO_POINTER, parameterHandler);
+            addExactParameterTypeHandler(wrapType, typeFactory.getPointerType(), parameterHandler);
         }
     }
 
@@ -159,8 +161,9 @@ final class TypeHandlerRegistry {
         return null;
     }
 
+    @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
-    <T> TypeHandlerInfo<Invoker<T>> findReturnTypeInfo(Class<T> returnType) {
+    public <T> TypeHandlerInfo<Invoker<T>> findReturnTypeInfo(Class<T> returnType) {
         TypeHandlerInfo<Invoker<T>> typeHandlerInfo = extractFromMap(exactReturnTypeMap, inheritedReturnTypeMap, returnType);
         if (typeHandlerInfo != null) {
             return typeHandlerInfo;
@@ -181,8 +184,9 @@ final class TypeHandlerRegistry {
         }
     }
 
+    @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
-    <T> TypeHandlerInfo<ParameterHandler<T>> findParameterTypeInfo(Class<T> type) {
+    public <T> TypeHandlerInfo<ParameterHandler<T>> findParameterTypeInfo(Class<T> type) {
         TypeHandlerInfo<ParameterHandler<T>> typeHandlerInfo = extractFromMap(exactParameterTypeMap, inheritedParameterTypeMap, type);
         if (typeHandlerInfo != null) {
             return typeHandlerInfo;
@@ -206,6 +210,5 @@ final class TypeHandlerRegistry {
         Pointer NOMEMORY = AllocatedMemory.allocate(0);
 
     }
-
 
 }

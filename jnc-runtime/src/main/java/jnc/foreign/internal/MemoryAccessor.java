@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
  */
 final class MemoryAccessor {
 
-    private static final NativeMethods nm = NativeMethods.getInstance();
+    private static final NativeAccessor NA = NativeLoader.getAccessor();
 
     private long address;
 
@@ -39,59 +39,59 @@ final class MemoryAccessor {
     }
 
     byte getByte(int offset) {
-        return nm.getRawByte(address + offset);
+        return NA.getRawByte(address + offset);
     }
 
     void putByte(int offset, byte value) {
-        nm.putRawByte(address + offset, value);
+        NA.putRawByte(address + offset, value);
     }
 
     short getShort(int offset) {
-        return nm.getRawShort(address + offset);
+        return NA.getRawShort(address + offset);
     }
 
     void putShort(int offset, short value) {
-        nm.putRawShort(address + offset, value);
+        NA.putRawShort(address + offset, value);
     }
 
     int getInt(int offset) {
-        return nm.getRawInt(address + offset);
+        return NA.getRawInt(address + offset);
     }
 
     void putInt(int offset, int value) {
-        nm.putRawInt(address + offset, value);
+        NA.putRawInt(address + offset, value);
     }
 
     long getLong(int offset) {
-        return nm.getRawLong(address + offset);
+        return NA.getRawLong(address + offset);
     }
 
     void putLong(int offset, long value) {
-        nm.putRawLong(address + offset, value);
+        NA.putRawLong(address + offset, value);
     }
 
     float getFloat(int offset) {
-        return nm.getRawFloat(address + offset);
+        return NA.getRawFloat(address + offset);
     }
 
     void putFloat(int offset, float value) {
-        nm.putRawFloat(address + offset, value);
+        NA.putRawFloat(address + offset, value);
     }
 
     double getDouble(int offset) {
-        return nm.getRawDouble(address + offset);
+        return NA.getRawDouble(address + offset);
     }
 
     void putDouble(int offset, double value) {
-        nm.putRawDouble(address + offset, value);
+        NA.putRawDouble(address + offset, value);
     }
 
     long getAddress(int offset) {
-        return nm.getRawAddress(address + offset);
+        return NA.getRawAddress(address + offset);
     }
 
     void putAddress(int offset, long value) {
-        nm.putRawAddress(address + offset, value);
+        NA.putRawAddress(address + offset, value);
     }
 
     void putBoolean(int offset, InternalType internalType, boolean value) {
@@ -99,113 +99,113 @@ final class MemoryAccessor {
     }
 
     void putInt(int offset, InternalType internalType, int value) {
-        nm.putInt(address + offset, internalType.address(), value);
+        NA.putInt(address + offset, internalType.address(), value);
     }
 
     void putLong(int offset, InternalType internalType, long value) {
-        nm.putLong(address + offset, internalType.address(), value);
+        NA.putLong(address + offset, internalType.address(), value);
     }
 
     void putFloat(int offset, InternalType internalType, float value) {
-        nm.putFloat(address + offset, internalType.address(), value);
+        NA.putFloat(address + offset, internalType.address(), value);
     }
 
     void putDouble(int offset, InternalType internalType, double value) {
-        nm.putDouble(address + offset, internalType.address(), value);
+        NA.putDouble(address + offset, internalType.address(), value);
     }
 
     boolean getBoolean(int offset, InternalType internalType) {
-        return nm.getBoolean(address + offset, internalType.address());
+        return NA.getBoolean(address + offset, internalType.address());
     }
 
     int getInt(int offset, InternalType internalType) {
-        return nm.getInt(address + offset, internalType.address());
+        return NA.getInt(address + offset, internalType.address());
     }
 
     long getLong(int offset, InternalType internalType) {
-        return nm.getLong(address + offset, internalType.address());
+        return NA.getLong(address + offset, internalType.address());
     }
 
     float getFloat(int offset, InternalType internalType) {
-        return nm.getFloat(address + offset, internalType.address());
+        return NA.getFloat(address + offset, internalType.address());
     }
 
     double getDouble(int offset, InternalType internalType) {
-        return nm.getDouble(address + offset, internalType.address());
+        return NA.getDouble(address + offset, internalType.address());
     }
 
     void putBytes(int offset, byte[] bytes, int off, int len) {
-        nm.putBytes(address + offset, bytes, off, len);
+        NA.putBytes(address + offset, bytes, off, len);
     }
 
     void getBytes(int offset, byte[] bytes, int off, int len) {
-        nm.getBytes(address + offset, bytes, off, len);
+        NA.getBytes(address + offset, bytes, off, len);
     }
 
     void getShortArray(int offset, short[] array, int off, int len) {
-        nm.getShortArray(address + offset, array, off, len);
+        NA.getShortArray(address + offset, array, off, len);
     }
 
     void putShortArray(int offset, short[] array, int off, int len) {
-        nm.putShortArray(address + offset, array, off, len);
+        NA.putShortArray(address + offset, array, off, len);
     }
 
     void getCharArray(int offset, char[] array, int off, int len) {
-        nm.getCharArray(address + offset, array, off, len);
+        NA.getCharArray(address + offset, array, off, len);
     }
 
     void putCharArray(int offset, char[] array, int off, int len) {
-        nm.putCharArray(address + offset, array, off, len);
+        NA.putCharArray(address + offset, array, off, len);
     }
 
     void getIntArray(int offset, int[] array, int off, int len) {
-        nm.getIntArray(address + offset, array, off, len);
+        NA.getIntArray(address + offset, array, off, len);
     }
 
     void putIntArray(int offset, int[] array, int off, int len) {
-        nm.putIntArray(address + offset, array, off, len);
+        NA.putIntArray(address + offset, array, off, len);
     }
 
     void getLongArray(int offset, long[] array, int off, int len) {
-        nm.getLongArray(address + offset, array, off, len);
+        NA.getLongArray(address + offset, array, off, len);
     }
 
     void putLongArray(int offset, long[] array, int off, int len) {
-        nm.putLongArray(address + offset, array, off, len);
+        NA.putLongArray(address + offset, array, off, len);
     }
 
     void getFloatArray(int offset, float[] array, int off, int len) {
-        nm.getFloatArray(address + offset, array, off, len);
+        NA.getFloatArray(address + offset, array, off, len);
     }
 
     void putFloatArray(int offset, float[] array, int off, int len) {
-        nm.putFloatArray(address + offset, array, off, len);
+        NA.putFloatArray(address + offset, array, off, len);
     }
 
     void getDoubleArray(int offset, double[] array, int off, int len) {
-        nm.getDoubleArray(address + offset, array, off, len);
+        NA.getDoubleArray(address + offset, array, off, len);
     }
 
     void putDoubleArray(int offset, double[] array, int off, int len) {
-        nm.putDoubleArray(address + offset, array, off, len);
+        NA.putDoubleArray(address + offset, array, off, len);
     }
 
     void putStringUTF(int offset, @Nonnull String value) {
-        nm.putStringUTF(address + offset, value);
+        NA.putStringUTF(address + offset, value);
     }
 
     @Nonnull
     String getStringUTF(int offset) {
-        return nm.getStringUTF(address + offset);
+        return NA.getStringUTF(address + offset);
     }
 
     void putString16(int offset, @Nonnull String value) {
-        nm.putStringChar16(address + offset, value);
+        NA.putStringChar16(address + offset, value);
     }
 
     @Nonnull
     String getString16(int offset) {
-        return nm.getStringChar16(address + offset);
+        return NA.getStringChar16(address + offset);
     }
 
     MemoryAccessor checkIndex(int offset, long total, int len) {
@@ -223,11 +223,11 @@ final class MemoryAccessor {
     }
 
     String getStringUTFN(long address, long limit) {
-        return nm.getStringUTFN(address, limit);
+        return NA.getStringUTFN(address, limit);
     }
 
     String getStringChar16N(long address, long limit) {
-        return nm.getStringChar16N(address, limit);
+        return NA.getStringChar16N(address, limit);
     }
 
 }

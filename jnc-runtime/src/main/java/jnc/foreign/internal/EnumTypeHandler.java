@@ -24,7 +24,7 @@ class EnumTypeHandler<E extends Enum<E>> {
     private static final ConcurrentWeakIdentityHashMap<Class<? extends Enum<?>>, EnumTypeHandler<?>> cache
             = new ConcurrentWeakIdentityHashMap<>(32);
 
-    private static final Map<NativeType, NativeType> TO_SIGNED_TPYPE;
+    private static final Map<NativeType, NativeType> TO_SIGNED_TYPE;
     private static final Map<NativeType, NativeType> TO_UNSIGNED_TYPE;
 
     // method annotationType is not implemented, got null if invoked
@@ -41,7 +41,7 @@ class EnumTypeHandler<E extends Enum<E>> {
         add(toSigned, toUnsigned, UINT16, SINT16);
         add(toSigned, toUnsigned, UINT32, SINT32);
         add(toSigned, toUnsigned, UINT64, SINT64);
-        TO_SIGNED_TPYPE = toSigned;
+        TO_SIGNED_TYPE = toSigned;
         TO_UNSIGNED_TYPE = toUnsigned;
     }
 
@@ -69,8 +69,8 @@ class EnumTypeHandler<E extends Enum<E>> {
         long start = continuously.start();
         NativeType nativeType = continuously.type();
         EnumMappingErrorAction onUnmappable = continuously.onUnmappable();
-        NativeType mapped = (start < 0 ? TO_SIGNED_TPYPE : TO_UNSIGNED_TYPE).getOrDefault(nativeType, nativeType);
-        InternalType internalType = TypeHelper.findByNativeType(mapped);
+        NativeType mapped = (start < 0 ? TO_SIGNED_TYPE : TO_UNSIGNED_TYPE).getOrDefault(nativeType, nativeType);
+        InternalType internalType = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(mapped);
         if (!internalType.isIntegral()) {
             throw new IllegalArgumentException("Only integral type allowed on enum, but found "
                     + nativeType + " on " + type.getName());
