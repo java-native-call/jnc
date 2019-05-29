@@ -15,10 +15,12 @@
  */
 package jnc.foreign.internal;
 
+import jnc.foreign.Foreign;
 import jnc.foreign.LibraryLoader;
 import jnc.foreign.NativeType;
 import jnc.foreign.Platform;
 import jnc.foreign.Struct;
+import jnc.foreign.Type;
 import jnc.foreign.annotation.Continuously;
 import jnc.foreign.exception.UnmappableNativeValueException;
 import jnc.foreign.typedef.int32_t;
@@ -75,7 +77,31 @@ public class EnumTypeHandlerTest {
         assertThat(Libc.INSTANCE.toupper('a')).isEqualTo(Char.A);
         assertThatThrownBy(() -> Libc.INSTANCE.toupper('c'))
                 .isInstanceOf(UnmappableNativeValueException.class)
-                .matches(ex -> ((UnmappableNativeValueException) ex).getIntValue() == 'C');
+                .matches(ex -> ((UnmappableNativeValueException) ex).getValue() == 'C');
+    }
+
+    @Test
+    public void testSignedChange() throws Exception {
+        Type type = Foreign.getDefault().getEnumFieldAccessor(Signed1.class).type();
+        boolean isSigned = (boolean) type.getClass().getMethod("isSigned").invoke(type);
+        assertTrue(isSigned);
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    private <E extends Enum<E>> Struct testTooLarge(Class<E> klass) {
+        return new Struct() {
+            {
+                enumField(klass);
+            }
+        };
+    }
+
+    @Test
+    public void testTooLarge() {
+        testTooLarge(Large1.class);
+        assertThatThrownBy(() -> testTooLarge(Large2.class)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> testTooLarge(Large3.class)).isInstanceOf(IllegalArgumentException.class);
+        testTooLarge(Large4.class);
     }
 
     private static class Struct1 extends Struct {
@@ -119,6 +145,30 @@ public class EnumTypeHandlerTest {
 
     @Continuously(type = NativeType.ADDRESS)
     private enum Test1 {
+    }
+
+    @Continuously(type = NativeType.UINT8, start = -1)
+    private enum Signed1 {
+    }
+
+    @Continuously(type = NativeType.UINT8, start = 255)
+    private enum Large1 {
+        A // ok
+    }
+
+    @Continuously(type = NativeType.UINT8, start = 255)
+    private enum Large2 {
+        A, B // failed
+    }
+
+    @Continuously(type = NativeType.UINT8, start = 256)
+    private enum Large3 {
+        A, B // failed
+    }
+
+    @Continuously(type = NativeType.UINT8, start = 254)
+    private enum Large4 {
+        A, B // ok
     }
 
     @Continuously(start = 'A')

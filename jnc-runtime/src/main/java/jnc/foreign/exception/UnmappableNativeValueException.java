@@ -24,20 +24,20 @@ public class UnmappableNativeValueException extends IllegalArgumentException {
     private static final long serialVersionUID = 0L;
 
     private final Class<?> type;
-    private final int intValue;
+    private final long value;
 
-    public UnmappableNativeValueException(Class<?> type, int intVal) {
-        super("type=" + type.getName() + ",value=" + intVal);
+    public UnmappableNativeValueException(Class<?> type, long value) {
+        super("type=" + type.getName() + ",value=" + value);
         this.type = type;
-        this.intValue = intVal;
+        this.value = value;
     }
 
     public Class<?> getType() {
         return type;
     }
 
-    public int getIntValue() {
-        return intValue;
+    public long getValue() {
+        return value;
     }
 
 }

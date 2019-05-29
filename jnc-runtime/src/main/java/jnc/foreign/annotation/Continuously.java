@@ -20,12 +20,13 @@ import jnc.foreign.enums.EnumMappingErrorAction;
 @Target(ElementType.TYPE)
 public @interface Continuously {
 
+    long start() default 0;
+
     /**
-     * native type to mapped with
+     * native type mapped to, corresponding signed type if {@link #start()} is
+     * negative, unsigned type if start is great or equals to zero
      */
     NativeType type() default NativeType.UINT32;
-
-    int start() default 0;
 
     /**
      * when converting this enum from native, the result is doesn't match any
