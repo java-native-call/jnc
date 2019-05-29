@@ -11,20 +11,20 @@ init:
   run-in-folder: '${source-dir}/cmake-build-nb'
   command:
     predefined:
-      arguments: '-G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_C_COMPILER=${IDE_CC} -DCMAKE_CXX_COMPILER=${IDE_CXX} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DDIST_DIR=../../../../../lib'
+      arguments: '-G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_C_COMPILER=${IDE_CC} -DCMAKE_CXX_COMPILER=${IDE_CXX} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DDIST_DIR=../../../../lib'
   source-folder-filter: '^(?:nbproject|cmake-build(?:-.+)|CMakeFiles|libffi-prefix|\.idea)$'
 profiles:
   win-x86:
     build:
       pre-build:
         working-directory: cmake-build-win-i386
-        command-line: '${CMAKE} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=windows.cmake -DSYSTEM_PROCESSOR=x86 -DDIST_DIR=../../../../../lib ..'
+        command-line: '${CMAKE} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=windows.cmake -DSYSTEM_PROCESSOR=x86 -DDIST_DIR=../../../../lib ..'
       make:
         working-directory: cmake-build-win-i386
   win-x64:
     build:
       pre-build:
         working-directory: cmake-build-win-x86_64
-        command-line: '${CMAKE} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=windows.cmake -DSYSTEM_PROCESSOR=x64 -DDIST_DIR=../../../../../lib ..'
+        command-line: '${CMAKE} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=windows.cmake -DSYSTEM_PROCESSOR=x64 -DDIST_DIR=../../../../lib ..'
       make:
         working-directory: cmake-build-win-x86_64

@@ -194,9 +194,10 @@ if (DIST_DIR)
         string(TOLOWER "${CMAKE_SYSTEM_NAME}" JNI_DIRECTORY_NAME)
     endif ()
 
-    set(JNI_DIRECTORY "${DIST_DIR}/${JNI_DIRECTORY_NAME}")
+    get_filename_component(JNI_DIRECTORY "${DIST_DIR}/${JNI_DIRECTORY_NAME}" ABSOLUTE)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E make_directory "${JNI_DIRECTORY}"
+            COMMAND ${CMAKE_COMMAND} -E echo "copy ${TARGET_FILE_NAME} to ${JNI_DIRECTORY}/${DIST_FILE_NAME}"
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/${TARGET_FILE_NAME}" "${JNI_DIRECTORY}/${DIST_FILE_NAME}")
 endif ()
 
