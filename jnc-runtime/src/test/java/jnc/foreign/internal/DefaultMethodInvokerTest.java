@@ -15,13 +15,16 @@
  */
 package jnc.foreign.internal;
 
-import java.lang.reflect.Method;
+import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.util.concurrent.atomic.AtomicInteger;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author zhanhb
  */
 public class DefaultMethodInvokerTest {
@@ -29,18 +32,50 @@ public class DefaultMethodInvokerTest {
     private static final Logger log = LoggerFactory.getLogger(DefaultMethodInvokerTest.class);
 
     /**
-     * Test of findLookup1/findLookup2 method, of class DefaultMethodInvoker.
+     * Test of getInstance method, of class DefaultMethodInvoker.
      */
     @Test
-    public void testFindLookup() throws Exception {
-        log.info("findLookup1");
-        for (String name : new String[]{
-            "findLookup1",
-            "findLookup2"
-        }) {
-            Method method = DefaultMethodInvoker.class.getDeclaredMethod(name);
-            method.setAccessible(true);
-            method.invoke(null);
+    public void testGetInstance() throws Throwable {
+        AtomicInteger integer = new AtomicInteger();
+        // the second parameter is not used of returning lambda
+        // here use null to test it
+        DefaultMethodInvoker.getInstance(TestInterface.class.getMethod("defaultMethod", AtomicInteger.class))
+                .invoke(new TestInterfaceImpl(),
+                        null, new Object[]{integer});
+        assertThat(integer.get()).isEqualTo(1);
+
+        InvocationHandler ih = DefaultMethodInvoker.getInstance(Throw.class.getMethod("defaultMethod"));
+        assertThatThrownBy(() -> ih.invoke(new ThrowImpl(), null, new Object[]{}))
+                .isExactlyInstanceOf(IOException.class);
+    }
+
+    private interface TestInterface {
+
+        default void defaultMethod(AtomicInteger integer) {
+            integer.getAndIncrement();
+        }
+    }
+
+    private class TestInterfaceImpl implements TestInterface {
+
+        @Override
+        public final void defaultMethod(AtomicInteger integer) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private interface Throw {
+
+        default void defaultMethod() throws IOException {
+            throw new IOException();
+        }
+    }
+
+    private class ThrowImpl implements Throw {
+
+        @Override
+        public void defaultMethod() {
+            throw new StringIndexOutOfBoundsException();
         }
     }
 

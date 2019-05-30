@@ -1,54 +1,94 @@
 package jnc.foreign.internal;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/*use jdk7*/
+/**
+ * Handle handle invoke_special for interface methods default methods
+ *
+ * @author zhanhb
+ * @see
+ * <a href="https://github.com/spring-projects/spring-data-commons/blob/2.1.8.RELEASE/src/main/java/org/springframework/data/projection/DefaultMethodInvokingMethodInterceptor.java">Spring
+ * Data DefaultMethodInvokingMethodInterceptor.java</a>
+ */
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 class DefaultMethodInvoker {
 
-    private static final Lookup IMPL_LOOPUP;
+    private static final DefaultMethodUnreflector unreflector = createUnreflector();
+    private static final Class<?> inaccessibleObject;
 
     static {
-        Lookup lookup = null;
+        Class<?> ioe = null;
         try {
-            lookup = findLookup1();
-        } catch (Exception ex) {
-            try {
-                lookup = findLookup2();
-            } catch (Exception ignored) {
+            ioe = Class.forName("java.lang.reflect.InaccessibleObjectException").asSubclass(RuntimeException.class);
+        } catch (ClassNotFoundException ignored) {
+        }
+        inaccessibleObject = ioe;
+    }
+
+    private static <T> T unboxInvocationTarget(IMethod<T> iMethod, Object... args) throws Throwable {
+        try {
+            return iMethod.invoke(args);
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
+        }
+    }
+
+    private static Lookup getLookup(Class<?> declaringClass, Method privateLookupIn)
+            throws Throwable {
+        IMethod<Lookup> iMethod = args -> (Lookup) privateLookupIn.invoke(null, args);
+        return unboxInvocationTarget(iMethod, declaringClass, MethodHandles.lookup());
+    }
+
+    private static MethodHandle doLookup(Method method, Lookup lookup)
+            throws NoSuchMethodException, IllegalAccessException {
+        MethodType methodType = MethodType.methodType(method.getReturnType(), method.getParameterTypes());
+        return lookup.findSpecial(method.getDeclaringClass(), method.getName(), methodType, method.getDeclaringClass());
+    }
+
+    private static DefaultMethodUnreflector createUnreflector() {
+        try {
+            Method privateLookupIn = MethodHandles.class.getMethod("privateLookupIn", Class.class, Lookup.class);
+            return method -> doLookup(method, getLookup(method.getDeclaringClass(), privateLookupIn));
+        } catch (NoSuchMethodException ignore) {
+        }
+        try {
+            Constructor<Lookup> constructor = Lookup.class.getDeclaredConstructor(Class.class);
+            constructor.setAccessible(true);
+            return method -> {
+                Class<?> declaringClass = method.getDeclaringClass();
+                return unboxInvocationTarget(constructor::newInstance, declaringClass)
+                        .unreflectSpecial(method, declaringClass);
+            };
+        } catch (NoSuchMethodException | SecurityException ignored) {
+        } catch (RuntimeException ex) {
+            if (inaccessibleObject == null || !inaccessibleObject.isInstance(ex)) {
+                throw ex;
             }
         }
-        IMPL_LOOPUP = lookup;
+        return method -> doLookup(method, MethodHandles.lookup());
     }
 
-    private static Lookup findLookup1() throws Exception {
-        Field field = Lookup.class.getDeclaredField("IMPL_LOOKUP");
-        field.setAccessible(true);
-        return (Lookup) field.get(null);
+    static InvocationHandler getInstance(Method method) throws Throwable {
+        MethodHandle handle = unreflector.unreflectSpecial(method);
+        return (proxy, __, args) -> handle.bindTo(proxy).invokeWithArguments(args);
     }
 
-    private static Lookup findLookup2() throws Exception {
-        Constructor<Lookup> constructor = Lookup.class.getDeclaredConstructor(Class.class, int.class);
-        constructor.setAccessible(true);
-        return constructor.newInstance(Object.class, -1);
+    private interface IMethod<T> {
+
+        T invoke(Object... args) throws IllegalAccessException, InvocationTargetException, InstantiationException;
     }
 
-    static InvocationHandler getInstance(Method method) {
-        try {
-            MethodHandle handler = IMPL_LOOPUP.unreflectSpecial(method, method.getDeclaringClass());
-            return (Object proxy, Method unused, Object[] args) -> handler.bindTo(proxy).invokeWithArguments(args);
-        } catch (IllegalAccessException ex) {
-            throw new AssertionError(ex);
-        }
-    }
+    private interface DefaultMethodUnreflector {
 
-    static boolean isAvailable() {
-        return IMPL_LOOPUP != null;
+        MethodHandle unreflectSpecial(Method method) throws Throwable;
+
     }
 
 }

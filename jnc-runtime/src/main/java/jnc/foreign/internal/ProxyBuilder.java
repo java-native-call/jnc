@@ -35,13 +35,13 @@ class ProxyBuilder {
     private static final Method OBJECT_EQUALS;
     private static final Method OBJECT_HASH_CODE;
 
-    private static final InvocationHandler objectToString = (proxy, method, args) -> proxy.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(proxy));
-    private static final InvocationHandler objectHashCode = (proxy, method, args) -> System.identityHashCode(proxy);
-    private static final InvocationHandler objectEquals = (proxy, method, args) -> proxy == args[0];
+    private static final InvocationHandler objectToString = (proxy, __, args) -> proxy.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(proxy));
+    private static final InvocationHandler objectHashCode = (proxy, __, args) -> System.identityHashCode(proxy);
+    private static final InvocationHandler objectEquals = (proxy, __, args) -> proxy == args[0];
 
-    private static final InvocationHandler proxyToString = (proxy, method, args) -> proxy.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(Proxy.getInvocationHandler(proxy)));
-    private static final InvocationHandler proxyHashCode = (proxy, method, args) -> System.identityHashCode(Proxy.getInvocationHandler(proxy));
-    private static final InvocationHandler proxyEquals = (proxy, method, args) -> {
+    private static final InvocationHandler proxyToString = (proxy, __, args) -> proxy.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(Proxy.getInvocationHandler(proxy)));
+    private static final InvocationHandler proxyHashCode = (proxy, __, args) -> System.identityHashCode(Proxy.getInvocationHandler(proxy));
+    private static final InvocationHandler proxyEquals = (proxy, __, args) -> {
         Object another = args[0];
         return proxy == another || another != null
                 && Proxy.isProxyClass(another.getClass())
@@ -60,12 +60,6 @@ class ProxyBuilder {
 
     public static ProxyBuilder builder() {
         return new ProxyBuilder();
-    }
-
-    // visible for test
-    static <T> T newInstance(Class<T> klass, InvocationHandler ih) {
-        return klass.cast(Proxy.newProxyInstance(klass.getClassLoader(),
-                new Class<?>[]{klass}, requireNonNull(ih)));
     }
 
     @SuppressWarnings("unchecked")
@@ -153,10 +147,12 @@ class ProxyBuilder {
     }
 
     public ProxyBuilder useDefaultMethod() {
-        if (!DefaultMethodInvoker.isAvailable()) {
-            throw new IllegalStateException("default method invoker is not available");
-        }
         this.useDefaultMethod = true;
+        return this;
+    }
+
+    public ProxyBuilder customDefaultMethod() {
+        this.useDefaultMethod = false;
         return this;
     }
 
@@ -166,20 +162,25 @@ class ProxyBuilder {
         final Function<Method, InvocationHandler> otherwise = this.otherwise;
         final Function<Method, ? extends Throwable> orThrow = this.orThrow;
         return (proxy, method, args) -> map.computeIfAbsent(method, m -> {
-            if (useDefaultMethod && m.isDefault()) {
-                return DefaultMethodInvoker.getInstance(m);
-            }
-            final InvocationHandler handler = otherwise != null ? otherwise.apply(m) : null;
-            if (handler == null) {
+            try {
+                if (useDefaultMethod && m.isDefault()) {
+                    return DefaultMethodInvoker.getInstance(m);
+                }
+                final InvocationHandler handler = otherwise != null ? otherwise.apply(m) : null;
+                if (handler == null) {
+                    throw orThrow.apply(m);
+                }
+                return handler;
+            } catch (Throwable ex) {
                 //noinspection RedundantTypeArguments
-                throw ProxyBuilder.<RuntimeException>throwUnchecked(orThrow.apply(m));
+                throw ProxyBuilder.<RuntimeException>throwUnchecked(ex);
             }
-            return handler;
         }).invoke(proxy, method, args);
     }
 
     public <T> T newInstance(Class<T> interfaceClass) {
-        return newInstance(interfaceClass, toInvocationHandler());
+        return interfaceClass.cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(),
+                new Class<?>[]{interfaceClass}, toInvocationHandler()));
     }
 
 }

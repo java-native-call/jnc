@@ -21,75 +21,140 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Iterator;
+import java.util.function.Consumer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- *
  * @author zhanhb
  */
 public class ProxyBuilderTest {
+
+    private static Serializable createSerializable(InvocationHandler ih) {
+        Class<Serializable> c = Serializable.class;
+        return c.cast(Proxy.newProxyInstance(c.getClassLoader(),
+                new Class<?>[]{c}, ih));
+    }
 
     @Test
     public void testEquals() {
         // toString must be implemented for junit require this to display error message if failed
         ProxyBuilder builder = ProxyBuilder.builder().useObjectEquals().useProxyToString();
-        InvocationHandler handler = builder.toInvocationHandler();
-        Serializable instance1 = ProxyBuilder.newInstance(Serializable.class, handler);
-        Serializable instance2 = ProxyBuilder.newInstance(Serializable.class, handler);
-        assertNotEquals(instance1, instance2);
+        {
+            InvocationHandler handler = builder.toInvocationHandler();
+            assertNotEquals(createSerializable(handler), createSerializable(handler));
+        }
 
-        handler = builder.useProxyEquals().toInvocationHandler();
-        instance1 = ProxyBuilder.newInstance(Serializable.class, handler);
-        instance2 = ProxyBuilder.newInstance(Serializable.class, handler);
-        assertNotSame(instance1, instance2);
-        assertEquals(instance1, instance2);
+        {
+            InvocationHandler handler = builder.useProxyEquals().toInvocationHandler();
+            Serializable instance1 = createSerializable(handler);
+            Serializable instance2 = createSerializable(handler);
+            assertNotSame(instance1, instance2);
+            assertEquals(instance1, instance2);
+        }
     }
 
     @Test
     public void testHashCode() {
         // toString must be implemented for junit require this to display error message if failed
         ProxyBuilder builder = ProxyBuilder.builder().useObjectHashCode().useProxyToString();
-        Serializable serializable = builder.newInstance(Serializable.class);
-        assertEquals(System.identityHashCode(serializable), serializable.hashCode());
+        {
+            Serializable serializable = builder.newInstance(Serializable.class);
+            assertEquals(System.identityHashCode(serializable), serializable.hashCode());
+        }
 
-        serializable = builder.useProxyHashCode().newInstance(Serializable.class);
-        assertEquals(System.identityHashCode(Proxy.getInvocationHandler(serializable)), serializable.hashCode());
+        {
+            Serializable serializable = builder.useProxyHashCode().newInstance(Serializable.class);
+            assertEquals(System.identityHashCode(Proxy.getInvocationHandler(serializable)), serializable.hashCode());
+        }
     }
 
     @Test
     public void testToString() {
         ProxyBuilder builder = ProxyBuilder.builder().useObjectToString();
+        {
+            Serializable serializable = builder.newInstance(Serializable.class);
+            assertThat(serializable.toString())
+                    .contains(Long.toHexString(System.identityHashCode(serializable)))
+                    .contains(serializable.getClass().getName());
+        }
 
-        Serializable serializable = builder.newInstance(Serializable.class);
-        assertThat(serializable.toString())
-                .contains(Long.toHexString(System.identityHashCode(serializable)))
-                .contains(serializable.getClass().getName());
+        {
+            Serializable serializable = builder.useProxyToString().newInstance(Serializable.class);
+            assertThat(serializable.toString())
+                    .doesNotContain(Long.toHexString(System.identityHashCode(serializable)))
+                    .contains(serializable.getClass().getName());
+        }
+    }
 
-        serializable = builder.useProxyToString().newInstance(Serializable.class);
-        assertThat(serializable.toString())
-                .doesNotContain(Long.toHexString(System.identityHashCode(serializable)))
-                .contains(serializable.getClass().getName());
+    private <T> void testDefaultMethodOf(
+            Class<T> interfaceClass, Consumer<T> consumer,
+            Class<? extends Throwable> exceptionClass) {
+        ProxyBuilder builder = ProxyBuilder.builder().useObjectToString();
+        {
+            T t = builder.useDefaultMethod().newInstance(interfaceClass);
+            assertThatThrownBy(() -> consumer.accept(t))
+                    .isExactlyInstanceOf(exceptionClass);
+        }
+        {
+            T t = builder.customDefaultMethod().newInstance(interfaceClass);
+            assertThatThrownBy(() -> consumer.accept(t))
+                    .isExactlyInstanceOf(AbstractMethodError.class);
+        }
+    }
+
+    // TODO, failed on jdk8
+    //  failed on jdk9 if run with --illegal-access=deny
+    // @Test
+    public void testDefaultMethod() {
+        testDefaultMethodOf(Iterator.class, Iterator::remove, UnsupportedOperationException.class);
+    }
+
+    @Test
+    public void testDefaultMethodInCurrentModule() {
+        testDefaultMethodOf(MyInterface.class, MyInterface::defaultMethod, StringIndexOutOfBoundsException.class);
     }
 
     @Test
     public void testThrow() {
         // toString must be implemented for junit require this to display error message if failed
         ProxyBuilder builder = ProxyBuilder.builder().useProxyToString();
-        Closeable closeable = builder.newInstance(Closeable.class);
-        assertThatThrownBy(closeable::close).isInstanceOf(AbstractMethodError.class).hasMessage("close");
+        {
+            Closeable closeable = builder.newInstance(Closeable.class);
+            assertThatThrownBy(closeable::close).isInstanceOf(AbstractMethodError.class).hasMessage("close");
+        }
 
-        closeable = builder.orThrow(method -> new UnsupportedOperationException(method.getName())).newInstance(Closeable.class);
-        assertThatThrownBy(closeable::close).isInstanceOf(UnsupportedOperationException.class).hasMessage("close");
+        {
+            Closeable closeable = builder
+                    .orThrow(method -> new UnsupportedOperationException(method.getName()))
+                    .newInstance(Closeable.class);
+            assertThatThrownBy(closeable::close).isInstanceOf(UnsupportedOperationException.class).hasMessage("close");
+        }
 
-        closeable = builder.orThrow(method -> new IOException(method.getName())).newInstance(Closeable.class);
-        assertThatThrownBy(closeable::close).isInstanceOf(IOException.class).hasMessage("close");
+        {
+            Closeable closeable = builder
+                    .orThrow(method -> new IOException(method.getName()))
+                    .newInstance(Closeable.class);
+            assertThatThrownBy(closeable::close).isInstanceOf(IOException.class).hasMessage("close");
+        }
 
-        closeable = builder.orThrow(method -> new Exception(method.getName())).newInstance(Closeable.class);
-        assertThatThrownBy(closeable::close).isInstanceOf(UndeclaredThrowableException.class)
-                .hasCauseExactlyInstanceOf(Exception.class);
+        {
+            Closeable closeable = builder
+                    .orThrow(method -> new Exception(method.getName()))
+                    .newInstance(Closeable.class);
+            assertThatThrownBy(closeable::close).isInstanceOf(UndeclaredThrowableException.class)
+                    .hasCauseExactlyInstanceOf(Exception.class);
+        }
+    }
+
+    private interface MyInterface {
+
+        default void defaultMethod() {
+            throw new StringIndexOutOfBoundsException();
+        }
     }
 
 }
