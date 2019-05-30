@@ -1,139 +1,106 @@
+/*
+ * Copyright 2019 zhanhb.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package jnc.foreign.typedef;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import jnc.foreign.annotation.Typedef;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import jnc.foreign.ForeignProvider;
+import jnc.foreign.Platform;
 import jnc.foreign.enums.TypeAlias;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
 
+/**
+ * @author zhanhb
+ */
 public class TypedefTest {
 
-    private static final String PKG = size_t.class.getPackage().getName();
-    private static final String BASEPATH = "src/main/java";
+    private final String OSX = "osx";
+    private final String UNIX = "unix";
+    private final String BSD = "bsd";
+    private final String[] subPackages = {OSX, UNIX, BSD};
+    private final String basePackage = TypedefTest.class.getPackage().getName();
 
-    public static void main(String[] args) throws IOException {
-        write(null,
-                /* maybe sizeof(long) = 4 or 8 */
-                "long",
-                "clock_t",
-                /* enum on darwin */
-                "clockid_t",
-                "dev_t",
-                "errno_t",
-                // fpos_t is struct on linux
-                // DEFINE(fpos_t)
-                "ino_t",
-                // DEFINE(ino64_t)
-                "int16_t",
-                "int32_t",
-                "int64_t",
-                "int8_t",
-                // DEFINE(intmax_t)
-                "intptr_t",
-                "mode_t",
-                "off_t",
-                "pid_t",
-                "ptrdiff_t",
-                // DEFINE(rsize_t)
-                "size_t",
-                "socklen_t",
-                "ssize_t",
-                "time_t",
-                "uint16_t",
-                "uint32_t",
-                "uint64_t",
-                "uint8_t",
-                // DEFINE(uintmax_t)
-                "uintptr_t",
-                "useconds_t",
-                "wchar_t",
-                /*
-                 * linux: typedef int32_t *wctrans_t;
-                 * aix: typedef wint_t (*wctrans_t)();
-                 * solaris typedef unsigned int wctrans_t;
-                 * mingw typedef wchar_t wctrans_t;
-                 */
-                "wctrans_t",
-                /* pointer type on OpenBSD */
-                "wctype_t",
-                "wint_t"
-        );
-        write("unix",
-                "blkcnt_t",
-                "blksize_t",
-                "fsblkcnt_t",
-                "fsfilcnt_t",
-                "gid_t",
-                "id_t",
-                "in_addr_t",
-                "in_port_t",
-                "key_t",
-                /* not an integer type */
-                // DEFINE(mbstate_t)
-                "nlink_t",
-                "rlim_t",
-                "sa_family_t",
-                /* maybe not an integer type */
-                /* https://www.gnu.org/software/libc/manual/html_node/Signal-Sets.html */
-                // DEFINE(sigset_t)
-                "suseconds_t",
-                "uid_t"
-        );
-        write("bsd",
-                "register_t",
-                "segsz_t"
-        );
-        write("osx",
-                "ct_rune_t",
-                "rune_t",
-                "sae_associd_t",
-                "sae_connid_t",
-                "swblk_t",
-                "syscall_arg_t",
-                "user_addr_t",
-                "user_long_t",
-                "user_off_t",
-                "user_size_t",
-                "user_ssize_t",
-                "user_time_t",
-                "user_ulong_t"
-        );
-    }
+    @Test
+    public void testSupport() {
+        // test annotation class present
+        Map<String, List<TypeAlias>> map = new HashMap<>(4);
+        for (TypeAlias typeAlias : EnumSet.allOf(TypeAlias.class)) {
+            if (typeAlias == TypeAlias.cint) {
+                continue;
+            }
+            AtomicReference<String> found = new AtomicReference<>();
+            try {
+                Class.forName(basePackage + "." + typeAlias);
+                found.set("");
+            } catch (ClassNotFoundException ignored) {
+            }
+            for (String subPackage : subPackages) {
+                try {
+                    Class.forName(basePackage + "." + subPackage + "." + typeAlias);
+                    assertThat(found.compareAndSet(null, subPackage))
+                            .withFailMessage("duplicate annotation '%s' found both in package '%s' and '%s'", typeAlias, found, subPackage)
+                            .isTrue();
+                } catch (ClassNotFoundException ignored) {
+                }
+            }
+            String pkg = found.get();
+            assertThat(pkg)
+                    .withFailMessage("alias %s not found in any packages", typeAlias)
+                    .isNotNull();
+            map.computeIfAbsent(pkg, __ -> new ArrayList<>(16)).add(typeAlias);
+        }
 
-    private static void write(String subPackage, String... typeNames) throws IOException {
-        for (String cname : typeNames) {
-            writeImpl(cname, subPackage == null ? PKG : PKG + "." + subPackage, BASEPATH);
+        // test platform support
+        Set<String> supported = new HashSet<>(4);
+        ForeignProvider foreignProvider = ForeignProvider.getDefault();
+        Platform.OS os = foreignProvider.getPlatform().getOS();
+        if (os == Platform.OS.DARWIN) {
+            supported.add(OSX);
         }
-    }
+        if (os.isBSD()) {
+            supported.add(BSD);
+        }
+        if (os.isUnix()) {
+            supported.add(UNIX);
+        }
 
-    private static void writeImpl(String cname, String pkg, String basePath) throws IOException {
-        String jName = cname;
-        if ("int".equals(jName) || "long".equals(jName)) {
-            jName = "c" + jName;
-        }
-        Path dir = Paths.get(basePath, pkg.replace('.', '/'));
-        if (!Files.exists(dir)) {
-            Files.createDirectory(dir);
-        }
-        try (PrintWriter pw = new PrintWriter(dir.resolve(jName + ".java").toFile(), "UTF-8")) {
-            pw.println("package " + pkg + ";");
-            pw.println();
-            pw.println("import java.lang.annotation.Documented;");
-            pw.println("import java.lang.annotation.ElementType;");
-            pw.println("import java.lang.annotation.Retention;");
-            pw.println("import java.lang.annotation.RetentionPolicy;");
-            pw.println("import java.lang.annotation.Target;");
-            pw.println("import " + Typedef.class.getName() + ";");
-            pw.println("import " + TypeAlias.class.getName() + ";");
-            pw.println();
-            pw.println("@Documented");
-            pw.println("@Retention(RetentionPolicy.RUNTIME)");
-            pw.println("@Target({ElementType.METHOD, ElementType.PARAMETER})");
-            pw.println("@Typedef(TypeAlias." + jName + ")");
-            pw.println("public @interface " + jName + " {");
-            pw.println("}");
+        for (Map.Entry<String, List<TypeAlias>> entry : map.entrySet()) {
+            String key = entry.getKey();
+            List<TypeAlias> value = entry.getValue();
+            boolean s = supported.contains(key) || key.isEmpty();
+            for (TypeAlias typeAlias : value) {
+                boolean result;
+                try {
+                    foreignProvider.getForeign().findType(typeAlias);
+                    result = true;
+                } catch (UnsupportedOperationException ex) {
+                    result = false;
+                }
+                String msg = "alias support '%s' should %sbe supported on platform %s, but got %s";
+                assertThat(s == result)
+                        .withFailMessage(msg, typeAlias, s ? "" : "not ", os, result ? "supported" : "unsupported")
+                        .isTrue();
+            }
         }
     }
 
