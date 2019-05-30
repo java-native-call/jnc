@@ -24,7 +24,7 @@ enum DefaultForeign implements Foreign {
             tf = new TypeRegistry();
             thf = new TypeHandlerRegistry(tf);
         } catch (Throwable ex) {
-            ProxyBuilder builder = ProxyBuilder.builder().useProxyMethods().orThrow(__ -> ex);
+            ProxyBuilder builder = ProxyBuilder.builder().useProxyMethods().orThrow(ex);
             tf = builder.newInstance(TypeFactory.class);
             thf = builder.newInstance(TypeHandlerFactory.class);
         }

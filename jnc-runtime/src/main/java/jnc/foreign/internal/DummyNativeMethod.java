@@ -37,7 +37,7 @@ class DummyNativeMethod {
                         return null;
                     }
                 })
-                .orThrow(m -> t instanceof UnsatisfiedLinkError ? new JniLoadingException(t) : t)
+                .orThrow(__ -> t instanceof UnsatisfiedLinkError ? new JniLoadingException(t) : t)
                 .newInstance(NativeAccessor.class);
     }
 

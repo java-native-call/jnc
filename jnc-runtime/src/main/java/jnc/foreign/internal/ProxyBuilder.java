@@ -145,6 +145,13 @@ class ProxyBuilder {
         return this;
     }
 
+    @SuppressWarnings("ThrowableResultIgnored")
+    public ProxyBuilder orThrow(Throwable orThrow) {
+        requireNonNull(orThrow);
+        this.orThrow = __ -> orThrow;
+        return this;
+    }
+
     public ProxyBuilder useDefaultMethod() {
         if (!DefaultMethodInvoker.isAvailable()) {
             throw new IllegalStateException("default method invoker is not available");
