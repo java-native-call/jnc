@@ -16,10 +16,9 @@
 package jnc.foreign.exception;
 
 /**
- *
  * @author zhanhb
  */
-public class UnmappableNativeValueException extends IllegalArgumentException {
+public final class UnmappableNativeValueException extends IllegalArgumentException {
 
     private static final long serialVersionUID = 0L;
 
@@ -27,7 +26,7 @@ public class UnmappableNativeValueException extends IllegalArgumentException {
     private final long value;
 
     public UnmappableNativeValueException(Class<?> type, long value) {
-        super("type=" + type.getName() + ",value=" + value);
+        super("type=" + type.getName() + ",value=" + value, null);
         this.type = type;
         this.value = value;
     }
