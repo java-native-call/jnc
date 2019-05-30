@@ -66,7 +66,7 @@ enum DefaultForeign implements Foreign {
 
     @Nonnull
     @Override
-    public Type findType(TypeAlias alias) {
+    public Alias findType(TypeAlias alias) {
         return typeFactory.findByAlias(alias);
     }
 

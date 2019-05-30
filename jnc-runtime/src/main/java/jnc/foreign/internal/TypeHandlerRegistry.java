@@ -35,7 +35,8 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
     }
 
     @SuppressWarnings("NestedAssignment")
-    private static <T> ParameterHandler<T> toParameterHandler(ArrayParameterHandler<T> toNative, ArrayParameterHandler<T> fromNative, int size) {
+    private static <T> ParameterHandler<T> toParameterHandler(
+            ArrayParameterHandler<T> toNative, ArrayParameterHandler<T> fromNative, int typeBytes) {
         return (CallContext context, int index, T array) -> {
             int len;
             if (array == null) {
@@ -45,7 +46,7 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
             } else {
                 int offset = 0;
                 int off = 0;
-                Pointer memory = AllocatedMemory.allocate(len, size);
+                Pointer memory = AllocatedMemory.allocate(len, typeBytes);
                 toNative.handle(memory, offset, array, off, len);
                 context.onFinish(() -> fromNative.handle(memory, offset, array, off, len)).putLong(index, memory.address());
             }
@@ -59,11 +60,13 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
     private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> inheritedParameterTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
 
     TypeHandlerRegistry(TypeFactory typeFactory) {
-        InternalType pointer = typeFactory.getPointerType();
+        InternalType pointerType = typeFactory.findByNativeType(NativeType.POINTER);
         this.typeFactory = typeFactory;
-        addExactReturnTypeHandler(Pointer.class, TypeHandlerInfo.always(pointer, Invokers::invokePointer));
+        addExactReturnTypeHandler(Pointer.class, TypeHandlerInfo.always(pointerType, Invokers::invokePointer));
 
-        addPrimaryTypeHandler(void.class, NativeType.VOID, (context, index, __) -> context.putLong(index, 0), Invokers::invokeVoid);
+        // parameter type should not be void, maybe user want to define a pointer type.
+        addExactParameterTypeHandler(Void.class, pointerType, (context, index, __) -> context.putLong(index, 0));
+        addPrimaryTypeHandler(void.class, NativeType.VOID, null, Invokers::invokeVoid);
         addPrimaryTypeHandler(boolean.class, NativeType.UINT8, CallContext::putBoolean, Invokers::invokeBoolean);
         addPrimaryTypeHandler(byte.class, NativeType.SINT8, CallContext::putByte, Invokers::invokeByte);
         addPrimaryTypeHandler(char.class, NativeType.UINT16, CallContext::putChar, Invokers::invokeChar);
@@ -73,38 +76,38 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
         addPrimaryTypeHandler(float.class, NativeType.FLOAT, CallContext::putFloat, Invokers::invokeFloat);
         addPrimaryTypeHandler(double.class, NativeType.DOUBLE, CallContext::putDouble, Invokers::invokeDouble);
 
-        addInheritedParameterTypeHandler(Struct.class, TypeHandlerInfo.always(pointer, (context, index, obj) -> context.putLong(index, obj == null ? 0 : obj.getMemory().address())));
-        addInheritedParameterTypeHandler(Pointer.class, TypeHandlerInfo.always(pointer, (context, index, obj) -> context.putLong(index, obj == null ? 0 : obj.address())));
-        addInheritedParameterTypeHandler(ByReference.class, TypeHandlerInfo.always(pointer, TypeHandlerRegistry::putByReference));
+        addInheritedParameterTypeHandler(Struct.class, TypeHandlerInfo.always(pointerType, (context, index, obj) -> context.putLong(index, obj == null ? 0 : obj.getMemory().address())));
+        addInheritedParameterTypeHandler(Pointer.class, TypeHandlerInfo.always(pointerType, (context, index, obj) -> context.putLong(index, obj == null ? 0 : obj.address())));
+        addInheritedParameterTypeHandler(ByReference.class, TypeHandlerInfo.always(pointerType, TypeHandlerRegistry::putByReference));
 
-        addPrimitiveArrayParameterTypeHandler(byte[].class, Pointer::putBytes, Pointer::getBytes, Byte.BYTES);
-        addPrimitiveArrayParameterTypeHandler(char[].class, Pointer::putCharArray, Pointer::getCharArray, Character.BYTES);
-        addPrimitiveArrayParameterTypeHandler(short[].class, Pointer::putShortArray, Pointer::getShortArray, Short.BYTES);
-        addPrimitiveArrayParameterTypeHandler(int[].class, Pointer::putIntArray, Pointer::getIntArray, Integer.BYTES);
-        addPrimitiveArrayParameterTypeHandler(long[].class, Pointer::putLongArray, Pointer::getLongArray, Long.BYTES);
-        addPrimitiveArrayParameterTypeHandler(float[].class, Pointer::putFloatArray, Pointer::getFloatArray, Float.BYTES);
-        addPrimitiveArrayParameterTypeHandler(double[].class, Pointer::putDoubleArray, Pointer::getDoubleArray, Double.BYTES);
-        addPrimitiveArrayParameterTypeHandler(boolean[].class, TypeHandlerRegistry::putBooleanArray, TypeHandlerRegistry::getBooleanArray, Byte.BYTES);
+        addPrimitiveArrayParameterTypeHandler(pointerType, byte[].class, Pointer::putBytes, Pointer::getBytes, Byte.BYTES);
+        addPrimitiveArrayParameterTypeHandler(pointerType, char[].class, Pointer::putCharArray, Pointer::getCharArray, Character.BYTES);
+        addPrimitiveArrayParameterTypeHandler(pointerType, short[].class, Pointer::putShortArray, Pointer::getShortArray, Short.BYTES);
+        addPrimitiveArrayParameterTypeHandler(pointerType, int[].class, Pointer::putIntArray, Pointer::getIntArray, Integer.BYTES);
+        addPrimitiveArrayParameterTypeHandler(pointerType, long[].class, Pointer::putLongArray, Pointer::getLongArray, Long.BYTES);
+        addPrimitiveArrayParameterTypeHandler(pointerType, float[].class, Pointer::putFloatArray, Pointer::getFloatArray, Float.BYTES);
+        addPrimitiveArrayParameterTypeHandler(pointerType, double[].class, Pointer::putDoubleArray, Pointer::getDoubleArray, Double.BYTES);
+        addPrimitiveArrayParameterTypeHandler(pointerType, boolean[].class, TypeHandlerRegistry::putBooleanArray, TypeHandlerRegistry::getBooleanArray, Byte.BYTES);
     }
 
-    private <T> void addPrimitiveArrayParameterTypeHandler(Class<T> primitiveArrayType, ArrayParameterHandler<T> toNative, ArrayParameterHandler<T> fromNative, int size) {
-        ParameterHandler<T> parameterHandler = toParameterHandler(toNative, fromNative, size);
-        addExactParameterTypeHandler(primitiveArrayType, TypeHandlerInfo.always(typeFactory.getPointerType(), parameterHandler));
+    private <T> void addPrimitiveArrayParameterTypeHandler(
+            InternalType pointerType, Class<T> primitiveArrayType,
+            ArrayParameterHandler<T> toNative, ArrayParameterHandler<T> fromNative, int typeBytes) {
+        ParameterHandler<T> parameterHandler = toParameterHandler(toNative, fromNative, typeBytes);
+        addExactParameterTypeHandler(primitiveArrayType, TypeHandlerInfo.always(pointerType, parameterHandler));
     }
 
-    private <T> void addPrimaryTypeHandler(Class<T> primitiveType, NativeType nativeType,
+    private <T> void addPrimaryTypeHandler(
+            Class<T> primitiveType, NativeType nativeType,
             ParameterHandler<T> parameterHandler, Invoker<T> invoker) {
         Class<T> wrapType = Primitives.wrap(primitiveType);
         InternalType defaultType = typeFactory.findByNativeType(nativeType);
 
         addExactReturnTypeHandler(primitiveType, defaultType, invoker);
         addExactReturnTypeHandler(wrapType, defaultType, invoker);
-        if (primitiveType != void.class) {
+        if (parameterHandler != null) {
             addExactParameterTypeHandler(primitiveType, defaultType, parameterHandler);
             addExactParameterTypeHandler(wrapType, defaultType, parameterHandler);
-        } else {
-            // parameter type should not be void, maybe user want to define a pointer type.
-            addExactParameterTypeHandler(wrapType, typeFactory.getPointerType(), parameterHandler);
         }
     }
 

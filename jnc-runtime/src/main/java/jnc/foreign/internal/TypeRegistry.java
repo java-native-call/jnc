@@ -6,31 +6,9 @@ import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import jnc.foreign.NativeType;
-import static jnc.foreign.NativeType.DOUBLE;
-import static jnc.foreign.NativeType.FLOAT;
-import static jnc.foreign.NativeType.POINTER;
-import static jnc.foreign.NativeType.SINT16;
-import static jnc.foreign.NativeType.SINT32;
-import static jnc.foreign.NativeType.SINT64;
-import static jnc.foreign.NativeType.SINT8;
-import static jnc.foreign.NativeType.UINT16;
-import static jnc.foreign.NativeType.UINT32;
-import static jnc.foreign.NativeType.UINT64;
-import static jnc.foreign.NativeType.UINT8;
-import static jnc.foreign.NativeType.VOID;
+import static jnc.foreign.NativeType.*;
 import jnc.foreign.enums.TypeAlias;
-import static jnc.foreign.internal.NativeAccessor.TYPE_DOUBLE;
-import static jnc.foreign.internal.NativeAccessor.TYPE_FLOAT;
-import static jnc.foreign.internal.NativeAccessor.TYPE_POINTER;
-import static jnc.foreign.internal.NativeAccessor.TYPE_SINT16;
-import static jnc.foreign.internal.NativeAccessor.TYPE_SINT32;
-import static jnc.foreign.internal.NativeAccessor.TYPE_SINT64;
-import static jnc.foreign.internal.NativeAccessor.TYPE_SINT8;
-import static jnc.foreign.internal.NativeAccessor.TYPE_UINT16;
-import static jnc.foreign.internal.NativeAccessor.TYPE_UINT32;
-import static jnc.foreign.internal.NativeAccessor.TYPE_UINT64;
-import static jnc.foreign.internal.NativeAccessor.TYPE_UINT8;
-import static jnc.foreign.internal.NativeAccessor.TYPE_VOID;
+import static jnc.foreign.internal.NativeAccessor.*;
 import static jnc.foreign.internal.TypeInfo.MASK_FLOATING;
 import static jnc.foreign.internal.TypeInfo.MASK_INTEGRAL;
 import static jnc.foreign.internal.TypeInfo.MASK_SIGNED;
@@ -54,65 +32,79 @@ class TypeRegistry implements TypeFactory {
         }
     }
 
+    private static TypeAlias toTypeAlias(String name) {
+        try {
+            return TypeAlias.valueOf(name);
+        } catch (IllegalArgumentException ex) {
+            // ok might be int,long
+        }
+        if (name.equals("int")) {
+            return TypeAlias.cint;
+        } else if (name.equals("long")) {
+            return TypeAlias.clong;
+        }
+        return null;
+    }
 
-    private final EnumMap<NativeType, TypeInfo> MAP;
-    private final Map<Integer, TypeInfo> TYPE_INFOS;
+    private final EnumMap<NativeType, TypeInfo> NATIVE_TO_TYPE;
     private final HashMap<Class<?>, TypeInfo> PRIMITIVE_MAP;
-    private final AliasFactory aliasFactory;
-    private final TypeInfo pointerType;
+    private final EnumMap<TypeAlias, Alias> ALIAS_MAP;
 
     TypeRegistry() {
-        long[][] types = NativeLoader.getAccessor().getTypes();
+        NativeAccessor accessor = NativeLoader.getAccessor();
+        long[][] types = accessor.getTypes();
         Map<Integer, TypeInfo> typeInfos = new HashMap<>(types.length * 3 / 4);
-        EnumMap<NativeType, TypeInfo> map = new EnumMap<>(NativeType.class);
+        EnumMap<NativeType, TypeInfo> nativeToType = new EnumMap<>(NativeType.class);
         HashMap<Class<?>, TypeInfo> primitiveMap = new HashMap<>(16);
 
-        add(types, VOID, void.class, TYPE_VOID, 0, typeInfos, map, primitiveMap);
-        add(types, FLOAT, float.class, TYPE_FLOAT, MASK_SIGNED | MASK_FLOATING, typeInfos, map, primitiveMap);
-        add(types, DOUBLE, double.class, TYPE_DOUBLE, MASK_SIGNED | MASK_FLOATING, typeInfos, map, primitiveMap);
-        add(types, UINT8, null, TYPE_UINT8, MASK_INTEGRAL, typeInfos, map, primitiveMap);
-        add(types, SINT8, byte.class, TYPE_SINT8, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
-        add(types, UINT16, char.class, TYPE_UINT16, MASK_INTEGRAL, typeInfos, map, primitiveMap);
-        add(types, SINT16, short.class, TYPE_SINT16, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
-        add(types, UINT32, null, TYPE_UINT32, MASK_INTEGRAL, typeInfos, map, primitiveMap);
-        add(types, SINT32, int.class, TYPE_SINT32, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
-        add(types, UINT64, null, TYPE_UINT64, MASK_INTEGRAL, typeInfos, map, primitiveMap);
-        add(types, SINT64, long.class, TYPE_SINT64, MASK_INTEGRAL | MASK_SIGNED, typeInfos, map, primitiveMap);
-        add(types, POINTER, null, TYPE_POINTER, 0, typeInfos, map, primitiveMap);
+        add(types, VOID, void.class, TYPE_VOID, 0, typeInfos, nativeToType, primitiveMap);
+        add(types, FLOAT, float.class, TYPE_FLOAT, MASK_SIGNED | MASK_FLOATING, typeInfos, nativeToType, primitiveMap);
+        add(types, DOUBLE, double.class, TYPE_DOUBLE, MASK_SIGNED | MASK_FLOATING, typeInfos, nativeToType, primitiveMap);
+        add(types, UINT8, null, TYPE_UINT8, MASK_INTEGRAL, typeInfos, nativeToType, primitiveMap);
+        add(types, SINT8, byte.class, TYPE_SINT8, MASK_INTEGRAL | MASK_SIGNED, typeInfos, nativeToType, primitiveMap);
+        add(types, UINT16, char.class, TYPE_UINT16, MASK_INTEGRAL, typeInfos, nativeToType, primitiveMap);
+        add(types, SINT16, short.class, TYPE_SINT16, MASK_INTEGRAL | MASK_SIGNED, typeInfos, nativeToType, primitiveMap);
+        add(types, UINT32, null, TYPE_UINT32, MASK_INTEGRAL, typeInfos, nativeToType, primitiveMap);
+        add(types, SINT32, int.class, TYPE_SINT32, MASK_INTEGRAL | MASK_SIGNED, typeInfos, nativeToType, primitiveMap);
+        add(types, UINT64, null, TYPE_UINT64, MASK_INTEGRAL, typeInfos, nativeToType, primitiveMap);
+        add(types, SINT64, long.class, TYPE_SINT64, MASK_INTEGRAL | MASK_SIGNED, typeInfos, nativeToType, primitiveMap);
+        add(types, POINTER, null, TYPE_POINTER, 0, typeInfos, nativeToType, primitiveMap);
 
-        MAP = map;
-        TYPE_INFOS = typeInfos;
-        PRIMITIVE_MAP = primitiveMap;
-
-        pointerType = map.get(NativeType.POINTER);
-        // TODO leak this in constructor
-        aliasFactory = new AliasFactory(this);
-    }
-
-    @Override
-    public TypeInfo getPointerType() {
-        return pointerType;
-    }
-
-    @Override
-    public TypeInfo findByType(int type) {
-        TypeInfo ti = TYPE_INFOS.get(type);
-        if (ti == null) {
-            throw new IllegalArgumentException("unsupported type " + type);
+        HashMap<String, Integer> aliasToId = new HashMap<>(50);
+        accessor.initAlias(aliasToId);
+        EnumMap<TypeAlias, Alias> aliasMap = new EnumMap<>(TypeAlias.class);
+        for (Map.Entry<String, Integer> entry : aliasToId.entrySet()) {
+            String key = entry.getKey();
+            int type = entry.getValue();
+            TypeAlias typeAlias = toTypeAlias(key);
+            // if type alias is null, means native lib defined an alias,
+            // but not exists in the enum, maybe native lib have higher version than java's
+            if (typeAlias != null) {
+                // if typeInfos.get(type) returns null, means method getTypes and initAlias not match
+                TypeInfo typeInfo = Objects.requireNonNull(typeInfos.get(type), "native type and alias mismatch");
+                aliasMap.put(typeAlias, new Alias(typeAlias, typeInfo));
+            }
         }
-        return ti;
+
+        NATIVE_TO_TYPE = nativeToType;
+        PRIMITIVE_MAP = primitiveMap;
+        ALIAS_MAP = aliasMap;
     }
 
     @Override
     public Alias findByAlias(TypeAlias typeAlias) {
         Objects.requireNonNull(typeAlias, "type alias");
-        return aliasFactory.find(typeAlias);
+        Alias alias = ALIAS_MAP.get(typeAlias);
+        if (alias == null) {
+            throw new UnsupportedOperationException("type " + typeAlias + " is not supported on current platform");
+        }
+        return alias;
     }
 
     @Override
     public InternalType findByNativeType(NativeType nativeType) {
         Objects.requireNonNull(nativeType, "native type");
-        InternalType internalType = MAP.get(nativeType);
+        InternalType internalType = NATIVE_TO_TYPE.get(nativeType);
         if (internalType == null) {
             throw new IllegalArgumentException("unsupported native type " + nativeType);
         }
