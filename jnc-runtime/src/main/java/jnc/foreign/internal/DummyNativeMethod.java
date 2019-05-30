@@ -15,6 +15,7 @@
  */
 package jnc.foreign.internal;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Set;
@@ -27,30 +28,42 @@ import jnc.foreign.exception.JniLoadingException;
 class DummyNativeMethod {
 
     static NativeAccessor createProxy(Throwable t) {
+        return new DummyNativeMethod(t).create();
+    }
+
+    private final InvocationHandler throwHandler;
+
+    private DummyNativeMethod(Throwable t) {
+        this.throwHandler = (proxy, __, args) -> {
+            throw t instanceof UnsatisfiedLinkError ? new JniLoadingException(t) : t;
+        };
+    }
+
+    public long getCifInfo() {
+        return 0;
+    }
+
+    public long getMethodId(Method method) {
+        return 0;
+    }
+
+    public Set<Runnable> onFinalize(Set<Runnable> set) {
+        return Objects.requireNonNull(set);
+    }
+
+    private NativeAccessor create() {
         return ProxyBuilder.builder().useProxyMethods()
                 .otherwise(method -> {
                     try {
                         Method m = DummyNativeMethod.class.getMethod(method.getName(),
                                 method.getParameterTypes());
-                        return (proxy, method1, args) -> m.invoke(null, args);
-                    } catch (NoSuchMethodException e) {
-                        return null;
+                        // delegate to methods of class DummyNativeMethod
+                        return (___, __, args) -> m.invoke(DummyNativeMethod.this, args);
+                    } catch (NoSuchMethodException ex) {
+                        return throwHandler;
                     }
                 })
-                .orThrow(__ -> t instanceof UnsatisfiedLinkError ? new JniLoadingException(t) : t)
                 .newInstance(NativeAccessor.class);
-    }
-
-    public static long getCifInfo() {
-        return 0;
-    }
-
-    public static long getMethodId(Method method) {
-        return 0;
-    }
-
-    public static Set<Runnable> onFinalize(Set<Runnable> set) {
-        return Objects.requireNonNull(set);
     }
 
 }

@@ -1,5 +1,6 @@
 *.iml
 .DS_Store
+.LCKpom.xml~
 .flattened-pom.xml
 .idea/
 hs_err_pid*.log

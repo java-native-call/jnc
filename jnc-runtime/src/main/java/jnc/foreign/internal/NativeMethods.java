@@ -15,7 +15,7 @@ class NativeMethods implements NativeAccessor {
     private static final ReentrantLock lock = new ReentrantLock();
     private static final List<Runnable> ON_UNLOAD = new ArrayList<>(4);
 
-    // access by public final native method
+    // access by native method
     @SuppressWarnings({"unused", "CollectionsToArray"})
     private static void onUnload() {
         Runnable[] array = {};

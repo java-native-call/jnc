@@ -73,7 +73,13 @@ class InvocationLibrary<T> {
         private final Invoker<?> invoker;
         private final long function;
 
-        MethodInvocation(ParameterHandler<?>[] handlers, CallingConvention callingConvention, Invoker<?> invoker, long function, InternalType retType, InternalType[] ptypes) {
+        MethodInvocation(
+                ParameterHandler<?>[] handlers,
+                CallingConvention callingConvention,
+                Invoker<?> invoker,
+                long function,
+                InternalType retType,
+                InternalType[] ptypes) {
             this.callingConvention = callingConvention;
             this.handlers = handlers;
             this.container = CifContainer.create(callingConvention, retType, ptypes);
@@ -81,6 +87,7 @@ class InvocationLibrary<T> {
             this.function = function;
         }
 
+        // visible for test
         CallingConvention getCallingConvention() {
             return callingConvention;
         }

@@ -27,45 +27,45 @@ import javax.annotation.Nullable;
 interface NativeAccessor {
 
     @Native
-    static final int TYPE_VOID = 0;
+    int TYPE_VOID = 0;
     @Native
-    static final int TYPE_FLOAT = 2;
+    int TYPE_FLOAT = 2;
     @Native
-    static final int TYPE_DOUBLE = 3;
+    int TYPE_DOUBLE = 3;
     @Native
-    static final int TYPE_UINT8 = 5;
+    int TYPE_UINT8 = 5;
     @Native
-    static final int TYPE_SINT8 = 6;
+    int TYPE_SINT8 = 6;
     @Native
-    static final int TYPE_UINT16 = 7;
+    int TYPE_UINT16 = 7;
     @Native
-    static final int TYPE_SINT16 = 8;
+    int TYPE_SINT16 = 8;
     @Native
-    static final int TYPE_UINT32 = 9;
+    int TYPE_UINT32 = 9;
     @Native
-    static final int TYPE_SINT32 = 10;
+    int TYPE_SINT32 = 10;
     @Native
-    static final int TYPE_UINT64 = 11;
+    int TYPE_UINT64 = 11;
     @Native
-    static final int TYPE_SINT64 = 12;
+    int TYPE_SINT64 = 12;
     @Native
-    static final int TYPE_STRUCT = 13;
+    int TYPE_STRUCT = 13;
     @Native
-    static final int TYPE_POINTER = 14;
+    int TYPE_POINTER = 14;
 
     @Native
-    static final int RTLD_LAZY = 1;
+    int RTLD_LAZY = 1;
     @Native
-    static final int RTLD_NOW = 2;
+    int RTLD_NOW = 2;
     @Native
-    static final int RTLD_LOCAL = 4;
+    int RTLD_LOCAL = 4;
     @Native
-    static final int RTLD_GLOBAL = 8;
+    int RTLD_GLOBAL = 8;
 
     @Native
-    static final int CONVENTION_DEFAULT = 0;
+    int CONVENTION_DEFAULT = 0;
     @Native
-    static final int CONVENTION_STDCALL = 1;
+    int CONVENTION_STDCALL = 1;
 
     /**
      *

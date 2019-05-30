@@ -34,15 +34,17 @@ final class CifContainer extends Struct {
     private static final int ALIGN_OF_FFI_CIF = (int) (CIF_INFO >> 32);
     private static final Address[] ARGUMENT_EMPTY = {};
 
-    static CifContainer create(CallingConvention callingConvention, InternalType resultType, InternalType... params) {
+    static CifContainer create(
+            CallingConvention callingConvention,
+            InternalType resultType, InternalType... params) {
         return new CifContainer(params).prepareInvoke(callingConvention, resultType);
     }
 
     private static int convention(CallingConvention callingConvention) {
         if (callingConvention == CallingConvention.STDCALL) {
-            return NativeMethods.CONVENTION_STDCALL;
+            return NativeAccessor.CONVENTION_STDCALL;
         }
-        return NativeMethods.CONVENTION_DEFAULT;
+        return NativeAccessor.CONVENTION_DEFAULT;
     }
 
     private final InternalType[] params;
@@ -75,7 +77,8 @@ final class CifContainer extends Struct {
     }
 
     CifContainer prepareInvoke(CallingConvention callingConvention, InternalType resultType) {
-        NA.prepareInvoke(cif.getMemory().address(), convention(callingConvention), params.length, resultType.address(), getMemory().address());
+        NA.prepareInvoke(cif.getMemory().address(), convention(callingConvention),
+                params.length, resultType.address(), getMemory().address());
         return this;
     }
 
@@ -152,7 +155,8 @@ final class CifContainer extends Struct {
 
         @Override
         public <T> T invoke(Invoker<T> invoker, long function) {
-            T result = invoker.invoke(CifContainer.this.getCifAddress(), function, parameter.address(), CifContainer.this.offsets);
+            T result = invoker.invoke(CifContainer.this.getCifAddress(),
+                    function, parameter.address(), CifContainer.this.offsets);
             finish();
             return result;
         }
