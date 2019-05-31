@@ -15,11 +15,13 @@
  */
 package jnc.foreign.internal;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import jnc.foreign.enums.CallingConvention;
@@ -84,7 +86,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
 
     private void handle(
             Object[] values, InternalType[] paramTypes, ParameterHandler<?>[] h, int k,
-            Object value, ArrayList<Class<?>> annotations) {
+            Object value, List<Class<? extends Annotation>> annotations) {
         TypeHandlerInfo<? extends ParameterHandler<?>> parameterTypeInfo;
         if (value == null) {
             parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(methodVariadicType);
@@ -116,7 +118,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
 
         Reciever reciever = RECIEVER_MAP.getOrDefault(arg.getClass(), Array::get);
 
-        ArrayList<Class<?>> annotations = new ArrayList<>(4);
+        List<Class<? extends Annotation>> annotations = new ArrayList<>(4);
         for (int i = 0; i < variadicLen; ++i) {
             Object value = reciever.apply(arg, i);
             if (value == null) {
@@ -126,7 +128,9 @@ final class VariadicMethodInvocation implements MethodInvocation {
             }
             if (value instanceof Class) {
                 if (((Class) value).isAnnotation()) {
-                    annotations.add((Class<?>) value);
+                    @SuppressWarnings("unchecked")
+                    Class<? extends Annotation> as = (Class<? extends Annotation>) value;
+                    annotations.add(as);
                     continue;
                 }
                 throw new IllegalArgumentException("unknown class");
@@ -140,8 +144,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
             h = Arrays.copyOf(h, k);
             values = Arrays.copyOf(values, k);
         }
-        CifContainer container = CifContainer.createVariadic(convention, k, retType, paramTypes);
-        CallContext context = container.newCallContext();
+        CallContext context = CifContainer.createVariadic(convention, k, retType, paramTypes).newCallContext();
 
         for (int i = 0; i < k; i++) {
             @SuppressWarnings("unchecked")

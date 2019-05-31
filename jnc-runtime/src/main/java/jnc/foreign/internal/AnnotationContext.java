@@ -18,18 +18,16 @@ package jnc.foreign.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
  * @author zhanhb
  */
-final class AnnotationContext {
+interface AnnotationContext {
 
     static AnnotationContext newContext(AnnotatedElement element) {
-        return new AnnotationContext(element.getAnnotations());
+        return new AnnotationContextImpl(element.getAnnotations());
     }
 
     static AnnotationContext[] newMethodParameterContexts(Method method) {
@@ -37,36 +35,18 @@ final class AnnotationContext {
         int length = parameterAnnotations.length;
         AnnotationContext[] annotationContexts = new AnnotationContext[length];
         for (int i = 0; i < length; ++i) {
-            annotationContexts[i] = new AnnotationContext(parameterAnnotations[i]);
+            annotationContexts[i] = new AnnotationContextImpl(parameterAnnotations[i]);
         }
         return annotationContexts;
     }
 
-    static AnnotationContext newMockContext(ArrayList<Class<?>> annotations, AnnotationContext previous) {
-        // TODO
-        return previous;
-    }
-
-    private final Map<Class<?>, Annotation> annotations;
-
-    private AnnotationContext(Annotation[] annotations) {
-        @SuppressWarnings("CollectionWithoutInitialCapacity")
-        Map<Class<?>, Annotation> map = new LinkedHashMap<>();
-        for (Annotation annotation : annotations) {
-            map.putIfAbsent(annotation.annotationType(), annotation);
-        }
-        for (Annotation annotation : annotations) {
-            for (Annotation transfer : annotation.annotationType().getAnnotations()) {
-                map.putIfAbsent(transfer.annotationType(), transfer);
-            }
-        }
-        this.annotations = map;
+    static AnnotationContext newMockContext(List<Class<? extends Annotation>> annotations, AnnotationContext previous) {
+        return new CombineAnnotationContext(new AnnotationContextImpl(annotations.stream()
+                .map(klass -> SimpleAnnotationBuilder.of(klass).build())
+                .toArray(Annotation[]::new)), previous);
     }
 
     @Nullable
-    @SuppressWarnings({"unchecked", "WeakerAccess"})
-    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return (T) annotations.get(annotationClass);
-    }
+    <T extends Annotation> T getAnnotation(Class<T> annotationClass);
 
 }

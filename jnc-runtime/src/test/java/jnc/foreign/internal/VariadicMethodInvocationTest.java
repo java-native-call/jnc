@@ -18,6 +18,7 @@ package jnc.foreign.internal;
 import java.nio.charset.StandardCharsets;
 import jnc.foreign.LibraryLoader;
 import jnc.foreign.Platform;
+import jnc.foreign.typedef.size_t;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 
@@ -32,9 +33,11 @@ public class VariadicMethodInvocationTest {
     @Test
     public void testInvoke() throws Exception {
         byte[] bytes = new byte[200];
-        byte[] format = "%#x\u0000".getBytes(StandardCharsets.UTF_8);
-        int n = Libc.INSTANCE.sprintf(bytes, format, 16);
-        assertThat(new String(bytes, 0, n)).isEqualTo("0x10");
+        boolean windows = Platform.getNativePlatform().getOS().isWindows();
+        String s = windows ? "%Ix" : "%zx";
+        byte[] format = (s + " %d %.2f\u0000").getBytes(StandardCharsets.UTF_8);
+        int n = Libc.INSTANCE.sprintf(bytes, format, size_t.class, 0x123456, 1234, 0.2);
+        assertThat(new String(bytes, 0, n)).isEqualTo("123456 1234 0.20");
     }
 
     @SuppressWarnings("PublicInnerClass")

@@ -29,10 +29,8 @@ class EnumTypeHandler<E extends Enum<E>> {
 
     // method annotationType is not implemented, got null if invoked
     // equals, hashCode, toString is same as class {@code Object} does
-    private static final Continuously defaultContinuously = ProxyBuilder.empty()
-            .useObjectMethods()
-            .otherwise((proxy, method, args) -> method.getDefaultValue())
-            .newInstance(Continuously.class);
+    private static final Continuously defaultContinuously
+            = SimpleAnnotationBuilder.of(Continuously.class).build();
 
     static {
         EnumMap<NativeType, NativeType> toSigned = new EnumMap<>(NativeType.class);
