@@ -208,6 +208,9 @@ class NativeMethods implements NativeAccessor {
     public final native void prepareInvoke(long cif, int abi, int len, long retType, long atypes);
 
     @Override
+    public final native void prepareInvokeVariadic(long cif, int abi, int fixedArgs, int totalArgs,long retType, long atypes);
+
+    @Override
     public final native boolean invokeBoolean(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
 
     @Override

@@ -23,6 +23,22 @@ static void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int error) {
 #define GET_ABI(x) ((x & 0) | FFI_DEFAULT_ABI)
 #endif
 
+static void checkReturnValue(JNIEnv *env, ffi_status status) {
+    switch (status) {
+    case FFI_OK:
+        break;
+    case FFI_BAD_TYPEDEF:
+        throwByName(env, IllegalArgument, "Bad typedef");
+        break;
+    case FFI_BAD_ABI:
+        throwByName(env, IllegalArgument, "Bad abi");
+        break;
+    default:
+        throwByName(env, UnknownError, NULL);
+        break;
+    }
+}
+
 /*
  * Class:     jnc_foreign_internal_NativeMethods
  * Method:    prepareInvoke
@@ -38,19 +54,25 @@ Java_jnc_foreign_internal_NativeMethods_prepareInvoke
     checkNullPointer(env, pcif, /*void*/);
     checkNullPointer(env, prtype, /*void*/);
     checkNullPointer(env, patype, /*void*/);
-    switch (ffi_prep_cif(pcif, (ffi_abi) GET_ABI(abi), (unsigned) nargs, prtype, patype)) {
-    case FFI_OK:
-        break;
-    case FFI_BAD_TYPEDEF:
-        throwByName(env, IllegalArgument, "Bad typedef");
-        break;
-    case FFI_BAD_ABI:
-        throwByName(env, IllegalArgument, "Bad abi");
-        break;
-    default:
-        throwByName(env, UnknownError, NULL);
-        break;
-    }
+    checkReturnValue(env, ffi_prep_cif(pcif, (ffi_abi) GET_ABI(abi), (unsigned) nargs, prtype, patype));
+}
+
+/*
+ * Class:     jnc_foreign_internal_NativeMethods
+ * Method:    prepareInvokeVariadic
+ * Signature: (JIIIJJ)V
+ */
+JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_prepareInvokeVariadic
+(JNIEnv *env, jobject UNUSED(self), jlong lcif, jint abi, jint nfixedargs,
+        jint ntotalargs, jlong lrtype, jlong latype) {
+    ffi_cif *pcif = j2c(lcif, ffi_cif);
+    ffi_type *prtype = j2c(lrtype, ffi_type);
+    ffi_type **patype = j2c(latype, ffi_type*);
+    checkNullPointer(env, pcif, /*void*/);
+    checkNullPointer(env, prtype, /*void*/);
+    checkNullPointer(env, patype, /*void*/);
+    checkReturnValue(env, ffi_prep_cif_var(pcif, (ffi_abi) GET_ABI(abi),
+            (unsigned) nfixedargs, (unsigned) ntotalargs, prtype, patype));
 }
 
 #define DEFINE_INVOKE(name, jtype, ret)                             \
@@ -67,7 +89,7 @@ Java_jnc_foreign_internal_NativeMethods_invoke##name                \
         CALLJNI(env, GetArrayLength, offsets) : 0;                  \
     void ** pavalues;                                               \
     if (likely(cnt != 0)) {                                         \
-        pavalues = alloca(cnt * (sizeof (void *)) + sizeof (jint)); \
+        pavalues = alloca(cnt * (sizeof (void *) + sizeof (jint))); \
         jint* joff = (jint*) (void*) &pavalues[cnt];                \
         CALLJNI(env, GetIntArrayRegion, offsets, 0, cnt, joff);     \
         uint32_t i = 0;                                             \

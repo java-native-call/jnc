@@ -187,14 +187,16 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_STRIP} ${STRIP_ARGS} "${CMAKE_BINARY_DIR}/${TARGET_FILE_NAME}")
 if (DIST_DIR)
     # chanage backslash to slash on windows
-    file(TO_CMAKE_PATH "${DIST_DIR}" DIST_DIR)
+    get_filename_component(DIST_DIR "${DIST_DIR}" ABSOLUTE)
+    #ensure property DIST_DIR present when rebuild
+    set(DIST_DIR "${DIST_DIR}" CACHE PATH "dist directory")
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
         set(JNI_DIRECTORY_NAME win32)
     else ()
         string(TOLOWER "${CMAKE_SYSTEM_NAME}" JNI_DIRECTORY_NAME)
     endif ()
 
-    get_filename_component(JNI_DIRECTORY "${DIST_DIR}/${JNI_DIRECTORY_NAME}" ABSOLUTE)
+    set(JNI_DIRECTORY "${DIST_DIR}/${JNI_DIRECTORY_NAME}")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E make_directory "${JNI_DIRECTORY}"
             COMMAND ${CMAKE_COMMAND} -E echo "copy ${TARGET_FILE_NAME} to ${JNI_DIRECTORY}/${DIST_FILE_NAME}"

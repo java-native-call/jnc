@@ -52,13 +52,16 @@ public class AllocatedMemoryTest {
         boolean interrupted = false;
         try {
             int sleep = 1;
-            for (int i = 0; i < 9 && !set.isEmpty(); ++i) {
+            for (int i = 0; i < 12 && !set.isEmpty(); ++i) {
                 try {
                     Thread.sleep(sleep);
                 } catch (InterruptedException ex) {
                     interrupted = true;
                 }
                 sleep <<= 1;
+                if (i > 8) {
+                    System.gc();
+                }
             }
         } finally {
             if (interrupted) {

@@ -48,7 +48,7 @@ public class InvocationLibraryTest {
         return new InvocationLibrary<>(iface, DUMMY_LIB, loadOptions, typeFactory, THR);
     }
 
-    private <T> void test(Class<T> klass, LoadOptions options, Consumer<Function<String, InvocationLibrary.MethodInvocation>> consumer) {
+    private <T> void test(Class<T> klass, LoadOptions options, Consumer<Function<String, MethodInvocation>> consumer) {
         InvocationLibrary<T> library = newInvocationLibrary(klass, options);
         consumer.accept(name -> {
             try {

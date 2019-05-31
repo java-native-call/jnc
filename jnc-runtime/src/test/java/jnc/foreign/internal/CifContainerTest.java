@@ -14,7 +14,6 @@ public class CifContainerTest {
     private static final Logger log = LoggerFactory.getLogger(CifContainerTest.class);
     private static final String LIBC = DefaultPlatform.INSTANCE.getLibcName();
     private static final String LIBM = TestLibs.getStandardMath();
-    private static final NativeAccessor NA = NativeLoader.getAccessor();
 
     @Test
     public void testAcos() {

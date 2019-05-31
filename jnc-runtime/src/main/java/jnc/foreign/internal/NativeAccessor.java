@@ -200,6 +200,8 @@ interface NativeAccessor {
 
     void prepareInvoke(long cif, int abi, int len, long retType, long atypes);
 
+    void prepareInvokeVariadic(long cif, int abi, int fixedArgs, int totalArgs, long retType, long atypes);
+
     boolean invokeBoolean(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
 
     int invokeInt(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);

@@ -18,6 +18,7 @@ package jnc.foreign.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -39,6 +40,11 @@ final class AnnotationContext {
             annotationContexts[i] = new AnnotationContext(parameterAnnotations[i]);
         }
         return annotationContexts;
+    }
+
+    static AnnotationContext newMockContext(ArrayList<Class<?>> annotations, AnnotationContext previous) {
+        // TODO
+        return previous;
     }
 
     private final Map<Class<?>, Annotation> annotations;

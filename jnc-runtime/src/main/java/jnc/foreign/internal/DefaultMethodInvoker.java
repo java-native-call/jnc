@@ -82,7 +82,7 @@ class DefaultMethodInvoker {
 
     private interface IMethod<T> {
 
-        T invoke(Object... args) throws IllegalAccessException, InvocationTargetException, InstantiationException;
+        T invoke(Object[] args) throws IllegalAccessException, InvocationTargetException, InstantiationException;
     }
 
     private interface DefaultMethodUnreflector {

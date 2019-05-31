@@ -1,11 +1,10 @@
 package jnc.foreign.internal;
 
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import jnc.foreign.LoadOptions;
 import jnc.foreign.enums.CallingConvention;
 
-class InvocationLibrary<T> {
+final class InvocationLibrary<T> {
 
     static <T> T create(Class<T> interfaceClass, Library library, LoadOptions loadOptions,
             TypeFactory typeFactory, TypeHandlerFactory typeHandlerFactory) {
@@ -38,18 +37,28 @@ class InvocationLibrary<T> {
 
     // visible for test
     MethodInvocation find(Method method) {
-        if (method.isVarArgs()) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
+        AnnotationContext ac = AnnotationContext.newContext(method);
+        jnc.foreign.annotation.CallingConvention methodConvention = ac.getAnnotation(jnc.foreign.annotation.CallingConvention.class);
+        CallingConvention convention = methodConvention != null ? methodConvention.value() : classConvention;
         String name = method.getName();
         long function = library.dlsym(name);
-        AnnotationContext ac = AnnotationContext.newContext(method);
         TypeHandlerInfo<? extends Invoker<?>> returnTypeInfo = typeHandlerFactory.findReturnTypeInfo(method.getReturnType());
         InternalType retType = returnTypeInfo.getType(typeFactory, ac);
         Invoker<?> invoker = returnTypeInfo.getHandler();
         Class<?>[] parameterTypes = method.getParameterTypes();
+        int len;
+        Class<?> variadicType;
         AnnotationContext[] mpacs = AnnotationContext.newMethodParameterContexts(method);
-        int len = parameterTypes.length;
+        if (method.isVarArgs()) {
+            len = parameterTypes.length - 1;
+            if (len == 0) {
+                throw new IllegalStateException("method " + method + " is variadic, at least one fixed argument is required.");
+            }
+            variadicType = parameterTypes[len].getComponentType();
+        } else {
+            len = parameterTypes.length;
+            variadicType = null;
+        }
         InternalType[] ptypes = new InternalType[len];
         @SuppressWarnings("rawtypes")
         ParameterHandler<?>[] handlers = new ParameterHandler[len];
@@ -59,54 +68,10 @@ class InvocationLibrary<T> {
             ptypes[i] = typeHandlerInfo.getType(typeFactory, mpacs[i]);
             handlers[i] = typeHandlerInfo.getHandler();
         }
-        jnc.foreign.annotation.CallingConvention methodConvention = ac.getAnnotation(jnc.foreign.annotation.CallingConvention.class);
-        return new MethodInvocation(handlers, methodConvention != null ? methodConvention.value() : classConvention, invoker, function, retType, ptypes);
-    }
-
-    // visible for test
-    @SuppressWarnings("PackageVisibleInnerClass")
-    static class MethodInvocation implements InvocationHandler {
-
-        private final CallingConvention callingConvention;
-        private final ParameterHandler<?>[] handlers;
-        private final CifContainer container;
-        private final Invoker<?> invoker;
-        private final long function;
-
-        MethodInvocation(
-                ParameterHandler<?>[] handlers,
-                CallingConvention callingConvention,
-                Invoker<?> invoker,
-                long function,
-                InternalType retType,
-                InternalType[] ptypes) {
-            this.callingConvention = callingConvention;
-            this.handlers = handlers;
-            this.container = CifContainer.create(callingConvention, retType, ptypes);
-            this.invoker = invoker;
-            this.function = function;
+        if (method.isVarArgs()) {
+            return new VariadicMethodInvocation(handlers, convention, invoker, function, retType, ptypes, variadicType, mpacs[len], typeFactory, typeHandlerFactory);
         }
-
-        // visible for test
-        CallingConvention getCallingConvention() {
-            return callingConvention;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method m, Object[] args) {
-            @SuppressWarnings("unchecked")
-            ParameterHandler<Object>[] h = (ParameterHandler<Object>[]) handlers;
-            int length = h.length;
-            if (length != 0) {
-                CallContext context = container.newCallContext();
-                for (int i = 0; i < length; i++) {
-                    h[i].handle(context, i, args[i]);
-                }
-                return context.invoke(invoker, function);
-            } else {
-                return invoker.invoke(container.getCifAddress(), function, 0, null);
-            }
-        }
+        return new FixedMethodInvocation(handlers, convention, invoker, function, retType, ptypes);
     }
 
 }
