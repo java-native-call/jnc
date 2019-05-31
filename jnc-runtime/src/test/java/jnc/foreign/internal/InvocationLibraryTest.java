@@ -65,7 +65,7 @@ public class InvocationLibraryTest {
     @Test
     public void testFind() {
         LoadOptions stdcallOptions = LoadOptions.builder().stdcall().build();
-        LoadOptions defaultCallingConventionOptions = LoadOptions.builder().defaultCallingConvention().build();
+        LoadOptions defaultCallingConventionOptions = LoadOptions.builder().convention(CallingConvention.DEFAULT).build();
 
         {
             test(NoConvention.class, defaultCallingConventionOptions, function -> {

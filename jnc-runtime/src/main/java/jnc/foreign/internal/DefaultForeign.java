@@ -1,5 +1,6 @@
 package jnc.foreign.internal;
 
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import jnc.foreign.FieldAccessor;
 import jnc.foreign.Foreign;
@@ -49,8 +50,17 @@ enum DefaultForeign implements Foreign {
     @Nonnull
     @Override
     public <T> T load(Class<T> interfaceClass, String libname, LoadOptions loadOptions) {
-        return InvocationLibrary.create(interfaceClass, NativeLibrary.open(libname, 0),
-                loadOptions, typeFactory, typeHandlerFactory);
+        Objects.requireNonNull(interfaceClass, "interfaceClass");
+        Objects.requireNonNull(loadOptions, "loadOptions");
+        try {
+            return InvocationLibrary.create(interfaceClass, NativeLibrary.open(libname, 0),
+                    loadOptions, typeFactory, typeHandlerFactory);
+        } catch (Throwable t) {
+            if (!loadOptions.isFailImmediately()) {
+                return ProxyBuilder.builder().useProxyMethods().orThrow(t).newInstance(interfaceClass);
+            }
+            throw t;
+        }
     }
 
     @Override

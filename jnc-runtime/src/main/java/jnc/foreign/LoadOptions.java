@@ -14,14 +14,20 @@ public final class LoadOptions {
     }
 
     private final CallingConvention callingConvention;
+    private final boolean failImmediately;
 
-    LoadOptions(CallingConvention callingConvention) {
+    LoadOptions(CallingConvention callingConvention, boolean failImmediately) {
         this.callingConvention = callingConvention;
+        this.failImmediately = failImmediately;
     }
 
     @Nonnull
     public CallingConvention getCallingConvention() {
         return callingConvention;
+    }
+
+    public boolean isFailImmediately() {
+        return failImmediately;
     }
 
 }

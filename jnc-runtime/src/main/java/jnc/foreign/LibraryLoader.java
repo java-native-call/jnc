@@ -2,6 +2,7 @@ package jnc.foreign;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import jnc.foreign.enums.CallingConvention;
 
 public class LibraryLoader<T> {
 
@@ -20,7 +21,22 @@ public class LibraryLoader<T> {
 
     @Nonnull
     public LibraryLoader<T> stdcall() {
-        loadOptionsBuilder.stdcall();
+        return convention(CallingConvention.STDCALL);
+    }
+
+    @Nonnull
+    public LibraryLoader<T> convention(CallingConvention convention) {
+        loadOptionsBuilder.convention(convention);
+        return this;
+    }
+
+    public LibraryLoader<T> failImmediately() {
+        loadOptionsBuilder.failImmediately();
+        return this;
+    }
+
+    public LibraryLoader<T> failDeferred() {
+        loadOptionsBuilder.failDeferred();
         return this;
     }
 
