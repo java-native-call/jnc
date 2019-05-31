@@ -9,7 +9,7 @@ class AllocatedMemory extends SizedDirectMemory {
 
     private static final Set<Runnable> SET = NativeLoader.getAccessor().onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(32)));
 
-    private static AllocatedMemory allocateImpl(int size) {
+    private static AllocatedMemory allocateImpl(long size) {
         Free free = new Free(size);
         boolean success = false;
         try {
@@ -32,28 +32,19 @@ class AllocatedMemory extends SizedDirectMemory {
         if (size < 0) {
             throw new IllegalArgumentException();
         }
-        int s = (int) size;
-        if (size != s) {
-            throw new OutOfMemoryError();
-        }
-        return allocateImpl(s);
+        return allocateImpl(size);
     }
 
     static AllocatedMemory allocate(int count, int size) throws OutOfMemoryError {
         if ((count | size) < 0) {
             throw new IllegalArgumentException();
         }
-        long r = (long) count * size;
-        int s = (int) r;
-        if (r != s) {
-            throw new OutOfMemoryError();
-        }
-        return allocateImpl(s);
+        return allocateImpl((long) count * size);
     }
 
     private final Free free;
 
-    private AllocatedMemory(int size, Free free) {
+    private AllocatedMemory(long size, Free free) {
         super(free.getAddress(), size);
         this.free = free;
     }
@@ -77,7 +68,7 @@ class AllocatedMemory extends SizedDirectMemory {
         @SuppressWarnings("unused")
         private volatile long address;
 
-        Free(int size) {
+        Free(long size) {
             this.address = NA.allocateMemory(size);
         }
 
