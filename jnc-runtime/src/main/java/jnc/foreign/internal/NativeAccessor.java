@@ -18,6 +18,7 @@ package jnc.foreign.internal;
 import java.lang.annotation.Native;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -196,7 +197,9 @@ interface NativeAccessor {
     /*
      * align:32,size:32
      */
-    long getCifInfo();
+    default long getCifInfo() {
+        return 0;
+    }
 
     void prepareInvoke(long cif, int abi, int len, long retType, long atypes);
 
@@ -214,8 +217,12 @@ interface NativeAccessor {
 
     void invokeStruct(long cif, long function, long base, @Nullable int[] offsets, long struct, Object obj, long methodId);
 
-    long getMethodId(Method method);
+    default long getMethodId(Method method) {
+        return 0;
+    }
 
-    Set<Runnable> onFinalize(Set<Runnable> set);
+    default Set<Runnable> onFinalize(Set<Runnable> set) {
+        return Objects.requireNonNull(set);
+    }
 
 }

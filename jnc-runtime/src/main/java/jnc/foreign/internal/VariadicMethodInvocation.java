@@ -31,10 +31,10 @@ import jnc.foreign.enums.CallingConvention;
  */
 final class VariadicMethodInvocation implements MethodInvocation {
 
-    private static final Map<Class<?>, Reciever> RECIEVER_MAP;
+    private static final Map<Class<?>, Receiver> RECEIVER_MAP;
 
     static {
-        Map<Class<?>, Reciever> map = new HashMap<>(12);
+        Map<Class<?>, Receiver> map = new HashMap<>(12);
         add(map, boolean[].class, Array::getBoolean);
         add(map, byte[].class, Array::getByte);
         add(map, short[].class, Array::getShort);
@@ -43,11 +43,11 @@ final class VariadicMethodInvocation implements MethodInvocation {
         add(map, long[].class, Array::getLong);
         add(map, float[].class, Array::getFloat);
         add(map, double[].class, Array::getDouble);
-        RECIEVER_MAP = map;
+        RECEIVER_MAP = map;
     }
 
-    private static void add(Map<Class<?>, Reciever> map, Class<?> klass, Reciever reciever) {
-        map.put(klass, reciever);
+    private static void add(Map<Class<?>, Receiver> map, Class<?> klass, Receiver receiver) {
+        map.put(klass, receiver);
     }
 
     private final ParameterHandler<?>[] handlers;
@@ -84,8 +84,8 @@ final class VariadicMethodInvocation implements MethodInvocation {
         this.typeHandlerFactory = typeHandlerFactory;
     }
 
-    private void handle(
-            Object[] values, InternalType[] paramTypes, ParameterHandler<?>[] h, int k,
+    private void put(
+            Object[] values, InternalType[] paramTypes, ParameterHandler<?>[] h, int index,
             Object value, List<Class<? extends Annotation>> annotations) {
         TypeHandlerInfo<? extends ParameterHandler<?>> parameterTypeInfo;
         if (value == null) {
@@ -93,9 +93,9 @@ final class VariadicMethodInvocation implements MethodInvocation {
         } else {
             parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(value.getClass());
         }
-        values[k] = value;
-        paramTypes[k] = parameterTypeInfo.getType(typeFactory, AnnotationContext.newMockContext(annotations, variadicAnnotationContext));
-        h[k] = parameterTypeInfo.getHandler();
+        values[index] = value;
+        paramTypes[index] = parameterTypeInfo.getType(typeFactory, AnnotationContext.newMockContext(annotations, variadicAnnotationContext));
+        h[index] = parameterTypeInfo.getHandler();
         annotations.clear();
     }
 
@@ -106,44 +106,45 @@ final class VariadicMethodInvocation implements MethodInvocation {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
-        // length > 2 is assumpted
-        Object arg = Objects.requireNonNull(args[args.length - 1], "variadic should be an array, but got null");
-        int variadicLen = Array.getLength(arg);
-        int maybeTotalLength = args.length + variadicLen - 1;
+        // length > 2 is assumed
+        final int fixedArgs = args.length - 1;
+        final Object variadics = Objects.requireNonNull(args[fixedArgs], "variadic should be an array, but got null");
+        final int variadicLen = Array.getLength(variadics);
+        final int maybeTotalLength = fixedArgs + variadicLen;
 
-        int k = args.length - 1;
+        int cur = fixedArgs;
         InternalType[] paramTypes = Arrays.copyOf(ptypes, maybeTotalLength);
         ParameterHandler<?>[] h = Arrays.copyOf(handlers, maybeTotalLength);
         Object[] values = Arrays.copyOf(args, maybeTotalLength, Object[].class);
 
-        Reciever reciever = RECIEVER_MAP.getOrDefault(arg.getClass(), Array::get);
+        final Receiver receiver = RECEIVER_MAP.getOrDefault(variadics.getClass(), Array::get);
 
-        List<Class<? extends Annotation>> annotations = new ArrayList<>(4);
+        final List<Class<? extends Annotation>> annotations = new ArrayList<>(4);
         for (int i = 0; i < variadicLen; ++i) {
-            Object value = reciever.apply(arg, i);
+            Object value = receiver.apply(variadics, i);
             if (value == null) {
-                handle(values, paramTypes, h, k, value, annotations);
-                ++k;
+                put(values, paramTypes, h, cur, null, annotations);
+                ++cur;
                 continue;
             }
             if (value instanceof Class) {
                 if (((Class<?>) value).isAnnotation()) {
-                    annotations.add(((Class<?>)value).asSubclass(Annotation.class));
+                    annotations.add(((Class<?>) value).asSubclass(Annotation.class));
                     continue;
                 }
             }
-            handle(values, paramTypes, h, k, value, annotations);
-            ++k;
+            put(values, paramTypes, h, cur, value, annotations);
+            ++cur;
         }
 
-        if (k < maybeTotalLength) {
-            paramTypes = Arrays.copyOf(paramTypes, k);
-            h = Arrays.copyOf(h, k);
-            values = Arrays.copyOf(values, k);
+        if (cur < maybeTotalLength) {
+            paramTypes = Arrays.copyOf(paramTypes, cur);
+            h = Arrays.copyOf(h, cur);
+            values = Arrays.copyOf(values, cur);
         }
-        CallContext context = CifContainer.createVariadic(convention, k, retType, paramTypes).newCallContext();
+        CallContext context = CifContainer.createVariadic(convention, fixedArgs, retType, paramTypes).newCallContext();
 
-        for (int i = 0; i < k; i++) {
+        for (int i = 0; i < cur; i++) {
             @SuppressWarnings("unchecked")
             ParameterHandler<Object> ph = (ParameterHandler<Object>) h[i];
             ph.handle(context, i, values[i]);
@@ -151,7 +152,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
         return context.invoke(invoker, function);
     }
 
-    private interface Reciever {
+    private interface Receiver {
 
         Object apply(Object array, int index);
 

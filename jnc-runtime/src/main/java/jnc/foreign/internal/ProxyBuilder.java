@@ -61,7 +61,7 @@ class ProxyBuilder {
     }
 
     public static ProxyBuilder builder() {
-        return empty().useProxyMethods();
+        return empty().useProxyMethods().useDefaultMethod();
     }
 
     public static ProxyBuilder empty() {

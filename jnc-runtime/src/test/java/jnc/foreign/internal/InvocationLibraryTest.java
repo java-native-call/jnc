@@ -15,6 +15,7 @@
  */
 package jnc.foreign.internal;
 
+import java.lang.reflect.Method;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import jnc.foreign.LoadOptions;
@@ -36,9 +37,10 @@ public class InvocationLibraryTest {
     private static TypeHandlerFactory THR;
 
     @BeforeClass
-    public static void setUpClass() {
+    public static void setUpClass() throws NoSuchMethodException {
+        Method dlsym = Library.class.getMethod("dlsym", String.class);
         ProxyBuilder builder = ProxyBuilder.builder();
-        DUMMY_LIB = builder.otherwise(method -> "dlsym".equals(method.getName()) ? (proxy, m, args) -> 0L : null)
+        DUMMY_LIB = builder.customize(dlsym, (proxy, method, args) -> 0L)
                 .newInstance(Library.class);
         typeFactory = DefaultForeign.INSTANCE.getTypeFactory();
         THR = DefaultForeign.INSTANCE.getTypeHandlerFactory();
