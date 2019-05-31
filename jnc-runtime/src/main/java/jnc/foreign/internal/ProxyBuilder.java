@@ -59,6 +59,10 @@ class ProxyBuilder {
     }
 
     public static ProxyBuilder builder() {
+        return empty().useProxyMethods();
+    }
+
+    public static ProxyBuilder empty() {
         return new ProxyBuilder();
     }
 

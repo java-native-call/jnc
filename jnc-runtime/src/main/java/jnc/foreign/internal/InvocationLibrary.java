@@ -31,7 +31,7 @@ final class InvocationLibrary<T> {
     }
 
     private T create() {
-        return ProxyBuilder.builder().useProxyMethods().useDefaultMethod()
+        return ProxyBuilder.builder().useDefaultMethod()
                 .otherwise(this::find).newInstance(interfaceClass);
     }
 

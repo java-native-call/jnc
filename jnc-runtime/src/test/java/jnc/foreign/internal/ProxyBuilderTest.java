@@ -42,7 +42,7 @@ public class ProxyBuilderTest {
     @Test
     public void testEquals() {
         // toString must be implemented for junit require this to display error message if failed
-        ProxyBuilder builder = ProxyBuilder.builder().useObjectEquals().useProxyToString();
+        ProxyBuilder builder = ProxyBuilder.empty().useObjectEquals().useProxyToString();
         {
             InvocationHandler handler = builder.toInvocationHandler();
             assertNotEquals(createSerializable(handler), createSerializable(handler));
@@ -60,7 +60,7 @@ public class ProxyBuilderTest {
     @Test
     public void testHashCode() {
         // toString must be implemented for junit require this to display error message if failed
-        ProxyBuilder builder = ProxyBuilder.builder().useObjectHashCode().useProxyToString();
+        ProxyBuilder builder = ProxyBuilder.empty().useObjectHashCode().useProxyToString();
         {
             Serializable serializable = builder.newInstance(Serializable.class);
             assertEquals(System.identityHashCode(serializable), serializable.hashCode());
@@ -74,7 +74,7 @@ public class ProxyBuilderTest {
 
     @Test
     public void testToString() {
-        ProxyBuilder builder = ProxyBuilder.builder().useObjectToString();
+        ProxyBuilder builder = ProxyBuilder.empty().useObjectToString();
         {
             Serializable serializable = builder.newInstance(Serializable.class);
             assertThat(serializable.toString())
@@ -93,7 +93,7 @@ public class ProxyBuilderTest {
     private <T> void testDefaultMethodOf(
             Class<T> interfaceClass, Consumer<T> consumer,
             Class<? extends Throwable> exceptionClass) {
-        ProxyBuilder builder = ProxyBuilder.builder().useObjectToString();
+        ProxyBuilder builder = ProxyBuilder.empty().useObjectToString();
         {
             T t = builder.useDefaultMethod().newInstance(interfaceClass);
             assertThatThrownBy(() -> consumer.accept(t))
@@ -121,7 +121,7 @@ public class ProxyBuilderTest {
     @Test
     public void testThrow() {
         // toString must be implemented for junit require this to display error message if failed
-        ProxyBuilder builder = ProxyBuilder.builder().useProxyToString();
+        ProxyBuilder builder = ProxyBuilder.empty().useProxyToString();
         {
             Closeable closeable = builder.newInstance(Closeable.class);
             assertThatThrownBy(closeable::close).isInstanceOf(AbstractMethodError.class).hasMessage("close");

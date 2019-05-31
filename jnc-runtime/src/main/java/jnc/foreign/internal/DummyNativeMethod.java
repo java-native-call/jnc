@@ -52,7 +52,7 @@ class DummyNativeMethod {
     }
 
     private NativeAccessor create() {
-        return ProxyBuilder.builder().useProxyMethods()
+        return ProxyBuilder.builder()
                 .otherwise(method -> {
                     try {
                         Method m = DummyNativeMethod.class.getMethod(method.getName(),

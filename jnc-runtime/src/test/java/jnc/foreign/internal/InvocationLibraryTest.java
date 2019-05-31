@@ -37,7 +37,7 @@ public class InvocationLibraryTest {
 
     @BeforeClass
     public static void setUpClass() {
-        ProxyBuilder builder = ProxyBuilder.builder().useProxyMethods();
+        ProxyBuilder builder = ProxyBuilder.builder();
         DUMMY_LIB = builder.otherwise(method -> "dlsym".equals(method.getName()) ? (proxy, m, args) -> 0L : null)
                 .newInstance(Library.class);
         typeFactory = DefaultForeign.INSTANCE.getTypeFactory();

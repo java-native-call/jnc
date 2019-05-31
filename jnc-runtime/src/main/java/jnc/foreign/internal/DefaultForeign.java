@@ -25,7 +25,7 @@ enum DefaultForeign implements Foreign {
             tf = new TypeRegistry();
             thf = new TypeHandlerRegistry(tf);
         } catch (Throwable ex) {
-            ProxyBuilder builder = ProxyBuilder.builder().useProxyMethods().orThrow(ex);
+            ProxyBuilder builder = ProxyBuilder.builder().orThrow(ex);
             tf = builder.newInstance(TypeFactory.class);
             thf = builder.newInstance(TypeHandlerFactory.class);
         }
@@ -57,7 +57,7 @@ enum DefaultForeign implements Foreign {
                     loadOptions, typeFactory, typeHandlerFactory);
         } catch (Throwable t) {
             if (!loadOptions.isFailImmediately()) {
-                return ProxyBuilder.builder().useProxyMethods().orThrow(t).newInstance(interfaceClass);
+                return ProxyBuilder.builder().orThrow(t).newInstance(interfaceClass);
             }
             throw t;
         }
