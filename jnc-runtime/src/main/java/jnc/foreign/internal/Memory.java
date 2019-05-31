@@ -12,7 +12,7 @@ abstract class Memory implements Pointer {
         this.ma = Objects.requireNonNull(ma);
     }
 
-    final MemoryAccessor getMemoryAccessor() {
+    final MemoryAccessor getAccessor() {
         return ma;
     }
 
