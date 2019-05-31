@@ -60,16 +60,12 @@ class AllocatedMemory extends SizedDirectMemory {
 
     @Override
     @SuppressWarnings("FinalizeDeclaration")
-    protected void finalize() throws Throwable {
+    protected void finalize() {
+        Free f = free;
         try {
-            Free f = free;
-            try {
-                f.run();
-            } finally {
-                SET.remove(f);
-            }
+            f.run();
         } finally {
-            super.finalize();
+            SET.remove(f);
         }
     }
 

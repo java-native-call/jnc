@@ -16,7 +16,7 @@ class NativeMethods implements NativeAccessor {
     private static final List<Runnable> ON_UNLOAD = new ArrayList<>(4);
 
     // access by native method
-    @SuppressWarnings({"unused", "CollectionsToArray"})
+    @SuppressWarnings("unused")
     private static void onUnload() {
         Runnable[] array = {};
         lock.lock();

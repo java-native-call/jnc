@@ -19,7 +19,7 @@ public class GetPidTest {
         }
     }
 
-    @SuppressWarnings("PublicInnerClass")
+    @SuppressWarnings({"PublicInnerClass", "UnusedReturnValue"})
     public interface LibC {
 
         LibC INSTANCE = LibraryLoader.create(LibC.class).load(Platform.getNativePlatform().getLibcName());

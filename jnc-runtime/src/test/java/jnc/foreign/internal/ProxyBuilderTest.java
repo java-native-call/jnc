@@ -45,7 +45,9 @@ public class ProxyBuilderTest {
         ProxyBuilder builder = ProxyBuilder.empty().useObjectEquals().useProxyToString();
         {
             InvocationHandler handler = builder.toInvocationHandler();
-            assertNotEquals(createSerializable(handler), createSerializable(handler));
+            Serializable serializable = createSerializable(handler);
+            assertEquals(serializable, serializable);
+            assertNotEquals(serializable, createSerializable(handler));
         }
 
         {
@@ -55,6 +57,16 @@ public class ProxyBuilderTest {
             assertNotSame(instance1, instance2);
             assertEquals(instance1, instance2);
         }
+    }
+
+    @Test
+    public void testToStringAndHashCode() {
+        InterfaceHasObjectMethods instance = ProxyBuilder
+                .empty().useObjectToString().useObjectHashCode()
+                .newInstance(InterfaceHasObjectMethods.class);
+        int idHash = System.identityHashCode(instance);
+        assertThat(instance.toString()).contains(Long.toHexString(idHash));
+        assertThat(instance.hashCode()).isEqualTo(idHash);
     }
 
     @Test
@@ -108,6 +120,7 @@ public class ProxyBuilderTest {
 
     // TODO, failed on jdk8
     //  failed on jdk9 if run with --illegal-access=deny
+    @SuppressWarnings("rawtypes")
     // @Test
     public void testDefaultMethod() {
         testDefaultMethodOf(Iterator.class, Iterator::remove, UnsupportedOperationException.class);
@@ -148,6 +161,15 @@ public class ProxyBuilderTest {
             assertThatThrownBy(closeable::close).isInstanceOf(UndeclaredThrowableException.class)
                     .hasCauseExactlyInstanceOf(Exception.class);
         }
+    }
+
+    private interface InterfaceHasObjectMethods {
+
+        @Override
+        String toString();
+
+        @Override
+        boolean equals(Object obj);
     }
 
     private interface MyInterface {

@@ -127,13 +127,10 @@ final class VariadicMethodInvocation implements MethodInvocation {
                 continue;
             }
             if (value instanceof Class) {
-                if (((Class) value).isAnnotation()) {
-                    @SuppressWarnings("unchecked")
-                    Class<? extends Annotation> as = (Class<? extends Annotation>) value;
-                    annotations.add(as);
+                if (((Class<?>) value).isAnnotation()) {
+                    annotations.add(((Class<?>)value).asSubclass(Annotation.class));
                     continue;
                 }
-                throw new IllegalArgumentException("unknown class");
             }
             handle(values, paramTypes, h, k, value, annotations);
             ++k;

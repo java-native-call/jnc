@@ -18,6 +18,7 @@ public final class StructArray<T extends Struct> extends Struct implements Itera
 
     private final List<T> list;
 
+    @SuppressWarnings("WeakerAccess")
     public StructArray(Supplier<T> constructor, int length) {
         Objects.requireNonNull(constructor, "constructor");
         @SuppressWarnings("LocalVariableHidesMemberVariable")

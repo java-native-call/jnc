@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-@SuppressWarnings("ResultOfObjectAllocationIgnored")
 public class AllocatedMemoryTest {
 
     @Test

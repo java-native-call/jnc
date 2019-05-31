@@ -1,9 +1,5 @@
 package jnc.foreign;
 
-import java.io.PrintStream;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uint32_t;
@@ -21,24 +17,6 @@ import org.slf4j.LoggerFactory;
 public class StructTest {
 
     private static final Logger log = LoggerFactory.getLogger(StructTest.class);
-
-    public static void main(String[] args) {
-        Class<?>[] declaredClasses = Struct.class.getDeclaredClasses();
-        List<Class<?>> list = new ArrayList<>(declaredClasses.length);
-        for (Class<?> inner : declaredClasses) {
-            if (!inner.isAnonymousClass() && (inner.getModifiers() & (Modifier.PRIVATE | Modifier.STATIC)) == 0) {
-                list.add(inner);
-            }
-        }
-        PrintStream out = System.out;
-        for (int i = list.size() - 1; i >= 0; --i) {
-            String s = list.get(i).getSimpleName();
-            out.println("@Nonnull");
-            out.println("protected final " + s + "[] array(@Nonnull " + s + "[] array) {");
-            out.println("    return memberArray(array, struct -> struct.new " + s + "());");
-            out.println("}");
-        }
-    }
 
     /**
      * Test of size method, of class Struct.

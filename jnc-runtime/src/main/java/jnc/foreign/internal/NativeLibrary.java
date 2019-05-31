@@ -81,12 +81,8 @@ class NativeLibrary implements Library {
 
     @Override
     @SuppressWarnings("FinalizeDeclaration")
-    protected void finalize() throws Throwable {
-        try {
-            close();
-        } finally {
-            super.finalize();
-        }
+    protected void finalize() {
+        close();
     }
 
     private static final class Dlclose implements Runnable {

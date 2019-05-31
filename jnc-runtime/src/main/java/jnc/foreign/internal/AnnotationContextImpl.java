@@ -43,7 +43,7 @@ final class AnnotationContextImpl implements AnnotationContext {
     }
 
     @Nullable
-    @SuppressWarnings(value = {"unchecked", "WeakerAccess"})
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         return (T) annotations.get(annotationClass);

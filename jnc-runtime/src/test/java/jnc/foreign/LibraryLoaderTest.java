@@ -43,6 +43,7 @@ public class LibraryLoaderTest {
     @SuppressWarnings("PublicInnerClass")
     public interface LibInterface {
 
+        @SuppressWarnings("UnusedReturnValue")
         long getpid();
 
     }

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author zhanhb
  */
-@SuppressWarnings("PublicInnerClass")
+@SuppressWarnings({"PublicInnerClass", "WeakerAccess", "unused"})
 public class EnumTypeHandlerTest {
 
     private static final Logger log = LoggerFactory.getLogger(EnumTypeHandlerTest.class);

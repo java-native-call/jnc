@@ -25,7 +25,7 @@ public interface Foreign extends Closeable {
     Type findType(TypeAlias alias) throws UnsupportedOperationException;
 
     @Nonnull
-    Type findType(NativeType nativeType) throws IllegalArgumentException;
+    Type findType(NativeType nativeType);
 
     @Nonnull
     <E extends Enum<E>> FieldAccessor<E> getEnumFieldAccessor(Class<E> type);

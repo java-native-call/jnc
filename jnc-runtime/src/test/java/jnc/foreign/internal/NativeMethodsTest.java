@@ -126,7 +126,7 @@ public class NativeMethodsTest {
      */
     @Test
     @SuppressWarnings({"UseSpecificCatch", "BroadCatchBlock", "TooBroadCatch"})
-    public void testPageSize() throws Exception {
+    public void testPageSize() {
         int expResult;
         try {
             Field field = Class.forName("sun.misc.Unsafe").getDeclaredField("theUnsafe");

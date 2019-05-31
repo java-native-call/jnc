@@ -29,7 +29,7 @@ final class CifContainer extends Struct {
     private static final int SIZE_OF_FFI_CIF = (int) CIF_INFO;
     private static final int ALIGN_OF_FFI_CIF = (int) (CIF_INFO >> 32);
     private static final InternalType[] TYPE_EMPTY = {};
-    private static final Struct.Address[] ADDRESS_EMPTY = {};
+    private static final Address[] ADDRESS_EMPTY = {};
 
     private static int convention(CallingConvention callingConvention) {
         if (callingConvention == CallingConvention.STDCALL) {

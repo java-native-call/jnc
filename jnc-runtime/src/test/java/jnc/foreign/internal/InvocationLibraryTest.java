@@ -28,7 +28,7 @@ import org.junit.Test;
 /**
  * @author zhanhb
  */
-@SuppressWarnings("PackageVisibleInnerClass")
+@SuppressWarnings({"PackageVisibleInnerClass", "unused"})
 public class InvocationLibraryTest {
 
     private static Library DUMMY_LIB;

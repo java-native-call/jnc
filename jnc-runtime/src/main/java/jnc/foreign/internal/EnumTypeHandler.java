@@ -51,9 +51,8 @@ class EnumTypeHandler<E extends Enum<E>> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T extends Enum<T>> EnumTypeHandler<T> getInstance(Class<T> type) {
-        // Must do the cast, or will got COMPILATION ERROR: incomparable types
-        //noinspection RedundantCast
-        if (!type.isEnum() || type == (Class) Enum.class) {
+        // isEnum will check if the class is enum and not java.lang.Enum itself
+        if (!type.isEnum()) {
             throw new IllegalArgumentException("Illegal type '" + type.getName() + "'");
         }
         return (EnumTypeHandler<T>) cache.computeIfAbsent(type, EnumTypeHandler::newInstance);
@@ -148,7 +147,7 @@ class EnumTypeHandler<E extends Enum<E>> {
         }
 
         @Override
-        public void set(Pointer memory, int offset, E value) {
+        public void set(Pointer memory, int offset, @Nullable E value) {
             memory.putLong(offset, defaultType, value != null ? start + value.ordinal() : 0);
         }
     }

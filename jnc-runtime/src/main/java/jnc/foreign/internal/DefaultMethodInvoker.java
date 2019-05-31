@@ -21,10 +21,10 @@ import java.lang.reflect.Method;
 class DefaultMethodInvoker {
 
     private static final DefaultMethodUnreflector unreflector = createUnreflector();
-    private static final Class<?> inaccessibleObject;
+    private static final Class<? extends RuntimeException> inaccessibleObject;
 
     static {
-        Class<?> ioe = null;
+        Class<? extends RuntimeException> ioe = null;
         try {
             ioe = Class.forName("java.lang.reflect.InaccessibleObjectException").asSubclass(RuntimeException.class);
         } catch (ClassNotFoundException ignored) {
@@ -52,6 +52,7 @@ class DefaultMethodInvoker {
         return lookup.findSpecial(method.getDeclaringClass(), method.getName(), methodType, method.getDeclaringClass());
     }
 
+    @SuppressWarnings({"BroadCatchBlock", "TooBroadCatch"})
     private static DefaultMethodUnreflector createUnreflector() {
         try {
             Method privateLookupIn = MethodHandles.class.getMethod("privateLookupIn", Class.class, Lookup.class);

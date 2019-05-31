@@ -17,9 +17,6 @@ public class InvokeTest {
     public void testInvoke() {
         Libc.INSTANCE.memcpy(0, 0, 0);
         Libc.INSTANCE.memcpy(0, 0, 0);
-        assertTrue(Libc.INSTANCE.equals(Libc.INSTANCE));
-        Libc.INSTANCE.hashCode();
-        Libc.INSTANCE.toString();
         assertEquals(Math.sqrt(5), Libm.INSTANCE.sqrt(5), -1);
         assertEquals(Math.PI, Libm.INSTANCE.atan2(0, -1), -1);
         assertEquals(Math.PI / 2, Libm.INSTANCE.atan2(1, 0), 1e-14);
@@ -105,12 +102,6 @@ public class InvokeTest {
             atomic.set(true);
             return 0x123456;
         }
-
-        @Override
-        int hashCode();
-
-        @Override
-        boolean equals(Object obj);
 
     }
 

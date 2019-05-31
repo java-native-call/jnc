@@ -4,7 +4,7 @@ import java.nio.ByteOrder;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-public class DirectMemoryTest {
+public class MemoryTest {
 
     private static final boolean LITTLE_ENDIAN = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
 

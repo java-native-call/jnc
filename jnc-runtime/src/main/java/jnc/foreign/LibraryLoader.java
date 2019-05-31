@@ -30,11 +30,13 @@ public class LibraryLoader<T> {
         return this;
     }
 
+    @Nonnull
     public LibraryLoader<T> failImmediately() {
         loadOptionsBuilder.failImmediately();
         return this;
     }
 
+    @Nonnull
     public LibraryLoader<T> failDeferred() {
         loadOptionsBuilder.failDeferred();
         return this;

@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("PublicInnerClass")
+@SuppressWarnings({"PublicInnerClass", "WeakerAccess"})
 public class WindowsTest {
 
     private static final Logger log = LoggerFactory.getLogger(WindowsTest.class);
@@ -53,7 +53,7 @@ public class WindowsTest {
     }
 
     @Test
-    public void testGetProcessTimes() throws InterruptedException {
+    public void testGetProcessTimes() {
         log.info("GetProcessTimes");
         long current = Kernel32.INSTANCE.GetCurrentProcess();
         FILETIME a = new FILETIME();
