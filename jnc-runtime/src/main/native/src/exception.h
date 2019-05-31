@@ -20,12 +20,12 @@ do {                                        \
     }                                       \
 } while(false)
 
-#define checkIllegalArgument(env, condition, ret)       \
-do {                                                    \
-    if (unlikely(!(condition))) {                       \
-        throwByName(env, IllegalArgument, #condition);  \
-        return ret;                                     \
-    }                                                   \
+#define checkIllegalArgument(env, condition, ret)   \
+do {                                                \
+    if (unlikely(!(condition))) {                   \
+        throwByName(env, IllegalArgument, NULL);    \
+        return ret;                                 \
+    }                                               \
 } while(false)
 
 #define checkNullPointer(...)   checkError(NullPointer, __VA_ARGS__)
