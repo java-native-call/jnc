@@ -668,11 +668,11 @@ public class Struct {
             base = new BaseField(NativeType.POINTER);
         }
 
-        public final jnc.foreign.Pointer getPointer() {
+        public final jnc.foreign.Pointer get() {
             return getMemory().getPointer(base.getOffset());
         }
 
-        public final void setPointer(jnc.foreign.Pointer value) {
+        public final void set(jnc.foreign.Pointer value) {
             getMemory().putPointer(base.getOffset(), value);
         }
 
