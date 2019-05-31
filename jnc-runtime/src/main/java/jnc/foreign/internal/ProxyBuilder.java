@@ -18,8 +18,10 @@ package jnc.foreign.internal;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import static java.util.Objects.requireNonNull;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -71,7 +73,7 @@ class ProxyBuilder {
         throw (T) throwable;
     }
 
-    private final Map<Method, InvocationHandler> map = new HashMap<>(4);
+    private final Map<MethodKey, InvocationHandler> map = new HashMap<>(4);
     private boolean useDefaultMethod;
     private Function<Method, InvocationHandler> otherwise;
     private Function<Method, ? extends Throwable> orThrow = method -> new AbstractMethodError(method.getName());
@@ -80,7 +82,7 @@ class ProxyBuilder {
     }
 
     public ProxyBuilder customize(Method method, InvocationHandler handler) {
-        map.put(requireNonNull(method), requireNonNull(handler));
+        map.put(MethodKey.of(requireNonNull(method)), requireNonNull(handler));
         return this;
     }
 
@@ -161,18 +163,18 @@ class ProxyBuilder {
     }
 
     public InvocationHandler toInvocationHandler() {
-        final ConcurrentMap<Method, InvocationHandler> map = new ConcurrentHashMap<>(this.map);
+        final ConcurrentMap<MethodKey, InvocationHandler> map = new ConcurrentHashMap<>(this.map);
         final boolean useDefaultMethod = this.useDefaultMethod;
         final Function<Method, InvocationHandler> otherwise = this.otherwise;
         final Function<Method, ? extends Throwable> orThrow = this.orThrow;
-        return (proxy, method, args) -> map.computeIfAbsent(method, m -> {
+        return (proxy, method, args) -> map.computeIfAbsent(MethodKey.of(method), __ -> {
             try {
-                if (useDefaultMethod && m.isDefault()) {
-                    return DefaultMethodInvoker.getInstance(m);
+                if (useDefaultMethod && method.isDefault()) {
+                    return DefaultMethodInvoker.getInstance(method);
                 }
-                final InvocationHandler handler = otherwise != null ? otherwise.apply(m) : null;
+                final InvocationHandler handler = otherwise != null ? otherwise.apply(method) : null;
                 if (handler == null) {
-                    throw orThrow.apply(m);
+                    throw orThrow.apply(method);
                 }
                 return handler;
             } catch (Throwable ex) {
@@ -185,6 +187,44 @@ class ProxyBuilder {
     public <T> T newInstance(Class<T> interfaceClass) {
         return interfaceClass.cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(),
                 new Class<?>[]{interfaceClass}, toInvocationHandler()));
+    }
+
+    private static class MethodKey {
+
+        private static MethodKey of(Method method) {
+            return new MethodKey(method.getReturnType(), method.getParameterTypes());
+        }
+
+        private final Class<?> returnType;
+        private final Class<?>[] parameterTypes;
+
+        private MethodKey(Class<?> returnType, Class<?>[] parameterTypes) {
+            this.returnType = returnType;
+            this.parameterTypes = parameterTypes;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 97 * hash + Objects.hashCode(this.returnType);
+            hash = 97 * hash + Arrays.hashCode(this.parameterTypes);
+            return hash;
+        }
+
+        @Override
+        @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj != null && getClass() == obj.getClass()) {
+                final MethodKey other = (MethodKey) obj;
+                return Objects.equals(this.returnType, other.returnType)
+                        && Arrays.equals(this.parameterTypes, other.parameterTypes);
+            }
+            return false;
+        }
+
     }
 
 }
