@@ -5,7 +5,7 @@ import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 
-public class LongByReference implements ByReference {
+public final class LongByReference implements ByReference {
 
     private long value;
 

@@ -48,7 +48,7 @@ abstract class TypeHandlerInfo<T> {
         return handler;
     }
 
-    private static class Always<T> extends TypeHandlerInfo<T> {
+    private static final class Always<T> extends TypeHandlerInfo<T> {
 
         private Always(InternalType type, T handler) {
             super(type, handler);
@@ -61,7 +61,7 @@ abstract class TypeHandlerInfo<T> {
 
     }
 
-    private static class TypedefFirst<T> extends TypeHandlerInfo<T> {
+    private static final class TypedefFirst<T> extends TypeHandlerInfo<T> {
 
         private TypedefFirst(InternalType type, T handler) {
             super(type, handler);

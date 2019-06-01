@@ -5,7 +5,7 @@ import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 
-public class CharByReference implements ByReference {
+public final class CharByReference implements ByReference {
 
     private char value;
 

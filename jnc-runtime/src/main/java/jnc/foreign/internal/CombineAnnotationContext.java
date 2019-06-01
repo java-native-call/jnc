@@ -22,7 +22,7 @@ import java.util.Objects;
  *
  * @author zhanhb
  */
-class CombineAnnotationContext implements AnnotationContext {
+final class CombineAnnotationContext implements AnnotationContext {
 
     private final AnnotationContext b;
     private final AnnotationContext a;

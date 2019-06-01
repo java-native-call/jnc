@@ -18,7 +18,7 @@ package jnc.foreign.internal;
 import java.lang.reflect.Method;
 import jnc.foreign.enums.CallingConvention;
 
-class FixedMethodInvocation implements MethodInvocation {
+final class FixedMethodInvocation implements MethodInvocation {
 
     private final CallingConvention convention;
     private final ParameterHandler<?>[] handlers;

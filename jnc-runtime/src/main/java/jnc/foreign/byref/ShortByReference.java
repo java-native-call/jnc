@@ -5,7 +5,7 @@ import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 
-public class ShortByReference implements ByReference {
+public final class ShortByReference implements ByReference {
 
     private short value;
 

@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import jnc.foreign.enums.CallingConvention;
 
 @SuppressWarnings("WeakerAccess")
-public class LibraryLoader<T> {
+public final class LibraryLoader<T> {
 
     @Nonnull
     public static <T> LibraryLoader<T> create(Class<T> cl) {

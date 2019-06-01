@@ -5,7 +5,7 @@ import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 import jnc.foreign.enums.TypeAlias;
 
-public class Uint32ByReference implements ByReference {
+public final class Uint32ByReference implements ByReference {
 
     private long value;
 

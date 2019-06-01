@@ -5,7 +5,7 @@ import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 
-public class ByteByReference implements ByReference {
+public final class ByteByReference implements ByReference {
 
     private byte value;
 

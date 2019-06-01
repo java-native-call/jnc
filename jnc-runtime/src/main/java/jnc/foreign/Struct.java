@@ -317,7 +317,7 @@ public class Struct {
 
     }
 
-    private class BaseField {
+    private final class BaseField {
 
         private final int offset;
         private final Type type;

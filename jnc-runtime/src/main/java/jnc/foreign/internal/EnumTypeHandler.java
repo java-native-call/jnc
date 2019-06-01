@@ -19,7 +19,7 @@ import jnc.foreign.annotation.Continuously;
 import jnc.foreign.enums.EnumMappingErrorAction;
 import jnc.foreign.exception.UnmappableNativeValueException;
 
-class EnumTypeHandler<E extends Enum<E>> {
+final class EnumTypeHandler<E extends Enum<E>> {
 
     private static final ConcurrentWeakIdentityHashMap<Class<? extends Enum<?>>, EnumTypeHandler<?>> cache
             = new ConcurrentWeakIdentityHashMap<>(32);
@@ -134,7 +134,7 @@ class EnumTypeHandler<E extends Enum<E>> {
         return fa;
     }
 
-    private class FieldAccessor implements jnc.foreign.FieldAccessor<E> {
+    private final class FieldAccessor implements jnc.foreign.FieldAccessor<E> {
 
         @Override
         public Type type() {

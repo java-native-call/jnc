@@ -30,7 +30,7 @@ import java.util.function.Function;
  * @param <V> the type of mapped values
  */
 @SuppressWarnings({"element-type-mismatch", "WeakerAccess"})
-class ConcurrentWeakIdentityHashMap<K, V> {
+final class ConcurrentWeakIdentityHashMap<K, V> {
 
     private final ConcurrentMap<Key<K>, V> map;
     private final ReferenceQueue<K> queue = new ReferenceQueue<>();
@@ -76,7 +76,7 @@ class ConcurrentWeakIdentityHashMap<K, V> {
         return map.size();
     }
 
-    private static class Key<T> extends WeakReference<T> {
+    private static final class Key<T> extends WeakReference<T> {
 
         private final int hash;
 

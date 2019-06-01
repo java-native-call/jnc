@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import jnc.foreign.enums.CallingConvention;
 
 @SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
-public class LoadOptionsBuilder {
+public final class LoadOptionsBuilder {
 
     private CallingConvention callingConvention = CallingConvention.DEFAULT;
     private boolean failImmediately;

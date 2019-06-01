@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
  * @author zhanhb
  */
 @Nullable
-class SimpleAnnotationBuilder<T extends Annotation> {
+final class SimpleAnnotationBuilder<T extends Annotation> {
 
     private static final Method ANNOTATION_TYPE;
 

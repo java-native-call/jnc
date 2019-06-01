@@ -5,7 +5,7 @@ import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 
-public class DoubleByReference implements ByReference {
+public final class DoubleByReference implements ByReference {
 
     private double value;
 

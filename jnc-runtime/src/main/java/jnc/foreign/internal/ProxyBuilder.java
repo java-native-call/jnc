@@ -31,7 +31,7 @@ import java.util.function.Function;
  * @author zhanhb
  */
 @SuppressWarnings("WeakerAccess")
-class ProxyBuilder {
+final class ProxyBuilder {
 
     private static final Method OBJECT_TO_STRING;
     private static final Method OBJECT_EQUALS;

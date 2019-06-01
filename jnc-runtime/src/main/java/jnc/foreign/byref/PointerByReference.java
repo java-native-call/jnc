@@ -5,7 +5,7 @@ import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 
-public class PointerByReference implements ByReference {
+public final class PointerByReference implements ByReference {
 
     private Pointer value;
 

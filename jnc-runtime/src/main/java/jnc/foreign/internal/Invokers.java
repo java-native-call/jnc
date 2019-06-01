@@ -22,7 +22,7 @@ import jnc.foreign.Pointer;
  * @author zhanhb
  */
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
-class Invokers {
+final class Invokers {
 
     private static final NativeAccessor NA = NativeLoader.getAccessor();
 

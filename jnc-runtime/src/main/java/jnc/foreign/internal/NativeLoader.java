@@ -31,7 +31,7 @@ import jnc.foreign.exception.JniLoadingException;
 /**
  * @author zhanhb
  */
-class NativeLoader {
+final class NativeLoader {
 
     private static final NativeAccessor NATIVE_ACCESSOR = init();
 

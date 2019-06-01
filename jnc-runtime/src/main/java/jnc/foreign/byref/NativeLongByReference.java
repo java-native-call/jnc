@@ -5,7 +5,7 @@ import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 import jnc.foreign.enums.TypeAlias;
 
-public class NativeLongByReference implements ByReference {
+public final class NativeLongByReference implements ByReference {
 
     private long value;
 

@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
  * Data DefaultMethodInvokingMethodInterceptor.java</a>
  */
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
-class DefaultMethodInvoker {
+final class DefaultMethodInvoker {
 
     private static final DefaultMethodUnreflector unreflector = createUnreflector();
     private static final Class<? extends RuntimeException> inaccessibleObject;

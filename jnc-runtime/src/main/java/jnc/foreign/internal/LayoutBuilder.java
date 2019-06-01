@@ -78,7 +78,7 @@ public abstract class LayoutBuilder {
 
     abstract int addFieldImpl(int size, int alignment);
 
-    private static class OfStruct extends LayoutBuilder {
+    private static final class OfStruct extends LayoutBuilder {
 
         private final int pack;
         private int offset;
@@ -111,7 +111,7 @@ public abstract class LayoutBuilder {
 
     }
 
-    private static class OfUnion extends LayoutBuilder {
+    private static final class OfUnion extends LayoutBuilder {
 
         private final int pack;
         private int size;

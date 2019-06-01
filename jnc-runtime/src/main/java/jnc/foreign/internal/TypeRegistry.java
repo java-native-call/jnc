@@ -13,7 +13,7 @@ import static jnc.foreign.internal.TypeInfo.MASK_FLOATING;
 import static jnc.foreign.internal.TypeInfo.MASK_INTEGRAL;
 import static jnc.foreign.internal.TypeInfo.MASK_SIGNED;
 
-class TypeRegistry implements TypeFactory {
+final class TypeRegistry implements TypeFactory {
 
     private static void add(long[][] types, NativeType nativeType,
             @Nullable Class<?> primaryClass, int type, int attr,
