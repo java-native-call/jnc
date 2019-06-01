@@ -40,8 +40,7 @@ public class VariadicMethodInvocationTest {
         assertThat(new String(bytes, 0, n)).isEqualTo("123456 1234 0.20");
     }
 
-    @SuppressWarnings("PublicInnerClass")
-    public interface Libc {
+    private interface Libc {
 
         Libc INSTANCE = LibraryLoader.create(Libc.class).load(Platform.getNativePlatform().getLibcName());
 

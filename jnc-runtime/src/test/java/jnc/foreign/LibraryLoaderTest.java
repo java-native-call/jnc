@@ -40,8 +40,7 @@ public class LibraryLoaderTest {
         assertThatThrownBy(lib::getpid).isExactlyInstanceOf(UnsatisfiedLinkError.class);
     }
 
-    @SuppressWarnings("PublicInnerClass")
-    public interface LibInterface {
+    private interface LibInterface {
 
         @SuppressWarnings("UnusedReturnValue")
         long getpid();

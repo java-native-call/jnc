@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({"PublicInnerClass", "UnusedReturnValue", "WeakerAccess", "unused", "SameParameterValue"})
+@SuppressWarnings({"UnusedReturnValue", "WeakerAccess", "unused", "SameParameterValue"})
 public class StructTest {
 
     private static final Logger log = LoggerFactory.getLogger(StructTest.class);
@@ -227,8 +227,7 @@ public class StructTest {
 
     }
 
-    @SuppressWarnings("PublicInnerClass")
-    public interface Libc {
+    private interface Libc {
 
         Libc INSTANCE = LibraryLoader.create(Libc.class).load(Platform.getNativePlatform().getLibcName());
 

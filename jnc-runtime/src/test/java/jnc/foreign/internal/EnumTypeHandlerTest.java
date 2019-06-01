@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author zhanhb
  */
-@SuppressWarnings({"PublicInnerClass", "WeakerAccess", "unused"})
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class EnumTypeHandlerTest {
 
     private static final Logger log = LoggerFactory.getLogger(EnumTypeHandlerTest.class);
@@ -132,7 +132,7 @@ public class EnumTypeHandlerTest {
 
     }
 
-    public interface Libc {
+    private interface Libc {
 
         Libc INSTANCE = LibraryLoader.create(Libc.class).load(Platform.getNativePlatform().getLibcName());
 
@@ -172,7 +172,7 @@ public class EnumTypeHandlerTest {
     }
 
     @Continuously(start = 'A')
-    public enum Char {
+    private enum Char {
         A, B
     }
 

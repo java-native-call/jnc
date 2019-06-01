@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
-@SuppressWarnings("PublicInnerClass")
 public class InvokeTest {
 
     @Test
@@ -74,7 +73,7 @@ public class InvokeTest {
         }
     }
 
-    public interface Libc {
+    private interface Libc {
 
         Libc INSTANCE = LibraryLoader.create(Libc.class).load(Platform.getNativePlatform().getLibcName());
 
@@ -105,7 +104,7 @@ public class InvokeTest {
 
     }
 
-    public interface Libm {
+    private interface Libm {
 
         Libm INSTANCE = LibraryLoader.create(Libm.class).load(TestLibs.getStandardMath());
 

@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({"PublicInnerClass", "WeakerAccess"})
+@SuppressWarnings("WeakerAccess")
 public class WindowsTest {
 
     private static final Logger log = LoggerFactory.getLogger(WindowsTest.class);
@@ -91,7 +91,7 @@ public class WindowsTest {
         }
     }
 
-    public static class FILETIME extends Struct {
+    private static class FILETIME extends Struct {
 
         private static long toMillis(final int high, final int low) {
             final long filetime = (long) high << 32 | low & 0xffffffffL;
@@ -127,7 +127,7 @@ public class WindowsTest {
     }
 
     @Stdcall
-    public interface Kernel32 {
+    private interface Kernel32 {
 
         Kernel32 INSTANCE = LibraryLoader.create(Kernel32.class).load("kernel32");
 
