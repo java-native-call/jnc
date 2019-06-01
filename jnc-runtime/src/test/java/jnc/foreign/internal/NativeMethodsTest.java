@@ -87,7 +87,7 @@ public class NativeMethodsTest {
     }
 
     @Test
-    public void testFfi_call() throws Exception {
+    public void testFfi_call() {
         Library lib = NativeLibrary.open(LIBC, 0);
         long toupper = lib.dlsym("toupper");
         CifContainer container = CifContainer.create(CallingConvention.DEFAULT, BuiltinType.SINT32, BuiltinType.SINT32);
@@ -103,7 +103,7 @@ public class NativeMethodsTest {
      * Test of allocateMemory method, of class NativeMethods.
      */
     @Test
-    public void testAllocateMemory() throws Exception {
+    public void testAllocateMemory() {
         log.info("allocateMemory");
         long size = 1000;
         for (int i = 0; i < 10000000; ++i) {

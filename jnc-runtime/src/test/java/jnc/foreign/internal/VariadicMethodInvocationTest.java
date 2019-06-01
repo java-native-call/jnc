@@ -54,15 +54,16 @@ public class VariadicMethodInvocationTest {
     @Test
     public void testPromotionsIntegral() {
         byte[] bytes = new byte[20];
-        byte[] format = ("%d %d %d %d %d\u0000").getBytes(StandardCharsets.UTF_8);
+        byte[] format = ("%d %d %d %d %d %d\u0000").getBytes(StandardCharsets.UTF_8);
         int n = Libc.INSTANCE.sprintf(bytes, format,
+                false,
                 (byte) 1,
                 (short) 2,
                 uint8_t.class, 3,
                 uint16_t.class, 4,
                 (char) 5
         );
-        assertThat(new String(bytes, 0, n)).isEqualTo("1 2 3 4 5");
+        assertThat(new String(bytes, 0, n)).isEqualTo("0 1 2 3 4 5");
     }
 
     @Test
@@ -73,13 +74,13 @@ public class VariadicMethodInvocationTest {
             Pointer p = UnboundedDirectMemory.of(0);
             int n = Libc.INSTANCE.sprintf(bytes, format, p);
             // printf("%p", NULL); // result is different on different platforms
-            // 0x0 on macosx
-            // (nil) on linux
-            // 00000000 or 0000000000000000
+            // 0x0 on Mac OS X
+            // (nil) on Linux
+            // 00000000 or 0000000000000000 on Windows(depends on the architecture)
             // someone say on his system got '(null)' without quote
             // https://stackoverflow.com/questions/10461360/what-is-the-behavior-of-the-conversion-specifier-p-with-null-pointer
             String result = new String(bytes, 0, n);
-            assertThat(result).matches("0x0|\\(nil|null\\)|(?:0{8})+");
+            assertThat(result).matches("0x0|\\((?:nil|null)\\)|(?:0{8})+");
         }
 
         {

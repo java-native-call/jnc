@@ -104,16 +104,16 @@ public class TypedefGenerator {
 
     private static void write(String subPackage, String... typeNames) throws IOException {
         for (String cname : typeNames) {
-            writeImpl(cname, subPackage == null ? PKG : PKG + "." + subPackage, BASEPATH);
+            writeImpl(cname, subPackage == null ? PKG : PKG + "." + subPackage);
         }
     }
 
-    private static void writeImpl(String cname, String pkg, String basePath) throws IOException {
+    private static void writeImpl(String cname, String pkg) throws IOException {
         String jName = cname;
         if ("int".equals(jName) || "long".equals(jName)) {
             jName = "c" + jName;
         }
-        Path dir = Paths.get(basePath, pkg.replace('.', '/'));
+        Path dir = Paths.get(BASEPATH, pkg.replace('.', '/'));
         if (!Files.exists(dir)) {
             Files.createDirectory(dir);
         }

@@ -49,8 +49,8 @@ public interface SleepUtil {
         return condition.getAsBoolean();
     }
 
-    // usually usage assertTrue(() -> sleepUntil(...))
-    // ... should be the condition should be true after sleep
+    // simple usage assertTrue(() -> sleepUntil(...))
+    // ... is the condition, which ought be true after sleep
     static boolean sleepUntil(BooleanSupplier condition) {
         Objects.requireNonNull(condition);
         return !sleepWhile(() -> !condition.getAsBoolean());

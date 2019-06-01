@@ -255,7 +255,7 @@ public class Struct {
     public final <E extends Enum<E>> EnumField<E>[] enumArray(Class<E> klass, int length) {
         @SuppressWarnings({"unchecked", "rawtypes"})
         EnumField<E>[] array = new EnumField[length];
-        return memberArray(array, arr -> arr.enumField(klass));
+        return memberArray(array, struct -> struct.enumField(klass));
     }
 
     @Nonnull

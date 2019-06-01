@@ -39,6 +39,7 @@ public class UnionTest {
         assertEquals("alignof(" + name + ")", align, test1.alignment());
     }
 
+    @SuppressWarnings("unused")
     private static class Test1 extends Union {
 
         private final uint8_t[] b = array(new uint8_t[8]);
@@ -58,6 +59,7 @@ public class UnionTest {
 
     }
 
+    @SuppressWarnings("unused")
     private static class Test2 extends Union {
 
         private final uint8_t[] b = array(new uint8_t[18]);
@@ -65,6 +67,7 @@ public class UnionTest {
 
     }
 
+    @SuppressWarnings("unused")
     private static class Test3 extends Union {
 
         private final uint64_t ju = new uint64_t();

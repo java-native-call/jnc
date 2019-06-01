@@ -15,8 +15,8 @@
  */
 package jnc.foreign;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
@@ -24,14 +24,17 @@ import org.junit.Test;
  */
 public class PaddingTest {
 
-    Struct withPadding(int size, int alignment) {
+    @SuppressWarnings("UnusedReturnValue")
+    private Struct withPadding(int size, int alignment) {
         return new Struct() {
+            @SuppressWarnings("unused")
             private final Struct.Padding padding = padding(size, alignment);
         };
     }
 
-    Struct withPadding(int size) {
+    private Struct withPadding(int size) {
         return new Struct() {
+            @SuppressWarnings("unused")
             private final Struct.Padding padding = padding(size);
         };
     }
@@ -40,7 +43,7 @@ public class PaddingTest {
     public void test() {
         assertThatThrownBy(() -> withPadding(0)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> withPadding(3, 3)).isInstanceOf(IllegalArgumentException.class);
-        assertEquals(1, withPadding(1).size());
+        assertThat(withPadding(1).size()).isEqualTo(1);
         assertThatThrownBy(() -> withPadding(9, 2)).isInstanceOf(IllegalArgumentException.class);
     }
 

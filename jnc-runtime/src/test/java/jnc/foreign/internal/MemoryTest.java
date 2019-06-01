@@ -20,7 +20,7 @@ public class MemoryTest {
         }
         long MAGIC0 = LITTLE_ENDIAN ? 0x0807060504030201L : 0x0102030405060708L;
         for (int off = 0; off < 8; ++off) {
-            long MAGIC = LITTLE_ENDIAN ? Long.rotateRight(MAGIC0, off <<3) : Long.rotateLeft(MAGIC0, off <<3);
+            long MAGIC = LITTLE_ENDIAN ? Long.rotateRight(MAGIC0, off << 3) : Long.rotateLeft(MAGIC0, off << 3);
             assertEquals(MAGIC, memory.getLong(off));
             for (int i = 0; i < 6; ++i) {
                 long[] array = new long[i];

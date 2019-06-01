@@ -96,8 +96,7 @@ public class WindowsTest {
         private static long toMillis(final int high, final int low) {
             final long filetime = (long) high << 32 | low & 0xffffffffL;
             final long ms_since_16010101 = filetime / (1000 * 10);
-            final long ms_since_19700101 = ms_since_16010101 - 11644473600000L;
-            return ms_since_19700101;
+            return ms_since_16010101 - 11644473600000L;
         }
 
         private final DWORD dwLowDateTime = new DWORD();

@@ -83,7 +83,6 @@ public class MemoryAccessorTest {
         test(memory);
 
         clear.run();
-        //noinspection ConstantConditions
         test(UnboundedDirectMemory.of(memory.address()));
 
         clear.run();
@@ -92,7 +91,6 @@ public class MemoryAccessorTest {
         test(memory.slice(0, (int) memory.size()));
 
         clear.run();
-        //noinspection ConstantConditions
         test(UnboundedDirectMemory.of(memory.address() + 1));
     }
 

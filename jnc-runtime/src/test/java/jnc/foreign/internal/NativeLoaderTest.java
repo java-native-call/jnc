@@ -19,13 +19,9 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import jnc.foreign.Platform;
-import org.assertj.core.api.Assertions;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +50,7 @@ public class NativeLoaderTest {
                         .customize(ARCH_GETTER, (a, b, c) -> arch)
                         .newInstance(Platform.class);
                 if (os != Platform.OS.UNKNOWN && arch != Platform.Arch.UNKNOWN || os == Platform.OS.DARWIN) {
-                    // when profile is building native, maybe the lib doesn't exists
+                    // when profile native is active, maven won't copy lib, thus lib doesn't exist
                     instance.getLibClassPath(platform);
                 } else {
                     assertThatThrownBy(() -> instance.getLibClassPath(platform), "%s %s", os, arch)

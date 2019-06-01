@@ -64,15 +64,18 @@ public class InvokeTest {
 
         private final int32_t value = new int32_t();
 
+        @SuppressWarnings("WeakerAccess")
         public void setValue(int i) {
             value.set(i);
         }
 
+        @SuppressWarnings("unused")
         public int getValue() {
             return value.get();
         }
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     private interface Libc {
 
         Libc INSTANCE = LibraryLoader.create(Libc.class).load(Platform.getNativePlatform().getLibcName());
