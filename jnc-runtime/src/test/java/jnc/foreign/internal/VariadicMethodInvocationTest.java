@@ -27,15 +27,17 @@ import org.junit.Test;
  */
 public class VariadicMethodInvocationTest {
 
+    private final char z = Platform.getNativePlatform().getOS().isWindows() ? 'I' : 'z';
+
     /**
      * Test of invoke method, of class VariadicMethodInvocation.
      */
     @Test
     public void testInvoke() throws Exception {
+        // TODO promotions float->double
+        // https://en.cppreference.com/w/c/language/variadic
         byte[] bytes = new byte[200];
-        boolean windows = Platform.getNativePlatform().getOS().isWindows();
-        String s = windows ? "%Ix" : "%zx";
-        byte[] format = (s + " %d %.2f\u0000").getBytes(StandardCharsets.UTF_8);
+        byte[] format = ("%" + z + "x" + " %d %.2f\u0000").getBytes(StandardCharsets.UTF_8);
         int n = Libc.INSTANCE.sprintf(bytes, format, size_t.class, 0x123456, 1234, 0.2);
         assertThat(new String(bytes, 0, n)).isEqualTo("123456 1234 0.20");
     }
@@ -45,7 +47,6 @@ public class VariadicMethodInvocationTest {
         Libc INSTANCE = LibraryLoader.create(Libc.class).load(Platform.getNativePlatform().getLibcName());
 
         int sprintf(byte[] target, byte[] format, Object... args);
-
     }
 
 }

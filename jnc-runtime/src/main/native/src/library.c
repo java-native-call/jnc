@@ -130,6 +130,7 @@ Java_jnc_foreign_internal_NativeMethods_dlsym
     checkNullPointer(env, hModule, 0);
     checkNullPointer(env, symbol, 0);
     jlong ret = 0;
+    // TODO charset on windows is not utf8, are all symbol characters ASCII??
     DO_WITH_STRING_UTF(env, symbol, psymbol, len, ret = p2j(dlsym(hModule, psymbol)), 0);
     if (unlikely(ret == 0)) {
         throwByLastError(env, UnsatisfiedLink);

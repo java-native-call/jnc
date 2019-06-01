@@ -29,10 +29,11 @@ do {                                                                  \
 #define DO_WITH_STRING_UTF(env, jstring, name, length, stat, ret) \
 do {                                                              \
     jsize length = CALLJNI(env, GetStringUTFLength, jstring);     \
+    jsize strLen_ = CALLJNI(env, GetStringLength, jstring);       \
     if (unlikely(CALLJNI(env, ExceptionCheck))) return ret;       \
-    char* name = (char*) malloc(length + 1);                      \
+    char *name = (char*) malloc(length + 1);                      \
     checkOutOfMemory(env, name, ret);                             \
-    CALLJNI(env, GetStringUTFRegion, jstring, 0, length, name);   \
+    CALLJNI(env, GetStringUTFRegion, jstring, 0, strLen_, name);  \
     if (unlikely(CALLJNI(env, ExceptionCheck))) return ret;       \
     name[length] = 0;                                             \
     stat;                                                         \
@@ -51,8 +52,19 @@ do {                                                              \
 
 #define NOOP(...) __VA_ARGS__
 #ifdef __cplusplus
-#define p2j(x) jlong(reinterpret_cast<uintptr_t>(x))
-#define j2p(x, type) reinterpret_cast<type>(uintptr_t(x))
+
+template<class _Tp> inline jlong p2j(const volatile _Tp * x) {
+    return jlong(reinterpret_cast<uintptr_t> (x));
+}
+
+namespace jnc {
+
+template<class _Tp> inline _Tp* j2p_impl(jlong x) {
+    return reinterpret_cast<_Tp *> (uintptr_t(x));
+}
+
+}
+#define j2p(x, type) jnc::j2p_impl<type>(x)
 #define j2c(x, type) j2p(x, type*)
 #define j2vp(x) j2c(x, void)
 #else
