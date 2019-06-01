@@ -190,73 +190,73 @@ class SizedDirectMemory extends Memory {
 
     @Override
     public final void getShortArray(int offset, short[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Short.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Short.BYTES)
                 .getShortArray(offset, array, off, len);
     }
 
     @Override
     public final void putShortArray(int offset, short[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Short.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Short.BYTES)
                 .putShortArray(offset, array, off, len);
     }
 
     @Override
     public final void putCharArray(int offset, char[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Character.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Character.BYTES)
                 .putCharArray(offset, array, off, len);
     }
 
     @Override
     public final void getCharArray(int offset, char[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Character.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Character.BYTES)
                 .getCharArray(offset, array, off, len);
     }
 
     @Override
     public final void putIntArray(int offset, int[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Integer.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Integer.BYTES)
                 .putIntArray(offset, array, off, len);
     }
 
     @Override
     public final void getIntArray(int offset, int[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Integer.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Integer.BYTES)
                 .getIntArray(offset, array, off, len);
     }
 
     @Override
     public final void putLongArray(int offset, long[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Long.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Long.BYTES)
                 .putLongArray(offset, array, off, len);
     }
 
     @Override
     public final void getLongArray(int offset, long[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Long.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Long.BYTES)
                 .getLongArray(offset, array, off, len);
     }
 
     @Override
     public final void putFloatArray(int offset, float[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Float.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Float.BYTES)
                 .putFloatArray(offset, array, off, len);
     }
 
     @Override
     public final void getFloatArray(int offset, float[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Float.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Float.BYTES)
                 .getFloatArray(offset, array, off, len);
     }
 
     @Override
     public final void putDoubleArray(int offset, double[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Double.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Double.BYTES)
                 .putDoubleArray(offset, array, off, len);
     }
 
     @Override
     public final void getDoubleArray(int offset, double[] array, int off, int len) {
-        getAccessor().checkIndex(offset, size, len, Double.BYTES)
+        getAccessor().checkArrayIndex(offset, size, len, Double.BYTES)
                 .getDoubleArray(offset, array, off, len);
     }
 
@@ -282,7 +282,7 @@ class SizedDirectMemory extends Memory {
 
     @Override
     public final void putString16(int offset, @Nonnull String value) {
-        getAccessor().checkIndex(offset, size, value.length() + 1, Character.BYTES)
+        getAccessor().checkArrayIndex(offset, size, value.length() + 1, Character.BYTES)
                 .putString16(offset, value);
     }
 

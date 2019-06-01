@@ -215,7 +215,7 @@ final class MemoryAccessor {
         return this;
     }
 
-    MemoryAccessor checkIndex(int offset, long total, int len, int unit) {
+    MemoryAccessor checkArrayIndex(int offset, long total, int len, int unit) {
         if (offset < 0 || offset > total - (long) len * unit) {
             throw new IndexOutOfBoundsException();
         }
