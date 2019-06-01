@@ -61,7 +61,7 @@ class NativeLoader {
         }
     }
 
-    // visible for test
+    @VisibleForTesting
     URL getLibPath(Platform platform) {
         String libPath = getLibClassPath(platform);
         URL url = NativeLoader.class.getClassLoader().getResource(libPath);
@@ -71,6 +71,7 @@ class NativeLoader {
         return url;
     }
 
+    @VisibleForTesting
     String getLibClassPath(Platform platform) {
         StringBuilder sb = new StringBuilder(NativeLoader.class.getPackage().getName().replace(".", "/")).append("/native/");
         Platform.OS os = platform.getOS();
@@ -97,6 +98,7 @@ class NativeLoader {
         }
     }
 
+    @VisibleForTesting
     void loadWithTempFile(Consumer<String> loadAction, URL url) throws IOException {
         Path tmp = Files.createTempFile("lib", System.mapLibraryName("jnc"));
         try {

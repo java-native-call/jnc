@@ -17,7 +17,7 @@ final class InvocationLibrary<T> {
     private final TypeHandlerFactory typeHandlerFactory;
     private final TypeFactory typeFactory;
 
-    // visible for test
+    @VisibleForTesting
     InvocationLibrary(Class<T> interfaceClass, Library library, LoadOptions options,
             TypeFactory typeFactory, TypeHandlerFactory typeHandlerFactory) {
         this.interfaceClass = interfaceClass;
@@ -34,7 +34,7 @@ final class InvocationLibrary<T> {
         return ProxyBuilder.builder().otherwise(this::find).newInstance(interfaceClass);
     }
 
-    // visible for test
+    @VisibleForTesting
     MethodInvocation find(Method method) {
         AnnotationContext ac = AnnotationContext.newContext(method);
         jnc.foreign.annotation.CallingConvention methodConvention = ac.getAnnotation(jnc.foreign.annotation.CallingConvention.class);

@@ -36,7 +36,7 @@ final class Cleaner {
         return INSTANCE;
     }
 
-    // visible for test
+    @VisibleForTesting
     @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
     static void performRemove(Ref list) {
         while (true) {
@@ -48,7 +48,7 @@ final class Cleaner {
                 }
                 try {
                     list.next.clean();
-                } catch (Throwable t) {
+                } catch (Throwable ignored) {
                 }
             }
         }
@@ -57,7 +57,7 @@ final class Cleaner {
     private final ReferenceQueue<Object> queue = new ReferenceQueue<>();
     private final Ref list;
 
-    // visible for test
+    @VisibleForTesting
     Cleaner(Ref list) {
         this.list = list;
     }
@@ -70,13 +70,13 @@ final class Cleaner {
         while ((ref = (Ref) queue.poll()) != null) {
             try {
                 ref.clean();
-            } catch (Throwable t) {
+            } catch (Throwable ignored) {
             }
         }
         return new Ref(obj, this, action);
     }
 
-    // visible for test
+    @VisibleForTesting
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject", "PackageVisibleInnerClass"})
     static final class Ref extends PhantomReference<Object>
             implements Cleanable {
@@ -108,7 +108,7 @@ final class Cleaner {
             }
         }
 
-        // visible for test
+        @VisibleForTesting
         boolean remove() {
             synchronized (list) {
                 if (next != this) {
