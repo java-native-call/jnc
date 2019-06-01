@@ -72,13 +72,16 @@ final class CifContainer extends Struct {
             atypes[i].set(params[i].address());
         }
 
-        // TODO struct layout is expected here.
         if (length != 0) {
             int[] offsets = new int[length];
-            ParameterTemplate parameterTemplate = new ParameterTemplate(params, offsets);
+            LayoutBuilder builder = LayoutBuilder.withoutPack(LayoutBuilder.Type.STRUCT);
+            for (int i = 0; i < length; ++i) {
+                InternalType param = params[i];
+                offsets[i] = builder.addField(param.size(), param.alignment());
+            }
             this.params = params;
             this.offsets = offsets;
-            this.parameterSize = parameterTemplate.size();
+            this.parameterSize = builder.size();
         } else {
             this.params = TYPE_EMPTY;
             this.offsets = null;

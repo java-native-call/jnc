@@ -41,7 +41,7 @@ public class PaddingTest {
         assertThatThrownBy(() -> withPadding(0)).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> withPadding(3, 3)).isInstanceOf(IllegalArgumentException.class);
         assertEquals(1, withPadding(1).size());
-        assertEquals(10, withPadding(9, 2).size());
+        assertThatThrownBy(() -> withPadding(9, 2)).isInstanceOf(IllegalArgumentException.class);
     }
 
 }

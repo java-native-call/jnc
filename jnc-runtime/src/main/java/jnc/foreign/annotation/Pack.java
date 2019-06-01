@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 public @interface Pack {
 
     /**
-     * ignore if it's zero.
+     * ignore if it's zero, when inherit class doesn't need a pack.
      *
      * @return the pack value of this structure
      */

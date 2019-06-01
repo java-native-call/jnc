@@ -107,6 +107,7 @@ public class StructTest {
     public void testStructSizeTooLarge() {
         assertThatThrownBy(() -> new Struct() {
             {
+                padding(1);
                 padding(Integer.MAX_VALUE);
             }
         }).isInstanceOf(OutOfMemoryError.class);

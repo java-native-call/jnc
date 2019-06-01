@@ -8,68 +8,42 @@ import javax.annotation.Nullable;
 import jnc.foreign.annotation.Pack;
 import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.exception.UnmappableNativeValueException;
+import jnc.foreign.internal.LayoutBuilder;
 
 @SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess", "unused"})
 public class Struct {
 
-    private static final int MAX_ALIGN = 16;
-
-    private static int align(int size, int alignment) {
-        return size + alignment - 1 & -alignment;
-    }
-
-    private static int checkSize(int size) {
-        if (size <= 0) {
-            throw new IllegalArgumentException("Illegal size " + size);
-        }
-        if (size > (Integer.MAX_VALUE & -MAX_ALIGN)) {
-            throw new OutOfMemoryError("size too large " + size);
-        }
-        return size;
-    }
-
-    // visible for testing
-    private static int getPack(Class<?> type) {
-        Pack pack = type.getAnnotation(Pack.class);
+    private static LayoutBuilder getLayout(LayoutBuilder.Type layoutType, Class<?> klass) {
+        Pack pack = klass.getAnnotation(Pack.class);
         if (pack != null) {
             int value = pack.value();
-            if (value > 0) {
-                if ((value & (value - 1)) != 0 || value > MAX_ALIGN) {
-                    throw new IllegalArgumentException("expected pack parameter to be '1', '2', '4', '8', or '16'");
-                }
-                return value;
-            }
             if (value != 0) {
-                throw new IllegalArgumentException("Illegal pack value " + value);
+                return LayoutBuilder.withPack(layoutType, value);
             }
         }
-        return MAX_ALIGN;
+        return LayoutBuilder.withoutPack(layoutType);
     }
 
-    private int size;
-    private int alignment = 1;
+    private final LayoutBuilder layoutBuilder;
     private jnc.foreign.Pointer memory;
     private Enclosing enclosing;
     private State state = State.INITIAL;
-    private final int pack = getPack(getClass());
 
-    private int addField0(int offset, int size, int alignment) {
-        checkState(State.FIELDS_ADDING, State.FIELDS_ADDING);
-        this.size = Math.max(this.size, offset + checkSize(size));
-        this.alignment = Math.max(this.alignment, Math.min(alignment, pack));
-        return offset;
+    public Struct() {
+        this.layoutBuilder = getLayout(LayoutBuilder.Type.STRUCT, getClass());
     }
 
-    int nextOffset(int alignment) {
-        return align(this.size, Math.min(pack, alignment));
+    // for Union
+    Struct(Void unused) {
+        this.layoutBuilder = getLayout(LayoutBuilder.Type.UNION, getClass());
     }
 
     /**
-     *
      * @return offset of the field
      */
     final int addField(int size, int alignment) {
-        return addField0(nextOffset(alignment), size, alignment);
+        checkState(Struct.State.FIELDS_ADDING, Struct.State.FIELDS_ADDING);
+        return layoutBuilder.addField(size, alignment);
     }
 
     private void advance(State to) {
@@ -88,12 +62,12 @@ public class Struct {
 
     public final int size() {
         advance(State.FIELDS_FINISHED);
-        return align(size, alignment);
+        return layoutBuilder.size();
     }
 
     public final int alignment() {
         advance(State.FIELDS_FINISHED);
-        return alignment;
+        return layoutBuilder.alignment();
     }
 
     public final Foreign getForeign() {
@@ -319,11 +293,8 @@ public class Struct {
         }
 
         Padding(int size, int alignment) {
-            if ((alignment & alignment - 1) != 0) {
-                throw new IllegalArgumentException("Illegal alignment " + alignment);
-            }
-            if (size < alignment) {
-                throw new IllegalArgumentException("size is smaller than alignment: size=" + size + ",align=" + alignment);
+            if (size <= 0) {
+                throw new IllegalArgumentException("Illegal padding size " + size);
             }
             addField(size, alignment);
         }

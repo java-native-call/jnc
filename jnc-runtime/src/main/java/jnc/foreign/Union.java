@@ -1,10 +1,11 @@
 package jnc.foreign;
 
+@SuppressWarnings("WeakerAccess")
 public class Union extends Struct {
 
-    @Override
-    int nextOffset(int alignment) {
-        return 0;
+    public Union() {
+        //noinspection RedundantCast
+        super((Void) null);
     }
 
 }
