@@ -2,23 +2,18 @@ package jnc.foreign.internal;
 
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
-class AllocatedMemory extends SizedDirectMemory {
+final class AllocatedMemory extends SizedDirectMemory {
 
     private static final Cleaner CLEANER = Cleaner.getInstance();
 
     private static AllocatedMemory allocateImpl(long size) {
         Free free = new Free(size);
-        boolean success = false;
         try {
-            AllocatedMemory memory = new AllocatedMemory(size, free);
-            CLEANER.register(memory, free);
-            success = true;
-            return memory;
-        } finally {
+            return new AllocatedMemory(size, free);
+        } catch (Throwable t) {
             // very rare, maybe OutOfMemoryError when register Cleanable
-            if (!success) {
-                free.run();
-            }
+            free.run();
+            throw t;
         }
     }
 
@@ -36,8 +31,10 @@ class AllocatedMemory extends SizedDirectMemory {
         return allocateImpl((long) count * size);
     }
 
+    @SuppressWarnings("LeakingThisInConstructor")
     private AllocatedMemory(long size, Free free) {
         super(free.getAddress(), size);
+        CLEANER.register(this, free);
     }
 
     private static final class Free implements Runnable {

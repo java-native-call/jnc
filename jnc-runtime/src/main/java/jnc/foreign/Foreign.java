@@ -3,6 +3,7 @@ package jnc.foreign;
 import java.io.Closeable;
 import javax.annotation.Nonnull;
 import jnc.foreign.enums.TypeAlias;
+import jnc.foreign.spi.ForeignProvider;
 
 public interface Foreign extends Closeable {
 
@@ -10,9 +11,6 @@ public interface Foreign extends Closeable {
     static Foreign getDefault() {
         return ForeignProvider.getDefault().getForeign();
     }
-
-    @Nonnull
-    ForeignProvider provider();
 
     @Nonnull
     <T> T load(Class<T> interfaceClass, String libname, LoadOptions loadOptions);

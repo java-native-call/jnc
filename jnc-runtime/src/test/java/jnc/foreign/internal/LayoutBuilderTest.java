@@ -35,18 +35,19 @@ public class LayoutBuilderTest {
         assertThatThrownBy(() -> LayoutBuilder.withPack(type, Integer.MIN_VALUE));
 
         LayoutBuilder builder = LayoutBuilder.withoutPack(type);
-        builder.addField(0, 1);
-        assertThatThrownBy(() -> builder.addField(0, 0))
+        builder.newField(0, 1);
+        assertThatThrownBy(() -> builder.newField(0, 0))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Illegal alignment");
-        assertThatThrownBy(() -> builder.addField(-1, 0))
+        assertThatThrownBy(() -> builder.newField(-1, 0))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Illegal size");
-        assertThatThrownBy(() -> builder.addField(3, 2))
+        assertThatThrownBy(() -> builder.newField(3, 2))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("combination");
 
-        // no fields should be add, all operations are failed
+        // only an empty field has been added, other operations are failed
+        // the builder should not changed
         assertThat(builder.size()).isEqualTo(0);
         assertThat(builder.alignment()).isEqualTo(1);
     }

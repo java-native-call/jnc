@@ -1,6 +1,7 @@
 package jnc.foreign;
 
 import javax.annotation.Nonnull;
+import jnc.foreign.spi.ForeignProvider;
 
 @SuppressWarnings("PublicInnerClass")
 public interface Platform {

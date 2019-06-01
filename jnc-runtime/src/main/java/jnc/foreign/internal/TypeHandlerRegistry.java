@@ -3,11 +3,11 @@ package jnc.foreign.internal;
 import java.lang.reflect.Array;
 import javax.annotation.Nullable;
 import jnc.foreign.Foreign;
-import jnc.foreign.ForeignProvider;
 import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.Struct;
 import jnc.foreign.byref.ByReference;
+import jnc.foreign.spi.ForeignProvider;
 
 final class TypeHandlerRegistry implements TypeHandlerFactory {
 

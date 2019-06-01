@@ -29,7 +29,7 @@ public interface SleepUtil {
         System.gc();
         boolean interrupted = false;
         try {
-            int sleep = 1;
+            long sleep = 1;
             for (int i = 0; i < 12 && condition.getAsBoolean(); ++i) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(sleep);

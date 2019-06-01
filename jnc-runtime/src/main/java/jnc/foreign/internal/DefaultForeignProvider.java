@@ -2,8 +2,8 @@ package jnc.foreign.internal;
 
 import javax.annotation.Nonnull;
 import jnc.foreign.Foreign;
-import jnc.foreign.ForeignProvider;
 import jnc.foreign.Platform;
+import jnc.foreign.spi.ForeignProvider;
 
 public enum DefaultForeignProvider implements ForeignProvider {
 

@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import jnc.foreign.ForeignProvider;
 import jnc.foreign.Platform;
 import jnc.foreign.enums.TypeAlias;
+import jnc.foreign.spi.ForeignProvider;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 

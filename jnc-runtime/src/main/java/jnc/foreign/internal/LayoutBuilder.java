@@ -60,7 +60,7 @@ public abstract class LayoutBuilder {
         }
     }
 
-    public final int addField(int size, int alignment) {
+    public final int newField(int size, int alignment) {
         return addFieldImpl(size, alignment);
     }
 

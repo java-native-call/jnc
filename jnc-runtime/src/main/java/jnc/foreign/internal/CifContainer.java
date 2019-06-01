@@ -76,7 +76,7 @@ final class CifContainer extends Struct {
             LayoutBuilder builder = LayoutBuilder.withoutPack(LayoutBuilder.Type.STRUCT);
             for (int i = 0; i < length; ++i) {
                 InternalType param = params[i];
-                offsets[i] = builder.addField(param.size(), param.alignment());
+                offsets[i] = builder.newField(param.size(), param.alignment());
             }
             this.params = params;
             this.offsets = offsets;

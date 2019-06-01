@@ -1,6 +1,8 @@
-package jnc.foreign;
+package jnc.foreign.spi;
 
 import javax.annotation.Nonnull;
+import jnc.foreign.Foreign;
+import jnc.foreign.Platform;
 import jnc.foreign.internal.DefaultForeignProvider;
 
 public interface ForeignProvider {

@@ -8,17 +8,17 @@ enum DefaultPlatform implements Platform {
 
     INSTANCE;
 
-    private static boolean startsWith(String string, String other) {
+    private static boolean startsWithIgnoreCase(String string, String other) {
         return string.regionMatches(true, 0, other, 0, other.length());
     }
 
     private static OS getOsByName(String osName) {
         for (OS maybe : EnumSet.allOf(OS.class)) {
-            if (startsWith(osName, maybe.name())) {
+            if (startsWithIgnoreCase(osName, maybe.name())) {
                 return maybe;
             }
         }
-        return startsWith(osName, "mac") ? OS.DARWIN : OS.UNKNOWN;
+        return startsWithIgnoreCase(osName, "mac") ? OS.DARWIN : OS.UNKNOWN;
     }
 
     private static Arch getArchByName(String archName) {

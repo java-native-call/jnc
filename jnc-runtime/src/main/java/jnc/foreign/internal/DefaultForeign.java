@@ -4,12 +4,12 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import jnc.foreign.FieldAccessor;
 import jnc.foreign.Foreign;
-import jnc.foreign.ForeignProvider;
 import jnc.foreign.LoadOptions;
 import jnc.foreign.MemoryManager;
 import jnc.foreign.NativeType;
 import jnc.foreign.Type;
 import jnc.foreign.enums.TypeAlias;
+import jnc.foreign.spi.ForeignProvider;
 
 enum DefaultForeign implements Foreign {
 
@@ -39,12 +39,6 @@ enum DefaultForeign implements Foreign {
 
     TypeHandlerFactory getTypeHandlerFactory() {
         return typeHandlerFactory;
-    }
-
-    @Nonnull
-    @Override
-    public ForeignProvider provider() {
-        return DefaultForeignProvider.INSTANCE;
     }
 
     @Nonnull

@@ -21,28 +21,24 @@ import jnc.foreign.Platform;
 /**
  * @author zhanhb
  */
-class NativeLibrary implements Library {
+final class NativeLibrary implements Library {
 
     private static final NativeAccessor NA = NativeLoader.getAccessor();
     private static final Cleaner CLEANER = Cleaner.getInstance();
 
     static NativeLibrary open(String libName, int mode) {
         Dlclose dlclose = new Dlclose(libName, mode);
-        boolean success = false;
         try {
-            NativeLibrary library = new NativeLibrary(dlclose);
-            success = true;
-            return library;
-        } finally {
+            return new NativeLibrary(dlclose);
+        } catch(Throwable t) {
             // very rare, maybe OutOfMemoryError when create Cleanable
-            if (!success) {
-                dlclose.run();
-            }
+            dlclose.run();
+            throw t;
         }
     }
 
     private final long address;
-    private final Cleaner.Cleanable cleanable;
+    private final Runnable cleanable;
 
     @SuppressWarnings("LeakingThisInConstructor")
     private NativeLibrary(Dlclose dlclose) {
@@ -62,13 +58,7 @@ class NativeLibrary implements Library {
 
     @Override
     public void close() {
-        cleanable.clean();
-    }
-
-    @Override
-    @SuppressWarnings({"FinalizeDeclaration", "FinalizeDoesntCallSuperFinalize"})
-    protected void finalize() {
-        close();
+        cleanable.run();
     }
 
     private static final class Dlclose implements Runnable {

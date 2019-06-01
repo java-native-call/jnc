@@ -29,29 +29,11 @@ final class Cleaner {
     static {
         Ref list = new Ref();
         INSTANCE = new Cleaner(list);
-        NativeLoader.getAccessor().onFinalize(() -> performRemove(list));
+        NativeLoader.getAccessor().onFinalize(list::cleanAll);
     }
 
     static Cleaner getInstance() {
         return INSTANCE;
-    }
-
-    @VisibleForTesting
-    @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
-    static void performRemove(Ref list) {
-        while (true) {
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (list) {
-                // assert list == list.list;
-                if (list.isListEmpty()) {
-                    break;
-                }
-                try {
-                    list.next.clean();
-                } catch (Throwable ignored) {
-                }
-            }
-        }
     }
 
     private final ReferenceQueue<Object> queue = new ReferenceQueue<>();
@@ -63,13 +45,13 @@ final class Cleaner {
     }
 
     @SuppressWarnings("NestedAssignment")
-    Cleanable register(Object obj, Runnable action) {
+    Runnable register(Object obj, Runnable action) {
         Objects.requireNonNull(obj, "obj");
         Objects.requireNonNull(action, "action");
         Ref ref;
         while ((ref = (Ref) queue.poll()) != null) {
             try {
-                ref.clean();
+                ref.run();
             } catch (Throwable ignored) {
             }
         }
@@ -78,34 +60,35 @@ final class Cleaner {
 
     @VisibleForTesting
     @SuppressWarnings({"AccessingNonPublicFieldOfAnotherObject", "PackageVisibleInnerClass"})
-    static final class Ref extends PhantomReference<Object>
-            implements Cleanable {
+    static final class Ref extends PhantomReference<Object> implements Runnable {
 
         private final Runnable action;
-        private Ref prev = this, next = this;
         private final Ref list;
+        private Ref prev, next;
 
-        Ref(Object referent, Cleaner cleaner, Runnable action) {
+        @SuppressWarnings("LeakingThisInConstructor")
+        private Ref(Object referent, Cleaner cleaner, Runnable action) {
             super(referent, cleaner.queue);
-            this.list = cleaner.list;
+            Ref list = cleaner.list;
             this.action = action;
+            this.list = list;
 
-            insert();
-        }
-
-        Ref() {
-            super(null, null);
-            this.action = null;
-            this.list = this;
-        }
-
-        private void insert() {
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (list) {
                 this.prev = list;
                 this.next = list.next;
                 this.next.prev = this;
-                this.list.next = this;
+                list.next = this;
             }
+        }
+
+        @VisibleForTesting
+        Ref() {
+            super(null, null);
+            this.prev = this;
+            this.next = this;
+            this.action = null;
+            this.list = this;
         }
 
         @VisibleForTesting
@@ -123,25 +106,31 @@ final class Cleaner {
         }
 
         @Override
-        public void clean() {
+        public void run() {
             if (remove()) {
                 super.clear();
+                //noinspection ConstantConditions
                 action.run();
             }
         }
 
-        boolean isListEmpty() {
+        @VisibleForTesting
+        void cleanAll() {
+            final Ref list = this.list;
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (list) {
-                return list == list.next;
+                while (true) {
+                    Ref next = list.next;
+                    if (next == list) {
+                        break;
+                    }
+                    try {
+                        next.run();
+                    } catch (Throwable ignored) {
+                    }
+                }
             }
         }
-
-    }
-
-    @SuppressWarnings("PackageVisibleInnerClass")
-    interface Cleanable {
-
-        void clean();
 
     }
 

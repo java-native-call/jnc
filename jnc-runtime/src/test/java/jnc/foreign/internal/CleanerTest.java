@@ -15,10 +15,14 @@
  */
 package jnc.foreign.internal;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -30,7 +34,7 @@ public class CleanerTest {
     };
 
     @Test
-    public void testPerformRemove() throws Exception {
+    public void testPerformRemove() {
         Cleaner.Ref list = new Cleaner.Ref();
         assertFalse(list.remove());
 
@@ -38,10 +42,8 @@ public class CleanerTest {
 
         {
             AtomicBoolean executed = new AtomicBoolean();
-            cleaner.register(list, () -> {
-                executed.set(true);
-            });
-            Cleaner.performRemove(list);
+            cleaner.register(list, () -> executed.set(true));
+            list.cleanAll();
             assertTrue("performRemove not executed", executed.get());
         }
 
@@ -53,7 +55,7 @@ public class CleanerTest {
             cleaner.register(list, () -> {
                 throw new RuntimeException();
             });
-            Cleaner.performRemove(list);
+            list.cleanAll();
             assertFalse(list.remove());
         }
     }
@@ -66,11 +68,9 @@ public class CleanerTest {
         {
             AtomicBoolean executed = new AtomicBoolean();
             {
-                cleaner.register(new Object(), () -> {
-                    executed.set(true);
-                });
+                cleaner.register(new Object(), () -> executed.set(true));
             }
-            // register new object to make sure trigged
+            // register new object to make sure clean action triggered
             assertTrue(SleepUtil.sleepUntil(() -> {
                 cleaner.register(new Object(), NOOP);
                 return executed.get();
@@ -91,14 +91,34 @@ public class CleanerTest {
                 });
             }
 
-            // register new object to make sure trigged
-            assertThat(catchThrowable(() -> {
-                assertTrue(SleepUtil.sleepUntil(() -> {
-                    cleaner.register(new Object(), NOOP);
-                    return executed.get();
-                }));
-            })).doesNotThrowAnyException();
+            // register new object to make sure clean action triggered
+            assertTrue(SleepUtil.sleepUntil(() -> {
+                cleaner.register(new Object(), NOOP);
+                return executed.get();
+            }));
         }
+    }
+
+    @Test
+    public void testConcurrency() throws InterruptedException {
+        Cleaner.Ref list = new Cleaner.Ref();
+        Cleaner cleaner = new Cleaner(list);
+        ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        int nTotal = 100000;
+        AtomicInteger atomicInteger = new AtomicInteger();
+        try {
+            for (int i = 0; i < nTotal; ++i) {
+                es.submit(() -> {
+                    cleaner.register(new Object(), atomicInteger::incrementAndGet);
+                });
+            }
+        } finally {
+            es.shutdown();
+        }
+        es.awaitTermination(nTotal, TimeUnit.HOURS);
+         // this method seems to be very slow
+        list.cleanAll();
+        assertThat(atomicInteger.get()).isEqualTo(nTotal);
     }
 
 }

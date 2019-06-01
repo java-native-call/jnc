@@ -8,11 +8,12 @@ import jnc.foreign.annotation.Pack;
 import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.exception.UnmappableNativeValueException;
 import jnc.foreign.internal.LayoutBuilder;
+import jnc.foreign.spi.ForeignProvider;
 
 @SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess", "unused"})
 public class Struct {
 
-    private static LayoutBuilder getLayout(LayoutBuilder.Type layoutType, Class<?> klass) {
+    private static LayoutBuilder getLayoutBuilder(LayoutBuilder.Type layoutType, Class<?> klass) {
         Pack pack = klass.getAnnotation(Pack.class);
         if (pack != null) {
             int value = pack.value();
@@ -29,12 +30,12 @@ public class Struct {
     private State state = State.INITIAL;
 
     public Struct() {
-        this.layoutBuilder = getLayout(LayoutBuilder.Type.STRUCT, getClass());
+        this.layoutBuilder = getLayoutBuilder(LayoutBuilder.Type.STRUCT, getClass());
     }
 
     // for Union
     Struct(Void unused) {
-        this.layoutBuilder = getLayout(LayoutBuilder.Type.UNION, getClass());
+        this.layoutBuilder = getLayoutBuilder(LayoutBuilder.Type.UNION, getClass());
     }
 
     /**
@@ -42,7 +43,7 @@ public class Struct {
      */
     final int addField(int size, int alignment) {
         checkState(Struct.State.FIELDS_ADDING, Struct.State.FIELDS_ADDING);
-        return layoutBuilder.addField(size, alignment);
+        return layoutBuilder.newField(size, alignment);
     }
 
     private void advance(State to) {
