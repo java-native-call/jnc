@@ -15,15 +15,16 @@
  */
 package jnc.foreign.internal;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Locale;
+import java.util.function.Consumer;
 import jnc.foreign.Platform;
 import jnc.foreign.exception.JniLoadingException;
 
@@ -37,7 +38,7 @@ class NativeLoader {
     private static NativeAccessor init() {
         NativeLoader loader = new NativeLoader();
         try {
-            loader.load(loader.getLibPath());
+            loader.load(System::load, loader.getLibPath(DefaultPlatform.INSTANCE));
         } catch (Throwable t) {
             return DummyNativeMethod.createProxy(t);
         }
@@ -48,31 +49,21 @@ class NativeLoader {
         return NATIVE_ACCESSOR;
     }
 
-    private void load(URL url) {
+    private void load(Consumer<String> loadAction, URL url) {
         try {
             if ("file".equalsIgnoreCase(url.getProtocol())) {
-                System.load(new File(url.toURI()).getPath());
+                loadAction.accept(Paths.get(url.toURI()).toString());
             } else {
-                Path tmp = Files.createTempFile("lib", System.mapLibraryName("jnc"));
-                try {
-                    try (InputStream is = url.openStream()) {
-                        Files.copy(is, tmp, StandardCopyOption.REPLACE_EXISTING);
-                    }
-                    System.load(tmp.toAbsolutePath().toString());
-                } finally {
-                    try {
-                        Files.delete(tmp);
-                    } catch (IOException ignored) {
-                    }
-                }
+                loadWithTempFile(loadAction, url);
             }
         } catch (IOException | URISyntaxException ex) {
             throw new JniLoadingException(ex);
         }
     }
 
-    private URL getLibPath() {
-        String libPath = getLibClassPath();
+    // visible for test
+    URL getLibPath(Platform platform) {
+        String libPath = getLibClassPath(platform);
         URL url = NativeLoader.class.getClassLoader().getResource(libPath);
         if (url == null) {
             throw new UnsatisfiedLinkError("unable to find native lib in the classpath");
@@ -80,9 +71,8 @@ class NativeLoader {
         return url;
     }
 
-    private String getLibClassPath() {
+    String getLibClassPath(Platform platform) {
         StringBuilder sb = new StringBuilder(NativeLoader.class.getPackage().getName().replace(".", "/")).append("/native/");
-        Platform platform = DefaultPlatform.INSTANCE;
         Platform.OS os = platform.getOS();
         switch (os) {
             case WINDOWS:
@@ -104,6 +94,21 @@ class NativeLoader {
                 return sb.append(System.mapLibraryName("jnc-" + arch.name().toLowerCase(Locale.US))).toString();
             default:
                 throw new UnsupportedOperationException("unsupported operation system arch");
+        }
+    }
+
+    void loadWithTempFile(Consumer<String> loadAction, URL url) throws IOException {
+        Path tmp = Files.createTempFile("lib", System.mapLibraryName("jnc"));
+        try {
+            try (InputStream is = url.openStream()) {
+                Files.copy(is, tmp, StandardCopyOption.REPLACE_EXISTING);
+            }
+            loadAction.accept(tmp.toAbsolutePath().toString());
+        } finally {
+            try {
+                Files.delete(tmp);
+            } catch (IOException ignored) {
+            }
         }
     }
 
