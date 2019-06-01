@@ -46,7 +46,7 @@ public class VariadicMethodInvocationTest {
     @Test
     public void testPromotionsFloat() {
         byte[] bytes = new byte[20];
-        byte[] format = ("%.2f %.2f %.2f %.2f\u0000").getBytes(StandardCharsets.UTF_8);
+        byte[] format = "%.2f %.2f %.2f %.2f\u0000".getBytes(StandardCharsets.UTF_8);
         int n = Libc.INSTANCE.sprintf(bytes, format, 0.2f, 0.2, 0.2f, 0.2);
         assertThat(new String(bytes, 0, n)).isEqualTo("0.20 0.20 0.20 0.20");
     }
@@ -54,7 +54,7 @@ public class VariadicMethodInvocationTest {
     @Test
     public void testPromotionsIntegral() {
         byte[] bytes = new byte[20];
-        byte[] format = ("%d %d %d %d %d %d\u0000").getBytes(StandardCharsets.UTF_8);
+        byte[] format = "%d %d %d %d %d %d\u0000".getBytes(StandardCharsets.UTF_8);
         int n = Libc.INSTANCE.sprintf(bytes, format,
                 false,
                 (byte) 1,
@@ -64,6 +64,24 @@ public class VariadicMethodInvocationTest {
                 (char) 5
         );
         assertThat(new String(bytes, 0, n)).isEqualTo("0 1 2 3 4 5");
+    }
+
+    @Test
+    public void testPrimary() {
+        byte[] bytes = new byte[20];
+        byte[] format = "%d %d %d %d %d\u0000".getBytes(StandardCharsets.UTF_8);
+
+        int n = Libc.INSTANCE.sprintfInt(bytes, format, 1, 2, 3, 4, 5);
+        assertThat(new String(bytes, 0, n)).isEqualTo("1 2 3 4 5");
+    }
+
+    @Test
+    public void testNonObjectNull() {
+        byte[] bytes = new byte[20];
+        byte[] format = "\u0000".getBytes(StandardCharsets.UTF_8);
+
+        assertThatThrownBy(() -> Libc.INSTANCE.sprintfNumber(bytes, format, (Number) null))
+                .isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -96,6 +114,12 @@ public class VariadicMethodInvocationTest {
         Libc INSTANCE = LibraryLoader.create(Libc.class).load(Platform.getNativePlatform().getLibcName());
 
         int sprintf(byte[] target, byte[] format, Object... args);
+
+        @Entry("sprintf")
+        int sprintfInt(byte[] target, byte[] format, int... args);
+
+        @Entry("sprintf")
+        int sprintfNumber(byte[] target, byte[] format, Number... args);
     }
 
 }

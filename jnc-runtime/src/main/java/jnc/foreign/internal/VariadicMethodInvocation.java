@@ -94,7 +94,11 @@ final class VariadicMethodInvocation implements MethodInvocation {
             if (methodVariadicType == Object.class) {
                 parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(Void.class);
             } else {
-                parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(methodVariadicType);
+                try {
+                    parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(methodVariadicType);
+                } catch (UnsupportedOperationException ex) {
+                    throw new NullPointerException();
+                }
             }
         } else {
             parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(value.getClass());

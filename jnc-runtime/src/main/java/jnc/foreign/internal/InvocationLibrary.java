@@ -39,7 +39,13 @@ final class InvocationLibrary<T> {
         AnnotationContext ac = AnnotationContext.newContext(method);
         jnc.foreign.annotation.CallingConvention methodConvention = ac.getAnnotation(jnc.foreign.annotation.CallingConvention.class);
         CallingConvention convention = methodConvention != null ? methodConvention.value() : classConvention;
-        String name = method.getName();
+        Entry entry = ac.getAnnotation(Entry.class);
+        String name;
+        if (entry != null) {
+            name = entry.value();
+        } else {
+            name = method.getName();
+        }
         long function = library.dlsym(name);
         TypeHandlerInfo<? extends Invoker<?>> returnTypeInfo = typeHandlerFactory.findReturnTypeInfo(method.getReturnType());
         InternalType retType = returnTypeInfo.getType(typeFactory, ac);
