@@ -43,7 +43,7 @@ class ProxyBuilder {
 
     private static final InvocationHandler proxyToString = (proxy, __, args) -> proxy.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(Proxy.getInvocationHandler(proxy)));
     private static final InvocationHandler proxyHashCode = (proxy, __, args) -> System.identityHashCode(Proxy.getInvocationHandler(proxy));
-    private static final InvocationHandler proxyEquals = (proxy, __, args) -> {
+    private static final InvocationHandler proxySame = (proxy, __, args) -> {
         Object another = args[0];
         return proxy == another || another != null
                 && Proxy.isProxyClass(another.getClass())
@@ -60,12 +60,16 @@ class ProxyBuilder {
         }
     }
 
-    public static ProxyBuilder builder() {
-        return empty().useProxyMethods().useDefaultMethod();
-    }
-
     public static ProxyBuilder empty() {
         return new ProxyBuilder();
+    }
+
+    public static ProxyBuilder builder() {
+        return empty().proxyMethods().defaultMethods();
+    }
+
+    public static ProxyBuilder identifier() {
+        return empty().identifierMethods().defaultMethods();
     }
 
     @SuppressWarnings("unchecked")
@@ -108,36 +112,45 @@ class ProxyBuilder {
         return customize(OBJECT_HASH_CODE, handler);
     }
 
-    public ProxyBuilder useObjectToString() {
+    public ProxyBuilder objectToString() {
         return toStringWith(objectToString);
     }
 
-    public ProxyBuilder useObjectHashCode() {
+    public ProxyBuilder objectHashCode() {
         return hashCodeWith(objectHashCode);
     }
 
-    public ProxyBuilder useObjectEquals() {
+    public ProxyBuilder objectEquals() {
         return equalsWith(objectEquals);
     }
 
-    public ProxyBuilder useObjectMethods() {
-        return useObjectEquals().useObjectHashCode().useObjectToString();
+    public ProxyBuilder identifierMethods() {
+        return objectEquals().objectHashCode().objectToString();
     }
 
-    public ProxyBuilder useProxyToString() {
+    public ProxyBuilder proxyToString() {
         return toStringWith(proxyToString);
     }
 
-    public ProxyBuilder useProxyHashCode() {
+    public ProxyBuilder proxyHashCode() {
         return hashCodeWith(proxyHashCode);
     }
 
-    public ProxyBuilder useProxyEquals() {
-        return equalsWith(proxyEquals);
+    public ProxyBuilder equalsWithProxySame() {
+        return equalsWith(proxySame);
     }
 
-    public ProxyBuilder useProxyMethods() {
-        return useProxyEquals().useProxyHashCode().useProxyToString();
+    public ProxyBuilder proxyMethods() {
+        return equalsWithProxySame().proxyHashCode().proxyToString();
+    }
+
+    public ProxyBuilder defaultMethods(boolean useDefaultMethod) {
+        this.useDefaultMethod = useDefaultMethod;
+        return this;
+    }
+
+    public ProxyBuilder defaultMethods() {
+        return defaultMethods(true);
     }
 
     public ProxyBuilder orThrow(Function<Method, ? extends Throwable> orThrow) {
@@ -149,16 +162,6 @@ class ProxyBuilder {
     public ProxyBuilder orThrow(Throwable orThrow) {
         requireNonNull(orThrow);
         this.orThrow = __ -> orThrow;
-        return this;
-    }
-
-    public ProxyBuilder useDefaultMethod() {
-        this.useDefaultMethod = true;
-        return this;
-    }
-
-    public ProxyBuilder customDefaultMethod() {
-        this.useDefaultMethod = false;
         return this;
     }
 

@@ -51,8 +51,7 @@ class SimpleAnnotationBuilder<T extends Annotation> {
 
     public T build() {
         final Class<T> ac = annotationClass;
-        return ProxyBuilder.empty()
-                .useObjectMethods()
+        return ProxyBuilder.identifier()
                 .customize(ANNOTATION_TYPE, (key, method, args) -> ac)
                 .otherwise((proxy, method, args) -> method.getDefaultValue())
                 .newInstance(ac);

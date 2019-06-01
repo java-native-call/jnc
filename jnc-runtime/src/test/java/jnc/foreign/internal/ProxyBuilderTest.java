@@ -42,7 +42,7 @@ public class ProxyBuilderTest {
     @Test
     public void testEquals() {
         // toString must be implemented for junit require this to display error message if failed
-        ProxyBuilder builder = ProxyBuilder.empty().useObjectEquals().useProxyToString();
+        ProxyBuilder builder = ProxyBuilder.empty().objectEquals().proxyToString();
         {
             InvocationHandler handler = builder.toInvocationHandler();
             Serializable serializable = createSerializable(handler);
@@ -51,7 +51,7 @@ public class ProxyBuilderTest {
         }
 
         {
-            InvocationHandler handler = builder.useProxyEquals().toInvocationHandler();
+            InvocationHandler handler = builder.equalsWithProxySame().toInvocationHandler();
             Serializable instance1 = createSerializable(handler);
             Serializable instance2 = createSerializable(handler);
             assertNotSame(instance1, instance2);
@@ -61,8 +61,7 @@ public class ProxyBuilderTest {
 
     @Test
     public void testToStringAndHashCode() {
-        InterfaceHasObjectMethods instance = ProxyBuilder
-                .empty().useObjectToString().useObjectHashCode()
+        InterfaceHasObjectMethods instance = ProxyBuilder.identifier()
                 .newInstance(InterfaceHasObjectMethods.class);
         int idHash = System.identityHashCode(instance);
         assertThat(instance.toString()).contains(Long.toHexString(idHash));
@@ -72,21 +71,21 @@ public class ProxyBuilderTest {
     @Test
     public void testHashCode() {
         // toString must be implemented for junit require this to display error message if failed
-        ProxyBuilder builder = ProxyBuilder.empty().useObjectHashCode().useProxyToString();
+        ProxyBuilder builder = ProxyBuilder.empty().objectHashCode().proxyToString();
         {
             Serializable serializable = builder.newInstance(Serializable.class);
             assertEquals(System.identityHashCode(serializable), serializable.hashCode());
         }
 
         {
-            Serializable serializable = builder.useProxyHashCode().newInstance(Serializable.class);
+            Serializable serializable = builder.proxyHashCode().newInstance(Serializable.class);
             assertEquals(System.identityHashCode(Proxy.getInvocationHandler(serializable)), serializable.hashCode());
         }
     }
 
     @Test
     public void testToString() {
-        ProxyBuilder builder = ProxyBuilder.empty().useObjectToString();
+        ProxyBuilder builder = ProxyBuilder.empty().objectToString();
         {
             Serializable serializable = builder.newInstance(Serializable.class);
             assertThat(serializable.toString())
@@ -95,7 +94,7 @@ public class ProxyBuilderTest {
         }
 
         {
-            Serializable serializable = builder.useProxyToString().newInstance(Serializable.class);
+            Serializable serializable = builder.proxyToString().newInstance(Serializable.class);
             assertThat(serializable.toString())
                     .doesNotContain(Long.toHexString(System.identityHashCode(serializable)))
                     .contains(serializable.getClass().getName());
@@ -105,14 +104,14 @@ public class ProxyBuilderTest {
     private <T> void testDefaultMethodOf(
             Class<T> interfaceClass, Consumer<T> consumer,
             Class<? extends Throwable> exceptionClass) {
-        ProxyBuilder builder = ProxyBuilder.empty().useObjectToString();
+        ProxyBuilder builder = ProxyBuilder.empty().objectToString();
         {
-            T t = builder.useDefaultMethod().newInstance(interfaceClass);
+            T t = builder.defaultMethods().newInstance(interfaceClass);
             assertThatThrownBy(() -> consumer.accept(t))
                     .isExactlyInstanceOf(exceptionClass);
         }
         {
-            T t = builder.customDefaultMethod().newInstance(interfaceClass);
+            T t = builder.defaultMethods(false).newInstance(interfaceClass);
             assertThatThrownBy(() -> consumer.accept(t))
                     .isExactlyInstanceOf(AbstractMethodError.class);
         }
@@ -134,7 +133,7 @@ public class ProxyBuilderTest {
     @Test
     public void testThrow() {
         // toString must be implemented for junit require this to display error message if failed
-        ProxyBuilder builder = ProxyBuilder.empty().useProxyToString();
+        ProxyBuilder builder = ProxyBuilder.empty().proxyToString();
         {
             Closeable closeable = builder.newInstance(Closeable.class);
             assertThatThrownBy(closeable::close).isInstanceOf(AbstractMethodError.class).hasMessage("close");
