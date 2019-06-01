@@ -23,8 +23,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import jnc.foreign.NativeType;
 import jnc.foreign.enums.CallingConvention;
+import jnc.foreign.enums.TypeAlias;
 
 /**
  * @author zhanhb
@@ -90,14 +91,34 @@ final class VariadicMethodInvocation implements MethodInvocation {
             Object value, List<Class<? extends Annotation>> annotations) {
         TypeHandlerInfo<? extends ParameterHandler<?>> parameterTypeInfo;
         if (value == null) {
-            parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(methodVariadicType);
+            if (methodVariadicType == Object.class) {
+                parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(Void.class);
+            } else {
+                parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(methodVariadicType);
+            }
         } else {
             parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(value.getClass());
         }
         values[index] = value;
-        paramTypes[index] = parameterTypeInfo.getType(typeFactory, AnnotationContext.newMockContext(annotations, variadicAnnotationContext));
+        InternalType infoType = parameterTypeInfo.getType(typeFactory, AnnotationContext.newMockContext(annotations, variadicAnnotationContext));
+        paramTypes[index] = promotions(infoType);
         h[index] = parameterTypeInfo.getHandler();
         annotations.clear();
+    }
+
+    // [u]int8/16->int, float->double
+    // https://en.cppreference.com/w/c/language/variadic
+    private InternalType promotions(InternalType infoType) {
+        switch (infoType.nativeType()) {
+            case SINT8:
+            case UINT8:
+            case SINT16:
+            case UINT16:
+                return typeFactory.findByAlias(TypeAlias.cint);
+            case FLOAT:
+                return typeFactory.findByNativeType(NativeType.DOUBLE);
+        }
+        return infoType;
     }
 
     @Override
@@ -106,43 +127,58 @@ final class VariadicMethodInvocation implements MethodInvocation {
     }
 
     @Override
+    @SuppressWarnings("NestedAssignment")
     public Object invoke(Object proxy, Method method, Object[] args) {
         // length > 2 is assumed
         final int fixedArgs = args.length - 1;
-        final Object variadics = Objects.requireNonNull(args[fixedArgs], "variadic should be an array, but got null");
-        final int variadicLen = Array.getLength(variadics);
-        final int maybeTotalLength = fixedArgs + variadicLen;
+        final Object variadics = args[fixedArgs];
 
-        int cur = fixedArgs;
-        InternalType[] paramTypes = Arrays.copyOf(ptypes, maybeTotalLength);
-        ParameterHandler<?>[] h = Arrays.copyOf(handlers, maybeTotalLength);
-        Object[] values = Arrays.copyOf(args, maybeTotalLength, Object[].class);
+        int variadicLen;
+        int cur;
+        InternalType[] paramTypes;
+        ParameterHandler<?>[] h;
+        Object[] values;
 
-        final Receiver receiver = RECEIVER_MAP.getOrDefault(variadics.getClass(), Array::get);
+        if (variadics == null || (variadicLen = Array.getLength(variadics)) == 0) {
+            cur = fixedArgs;
+            paramTypes = ptypes;
+            h = handlers;
+            values = Arrays.copyOf(args, fixedArgs);
+        } else {
+            final int maybeTotalLength = fixedArgs + variadicLen;
 
-        final List<Class<? extends Annotation>> annotations = new ArrayList<>(4);
-        for (int i = 0; i < variadicLen; ++i) {
-            Object value = receiver.apply(variadics, i);
-            if (value == null) {
-                put(values, paramTypes, h, cur, null, annotations);
-                ++cur;
-                continue;
-            }
-            if (value instanceof Class) {
-                if (((Class<?>) value).isAnnotation()) {
-                    annotations.add(((Class<?>) value).asSubclass(Annotation.class));
+            cur = fixedArgs;
+            paramTypes = Arrays.copyOf(ptypes, maybeTotalLength);
+            h = Arrays.copyOf(handlers, maybeTotalLength);
+            values = Arrays.copyOf(args, maybeTotalLength, Object[].class);
+
+            final Receiver receiver = RECEIVER_MAP.getOrDefault(variadics.getClass(), Array::get);
+
+            final List<Class<? extends Annotation>> annotations = new ArrayList<>(4);
+            for (int i = 0; i < variadicLen; ++i) {
+                Object value = receiver.apply(variadics, i);
+                if (value == null) {
+                    put(values, paramTypes, h, cur, null, annotations);
+                    ++cur;
                     continue;
                 }
+                if (value instanceof Class) {
+                    if (((Class<?>) value).isAnnotation()) {
+                        annotations.add(((Class<?>) value).asSubclass(Annotation.class));
+                        continue;
+                    }
+                }
+                put(values, paramTypes, h, cur, value, annotations);
+                ++cur;
             }
-            put(values, paramTypes, h, cur, value, annotations);
-            ++cur;
+
+            if (cur < maybeTotalLength) {
+                paramTypes = Arrays.copyOf(paramTypes, cur);
+                h = Arrays.copyOf(h, cur);
+                values = Arrays.copyOf(values, cur);
+            }
         }
 
-        if (cur < maybeTotalLength) {
-            paramTypes = Arrays.copyOf(paramTypes, cur);
-            h = Arrays.copyOf(h, cur);
-            values = Arrays.copyOf(values, cur);
-        }
         CallContext context = CifContainer.createVariadic(convention, fixedArgs, retType, paramTypes).newCallContext();
 
         for (int i = 0; i < cur; i++) {
