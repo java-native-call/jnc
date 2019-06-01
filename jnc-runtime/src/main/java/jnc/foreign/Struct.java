@@ -268,7 +268,7 @@ public class Struct {
         private final Struct struct;
         private final int offset;
 
-        public Enclosing(Struct struct, int offset) {
+        Enclosing(Struct struct, int offset) {
             this.struct = struct;
             this.offset = offset;
         }
