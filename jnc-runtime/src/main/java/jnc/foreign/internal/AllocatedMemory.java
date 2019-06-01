@@ -1,29 +1,23 @@
 package jnc.foreign.internal;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 class AllocatedMemory extends SizedDirectMemory {
 
-    private static final Set<Runnable> SET = NativeLoader.getAccessor().onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(32)));
+    private static final Cleaner CLEANER = Cleaner.getInstance();
 
     private static AllocatedMemory allocateImpl(long size) {
         Free free = new Free(size);
         boolean success = false;
         try {
             AllocatedMemory memory = new AllocatedMemory(size, free);
-            SET.add(free);
+            CLEANER.register(memory, free);
             success = true;
             return memory;
         } finally {
+            // very rare, maybe OutOfMemoryError when register Cleanable
             if (!success) {
-                try {
-                    free.run();
-                } finally {
-                    SET.remove(free);
-                }
+                free.run();
             }
         }
     }
@@ -42,22 +36,8 @@ class AllocatedMemory extends SizedDirectMemory {
         return allocateImpl((long) count * size);
     }
 
-    private final Free free;
-
     private AllocatedMemory(long size, Free free) {
         super(free.getAddress(), size);
-        this.free = free;
-    }
-
-    @Override
-    @SuppressWarnings({"FinalizeDeclaration", "FinalizeDoesntCallSuperFinalize"})
-    protected void finalize() {
-        Free f = free;
-        try {
-            f.run();
-        } finally {
-            SET.remove(f);
-        }
     }
 
     private static final class Free implements Runnable {
@@ -74,16 +54,6 @@ class AllocatedMemory extends SizedDirectMemory {
 
         long getAddress() {
             return address;
-        }
-
-        @Override
-        public int hashCode() {
-            return System.identityHashCode(this);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj == this;
         }
 
         @Override

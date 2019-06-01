@@ -18,7 +18,6 @@ package jnc.foreign.internal;
 import java.lang.annotation.Native;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.Objects;
 import javax.annotation.Nullable;
 
 /**
@@ -220,8 +219,20 @@ interface NativeAccessor {
         return 0;
     }
 
-    default <T extends Iterable<Runnable> > T onFinalize(T set) {
-        return Objects.requireNonNull(set);
+    /**
+     * Maybe the classloader instance is finalized before the lib, meanwhile the
+     * native lib is also finalized. There's no guarantee who is finalized
+     * first. Let it call our method onUnload to make sure these are finalized
+     * before native library unloaded.
+     *
+     * @param action when deployed, should only be invoked by Cleaner, nullable
+     * for test
+     * @see Cleaner#performRemove(Cleaner.Ref)
+     * @see NativeMethods#onFinalize(java.lang.Runnable)
+     * @return true if registered successfully
+     */
+    default boolean onFinalize(Runnable action) {
+        return false;
     }
 
 }

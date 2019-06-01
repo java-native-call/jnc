@@ -15,9 +15,6 @@
  */
 package jnc.foreign.internal;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import jnc.foreign.Platform;
 
@@ -27,36 +24,30 @@ import jnc.foreign.Platform;
 class NativeLibrary implements Library {
 
     private static final NativeAccessor NA = NativeLoader.getAccessor();
-    // maybe the classloader is finalized before the lib, meanwhile the native lib is also finalized
-    // let it call our method onUnload to make sure we are closed before it's unloaded.
-    // There is no issue with java builtin object.
-    private static final Set<Runnable> SET = NA.onFinalize(Collections.newSetFromMap(new ConcurrentHashMap<>(16)));
+    private static final Cleaner CLEANER = Cleaner.getInstance();
 
     static NativeLibrary open(String libName, int mode) {
         Dlclose dlclose = new Dlclose(libName, mode);
         boolean success = false;
         try {
             NativeLibrary library = new NativeLibrary(dlclose);
-            SET.add(dlclose);
             success = true;
             return library;
         } finally {
+            // very rare, maybe OutOfMemoryError when create Cleanable
             if (!success) {
-                try {
-                    dlclose.run();
-                } finally {
-                    SET.remove(dlclose);
-                }
+                dlclose.run();
             }
         }
     }
 
     private final long address;
-    private final Dlclose dlclose;
+    private final Cleaner.Cleanable cleanable;
 
+    @SuppressWarnings("LeakingThisInConstructor")
     private NativeLibrary(Dlclose dlclose) {
         this.address = dlclose.getAddress();
-        this.dlclose = dlclose;
+        this.cleanable = CLEANER.register(this, dlclose);
     }
 
     @Override
@@ -71,12 +62,7 @@ class NativeLibrary implements Library {
 
     @Override
     public void close() {
-        Dlclose tmp = dlclose;
-        try {
-            tmp.run();
-        } finally {
-            SET.remove(tmp);
-        }
+        cleanable.clean();
     }
 
     @Override
@@ -113,16 +99,6 @@ class NativeLibrary implements Library {
 
         long getAddress() {
             return address;
-        }
-
-        @Override
-        public int hashCode() {
-            return System.identityHashCode(this);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj == this;
         }
 
         @Override

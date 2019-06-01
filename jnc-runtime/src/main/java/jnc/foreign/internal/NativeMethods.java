@@ -1,33 +1,25 @@
 package jnc.foreign.internal;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
-class NativeMethods implements NativeAccessor {
+enum NativeMethods implements NativeAccessor {
 
-    private static final ReentrantLock lock = new ReentrantLock();
-    private static final List<Runnable> ON_UNLOAD = new ArrayList<>(4);
+    INSTANCE;
 
     // access by native method
     @SuppressWarnings("unused")
     private static void onUnload() {
-        Runnable[] array = {};
-        lock.lock();
-        try {
-            array = ON_UNLOAD.toArray(array);
-        } finally {
-            lock.unlock();
-        }
-        for (int i = array.length - 1; i >= 0; --i) {
-            array[i].run();
+        @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
+        Runnable runnable = INSTANCE.onFinalize.getAndSet(null);
+        if (runnable != null) {
+            runnable.run();
         }
     }
+
+    private final AtomicReference<Runnable> onFinalize = new AtomicReference<>();
 
     /**
      * {@inheritDoc}
@@ -207,7 +199,7 @@ class NativeMethods implements NativeAccessor {
     public final native void prepareInvoke(long cif, int abi, int len, long retType, long atypes);
 
     @Override
-    public final native void prepareInvokeVariadic(long cif, int abi, int fixedArgs, int totalArgs,long retType, long atypes);
+    public final native void prepareInvokeVariadic(long cif, int abi, int fixedArgs, int totalArgs, long retType, long atypes);
 
     @Override
     public final native boolean invokeBoolean(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
@@ -230,23 +222,12 @@ class NativeMethods implements NativeAccessor {
     @Override
     public final native long getMethodId(Method method);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public <T extends Iterable<Runnable>> T onFinalize(T iterable) {
-        Objects.requireNonNull(iterable);
-        lock.lock();
-        try {
-            ON_UNLOAD.add(() -> {
-                for (Iterator<Runnable> it = iterable.iterator(); it.hasNext(); it.remove()) {
-                    try {
-                        it.next().run();
-                    } catch (Throwable ignored) {
-                    }
-                }
-            });
-        } finally {
-            lock.unlock();
-        }
-        return iterable;
+    public boolean onFinalize(Runnable r) {
+        return this.onFinalize.compareAndSet(null, r);
     }
 
 }

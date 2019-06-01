@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,17 +37,10 @@ public class ConcurrentWeakIdentityHashMapTest {
 
     @Test
     @SuppressWarnings("SleepWhileInLoop")
-    public void testEnsureRemoved() throws InterruptedException {
+    public void testEnsureRemoved() {
         instance.putIfAbsent(new Object(), new Object());
         assertEquals(1, instance.size());
-        System.gc();
-        for (int i = 0; i < 500; ++i) {
-            Thread.sleep(20);
-            if (instance.size() == 0) {
-                break;
-            }
-        }
-        assertEquals(0, instance.size());
+        assertTrue(SleepUtil.sleepUntil(()->instance.size() == 0));
     }
 
     @Test

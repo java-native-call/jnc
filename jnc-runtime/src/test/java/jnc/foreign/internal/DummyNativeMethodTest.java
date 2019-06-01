@@ -15,9 +15,9 @@
  */
 package jnc.foreign.internal;
 
-import java.util.Collections;
 import jnc.foreign.exception.JniLoadingException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertFalse;
 import org.junit.Test;
 
 /**
@@ -35,7 +35,7 @@ public class DummyNativeMethodTest {
         UnsatisfiedLinkError cause = new UnsatisfiedLinkError(message);
         NativeAccessor nativeAccessor = DummyNativeMethod.createProxy(cause);
         nativeAccessor.getCifInfo();
-        nativeAccessor.onFinalize(Collections.emptySet());
+        assertFalse(nativeAccessor.onFinalize(null));
         nativeAccessor.getMethodId(null);
         assertThatThrownBy(() -> nativeAccessor.allocateMemory(0))
                 .isExactlyInstanceOf(JniLoadingException.class)
@@ -46,7 +46,7 @@ public class DummyNativeMethodTest {
     public void testCreateProxy2() {
         NativeAccessor nativeAccessor = DummyNativeMethod.createProxy(new JniLoadingException(message));
         nativeAccessor.getCifInfo();
-        nativeAccessor.onFinalize(Collections.emptySet());
+        assertFalse(nativeAccessor.onFinalize(null));
         nativeAccessor.getMethodId(null);
         assertThatThrownBy(() -> nativeAccessor.allocateMemory(0))
                 .isExactlyInstanceOf(JniLoadingException.class)

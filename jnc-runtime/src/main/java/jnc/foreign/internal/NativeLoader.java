@@ -32,18 +32,16 @@ import jnc.foreign.exception.JniLoadingException;
  */
 class NativeLoader {
 
-    private static final NativeAccessor NATIVE_ACCESSOR;
+    private static final NativeAccessor NATIVE_ACCESSOR = init();
 
-    static {
+    private static NativeAccessor init() {
         NativeLoader loader = new NativeLoader();
-        NativeAccessor accessor;
         try {
             loader.load(loader.getLibPath());
-            accessor = new NativeMethods();
         } catch (Throwable t) {
-            accessor = DummyNativeMethod.createProxy(t);
+            return DummyNativeMethod.createProxy(t);
         }
-        NATIVE_ACCESSOR = accessor;
+        return NativeMethods.INSTANCE;
     }
 
     static NativeAccessor getAccessor() {

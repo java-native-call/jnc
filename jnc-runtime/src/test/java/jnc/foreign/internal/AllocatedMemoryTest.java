@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 public class AllocatedMemoryTest {
@@ -47,27 +47,7 @@ public class AllocatedMemoryTest {
         for (int i = 0; i < 100; ++i) {
             set.add(AllocatedMemory.allocate(10));
         }
-        System.gc();
-        boolean interrupted = false;
-        try {
-            int sleep = 1;
-            for (int i = 0; i < 12 && !set.isEmpty(); ++i) {
-                try {
-                    Thread.sleep(sleep);
-                } catch (InterruptedException ex) {
-                    interrupted = true;
-                }
-                sleep <<= 1;
-                if (i > 8) {
-                    System.gc();
-                }
-            }
-        } finally {
-            if (interrupted) {
-                Thread.currentThread().interrupt();
-            }
-        }
-        assertEquals(0, set.size());
+        assertTrue(SleepUtil.sleepUntil(set::isEmpty));
     }
 
 }
