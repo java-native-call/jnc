@@ -50,7 +50,7 @@ class AllocatedMemory extends SizedDirectMemory {
     }
 
     @Override
-    @SuppressWarnings("FinalizeDeclaration")
+    @SuppressWarnings({"FinalizeDeclaration", "FinalizeDoesntCallSuperFinalize"})
     protected void finalize() {
         Free f = free;
         try {

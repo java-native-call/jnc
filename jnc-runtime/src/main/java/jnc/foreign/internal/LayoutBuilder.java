@@ -30,7 +30,7 @@ public abstract class LayoutBuilder {
 
     private static int checkPack(int pack) {
         if (pack <= 0 || pack > MAX_ALIGNMENT || (pack & (pack - 1)) != 0) {
-            throw new IllegalArgumentException("expected pack to be '1', '2', '4', '8', or '16'");
+            throw new IllegalArgumentException("expect pack to be '1', '2', '4', '8', or '16'");
         }
         return pack;
     }

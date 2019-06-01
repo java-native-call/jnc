@@ -4,6 +4,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import jnc.foreign.enums.CallingConvention;
 
+@SuppressWarnings("WeakerAccess")
 public class LibraryLoader<T> {
 
     @Nonnull

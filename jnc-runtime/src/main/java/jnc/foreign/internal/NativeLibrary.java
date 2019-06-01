@@ -80,7 +80,7 @@ class NativeLibrary implements Library {
     }
 
     @Override
-    @SuppressWarnings("FinalizeDeclaration")
+    @SuppressWarnings({"FinalizeDeclaration", "FinalizeDoesntCallSuperFinalize"})
     protected void finalize() {
         close();
     }

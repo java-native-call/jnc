@@ -15,6 +15,7 @@
  */
 package jnc.foreign.internal;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.Test;
 
@@ -44,6 +45,10 @@ public class LayoutBuilderTest {
         assertThatThrownBy(() -> builder.addField(3, 2))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("combination");
+
+        // no fields should be add, all operations are failed
+        assertThat(builder.size()).isEqualTo(0);
+        assertThat(builder.alignment()).isEqualTo(1);
     }
 
 }

@@ -84,6 +84,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
         this.typeHandlerFactory = typeHandlerFactory;
     }
 
+    @SuppressWarnings("AssignmentToMethodParameter")
     private void put(
             Object[] values, InternalType[] paramTypes, ParameterHandler<?>[] h, int index,
             Object value, List<Class<? extends Annotation>> annotations) {
