@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nullable;
 
@@ -232,12 +231,12 @@ class NativeMethods implements NativeAccessor {
     public final native long getMethodId(Method method);
 
     @Override
-    public final Set<Runnable> onFinalize(Set<Runnable> set) {
-        Objects.requireNonNull(set);
+    public <T extends Iterable<Runnable>> T onFinalize(T iterable) {
+        Objects.requireNonNull(iterable);
         lock.lock();
         try {
             ON_UNLOAD.add(() -> {
-                for (Iterator<Runnable> it = set.iterator(); it.hasNext(); it.remove()) {
+                for (Iterator<Runnable> it = iterable.iterator(); it.hasNext(); it.remove()) {
                     try {
                         it.next().run();
                     } catch (Throwable ignored) {
@@ -247,7 +246,7 @@ class NativeMethods implements NativeAccessor {
         } finally {
             lock.unlock();
         }
-        return set;
+        return iterable;
     }
 
 }

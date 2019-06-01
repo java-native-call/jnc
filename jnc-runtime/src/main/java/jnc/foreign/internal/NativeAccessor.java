@@ -19,7 +19,6 @@ import java.lang.annotation.Native;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
@@ -221,7 +220,7 @@ interface NativeAccessor {
         return 0;
     }
 
-    default Set<Runnable> onFinalize(Set<Runnable> set) {
+    default <T extends Iterable<Runnable> > T onFinalize(T set) {
         return Objects.requireNonNull(set);
     }
 
