@@ -166,7 +166,7 @@ esac
 
 install=(install)
 
-if [[ "$deploy" == true ]] &&  git config --get remote.origin.url 2>&1 | grep -F https://github.com/java-native-call/jnc-build -q && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
+if [[ "$deploy" == true ]] &&  git config --get remote.origin.url 2>&1 | grep -F https://github.com/java-native-call/jnc.git -q && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
   install=(deploy -s .travis/settings.xml)
 fi
 
