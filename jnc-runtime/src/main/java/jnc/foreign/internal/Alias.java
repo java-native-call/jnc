@@ -59,7 +59,7 @@ final class Alias implements InternalType {
 
     @Override
     public String toString() {
-        return "Alias(" + typeAlias + ",target=" + typeInfo + ")";
+        return "Alias(" + getTypeAlias() + "=" + nativeType() + ")";
     }
 
     @Deprecated

@@ -84,4 +84,9 @@ final class TypeInfo implements InternalType {
     public void do_not_implement_this_for_its_used_internally() {
     }
 
+    @Override
+    public String toString() {
+        return "TypeInfo(" + nativeType() + ')';
+    }
+
 }
