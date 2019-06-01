@@ -54,7 +54,6 @@ final class CifContainer extends Struct {
     private final Struct cif;
     private final int[] offsets;
     private final int parameterSize;
-    private final long cifAddress;
 
     private CifContainer(InternalType[] params) {
         int length = params.length;
@@ -87,24 +86,23 @@ final class CifContainer extends Struct {
             this.offsets = null;
             this.parameterSize = 0;
         }
-        this.cifAddress = cif.getMemory().address();
     }
 
     private CifContainer prepareInvoke(CallingConvention convention, InternalType resultType) {
-        NA.prepareInvoke(cifAddress, convention(convention),
+        NA.prepareInvoke(cif.getMemory().address(), convention(convention),
                 params.length, resultType.address(), getMemory().address());
         return this;
     }
 
     private CifContainer prepareInvokeVariadic(CallingConvention convention,
             int fixedArgs, InternalType resultType) {
-        NA.prepareInvokeVariadic(cifAddress, convention(convention),
+        NA.prepareInvokeVariadic(cif.getMemory().address(), convention(convention),
                 fixedArgs, params.length, resultType.address(), getMemory().address());
         return this;
     }
 
     CallContext newCallContext() {
-        return new CifCallContext(parameterSize, params, offsets, cifAddress);
+        return new CifCallContext(parameterSize, params, offsets, cif);
     }
 
 }

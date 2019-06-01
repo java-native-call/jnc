@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
+import jnc.foreign.Struct;
 
 /**
  * @author zhanhb
@@ -30,14 +31,18 @@ final class CifCallContext implements CallContext {
     private List<Runnable> onFinish;
     private final int[] offsets;
     private final InternalType[] params;
-    private final long cifAddress;
+    // must keep a strong reference to cif,
+    // Maybe cif is gced before call finish
+    // VariadicMethodInvocation.invoke won't keep a reference to CifContainer
+    @SuppressWarnings("UnusedAssignment")
+    private final Struct cif;
 
     CifCallContext(int parameterSize, InternalType[] params,
-            @Nullable int[] offsets, long cifAddress) {
+            @Nullable int[] offsets, Struct cif) {
         this.parameter = AllocatedMemory.allocate(1, parameterSize);
         this.offsets = offsets;
         this.params = params;
-        this.cifAddress = cifAddress;
+        this.cif = cif;
     }
 
     @Override
@@ -84,7 +89,7 @@ final class CifCallContext implements CallContext {
 
     @Override
     public <T> T invoke(Invoker<T> invoker, long function) {
-        T result = invoker.invoke(cifAddress, function, parameter.address(), offsets);
+        T result = invoker.invoke(cif.getMemory().address(), function, parameter.address(), offsets);
         finish();
         return result;
     }
