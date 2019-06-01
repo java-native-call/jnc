@@ -1,6 +1,5 @@
 package jnc.foreign;
 
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -116,12 +115,14 @@ public class Struct {
     }
 
     private <T> T[] memberArray(T[] array, Function<Struct, T> constructor) {
-        Objects.requireNonNull(array, "array");
-        Struct struct = new Struct();
-        for (int i = 0, len = array.length; i < len; ++i) {
-            array[i] = constructor.apply(struct);
+        int len = array.length;
+        if (len != 0) {
+            Struct struct = new Struct();
+            for (int i = 0; i < len; ++i) {
+                array[i] = constructor.apply(struct);
+            }
+            this.inner(struct);
         }
-        this.inner(struct);
         return array;
     }
 

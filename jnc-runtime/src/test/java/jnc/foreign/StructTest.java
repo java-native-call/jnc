@@ -114,6 +114,15 @@ public class StructTest {
     }
 
     @Test
+    public void testStructZeroLengthArray() {
+        new Struct() {
+            {
+                array(new int32_t[0]);
+            }
+        };
+    }
+
+    @Test
     public void testIllegalSize() {
         assertThatThrownBy(() -> new Struct() {
             {
