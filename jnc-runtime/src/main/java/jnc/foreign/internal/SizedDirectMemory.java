@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 
+@NotFinal(NotFinal.Reason.EXTENSION_CLASS_PRESENT)
 class SizedDirectMemory extends Memory {
 
     private final long size;

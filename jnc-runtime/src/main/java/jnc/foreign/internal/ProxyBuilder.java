@@ -192,7 +192,7 @@ final class ProxyBuilder {
                 new Class<?>[]{interfaceClass}, toInvocationHandler()));
     }
 
-    private static class MethodKey {
+    private static final class MethodKey {
 
         private static MethodKey of(Method method) {
             return new MethodKey(method.getReturnType(), method.getParameterTypes());

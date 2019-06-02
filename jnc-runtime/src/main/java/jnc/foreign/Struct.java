@@ -8,8 +8,10 @@ import jnc.foreign.annotation.Pack;
 import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.exception.UnmappableNativeValueException;
 import jnc.foreign.internal.LayoutBuilder;
+import jnc.foreign.internal.NotFinal;
 import jnc.foreign.spi.ForeignProvider;
 
+@NotFinal(NotFinal.Reason.API)
 @SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess", "unused"})
 public class Struct {
 
@@ -435,6 +437,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class int8_t extends NumberField {
 
         private static final long serialVersionUID = 0L;
@@ -457,6 +460,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class int16_t extends NumberField {
 
         private static final long serialVersionUID = 0L;
@@ -479,6 +483,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class int32_t extends NumberField {
 
         private static final long serialVersionUID = 0L;
@@ -523,6 +528,7 @@ public class Struct {
 
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class int64_t extends LongField {
 
         private static final long serialVersionUID = 0L;
@@ -537,6 +543,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class uint8_t extends NumberField {
 
         private static final long serialVersionUID = 0L;
@@ -559,6 +566,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class uint16_t extends NumberField {
 
         private static final long serialVersionUID = 0L;
@@ -581,6 +589,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class uint32_t extends LongField {
 
         private static final long serialVersionUID = 0L;
@@ -595,6 +604,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class uint64_t extends LongField {
 
         private static final long serialVersionUID = 0L;
@@ -609,6 +619,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class bool extends AbstractBoolean {
 
         private static final long serialVersionUID = 0L;
@@ -619,6 +630,7 @@ public class Struct {
 
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class Address extends LongField {
 
         private static final long serialVersionUID = 0L;
@@ -633,6 +645,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class Pointer {
 
         private final BaseField base;
@@ -651,6 +664,7 @@ public class Struct {
 
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class size_t extends LongField {
 
         private static final long serialVersionUID = 0L;
@@ -665,6 +679,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class uintptr_t extends LongField {
 
         private static final long serialVersionUID = 0L;
@@ -679,6 +694,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class intptr_t extends LongField {
 
         private static final long serialVersionUID = 0L;
@@ -693,6 +709,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class clong extends LongField {
 
         private static final long serialVersionUID = 0L;
@@ -707,6 +724,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class Float32 extends NumberField {
 
         private static final long serialVersionUID = 0L;
@@ -729,6 +747,7 @@ public class Struct {
         }
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class Float64 extends NumberField {
 
         private static final long serialVersionUID = 0L;
@@ -754,6 +773,7 @@ public class Struct {
     /**
      * BYTE in windows, unsigned char
      */
+    @NotFinal(NotFinal.Reason.API)
     protected class BYTE extends uint8_t {
 
         private static final long serialVersionUID = 0L;
@@ -763,6 +783,7 @@ public class Struct {
 
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class WBOOL extends AbstractBoolean {
 
         private static final long serialVersionUID = 0L;
@@ -773,6 +794,7 @@ public class Struct {
 
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class WORD extends uint16_t {
 
         private static final long serialVersionUID = 0L;
@@ -782,6 +804,7 @@ public class Struct {
 
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class DWORD extends uint32_t {
 
         private static final long serialVersionUID = 0L;
@@ -791,6 +814,7 @@ public class Struct {
 
     }
 
+    @NotFinal(NotFinal.Reason.API)
     protected class DWORDLONG extends uint64_t {
 
         private static final long serialVersionUID = 0L;

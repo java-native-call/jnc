@@ -15,9 +15,12 @@
  */
 package jnc.foreign.exception;
 
+import jnc.foreign.internal.NotFinal;
+
 /**
  * @author zhanhb
  */
+@NotFinal(NotFinal.Reason.EXCEPTION)
 @SuppressWarnings("unused")
 public class JniLoadingException extends RuntimeException {
 

@@ -2,7 +2,7 @@ package jnc.foreign.internal;
 
 import javax.annotation.Nonnull;
 
-class Slice extends SizedDirectMemory {
+final class Slice extends SizedDirectMemory {
 
     // a holder to keep reference of the memory
     private final Memory outer;
