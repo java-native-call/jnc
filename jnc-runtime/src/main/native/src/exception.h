@@ -12,20 +12,12 @@
 
 #define throwByName(...) jnc_throw_by_name(__VA_ARGS__)
 
-#define checkError(type, env, name, ret)    \
-do {                                        \
-    if (unlikely(NULL == name)) {           \
-        throwByName(env, type, NULL);       \
-        return ret;                         \
-    }                                       \
-} while(false)
-
-#define checkIllegalArgument(env, condition, ret)   \
-do {                                                \
-    if (unlikely(!(condition))) {                   \
-        throwByName(env, IllegalArgument, NULL);    \
-        return ret;                                 \
-    }                                               \
+#define checkError(type, env, name, ret)        \
+do {                                            \
+    if (unlikely(JNC_NULLPTR == name)) {        \
+        throwByName(env, type, JNC_NULLPTR);    \
+        return ret;                             \
+    }                                           \
 } while(false)
 
 #define checkNullPointer(...)   checkError(NullPointer, __VA_ARGS__)

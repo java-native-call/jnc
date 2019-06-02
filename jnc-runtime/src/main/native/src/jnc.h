@@ -11,8 +11,7 @@
 #include <wchar.h>
 #include "exception.h"
 
-/* GetStringChars is not guaranteed to be null terminated
-   especially on old jdk */
+/* GetStringChars is not guaranteed to be null terminated */
 #define DO_WITH_STRING_16(env, jstring, name, length, stat, ret)      \
 do {                                                                  \
     jsize length = CALLJNI(env, GetStringLength, jstring);            \
@@ -39,42 +38,6 @@ do {                                                              \
     stat;                                                         \
     free(name);                                                   \
 } while(false)
-
-#ifdef UNUSED
-/* nothing */
-#elif defined(__GNUC__)
-#define UNUSED(x) UNUSED_ ## x __attribute__((unused))
-#elif defined(__LCLINT__)
-#define UNUSED(x) /*@unused@*/ x
-#else    /* !__GNUC__ && !__LCLINT__ */
-#define UNUSED(x) x
-#endif   /* !__GNUC__ && !__LCLINT__ */
-
-#define NOOP(...) __VA_ARGS__
-#ifdef __cplusplus
-
-template<class _Tp> inline jlong p2j(const volatile _Tp * x) {
-    return jlong(reinterpret_cast<uintptr_t> (x));
-}
-
-namespace jnc {
-
-template<class _Tp> inline _Tp* j2p_impl(jlong x) {
-    return reinterpret_cast<_Tp *> (uintptr_t(x));
-}
-
-}
-#define j2p(x, type) jnc::j2p_impl<type>(x)
-#define j2c(x, type) j2p(x, type*)
-#define j2vp(x) j2c(x, void)
-#else
-#define p2j(x) ((jlong)(uintptr_t)(x))
-#define j2p(x, type) ((type)(uintptr_t)(x))
-#define j2c(x, type) j2p(x, type*)
-#define j2vp(x) j2c(x, void)
-#endif
-
-#define MIN(x, y) ((x) < (y) ? (x) : (y))
 
 #define JNC_TYPE(type) jnc_foreign_internal_NativeAccessor_TYPE_##type
 #define CHECK_JNC_FFI(type) (JNC_TYPE(type) == FFI_TYPE_##type)

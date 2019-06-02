@@ -9,8 +9,8 @@
 #endif
 
 static void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int error) {
-    if (likely(obj != NULL && methodId != 0)) {
-        jmethodID method = j2p(methodId, jmethodID);
+    jmethodID method = j2p(methodId, jmethodID);
+    if (likely(obj != NULL && method != NULL)) {
         jvalue v;
         v.i = error;
         CALLJNI(env, CallVoidMethodA, obj, method, &v);

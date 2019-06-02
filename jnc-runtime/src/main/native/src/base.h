@@ -31,3 +31,61 @@
 #else
 #define CALLJNI(env, action, ...) (*env)->action(env, ##__VA_ARGS__)
 #endif
+
+#ifdef __cplusplus
+
+namespace jnc {
+
+    template<class _Tp> inline jlong p2j(const volatile _Tp * x) {
+        return jlong(reinterpret_cast<uintptr_t> (x));
+    }
+
+    template<class _Tp>
+    inline _Tp j2p_impl(jlong x) {
+        return reinterpret_cast<_Tp> (uintptr_t(x));
+    }
+
+    template<class T>
+    constexpr const inline T &min_impl(const T &a, const T &b) {
+        return a < b ? a : b;
+    }
+}
+
+using jnc::p2j;
+#define j2p(x, type) jnc::j2p_impl<type>(x)
+#define j2c(x, type) j2p(x, type*)
+#define j2vp(x) j2c(x, void)
+#define MIN(x, y) jnc::min_impl(x, y)
+#define EXTERNC extern "C"
+#define JNC_NULLPTR nullptr
+#else
+#define p2j(x) ((jlong)(uintptr_t)(x))
+#define j2p(x, type) ((type)(uintptr_t)(x))
+#define j2c(x, type) j2p(x, type*)
+#define j2vp(x) j2c(x, void)
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define EXTERNC extern
+#define JNC_NULLPTR NULL
+#endif
+
+#define NOOP(...) __VA_ARGS__
+
+#ifdef UNUSED
+/* nothing */
+#elif defined(__GNUC__)
+#define UNUSED(x) UNUSED_ ## x __attribute__((unused))
+#elif defined(__LCLINT__)
+#define UNUSED(x) /*@unused@*/ x
+#else    /* !__GNUC__ && !__LCLINT__ */
+#define UNUSED(x) x
+#endif   /* !__GNUC__ && !__LCLINT__ */
+
+#if SIZE_MAX == UINT64_MAX
+#define LP64_ONLY(x) x
+#define NOT_LP64(x)
+#elif SIZE_MAX == UINT32_MAX
+#define LP64_ONLY(x)
+#define NOT_LP64(x) x
+#else
+#error unknown type size_t
+#endif

@@ -140,8 +140,8 @@ typedef int errno_t;
  * Method:    initAlias
  * Signature: (Ljava/util/Map;)V
  */
-extern "C"
-JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_initAlias
+EXTERNC JNIEXPORT void JNICALL
+Java_jnc_foreign_internal_NativeMethods_initAlias
 (JNIEnv *env, jobject UNUSED(self), jobject obj) {
     checkNullPointer(env, obj, /*void*/);
 
@@ -272,8 +272,8 @@ JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_initAlias
  * Method:    getTypes
  * Signature: ()[[J
  */
-extern "C"
-JNIEXPORT jobjectArray JNICALL Java_jnc_foreign_internal_NativeMethods_getTypes
+EXTERNC JNIEXPORT jobjectArray JNICALL
+Java_jnc_foreign_internal_NativeMethods_getTypes
 (JNIEnv *env, jobject UNUSED(self)) {
 #define F(value) &ffi_type_##value
     ffi_type * addrs[] = {
