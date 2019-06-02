@@ -30,7 +30,7 @@ final class NativeLibrary implements Library {
         Dlclose dlclose = new Dlclose(libName, mode);
         try {
             return new NativeLibrary(dlclose);
-        } catch(Throwable t) {
+        } catch (Throwable t) {
             // very rare, maybe OutOfMemoryError when create Cleanable
             dlclose.run();
             throw t;

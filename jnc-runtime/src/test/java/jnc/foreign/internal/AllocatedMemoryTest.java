@@ -3,6 +3,7 @@ package jnc.foreign.internal;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
+import jnc.foreign.Pointer;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class AllocatedMemoryTest {
 
     @Test
     public void testIndexOfRange() {
-        AllocatedMemory memory = AllocatedMemory.allocate(3);
+        Pointer memory = AllocatedMemory.allocate(3);
         assertThatThrownBy(() -> memory.putInt(2, 2)).isInstanceOf(IndexOutOfBoundsException.class);
     }
 

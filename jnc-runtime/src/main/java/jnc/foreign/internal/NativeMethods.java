@@ -9,17 +9,16 @@ enum NativeMethods implements NativeAccessor {
 
     INSTANCE;
 
-    // access by native method
+    private static final AtomicReference<Runnable> onFinalize = new AtomicReference<>();
+
+    // access by native code
     @SuppressWarnings("unused")
     private static void onUnload() {
-        @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
-        Runnable runnable = INSTANCE.onFinalize.getAndSet(null);
+        Runnable runnable = onFinalize.getAndSet(null);
         if (runnable != null) {
             runnable.run();
         }
     }
-
-    private final AtomicReference<Runnable> onFinalize = new AtomicReference<>();
 
     /**
      * {@inheritDoc}
@@ -177,9 +176,6 @@ enum NativeMethods implements NativeAccessor {
     @Override
     public final native long allocateMemory(long size) throws OutOfMemoryError;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final native void copyMemory(long dst, long src, long n);
 
@@ -223,11 +219,20 @@ enum NativeMethods implements NativeAccessor {
     public final native long getMethodId(Method method);
 
     /**
-     * {@inheritDoc}
+     * Maybe the classloader instance is finalized before the lib, meanwhile the
+     * native lib is also finalized. There's no guarantee who is finalized
+     * first. Let it call our method onUnload to make sure these are finalized
+     * before native library unloaded.
+     *
+     * @param action when deployed, should only be invoked by Cleaner, nullable
+     * for test
+     * @see Cleaner.Ref#cleanAll()
+     * @see NativeMethods#onFinalize(java.lang.Runnable)
+     * @return true if registered successfully
      */
     @Override
-    public boolean onFinalize(Runnable r) {
-        return this.onFinalize.compareAndSet(null, r);
+    public boolean onFinalize(Runnable action) {
+        return onFinalize.compareAndSet(null, action);
     }
 
 }

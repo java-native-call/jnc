@@ -116,7 +116,7 @@ public class CleanerTest {
             es.shutdown();
         }
         es.awaitTermination(nTotal, TimeUnit.HOURS);
-         // this method seems to be very slow
+        // this method seems to be very slow
         list.cleanAll();
         assertThat(atomicInteger.get()).isEqualTo(nTotal);
     }

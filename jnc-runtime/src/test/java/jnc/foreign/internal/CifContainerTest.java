@@ -1,6 +1,7 @@
 package jnc.foreign.internal;
 
 import jnc.foreign.Platform;
+import jnc.foreign.Pointer;
 import jnc.foreign.TestLibs;
 import jnc.foreign.enums.CallingConvention;
 import jnc.foreign.enums.TypeAlias;
@@ -37,8 +38,8 @@ public class CifContainerTest {
         Alias uIntPtr = DefaultForeign.INSTANCE.getTypeFactory().findByAlias(TypeAlias.uintptr_t);
         CifContainer container = CifContainer.create(CallingConvention.DEFAULT, uIntPtr, uIntPtr, uIntPtr, sizeT);
         CallContext p = container.newCallContext();
-        Memory a = AllocatedMemory.allocate(20);
-        AllocatedMemory b = AllocatedMemory.allocate(20);
+        Pointer a = AllocatedMemory.allocate(20);
+        SizedDirectMemory b = AllocatedMemory.allocate(20);
         String str = "memory copy test";
         b.putStringUTF(0, str);
         p.putLong(0, a.address());

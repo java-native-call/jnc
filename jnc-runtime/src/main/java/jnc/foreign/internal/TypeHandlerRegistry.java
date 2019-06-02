@@ -164,27 +164,24 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
         return null;
     }
 
+    private UnsupportedOperationException unsupportedType(Class<?> type) {
+        return new UnsupportedOperationException("no type handler for type '" + type.getName() + "'");
+    }
+
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public <T> TypeHandlerInfo<Invoker<T>> findReturnTypeInfo(Class<T> returnType) {
         TypeHandlerInfo<Invoker<T>> typeHandlerInfo = extractFromMap(exactReturnTypeMap, inheritedReturnTypeMap, returnType);
         if (typeHandlerInfo != null) {
             return typeHandlerInfo;
+        } else if (returnType.isEnum()) {
+            EnumTypeHandler typeHandler = EnumTypeHandler.getInstance((Class) returnType);
+            Invoker<T> invoker = typeHandler.getInvoker();
+            TypeHandlerInfo<Invoker<T>> rthi = TypeHandlerInfo.typedefFirst(typeHandler.getDefaultType(), invoker);
+            addExactReturnTypeHandler(returnType, rthi);
+            return rthi;
         }
-        EnumTypeHandler typeHandler = findEnumHandler(returnType);
-        Invoker<T> invoker = typeHandler.getInvoker();
-        TypeHandlerInfo<Invoker<T>> rthi = TypeHandlerInfo.typedefFirst(typeHandler.getDefaultType(), invoker);
-        addExactReturnTypeHandler(returnType, rthi);
-        return rthi;
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private EnumTypeHandler findEnumHandler(Class type) {
-        try {
-            return EnumTypeHandler.getInstance(type);
-        } catch (IllegalArgumentException ex) {
-            throw new UnsupportedOperationException("no type handler for type '" + type.getName() + "'");
-        }
+        throw unsupportedType(returnType);
     }
 
     @Override
@@ -193,13 +190,15 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
         TypeHandlerInfo<ParameterHandler<T>> typeHandlerInfo = extractFromMap(exactParameterTypeMap, inheritedParameterTypeMap, type);
         if (typeHandlerInfo != null) {
             return typeHandlerInfo;
+        } else if (type.isEnum()) {
+            EnumTypeHandler typeHandler = EnumTypeHandler.getInstance((Class) type);
+            ParameterHandler<T> parameterHandler = typeHandler.getParameterHandler();
+            InternalType internalType = typeHandler.getDefaultType();
+            TypeHandlerInfo<ParameterHandler<T>> phi = TypeHandlerInfo.typedefFirst(internalType, parameterHandler);
+            addExactParameterTypeHandler(type, phi);
+            return phi;
         }
-        EnumTypeHandler typeHandler = findEnumHandler(type);
-        ParameterHandler<T> parameterHandler = typeHandler.getParameterHandler();
-        InternalType internalType = typeHandler.getDefaultType();
-        TypeHandlerInfo<ParameterHandler<T>> phi = TypeHandlerInfo.typedefFirst(internalType, parameterHandler);
-        addExactParameterTypeHandler(type, phi);
-        return phi;
+        throw unsupportedType(type);
     }
 
     private interface ArrayParameterHandler<T> {

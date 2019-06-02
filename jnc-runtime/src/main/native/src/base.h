@@ -40,6 +40,11 @@
 
 #ifdef __cplusplus
 
+// usually min should not be defined in C++
+#ifdef min
+#undef min
+#endif
+
 namespace jnc {
 
     template<class _Tp> inline jlong p2j(const _Tp * x) {
@@ -56,16 +61,17 @@ namespace jnc {
     }
 
     template<class T>
-    constexpr const inline T &min_impl(const T &a, const T &b) {
+    constexpr const inline T &min(const T &a, const T &b) {
         return a < b ? a : b;
     }
 }
 
+using jnc::min;
 using jnc::p2j;
 #define j2p(x, type) jnc::j2p_impl<type>(x)
 #define j2c(x, type) j2p(x, type*)
 #define j2vp(x) j2c(x, void)
-#define MIN(x, y) jnc::min_impl(x, y)
+#define MIN(x, y) min(x, y)
 #define EXTERNC extern "C"
 #define JNC_NULLPTR nullptr
 #else

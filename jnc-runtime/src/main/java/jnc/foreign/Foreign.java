@@ -25,6 +25,8 @@ public interface Foreign extends Closeable {
     @Nonnull
     Type findType(NativeType nativeType);
 
+    // Don't use, internal support for enum type
+    @Deprecated
     @Nonnull
     <E extends Enum<E>> FieldAccessor<E> getEnumFieldAccessor(Class<E> type);
 

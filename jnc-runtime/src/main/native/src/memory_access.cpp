@@ -3,7 +3,7 @@
 
 static bool checkNullAndRange(JNIEnv *env, jarray array, jint offset, jint size) {
     checkNullPointer(env, array, false);
-    if (unlikely(offset < 0 || offset > CALLJNI(env, GetArrayLength, array) - size)) {
+    if (unlikely(offset < 0 || offset > env->GetArrayLength(array) - size)) {
         throwByName(env, ArrayIndexOutOfBounds, nullptr);
         return false;
     }

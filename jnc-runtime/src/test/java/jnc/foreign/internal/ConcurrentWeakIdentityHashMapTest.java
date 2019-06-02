@@ -40,7 +40,7 @@ public class ConcurrentWeakIdentityHashMapTest {
     public void testEnsureRemoved() {
         instance.putIfAbsent(new Object(), new Object());
         assertEquals(1, instance.size());
-        assertTrue(SleepUtil.sleepUntil(()->instance.size() == 0));
+        assertTrue(SleepUtil.sleepUntil(() -> instance.size() == 0));
     }
 
     @Test

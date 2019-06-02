@@ -827,11 +827,13 @@ public class Struct {
     protected final class EnumField<E extends Enum<E>> {
 
         private final Class<E> type;
+        @SuppressWarnings("deprecation")
         private final FieldAccessor<E> fieldAccessor;
         private final BaseField field;
 
         EnumField(Class<E> type) {
             this.type = type;
+            @SuppressWarnings("deprecation")
             FieldAccessor<E> fa = getForeign().getEnumFieldAccessor(type);
             this.fieldAccessor = fa;
             this.field = new BaseField(fa.type());

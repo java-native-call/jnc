@@ -1,5 +1,7 @@
 package jnc.foreign;
 
+// Don't use, internal support for enum type
+@Deprecated
 public interface FieldAccessor<T> {
 
     Type type();

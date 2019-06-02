@@ -125,6 +125,7 @@ final class EnumTypeHandler<E extends Enum<E>> {
         return (long cif, long function, long base, @Nullable int[] offsets) -> mapLong(Invokers.invokeLong(cif, function, base, offsets));
     }
 
+    @Deprecated
     FieldAccessor getFieldAccessor() {
         FieldAccessor fa = this.fieldAccessor;
         if (fa == null) {
@@ -134,6 +135,7 @@ final class EnumTypeHandler<E extends Enum<E>> {
         return fa;
     }
 
+    @Deprecated
     private final class FieldAccessor implements jnc.foreign.FieldAccessor<E> {
 
         @Override

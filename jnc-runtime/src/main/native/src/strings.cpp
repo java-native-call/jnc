@@ -11,13 +11,13 @@ Java_jnc_foreign_internal_NativeMethods_putStringUTF
     char *paddr = j2c(laddr, char);
     checkNullPointer(env, paddr, /*void*/);
     checkNullPointer(env, value, /*void*/);
-    jsize utfLen = CALLJNI(env, GetStringUTFLength, value);
-    jsize len = CALLJNI(env, GetStringLength, value);
-    if (unlikely(CALLJNI(env, ExceptionCheck))) return;
+    jsize utfLen = env->GetStringUTFLength(value);
+    jsize len = env->GetStringLength(value);
+    if (unlikely(env->ExceptionCheck())) return;
     // It is said that some jvm implementation
     // will not got terminated character
     paddr[utfLen] = 0;
-    CALLJNI(env, GetStringUTFRegion, value, 0, len, paddr);
+    env->GetStringUTFRegion(value, 0, len, paddr);
 }
 
 /*

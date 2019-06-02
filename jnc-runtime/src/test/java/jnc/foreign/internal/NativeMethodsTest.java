@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import jnc.foreign.Pointer;
 import jnc.foreign.TestLibs;
 import jnc.foreign.enums.CallingConvention;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -80,7 +81,7 @@ public class NativeMethodsTest {
 
     @Test
     public void testStringUTF() {
-        Memory hello = AllocatedMemory.allocate(10);
+        Pointer hello = AllocatedMemory.allocate(10);
         String str = "hello!123";
         hello.putStringUTF(0, str);
         assertEquals(str, hello.getStringUTF(0));

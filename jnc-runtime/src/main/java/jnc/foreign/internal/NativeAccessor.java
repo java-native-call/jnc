@@ -47,6 +47,7 @@ interface NativeAccessor {
     int TYPE_UINT64 = 11;
     @Native
     int TYPE_SINT64 = 12;
+    @SuppressWarnings("unused")
     @Native
     int TYPE_STRUCT = 13;
     @Native
@@ -57,6 +58,7 @@ interface NativeAccessor {
     @Native
     int RTLD_NOW = 2;
     @Native
+    @SuppressWarnings("unused")
     int RTLD_LOCAL = 4;
     @Native
     int RTLD_GLOBAL = 8;
@@ -67,8 +69,9 @@ interface NativeAccessor {
     int CONVENTION_STDCALL = 1;
 
     /**
+     * array index also indicate the type, has null entry
      *
-     * @return [type_address, type_info(size:32 align:16 type:16)]
+     * @return [type_address, size&lt;&lt;32|align&lt;&lt;16|type]
      */
     long[][] getTypes();
 
@@ -171,7 +174,7 @@ interface NativeAccessor {
     /**
      * allocate clean memory of specified size
      *
-     * @param size
+     * @param size the size of memory to allocate
      * @return the address of the memory
      * @throws IllegalArgumentException size&lt;0
      */
@@ -180,12 +183,10 @@ interface NativeAccessor {
     /**
      * copy memory
      *
-     * @param dst
-     * @param src
-     * @param n
      * @throws IllegalArgumentException n&lt;0
      * @throws NullPointerException n&gt;0 and either dst or src is zero
      */
+    @SuppressWarnings("unused")
     void copyMemory(long dst, long src, long n);
 
     void freeMemory(long address);
@@ -193,7 +194,7 @@ interface NativeAccessor {
     int pageSize();
 
     /*
-     * align:32,size:32
+     * align<<32|size
      */
     default long getCifInfo() {
         return 0;
@@ -213,24 +214,13 @@ interface NativeAccessor {
 
     double invokeDouble(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
 
+    @SuppressWarnings("unused")
     void invokeStruct(long cif, long function, long base, @Nullable int[] offsets, long struct, Object obj, long methodId);
 
     default long getMethodId(Method method) {
         return 0;
     }
 
-    /**
-     * Maybe the classloader instance is finalized before the lib, meanwhile the
-     * native lib is also finalized. There's no guarantee who is finalized
-     * first. Let it call our method onUnload to make sure these are finalized
-     * before native library unloaded.
-     *
-     * @param action when deployed, should only be invoked by Cleaner, nullable
-     * for test
-     * @see Cleaner#performRemove(Cleaner.Ref)
-     * @see NativeMethods#onFinalize(java.lang.Runnable)
-     * @return true if registered successfully
-     */
     default boolean onFinalize(Runnable action) {
         return false;
     }

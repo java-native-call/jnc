@@ -20,7 +20,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import jnc.foreign.Platform;
+import jnc.foreign.exception.JniLoadingException;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -34,6 +36,34 @@ public class NativeLoaderTest {
     private static final Logger log = LoggerFactory.getLogger(NativeLoaderTest.class);
 
     private final NativeLoader instance = new NativeLoader();
+    private final String message = "It seems something goes wrong.";
+
+    /**
+     * Test of createProxy method, of class DummyNativeMethod.
+     */
+    @Test
+    public void testCreateProxy() {
+        UnsatisfiedLinkError cause = new UnsatisfiedLinkError(message);
+        NativeAccessor nativeAccessor = instance.createProxy(cause);
+        nativeAccessor.getCifInfo();
+        assertFalse(nativeAccessor.onFinalize(null));
+        nativeAccessor.getMethodId(null);
+        assertThatThrownBy(() -> nativeAccessor.allocateMemory(0))
+                .isExactlyInstanceOf(JniLoadingException.class)
+                .hasCause(cause);
+    }
+
+    @Test
+    public void testCreateProxy2() {
+        NativeAccessor nativeAccessor = instance.createProxy(new JniLoadingException(message));
+        nativeAccessor.getCifInfo();
+        assertFalse(nativeAccessor.onFinalize(null));
+        nativeAccessor.getMethodId(null);
+        assertThatThrownBy(() -> nativeAccessor.allocateMemory(0))
+                .isExactlyInstanceOf(JniLoadingException.class)
+                .hasNoCause()
+                .hasMessage(message);
+    }
 
     /**
      * Test of getLibClassPath method, of class NativeLoader.
@@ -66,7 +96,7 @@ public class NativeLoaderTest {
     @Test
     public void testLoadWithTempFile() throws Exception {
         log.info("loadWithTempFile");
-        URL url = instance.getLibPath(DefaultPlatform.INSTANCE);
+        URL url = instance.getLibPath();
         instance.loadWithTempFile(path -> assertTrue(Files.exists(Paths.get(path))), url);
     }
 

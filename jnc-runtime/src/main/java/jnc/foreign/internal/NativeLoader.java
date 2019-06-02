@@ -38,15 +38,22 @@ final class NativeLoader {
     private static NativeAccessor init() {
         NativeLoader loader = new NativeLoader();
         try {
-            loader.load(System::load, loader.getLibPath(DefaultPlatform.INSTANCE));
+            loader.load(System::load, loader.getLibPath());
         } catch (Throwable t) {
-            return DummyNativeMethod.createProxy(t);
+            return loader.createProxy(t);
         }
         return NativeMethods.INSTANCE;
     }
 
     static NativeAccessor getAccessor() {
         return NATIVE_ACCESSOR;
+    }
+
+    @VisibleForTesting
+    NativeAccessor createProxy(Throwable t) {
+        return ProxyBuilder.builder()
+                .orThrow(__ -> t instanceof UnsatisfiedLinkError ? new JniLoadingException(t) : t)
+                .newInstance(NativeAccessor.class);
     }
 
     private void load(Consumer<String> loadAction, URL url) {
@@ -62,8 +69,8 @@ final class NativeLoader {
     }
 
     @VisibleForTesting
-    URL getLibPath(Platform platform) {
-        String libPath = getLibClassPath(platform);
+    URL getLibPath() {
+        String libPath = getLibClassPath(DefaultPlatform.INSTANCE);
         URL url = NativeLoader.class.getClassLoader().getResource(libPath);
         if (url == null) {
             throw new UnsatisfiedLinkError("unable to find native lib in the classpath");

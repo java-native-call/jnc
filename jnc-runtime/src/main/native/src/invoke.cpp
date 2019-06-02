@@ -13,7 +13,7 @@ static void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int error) {
     if (likely(obj != nullptr && method != nullptr)) {
         jvalue v;
         v.i = error;
-        CALLJNI(env, CallVoidMethodA, obj, method, &v);
+        env->CallVoidMethodA(obj, method, &v);
     }
 }
 
@@ -25,17 +25,17 @@ static void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int error) {
 
 static void checkReturnValue(JNIEnv *env, ffi_status status) {
     switch (status) {
-    case FFI_OK:
-        break;
-    case FFI_BAD_TYPEDEF:
-        throwByName(env, IllegalArgument, "Bad typedef");
-        break;
-    case FFI_BAD_ABI:
-        throwByName(env, IllegalArgument, "Bad abi");
-        break;
-    default:
-        throwByName(env, UnknownError, nullptr);
-        break;
+        case FFI_OK:
+            break;
+        case FFI_BAD_TYPEDEF:
+            throwByName(env, IllegalArgument, "Bad typedef");
+            break;
+        case FFI_BAD_ABI:
+            throwByName(env, IllegalArgument, "Bad abi");
+            break;
+        default:
+            throwByName(env, UnknownError, nullptr);
+            break;
     }
 }
 

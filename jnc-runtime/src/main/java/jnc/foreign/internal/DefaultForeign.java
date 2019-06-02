@@ -2,14 +2,12 @@ package jnc.foreign.internal;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import jnc.foreign.FieldAccessor;
 import jnc.foreign.Foreign;
 import jnc.foreign.LoadOptions;
 import jnc.foreign.MemoryManager;
 import jnc.foreign.NativeType;
 import jnc.foreign.Type;
 import jnc.foreign.enums.TypeAlias;
-import jnc.foreign.spi.ForeignProvider;
 
 enum DefaultForeign implements Foreign {
 
@@ -80,9 +78,10 @@ enum DefaultForeign implements Foreign {
         return typeFactory.findByNativeType(nativeType);
     }
 
+    @Deprecated
     @Nonnull
     @Override
-    public <E extends Enum<E>> FieldAccessor<E> getEnumFieldAccessor(Class<E> type) {
+    public <E extends Enum<E>> jnc.foreign.FieldAccessor<E> getEnumFieldAccessor(Class<E> type) {
         return EnumTypeHandler.getInstance(type).getFieldAccessor();
     }
 

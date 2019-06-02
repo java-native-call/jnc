@@ -1,6 +1,7 @@
 package jnc.foreign.internal;
 
 import java.nio.ByteOrder;
+import jnc.foreign.Pointer;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -14,7 +15,7 @@ public class MemoryTest {
     @Test
     public void testUnalignedGet() {
         int size = 64;
-        Memory memory = AllocatedMemory.allocate(size);
+        Pointer memory = AllocatedMemory.allocate(size);
         for (int i = 0; i < size; ++i) {
             memory.putByte(i, (byte) ((i & 7) + 1));
         }
