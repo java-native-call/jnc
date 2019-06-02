@@ -10,7 +10,7 @@
 
 static void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int error) {
     jmethodID method = j2p(methodId, jmethodID);
-    if (likely(obj != NULL && method != NULL)) {
+    if (likely(obj != nullptr && method != nullptr)) {
         jvalue v;
         v.i = error;
         CALLJNI(env, CallVoidMethodA, obj, method, &v);
@@ -34,7 +34,7 @@ static void checkReturnValue(JNIEnv *env, ffi_status status) {
         throwByName(env, IllegalArgument, "Bad abi");
         break;
     default:
-        throwByName(env, UnknownError, NULL);
+        throwByName(env, UnknownError, nullptr);
         break;
     }
 }
@@ -44,7 +44,7 @@ static void checkReturnValue(JNIEnv *env, ffi_status status) {
  * Method:    prepareInvoke
  * Signature: (JIIJJ)V
  */
-JNIEXPORT void JNICALL
+EXTERNC JNIEXPORT void JNICALL
 Java_jnc_foreign_internal_NativeMethods_prepareInvoke
 (JNIEnv *env, jobject UNUSED(self), jlong lcif, jint abi, jint nargs,
         jlong lrtype, jlong latype) {
@@ -62,7 +62,7 @@ Java_jnc_foreign_internal_NativeMethods_prepareInvoke
  * Method:    prepareInvokeVariadic
  * Signature: (JIIIJJ)V
  */
-JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_prepareInvokeVariadic
+EXTERNC JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_prepareInvokeVariadic
 (JNIEnv *env, jobject UNUSED(self), jlong lcif, jint abi, jint nfixedargs,
         jint ntotalargs, jlong lrtype, jlong latype) {
     ffi_cif *pcif = j2c(lcif, ffi_cif);
@@ -76,7 +76,7 @@ JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_prepareInvokeVari
 }
 
 #define DEFINE_INVOKE(name, jtype, ret)                             \
-JNIEXPORT jtype JNICALL                                             \
+EXTERNC JNIEXPORT jtype JNICALL                                     \
 Java_jnc_foreign_internal_NativeMethods_invoke##name                \
 (JNIEnv * env, jobject UNUSED(self), jlong lcif, jlong jfun,        \
         jlong base, jintArray offsets, jobject obj,                 \
@@ -89,7 +89,8 @@ Java_jnc_foreign_internal_NativeMethods_invoke##name                \
         CALLJNI(env, GetArrayLength, offsets) : 0;                  \
     void ** pavalues;                                               \
     if (likely(cnt != 0)) {                                         \
-        pavalues = alloca(cnt * (sizeof (void *) + sizeof (jint))); \
+        auto unit = sizeof (void *) + sizeof (jint);                \
+        pavalues = static_cast<void**>(alloca (cnt * unit));        \
         jint* joff = (jint*) (void*) &pavalues[cnt];                \
         CALLJNI(env, GetIntArrayRegion, offsets, 0, cnt, joff);     \
         uint32_t i = 0;                                             \
@@ -97,7 +98,7 @@ Java_jnc_foreign_internal_NativeMethods_invoke##name                \
             pavalues[i] = j2c(base + joff[i], void*);               \
         }                                                           \
     } else {                                                        \
-        pavalues = NULL;                                            \
+        pavalues = nullptr;                                         \
     }                                                               \
     ffi_type * rtype = pcif->rtype;                                 \
     uint64_t res = 0;                                               \
@@ -119,7 +120,7 @@ DEFINE_INVOKE(Double, jdouble, 0);
  * Method:    getMethodId
  * Signature: (Ljava/lang/reflect/Method;)J
  */
-JNIEXPORT jlong JNICALL Java_jnc_foreign_internal_NativeMethods_getMethodId
+EXTERNC JNIEXPORT jlong JNICALL Java_jnc_foreign_internal_NativeMethods_getMethodId
 (JNIEnv *env, jobject UNUSED(self), jobject jmethod) {
     checkNullPointer(env, jmethod, 0);
     return p2j(CALLJNI(env, FromReflectedMethod, jmethod));

@@ -8,7 +8,7 @@
 #endif
 static jint _page_size;
 
-JNIEXPORT jint JNICALL JNI_OnLoad
+EXTERNC JNIEXPORT jint JNICALL JNI_OnLoad
 (JavaVM *UNUSED(vm), void *UNUSED(reserved)) {
 #ifdef _WIN32
     SYSTEM_INFO si;
@@ -25,7 +25,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad
  * Method:    getJniVersion
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL
+EXTERNC JNIEXPORT jint JNICALL
 Java_jnc_foreign_internal_NativeMethods_getJniVersion
 (JNIEnv *env, jobject UNUSED(self)) {
     return CALLJNI(env, GetVersion);
@@ -36,26 +36,26 @@ Java_jnc_foreign_internal_NativeMethods_getJniVersion
  * Method:    pageSize
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL
+EXTERNC JNIEXPORT jint JNICALL
 Java_jnc_foreign_internal_NativeMethods_pageSize
 (JNIEnv *UNUSED(env), jobject UNUSED(self)) {
     return _page_size;
 }
 
-JNIEXPORT void JNICALL JNI_OnUnload
+EXTERNC JNIEXPORT void JNICALL JNI_OnUnload
 (JavaVM *vm, void *UNUSED(reserved)) {
     JNIEnv *env;
-    if (likely((*vm)->GetEnv(vm, (void **) &env, JNI_VERSION_1_6) == JNI_OK)) {
-        jclass class = CALLJNI(env, FindClass, "jnc/foreign/internal/NativeMethods");
-        if (unlikely(class == NULL)) {
+    if (likely(vm->GetEnv((void **) &env, JNI_VERSION_1_6) == JNI_OK)) {
+        jclass type = CALLJNI(env, FindClass, "jnc/foreign/internal/NativeMethods");
+        if (unlikely(type == nullptr)) {
             CALLJNI(env, ExceptionClear);
             return;
         }
-        jmethodID methodId = CALLJNI(env, GetStaticMethodID, class, "onUnload", "()V");
-        if (unlikely(methodId == NULL)) {
+        jmethodID methodId = CALLJNI(env, GetStaticMethodID, type, "onUnload", "()V");
+        if (unlikely(methodId == nullptr)) {
             CALLJNI(env, ExceptionClear);
             return;
         }
-        CALLJNI(env, CallStaticVoidMethodA, class, methodId, NULL);
+        CALLJNI(env, CallStaticVoidMethodA, type, methodId, nullptr);
     }
 }

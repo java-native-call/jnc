@@ -5,6 +5,18 @@
  */
 static jlong malloc_zero;
 
+#define checkJlongIsSizeT(env, var, throwOnLarge, ret)  \
+do {                                                    \
+    if (unlikely(var < 0)) {                            \
+        throwByName(env, IllegalArgument, nullptr);     \
+        return ret;                                     \
+    }                                                   \
+    if (unlikely(jlong(size_t(var)) != var)) {          \
+        throwByName(env, throwOnLarge, nullptr);        \
+        return ret;                                     \
+    }                                                   \
+} while(false)
+
 /*
  * Class:     jnc_foreign_internal_NativeMethods
  * Method:    allocateMemory
@@ -13,14 +25,7 @@ static jlong malloc_zero;
 EXTERNC JNIEXPORT jlong JNICALL
 Java_jnc_foreign_internal_NativeMethods_allocateMemory
 (JNIEnv *env, jobject UNUSED(self), jlong size) {
-    if (unlikely(size < 0)) {
-        throwByName(env, IllegalArgument, NULL);
-        return 0;
-    }
-    if (unlikely((jlong) (size_t) size != size)) {
-        throwByName(env, OutOfMemory, NULL);
-        return 0;
-    }
+    checkJlongIsSizeT(env, size, OutOfMemory, 0);
     if (unlikely(size == 0)) return p2j(&malloc_zero);
     void *ret = malloc((size_t) size);
     checkOutOfMemory(env, ret, 0);
@@ -35,23 +40,12 @@ Java_jnc_foreign_internal_NativeMethods_allocateMemory
 EXTERNC JNIEXPORT void JNICALL
 Java_jnc_foreign_internal_NativeMethods_copyMemory
 (JNIEnv *env, jobject UNUSED(self), jlong ldst, jlong lsrc, jlong n) {
-    if (unlikely(n < 0)) {
-        throwByName(env, IllegalArgument, NULL);
-        return;
-    }
-    size_t sizetN = size_t(n);
-    if (
-            NOT_LP64(jlong(sizetN) != n)
-            LP64_ONLY(false)
-            ) {
-        throwByName(env, IllegalArgument, NULL);
-        return;
-    }
+    checkJlongIsSizeT(env, n, IllegalArgument, /*void*/);
     void *pdst = j2vp(ldst);
     void *psrc = j2vp(lsrc);
     checkNullPointer(env, pdst, /*void*/);
     checkNullPointer(env, psrc, /*void*/);
-    memcpy(pdst, psrc, sizetN);
+    memcpy(pdst, psrc, (size_t) n);
 }
 
 /*
@@ -62,9 +56,9 @@ Java_jnc_foreign_internal_NativeMethods_copyMemory
 EXTERNC JNIEXPORT void JNICALL
 Java_jnc_foreign_internal_NativeMethods_freeMemory
 (JNIEnv *UNUSED(env), jobject UNUSED(self), jlong laddr) {
-    /* free(NULL) should be noop, it's a good habbit to check null */
+    /* free(nullptr) should be noop, it's a good habbit to check null */
     void *paddr = j2vp(laddr);
-    if (likely(NULL != paddr && paddr != &malloc_zero)) {
+    if (likely(nullptr != paddr && paddr != &malloc_zero)) {
         free(paddr);
     }
 }

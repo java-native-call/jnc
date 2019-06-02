@@ -3,12 +3,6 @@
 #include "jnc_foreign_internal_NativeAccessor.h"
 #include "jnc_foreign_internal_NativeMethods.h"
 #include <ffi.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <wchar.h>
 #include "exception.h"
 
 /* GetStringChars is not guaranteed to be null terminated */

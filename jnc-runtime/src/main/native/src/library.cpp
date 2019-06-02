@@ -5,7 +5,7 @@
 #define RTLD_LAZY 0
 /* and zero to avoid unused parameter */
 #define JNC2RTLD(x) ((x) & 0)
-#define dlopen(path, mode) (path ? LoadLibraryExW(path, NULL, mode) : GetModuleHandleW(NULL))
+#define dlopen(path, mode) (path ? LoadLibraryExW(path, nullptr, mode) : GetModuleHandleW(nullptr))
 #define dlsym(hModule, symbol) GetProcAddress(hModule, symbol)
 #define dlclose(module) !FreeLibrary(module)
 /* assume wchar_t on windows is 2 byte, compile error when not */
@@ -24,7 +24,8 @@ do {                                                                        \
     if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
     jvalue jv_;                                                             \
     jv_.key = value;                                                        \
-    jobject jo_ = CALLJNI(env, NewObjectA, jc_, _jm, &jv_);                 \
+    auto jo_ = reinterpret_cast<jthrowable>                                 \
+        (CALLJNI(env, NewObjectA, jc_, _jm, &jv_));                         \
     if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
     CALLJNI(env, Throw, jo_);                                               \
     CALLJNI(env, DeleteLocalRef, jo_);                                      \
@@ -35,21 +36,21 @@ do {                                                                        \
 
 static void throwByLastError(JNIEnv * env, const char * type) {
     DWORD dw = GetLastError();
-    LPWSTR lpMsgBuf = NULL;
+    LPWSTR lpMsgBuf = nullptr;
     if (unlikely(!FormatMessageW(
             FORMAT_MESSAGE_ALLOCATE_BUFFER |
             FORMAT_MESSAGE_FROM_SYSTEM |
             FORMAT_MESSAGE_IGNORE_INSERTS,
-            NULL,
+            nullptr,
             dw,
             MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
             (LPWSTR) & lpMsgBuf,
-            0, NULL))) {
-        throwByName(env, OutOfMemory, NULL);
+            0, nullptr))) {
+        throwByName(env, OutOfMemory, nullptr);
         return;
     }
     // trust system call return value
-    // assume lpMsgBuf is not NULL
+    // assume lpMsgBuf is not nullptr
     size_t len = wcslen(lpMsgBuf);
     if (likely(len > 0 && lpMsgBuf[len - 1] == '\n'))--len;
     if (likely(len > 0 && lpMsgBuf[len - 1] == '\r'))--len;
@@ -99,20 +100,20 @@ do {                                        \
  * Method:    dlopen
  * Signature: (Ljava/lang/String;I)J
  */
-JNIEXPORT jlong JNICALL
+EXTERNC JNIEXPORT jlong JNICALL
 Java_jnc_foreign_internal_NativeMethods_dlopen
 (JNIEnv *env, jobject UNUSED(self), jstring path, jint mode) {
-    HMODULE ret = NULL;
-    if (unlikely(NULL == path)) {
+    HMODULE ret = nullptr;
+    if (unlikely(nullptr == path)) {
 #ifdef __BIONIC__
         ret = RTLD_DEFAULT;
 #else
-        ret = dlopen(NULL, RTLD_LAZY);
+        ret = dlopen(nullptr, RTLD_LAZY);
 #endif
     } else {
         DO_WITH_PLATFORM_STRING(env, path, buf, len, ret = dlopen((DLOPEN_PARAM_TYPE) (void*) buf, JNC2RTLD(mode)), 0);
     }
-    if (unlikely(NULL == ret)) {
+    if (unlikely(nullptr == ret)) {
         throwByLastError(env, UnsatisfiedLink);
     }
     return p2j(ret);
@@ -123,7 +124,7 @@ Java_jnc_foreign_internal_NativeMethods_dlopen
  * Method:    dlsym
  * Signature: (JLjava/lang/String;)J
  */
-JNIEXPORT jlong JNICALL
+EXTERNC JNIEXPORT jlong JNICALL
 Java_jnc_foreign_internal_NativeMethods_dlsym
 (JNIEnv *env, jobject UNUSED(self), jlong lhandle, jstring symbol) {
     HMODULE hModule = j2p(lhandle, HMODULE);
@@ -143,13 +144,13 @@ Java_jnc_foreign_internal_NativeMethods_dlsym
  * Method:    dlclose
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL
+EXTERNC JNIEXPORT void JNICALL
 Java_jnc_foreign_internal_NativeMethods_dlclose
 (JNIEnv *env, jobject UNUSED(self), jlong lhandle) {
     HMODULE hModule = j2p(lhandle, HMODULE);
     checkNullPointer(env, hModule, /*void*/);
 #ifdef _WIN32
-    if (unlikely(GetModuleHandleW(NULL) == (hModule))) return;
+    if (unlikely(GetModuleHandleW(nullptr) == (hModule))) return;
 #elif defined(__BIONIC__)
     if (hModule == RTLD_DEFAULT) return;
 #endif

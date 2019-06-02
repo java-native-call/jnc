@@ -1,6 +1,12 @@
 #pragma once
 
 #include <jni.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
+#include <wchar.h>
 
 #ifdef _WIN32
 // attribute hidden is not supported on windows
@@ -36,7 +42,11 @@
 
 namespace jnc {
 
-    template<class _Tp> inline jlong p2j(const volatile _Tp * x) {
+    template<class _Tp> inline jlong p2j(const _Tp * x) {
+        return jlong(reinterpret_cast<uintptr_t> (x));
+    }
+
+    template<class _Tp> inline jlong p2j(_Tp * x) {
         return jlong(reinterpret_cast<uintptr_t> (x));
     }
 
