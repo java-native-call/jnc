@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 
 class Slice extends SizedDirectMemory {
 
+    // a holder to keep reference of the memory
     private final Memory outer;
     private final int offset;
 
@@ -15,9 +16,9 @@ class Slice extends SizedDirectMemory {
 
     @Nonnull
     @Override
-    public final Slice slice(int offset, int count) {
-        getAccessor().checkIndex(offset, size(), count);
-        return new Slice(outer, this.offset + offset, count);
+    public final Slice slice(int beginIndex, int endIndex) {
+        MemoryAccessor.checkRange(size(), beginIndex, endIndex);
+        return new Slice(outer, offset + beginIndex, endIndex - beginIndex);
     }
 
 }

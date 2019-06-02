@@ -208,16 +208,33 @@ final class MemoryAccessor {
         return NA.getStringChar16(address + offset);
     }
 
-    MemoryAccessor checkIndex(int offset, long total, int len) {
-        if (offset < 0 || offset > total - len) {
+    /**
+     * check if specified {@code size} can be put in the specified
+     * {@code offset}
+     *
+     * @param total total size of the memory in bytes
+     * @param offset the offset of the memory to put into
+     * @param size the size of the object prepare to put
+     * @return {@code this}
+     */
+    MemoryAccessor checkSize(long total, int offset, int size) {
+        if (offset < 0 || offset > total - size) {
             throw new IndexOutOfBoundsException();
         }
         return this;
     }
 
-    MemoryAccessor checkArrayIndex(int offset, long total, int len, int unit) {
+    static void checkRange(long total, int beginIndex, int endIndex) {
+        if (beginIndex < 0 || endIndex > total || beginIndex > endIndex) {
+            String msg = String.format("begin=%s,end=%s,size=%s",beginIndex,endIndex,total);
+            throw new IndexOutOfBoundsException(msg);
+        }
+    }
+
+    MemoryAccessor checkArrayIndex(long total, int offset, int len, int unit, String typeMsg) {
         if (offset < 0 || offset > total - (long) len * unit) {
-            throw new IndexOutOfBoundsException();
+            String msg = String.format("access(offset=%s,size=%s)[%s*%s]",offset,total,typeMsg,len);
+            throw new IndexOutOfBoundsException(msg);
         }
         return this;
     }

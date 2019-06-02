@@ -244,8 +244,12 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
      */
     @Nonnull
     @Override
-    public Pointer slice(int offset, int size) {
-        return new Slice(this, offset, size);
+    public Pointer slice(int beginIndex, int endIndex) {
+        if (beginIndex > endIndex) {
+            String msg = "begin " + beginIndex + ", end " + endIndex;
+            throw new IndexOutOfBoundsException(msg);
+        }
+        return new Slice(this, beginIndex, endIndex - beginIndex);
     }
 
     @Override

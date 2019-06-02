@@ -283,7 +283,7 @@ public class Struct {
         }
 
         final jnc.foreign.Pointer getMemory(int size) {
-            return struct.getMemory().slice(offset, size);
+            return struct.getMemory().slice(offset, offset + size);
         }
     }
 
