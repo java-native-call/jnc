@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import jnc.foreign.Pointer;
 import jnc.foreign.TestLibs;
 import jnc.foreign.enums.CallingConvention;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -146,7 +147,7 @@ public class NativeMethodsTest {
     public void testGetStringUTFEmpty() {
         long address = NA.allocateMemory(0);
         try {
-            String string = NA.getStringUTF(address);
+            String string = NA.getStringUTF(address, -1);
             assertEquals("", string);
         } finally {
             NA.freeMemory(address);
@@ -164,13 +165,12 @@ public class NativeMethodsTest {
     }
 
     /**
-     * Test of putStringChar16/getStringChar16/getStringChar16N methods, of
-     * class NativeMethods.
+     * Test of putStringChar16/getStringChar16 methods, of class NativeMethods.
      */
     @Test
     public void testStringChar16() {
-        log.info("StringChar16");
-        AllocatedMemory memory = AllocatedMemory.allocate(40);
+        log.info("stringChar16");
+        Pointer memory = AllocatedMemory.allocate(40);
         long address = memory.address();
         String value = "\u0102\u0304\u0506\u0708\u0000\u0807\u0000";
 
@@ -186,29 +186,72 @@ public class NativeMethodsTest {
         memory.getCharArray(0, arr1, 0, arr1.length);
         assertArrayEquals(arr2, arr1);
 
-        assertHexEquals("aligned access", "\u0102\u0304\u0506\u0708", NA.getStringChar16(address));
+        assertHexEquals("aligned access", "\u0102\u0304\u0506\u0708", NA.getStringChar16(address, -1));
         String expect;
         if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
             expect = "\u0203\u0405\u0607\u0800\u0008\u0700";
         } else {
             expect = "\u0401\u0603\u0805\u0007\u0700\u0008";
         }
-        assertHexEquals("unaligned access", expect, NA.getStringChar16(address + 1));
+        assertHexEquals("unaligned access", expect, NA.getStringChar16(address + 1, -1));
 
-        assertHexEquals("aligned access with limit", "\u0102\u0304\u0506\u0708", NA.getStringChar16N(address, 8));
-        assertHexEquals("aligned access with limit", "\u0102\u0304\u0506", NA.getStringChar16N(address, 7));
+        assertHexEquals("aligned access with limit", "\u0102\u0304\u0506\u0708", NA.getStringChar16(address, 8));
+        assertHexEquals("aligned access with limit", "\u0102\u0304\u0506", NA.getStringChar16(address, 7));
         if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
             expect = "\u0203\u0405\u0607\u0800\u0008\u0700";
         } else {
             expect = "\u0401\u0603\u0805\u0007\u0700\u0008";
         }
-        assertHexEquals("unaligned access with limit", expect, NA.getStringChar16N(address + 1, 12));
+        assertHexEquals("unaligned access with limit", expect, NA.getStringChar16(address + 1, 12));
         if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
             expect = "\u0203\u0405\u0607\u0800\u0008";
         } else {
             expect = "\u0401\u0603\u0805\u0007\u0700";
         }
-        assertHexEquals("unaligned access with limit", expect, NA.getStringChar16N(address + 1, 11));
+        assertHexEquals("unaligned access with limit", expect, NA.getStringChar16(address + 1, 11));
+    }
+
+    /**
+     * Test of getStringUTFLength method, of class NativeMethods.
+     */
+    @Test
+    public void testGetStringUTFLength() {
+        log.info("getStringUTFLength");
+        assertThatThrownBy(() -> NA.getStringUTFLength(null))
+                .isInstanceOf(NullPointerException.class);
+        assertThat(NA.getStringUTFLength("")).isEqualTo(0);
+        assertThat(NA.getStringUTFLength("abcdef")).isEqualTo(6);
+        assertThat(NA.getStringUTFLength("\u0000")).isEqualTo(2);
+    }
+
+    /**
+     * Test of getFixLengthCharsetStringLength method, of class NativeMethods.
+     */
+    @Test
+    public void testGetStringLength() {
+        log.info("getFixLengthCharsetStringLength");
+        // address, limit, terminatorLength
+        // terminatorLength must be 1,2,4
+        assertThatThrownBy(() -> NA.getStringLength(0, 0, 1))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> NA.getStringLength(1, -2, 1))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> NA.getStringLength(1, 0, 3))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        Pointer pointer = AllocatedMemory.allocate(20);
+        pointer.putLong(0, 0x2020202020202020L);
+        for (int terminatorLength : new int[]{1, 2, 4}) {
+            assertThat(NA.getStringLength(pointer.address(), 0, terminatorLength))
+                    .describedAs("terminatorLength=%s", terminatorLength)
+                    .isEqualTo(0);
+            assertThat(NA.getStringLength(pointer.address(), -1, terminatorLength))
+                    .describedAs("terminatorLength=%s", terminatorLength)
+                    .isEqualTo(8 / terminatorLength);
+            assertThat(NA.getStringLength(pointer.address(), 4, terminatorLength))
+                    .describedAs("terminatorLength=%s", terminatorLength)
+                    .isEqualTo(4 / terminatorLength);
+        }
     }
 
 }

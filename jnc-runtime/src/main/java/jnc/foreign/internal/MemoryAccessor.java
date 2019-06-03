@@ -24,13 +24,6 @@ final class MemoryAccessor {
 
     private static final NativeAccessor NA = NativeLoader.getAccessor();
 
-    static void checkRange(long total, int beginIndex, int endIndex) {
-        if (beginIndex < 0 || endIndex > total || beginIndex > endIndex) {
-            String msg = String.format("begin=%s,end=%s,capacity=%s", beginIndex, endIndex, total);
-            throw new IndexOutOfBoundsException(msg);
-        }
-    }
-
     private long address;
 
     MemoryAccessor(long address) {
@@ -209,8 +202,8 @@ final class MemoryAccessor {
     }
 
     @Nonnull
-    String getStringUTF(int offset) {
-        return NA.getStringUTF(address + offset);
+    String getStringUTF(int offset, long limit) {
+        return NA.getStringUTF(address + offset, limit);
     }
 
     void putString16(int offset, @Nonnull String value) {
@@ -218,16 +211,12 @@ final class MemoryAccessor {
     }
 
     @Nonnull
-    String getString16(int offset) {
-        return NA.getStringChar16(address + offset);
+    String getString16(int offset, long limit) {
+        return NA.getStringChar16(address + offset, limit);
     }
 
-    String getStringUTFN(long address, long limit) {
-        return NA.getStringUTFN(address, limit);
-    }
-
-    String getStringChar16N(long address, long limit) {
-        return NA.getStringChar16N(address, limit);
+    int getFixLengthCharsetStringLength(int offset, long limit, int terminatorLength) {
+        return NA.getStringLength(address + offset, limit, terminatorLength);
     }
 
 }

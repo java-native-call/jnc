@@ -127,15 +127,18 @@ interface NativeAccessor {
 
     void putStringUTF(long address, String value);
 
-    String getStringUTF(long address);
-
-    String getStringUTFN(long address, long limit);
+    /**
+     * @param limit -1 if not limited
+     */
+    String getStringUTF(long address, long limit);
 
     void putStringChar16(long address, String value);
 
-    String getStringChar16(long address);
+    String getStringChar16(long address, long limit);
 
-    String getStringChar16N(long address, long limit);
+    int getStringUTFLength(String value);
+
+    int getStringLength(long address, long limit, int terminatorLength);
 
     void putRawAddress(long address, long value);
 

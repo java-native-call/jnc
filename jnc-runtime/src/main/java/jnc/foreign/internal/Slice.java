@@ -17,7 +17,7 @@ final class Slice extends SizedDirectMemory {
     @Nonnull
     @Override
     public final Slice slice(int beginIndex, int endIndex) {
-        MemoryAccessor.checkRange(size(), beginIndex, endIndex);
+        checkSliceRange(size(), beginIndex, endIndex);
         return new Slice(outer, offset + beginIndex, endIndex - beginIndex);
     }
 

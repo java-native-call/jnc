@@ -1,6 +1,6 @@
 package jnc.foreign.internal;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import jnc.foreign.NativeType;
@@ -8,6 +8,15 @@ import jnc.foreign.Pointer;
 
 @NotFinal(NotFinal.Reason.EXTENSION_CLASS_PRESENT)
 class SizedDirectMemory extends Memory {
+
+    // not private
+    // access by class Slice
+    static void checkSliceRange(long total, int beginIndex, int endIndex) {
+        if (beginIndex < 0 || endIndex > total || beginIndex > endIndex) {
+            String msg = String.format("begin=%s,end=%s,capacity=%s", beginIndex, endIndex, total);
+            throw new IndexOutOfBoundsException(msg);
+        }
+    }
 
     /**
      * check if specified {@code size} can be put in the specified
@@ -19,7 +28,9 @@ class SizedDirectMemory extends Memory {
      */
     private static void checkSize(long total, int offset, int size) {
         if (offset < 0 || offset > total - size) {
-            throw new IndexOutOfBoundsException();
+            String format = "capacity of this pointer is %s, but trying to put an object with size=%s at position %s";
+            String msg = String.format(format, total, size, offset);
+            throw new IndexOutOfBoundsException(msg);
         }
     }
 
@@ -282,44 +293,62 @@ class SizedDirectMemory extends Memory {
         getAccessor().getDoubleArray(offset, array, off, len);
     }
 
+    private void checkPutStringCapacity(long limit, int offset, int require) {
+        if (offset < 0 || offset > limit - require) {
+            String format = "capacity of this pointer is %s, but require %s to process the string at position %s";
+            String msg = String.format(format, limit, require, offset);
+            throw new IndexOutOfBoundsException(msg);
+        }
+    }
+
     @Override
     public final void putStringUTF(int offset, @Nonnull String value) {
-        byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
-        int len = bytes.length;
-        // we must check for offset might be negative
-        MemoryAccessor ma = getAccessor();
-        checkSize(size, offset, len + 1);
-        // call ma.put* without range check
-        ma.putByte(offset + len, (byte) 0);
-        ma.putBytes(offset, bytes, 0, len);
+        // TODO assume time complexity of getStringUTFLength is O(1) ?? 
+        //  maybe we should cache the length
+        int utfLength = NativeLoader.getAccessor().getStringUTFLength(value);
+        checkPutStringCapacity(size, offset, utfLength + 1);
+        getAccessor().putStringUTF(offset, value);
     }
 
     @Nonnull
     @Override
     public final String getStringUTF(int offset) {
-        checkSize(size, offset, 1);
-        MemoryAccessor ma = getAccessor();
-        return ma.getStringUTFN(ma.address() + offset, size);
+        return getAccessor().getStringUTF(offset, size);
     }
 
     @Override
-    public final void putString16(int offset, @Nonnull String value) {
-        checkArrayIndex(size, offset, value.length() + 1, Character.BYTES, "byte");
+    void putStringImpl(int offset, byte[] bytes, int terminatorLength) {
+        checkPutStringCapacity(size, offset, bytes.length + terminatorLength);
+        StringCoding.put(getAccessor(), offset, bytes, terminatorLength);
+    }
+
+    @Override
+    String getStringImpl(int offset, Charset charset) {
+        if (offset < 0 || offset > size) {
+            throw new IndexOutOfBoundsException();
+        }
+        return StringCoding.get(getAccessor(), offset, charset, size - offset);
+    }
+
+    @Override
+    final void putString16(int offset, @Nonnull String value) {
+        checkPutStringCapacity(size, offset, (value.length() + 1) * Character.BYTES);
         getAccessor().putString16(offset, value);
     }
 
     @Nonnull
     @Override
-    public final String getString16(int offset) {
-        MemoryAccessor ma = getAccessor();
-        checkSize(size, offset, Character.BYTES);
-        return ma.getStringChar16N(ma.address() + offset, size);
+    final String getString16(int offset) {
+        if (offset < 0 || offset > size) {
+            throw new IndexOutOfBoundsException();
+        }
+        return getAccessor().getString16(offset, size - offset);
     }
 
     @Nonnull
     @Override
     public Slice slice(int beginIndex, int endIndex) {
-        MemoryAccessor.checkRange(size, beginIndex, endIndex);
+        checkSliceRange(size, beginIndex, endIndex);
         return new Slice(this, beginIndex, endIndex - beginIndex);
     }
 

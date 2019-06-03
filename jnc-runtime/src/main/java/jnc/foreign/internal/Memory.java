@@ -1,6 +1,8 @@
 package jnc.foreign.internal;
 
+import java.nio.charset.Charset;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 
@@ -83,6 +85,38 @@ abstract class Memory implements Pointer {
     public final void putDouble(int offset, Type nativeType, double value) {
         putDouble(offset, toInternalType(nativeType), value);
     }
+
+    @Override
+    public final void putString(int offset, @Nonnull String value, @Nonnull Charset charset) {
+        Objects.requireNonNull(value);
+        Objects.requireNonNull(charset);
+        if (StringCoding.isNativeUTF16(charset)) {
+            putString16(offset, value);
+            return;
+        }
+        int terminatorLength = CharsetUtil.getTerminatorLength(charset);
+        // throws UnsupportedOperationException if the charset doesn't support encode
+        byte[] bytes = value.getBytes(charset);
+        putStringImpl(offset, bytes, terminatorLength);
+    }
+
+    @Nonnull
+    @Override
+    public String getString(int offset, @Nonnull Charset charset) {
+        Objects.requireNonNull(charset);
+        if (StringCoding.isNativeUTF16(charset)) {
+            return getString16(offset);
+        }
+        return getStringImpl(offset, charset);
+    }
+
+    abstract void putString16(int offset, @Nonnull String value);
+
+    abstract String getString16(int offset);
+
+    abstract void putStringImpl(int offset, byte[] bytes, int terminatorLength);
+
+    abstract String getStringImpl(int offset, Charset charset);
 
     abstract void putBoolean(int offset, InternalType internalType, boolean value);
 
