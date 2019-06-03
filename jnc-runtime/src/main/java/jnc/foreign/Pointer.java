@@ -1,5 +1,6 @@
 package jnc.foreign;
 
+import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -66,15 +67,51 @@ public interface Pointer {
 
     void putDoubleArray(int offset, double[] array, int off, int len);
 
+    /**
+     * Call NewStringUTF with current Pointer. If this pointer is managed, value
+     * will be truncated at the end of the pointer. The string is encoded in
+     * modified UTF-8.
+     *
+     * Note: {@code p.getStringUTF(offset)} is not full equally to
+     * {@code p.getString(offset, StandardCharsets.UTF_8)}. JNI use modified
+     * UTF-8
+     */
     @Nonnull
     String getStringUTF(int offset);
 
+    /**
+     * Call GetStringUTFRegion to get JNI format UTF-8 to this pointer. Null
+     * terminated. The string is decoded in modified UTF-8.
+     *
+     * Note: {@code p.putStringUTF(offset)} is not full equally to
+     * {@code p.getString(offset, StandardCharsets.UTF_8)}
+     *
+     * @throws IndexOutOfBoundsException If this pointer is managed and doesn't
+     * have enough space to put the string
+     */
     void putStringUTF(int offset, @Nonnull String value);
 
+    /**
+     * Read null terminated string in specified charset. Truncated if this
+     * pointer is managed and no terminated sequence found when reach the end of
+     * the pointer.
+     *
+     * @param offset the offset of this pointer
+     * @throws NullPointerException if charset is null
+     */
     @Nonnull
-    String getString16(int offset);
+    String getString(int offset, @Nonnull Charset charset);
 
-    void putString16(int offset, @Nonnull String value);
+    /**
+     * Put the String to this pointer in specified charset. Null Terminated.
+     * If the string value has null terminated character, will be truncated when
+     * read back with {@link #getString(int, Charset) getString}
+     *
+     * @param offset the offset of this pointer
+     * @throws IndexOutOfBoundsException If this pointer is managed and doesn't
+     * have enough space to put the string
+     */
+    void putString(int offset, @Nonnull String value, @Nonnull Charset charset);
 
     boolean getBoolean(int offset, Type type);
 
@@ -100,6 +137,10 @@ public interface Pointer {
 
     void putDouble(int offset, Type type, double value);
 
+    /**
+     * Treat the value at {@code offset} of this Pointer as an address, read as
+     * a pointer. The result is an unmanaged pointer.
+     */
     @Nullable
     Pointer getPointer(int offset);
 

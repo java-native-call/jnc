@@ -1,13 +1,24 @@
 package jnc.foreign;
 
+import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
 
 public interface MemoryManager {
 
     @Nonnull
-    Pointer allocate(long size) throws OutOfMemoryError;
+    Pointer allocate(long size);
 
     @Nonnull
-    Pointer allocateWithAlign(long size, long alignment) throws OutOfMemoryError;
+    Pointer allocateWithAlign(long size, long alignment);
+
+    /**
+     * Allocate exact size of memory to put the string and null terminator.
+     *
+     * @throws NullPointerException if {@code string} or {@code charset} is null
+     * @throws OutOfMemoryError if unable to allocate memory with specified
+     * string.
+     */
+    @Nonnull
+    Pointer allocateString(@Nonnull String string, @Nonnull Charset charset);
 
 }

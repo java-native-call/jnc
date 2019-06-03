@@ -1,5 +1,6 @@
 package jnc.foreign.internal;
 
+import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
 import jnc.foreign.Pointer;
 
@@ -147,6 +148,16 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
     }
 
     @Override
+    void putStringImpl(int offset, byte[] bytes, int terminatorLength) {
+        StringCoding.put(getAccessor(), offset, bytes, terminatorLength);
+    }
+
+    @Override
+    String getStringImpl(int offset, Charset charset) {
+        return StringCoding.get(getAccessor(), offset, charset, -1);
+    }
+
+    @Override
     public void putBytes(int offset, byte[] bytes, int off, int len) {
         getAccessor().putBytes(offset, bytes, off, len);
     }
@@ -224,18 +235,18 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
     @Nonnull
     @Override
     public String getStringUTF(int offset) {
-        return getAccessor().getStringUTF(offset);
+        return getAccessor().getStringUTF(offset, -1);
     }
 
     @Override
-    public void putString16(int offset, @Nonnull String value) {
+    void putString16(int offset, @Nonnull String value) {
         getAccessor().putString16(offset, value);
     }
 
     @Nonnull
     @Override
-    public String getString16(int offset) {
-        return getAccessor().getString16(offset);
+    String getString16(int offset) {
+        return getAccessor().getString16(offset, -1);
     }
 
     /**

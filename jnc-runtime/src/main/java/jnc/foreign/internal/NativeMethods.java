@@ -105,19 +105,19 @@ enum NativeMethods implements NativeAccessor {
     public final native void putStringUTF(long address, String value);
 
     @Override
-    public final native String getStringUTF(long address);
-
-    @Override
-    public final native String getStringUTFN(long address, long limit);
+    public final native String getStringUTF(long address, long limit);
 
     @Override
     public final native void putStringChar16(long address, String value);
 
     @Override
-    public final native String getStringChar16(long address);
+    public final native String getStringChar16(long address, long limit);
 
     @Override
-    public final native String getStringChar16N(long address, long limit);
+    public final native int getStringUTFLength(String value);
+
+    @Override
+    public final native int getStringLength(long address, long limit, int terminatorLength);
 
     @Override
     public final native void putRawAddress(long address, long value);

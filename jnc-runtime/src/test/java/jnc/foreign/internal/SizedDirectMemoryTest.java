@@ -1,5 +1,6 @@
 package jnc.foreign.internal;
 
+import jnc.foreign.Pointer;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
@@ -17,9 +18,7 @@ public class SizedDirectMemoryTest {
     @Test
     public void testPutStringUTF() {
         log.info("putStringUTF");
-        byte space = 32;
-        SizedDirectMemory instance = AllocatedMemory.allocate(8);
-        instance.putLong(0, 0x2020202020202020L);
+        Pointer instance = AllocatedMemory.allocate(8);
 
         assertThatThrownBy(() -> instance.putStringUTF(0, "abcdefgh"))
                 .isInstanceOf(IndexOutOfBoundsException.class);
@@ -29,15 +28,20 @@ public class SizedDirectMemoryTest {
 
         assertThatThrownBy(() -> instance.putStringUTF(2, "abcdef"))
                 .isInstanceOf(IndexOutOfBoundsException.class);
+        instance.putStringUTF(2, "abcde");
 
+        instance.putLong(0, 0x2020202020202020L);
+
+        byte space = 32;
         instance.putStringUTF(1, "a\u0000cd");
         assertEquals(space, instance.getByte(0));
         assertEquals('a', instance.getByte(1));
-        assertEquals(0, instance.getByte(2));
-        assertEquals('c', instance.getByte(3));
-        assertEquals('d', instance.getByte(4));
-        assertEquals(0, instance.getByte(5));
-        assertEquals(space, instance.getByte(6));
+        // NOTE putStringUTF is modified UTF-8
+        assertEquals(-64, instance.getByte(2));
+        assertEquals(-128, instance.getByte(3));
+        assertEquals('c', instance.getByte(4));
+        assertEquals('d', instance.getByte(5));
+        assertEquals(0, instance.getByte(6));
         assertEquals(space, instance.getByte(7));
 
         assertThatThrownBy(() -> instance.getByte(8))
@@ -51,13 +55,14 @@ public class SizedDirectMemoryTest {
     public void testGetStringUTF() {
         log.info("getStringUTF");
         int offset = 0;
-        SizedDirectMemory instance = AllocatedMemory.allocate(8);
-        Slice slice = instance.slice(0, 6);
+        Pointer instance = AllocatedMemory.allocate(8);
+        Pointer slice = instance.slice(0, 6);
         assertThat(instance.getStringUTF(offset)).isEmpty();
         instance.putLong(offset, 0x2020202020202020L);
         assertThat(instance.getStringUTF(offset)).isEqualTo("        ");
         assertThat(slice.address()).isEqualTo(instance.address());
         assertThat(slice.getStringUTF(offset)).isEqualTo("      ");
+        assertThat(slice.slice(1, 6).getStringUTF(offset)).isEqualTo("     ");
     }
 
 }
