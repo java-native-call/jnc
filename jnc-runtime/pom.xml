@@ -9,7 +9,7 @@
     <artifactId>jnc-runtime</artifactId>
 
     <properties>
-        <jni.header.dir>${project.basedir}/src/main/native/jni</jni.header.dir>
+        <jni.header.dir>${project.basedir}/../libjnc/jni</jni.header.dir>
         <module.name>com.github.zhanhb.jnc.runtime</module.name>
         <osgi.export>!jnc.foreign.internal.*,jnc.*;-noimport:=true</osgi.export>
         <osgi.import>javax.annotation.*;resolution:=optional,*</osgi.import>
@@ -147,7 +147,7 @@ try {
                                             <os family="mac" />
                                         </condition>
                                         <property name="cmake.build.dir.name" value="cmake-build-${build.arch}" />
-                                        <property name="cmake.build.dir" value="${project.basedir}/src/main/native/${cmake.build.dir.name}" />
+                                        <property name="cmake.build.dir" value="${project.basedir}/../libjnc/${cmake.build.dir.name}" />
                                         <mkdir dir="${cmake.build.dir}" />
                                         <exec dir="${cmake.build.dir}" executable="cmake" failonerror="true">
                                             <arg line="-G" />
