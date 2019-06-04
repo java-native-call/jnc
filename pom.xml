@@ -72,6 +72,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <module.name>com.github.zhanhb.jnc</module.name>
         <osgi.dynamicImport />
+        <gmavenplus-plugin.version>1.7.0</gmavenplus-plugin.version>
         <osgi.export>${project.groupId}.*;version=${project.version};-noimport:=true</osgi.export>
         <osgi.import>*</osgi.import>
         <osgi.private />
@@ -179,6 +180,11 @@
                             <Bundle-DocURL>${project.url}</Bundle-DocURL>
                         </instructions>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.gmavenplus</groupId>
+                    <artifactId>gmavenplus-plugin</artifactId>
+                    <version>${gmavenplus-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
