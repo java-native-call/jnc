@@ -2,10 +2,14 @@ package jnc.foreign.internal;
 
 import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import jnc.foreign.Pointer;
 
+@ParametersAreNonnullByDefault
 final class UnboundedDirectMemory extends Memory implements NativeObject, Pointer {
 
+    @Nullable
     static Pointer of(long address) {
         return address == 0 ? null : new UnboundedDirectMemory(address);
     }
@@ -263,13 +267,14 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
         return new Slice(this, beginIndex, endIndex - beginIndex);
     }
 
+    @Nullable
     @Override
     public Pointer getPointer(int offset) {
         return UnboundedDirectMemory.of(getAccessor().getAddress(offset));
     }
 
     @Override
-    public void putPointer(int offset, Pointer pointer) {
+    public void putPointer(int offset, @Nullable Pointer pointer) {
         getAccessor().putAddress(offset, pointer != null ? pointer.address() : 0);
     }
 

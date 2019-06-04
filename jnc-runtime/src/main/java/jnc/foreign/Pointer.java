@@ -3,7 +3,9 @@ package jnc.foreign;
 import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public interface Pointer {
 
     /**
@@ -89,7 +91,7 @@ public interface Pointer {
      * @throws IndexOutOfBoundsException If this pointer is managed and doesn't
      * have enough space to put the string
      */
-    void putStringUTF(int offset, @Nonnull String value);
+    void putStringUTF(int offset, String value);
 
     /**
      * Read null terminated string in specified charset. Truncated if this
@@ -100,7 +102,7 @@ public interface Pointer {
      * @throws NullPointerException if charset is null
      */
     @Nonnull
-    String getString(int offset, @Nonnull Charset charset);
+    String getString(int offset, Charset charset);
 
     /**
      * Put the String to this pointer in specified charset. Null Terminated.
@@ -111,7 +113,7 @@ public interface Pointer {
      * @throws IndexOutOfBoundsException If this pointer is managed and doesn't
      * have enough space to put the string
      */
-    void putString(int offset, @Nonnull String value, @Nonnull Charset charset);
+    void putString(int offset, String value, Charset charset);
 
     boolean getBoolean(int offset, Type type);
 

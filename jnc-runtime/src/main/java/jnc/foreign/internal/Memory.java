@@ -3,9 +3,11 @@ package jnc.foreign.internal;
 import java.nio.charset.Charset;
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 
+@ParametersAreNonnullByDefault
 abstract class Memory implements Pointer {
 
     private final MemoryAccessor ma;

@@ -2,6 +2,8 @@ package jnc.foreign.internal;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import jnc.foreign.Foreign;
 import jnc.foreign.LoadOptions;
 import jnc.foreign.MemoryManager;
@@ -9,6 +11,7 @@ import jnc.foreign.NativeType;
 import jnc.foreign.Type;
 import jnc.foreign.enums.TypeAlias;
 
+@ParametersAreNonnullByDefault
 enum DefaultForeign implements Foreign {
 
     INSTANCE;
@@ -41,7 +44,7 @@ enum DefaultForeign implements Foreign {
 
     @Nonnull
     @Override
-    public <T> T load(Class<T> interfaceClass, String libname, LoadOptions loadOptions) {
+    public <T> T load(Class<T> interfaceClass, @Nullable String libname, LoadOptions loadOptions) {
         Objects.requireNonNull(interfaceClass, "interfaceClass");
         Objects.requireNonNull(loadOptions, "loadOptions");
         try {

@@ -16,6 +16,7 @@
 package jnc.foreign.internal;
 
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import javax.annotation.Nullable;
 import jnc.foreign.Platform;
 
 /**
@@ -26,7 +27,7 @@ final class NativeLibrary implements Library {
     private static final NativeAccessor NA = NativeLoader.getAccessor();
     private static final Cleaner CLEANER = Cleaner.getInstance();
 
-    static NativeLibrary open(String libName, int mode) {
+    static NativeLibrary open(@Nullable String libName, int mode) {
         Dlclose dlclose = new Dlclose(libName, mode);
         try {
             return new NativeLibrary(dlclose);
@@ -67,7 +68,7 @@ final class NativeLibrary implements Library {
         private static final AtomicLongFieldUpdater<Dlclose> UPDATER
                 = AtomicLongFieldUpdater.newUpdater(Dlclose.class, "address");
 
-        private static long openImpl(String libName, int mode) {
+        private static long openImpl(@Nullable String libName, int mode) {
             try {
                 return NA.dlopen(libName, mode);
             } catch (UnsatisfiedLinkError error) {
@@ -83,7 +84,7 @@ final class NativeLibrary implements Library {
         @SuppressWarnings("unused")
         private volatile long address;
 
-        Dlclose(String libname, int mode) {
+        Dlclose(@Nullable String libname, int mode) {
             this.address = openImpl(libname, mode);
         }
 

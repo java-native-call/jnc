@@ -19,10 +19,12 @@ import java.lang.annotation.Native;
 import java.lang.reflect.Method;
 import java.util.Map;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * @author zhanhb
  */
+@ParametersAreNonnullByDefault
 interface NativeAccessor {
 
     @Native
@@ -224,7 +226,10 @@ interface NativeAccessor {
         return 0;
     }
 
-    default boolean onFinalize(Runnable action) {
+    /*
+     * action nullable for test. Will only be accessed by class Cleaner when published.
+     */
+    default boolean onFinalize(@Nullable Runnable action) {
         return false;
     }
 

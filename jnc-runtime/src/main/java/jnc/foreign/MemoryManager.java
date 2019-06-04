@@ -2,7 +2,9 @@ package jnc.foreign;
 
 import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 public interface MemoryManager {
 
     @Nonnull
@@ -19,6 +21,6 @@ public interface MemoryManager {
      * string.
      */
     @Nonnull
-    Pointer allocateString(@Nonnull String string, @Nonnull Charset charset);
+    Pointer allocateString(String string, Charset charset);
 
 }

@@ -2,9 +2,11 @@ package jnc.foreign.internal;
 
 import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import jnc.foreign.MemoryManager;
 import jnc.foreign.Pointer;
 
+@ParametersAreNonnullByDefault
 enum DefaultMemoryManager implements MemoryManager {
 
     INSTANCE;
@@ -21,6 +23,7 @@ enum DefaultMemoryManager implements MemoryManager {
         return AllocatedMemory.allocate(size);
     }
 
+    @Nonnull
     @Override
     public Pointer allocateString(String string, Charset charset) {
         byte[] bytes = string.getBytes(charset);
