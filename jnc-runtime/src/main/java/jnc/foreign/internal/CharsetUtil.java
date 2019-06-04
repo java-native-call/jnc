@@ -43,10 +43,12 @@ final class CharsetUtil {
                 }
             }
             // Null character is not defined in these charsets
-            // JIS_X0212-1990, IBM300, IBM834, JIS0208, these are fixed length encoding
-            // All these are fixed length charset
-            // for COMPOUND_TEXT let's assume length of null terminated character is 1
-            // assume terminator length is 2 for all other cases
+            // COMPOUND_TEXT, JIS_X0212-1990, IBM300, IBM834, JIS0208
+            // Except COMPOUND_TEXT all others are fixed length charsets with
+            // byte count per char 2. For COMPOUND_TEXT, let's assume length
+            // of null terminated character is 1.
+            // assume terminator length is 2 for all other unknown charsets.
+
             // COMPOUND_TEXT can be null
             return ch.equals(COMPOUND_TEXT) ? 1 : 2;
         });

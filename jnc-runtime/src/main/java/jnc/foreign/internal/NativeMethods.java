@@ -4,7 +4,9 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
+@ParametersAreNonnullByDefault
 enum NativeMethods implements NativeAccessor {
 
     INSTANCE;
@@ -231,7 +233,7 @@ enum NativeMethods implements NativeAccessor {
      * @return true if registered successfully
      */
     @Override
-    public boolean onFinalize(Runnable action) {
+    public boolean onFinalize(@Nullable Runnable action) {
         return onFinalize.compareAndSet(null, action);
     }
 

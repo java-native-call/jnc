@@ -2,9 +2,12 @@ package jnc.foreign;
 
 import java.io.Closeable;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.spi.ForeignProvider;
 
+@ParametersAreNonnullByDefault
 public interface Foreign extends Closeable {
 
     @Nonnull
@@ -13,7 +16,7 @@ public interface Foreign extends Closeable {
     }
 
     @Nonnull
-    <T> T load(Class<T> interfaceClass, String libname, LoadOptions loadOptions);
+    <T> T load(Class<T> interfaceClass, @Nullable String libname, LoadOptions loadOptions);
 
     /**
      * @throws UnsupportedOperationException if specified type is not supported

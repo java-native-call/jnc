@@ -3,9 +3,11 @@ package jnc.foreign.internal;
 import java.nio.charset.Charset;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 
+@ParametersAreNonnullByDefault
 @NotFinal(NotFinal.Reason.EXTENSION_CLASS_PRESENT)
 class SizedDirectMemory extends Memory {
 

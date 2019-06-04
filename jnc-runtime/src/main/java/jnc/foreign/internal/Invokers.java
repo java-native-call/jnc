@@ -16,16 +16,19 @@
 package jnc.foreign.internal;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNullableByDefault;
 import jnc.foreign.Pointer;
 
 /**
  * @author zhanhb
  */
+@ParametersAreNullableByDefault
 @SuppressWarnings("UtilityClassWithoutPrivateConstructor")
 final class Invokers {
 
     private static final NativeAccessor NA = NativeLoader.getAccessor();
 
+    @Nullable
     static Pointer invokePointer(long cif, long function, long base, @Nullable int[] offsets) {
         return UnboundedDirectMemory.of(invokeLong(cif, function, base, offsets));
     }
@@ -62,6 +65,7 @@ final class Invokers {
         return NA.invokeDouble(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
     }
 
+    @Nullable
     static Void invokeVoid(long cif, long function, long base, @Nullable int[] offsets) {
         NA.invokeVoid(cif, function, base, offsets, ThreadLocalError.getInstance(), LastErrorHandler.METHOD_ID);
         return null;

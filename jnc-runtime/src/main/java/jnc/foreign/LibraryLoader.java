@@ -2,8 +2,11 @@ package jnc.foreign;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import jnc.foreign.enums.CallingConvention;
 
+@ParametersAreNonnullByDefault
 @SuppressWarnings("WeakerAccess")
 public final class LibraryLoader<T> {
 
@@ -44,7 +47,7 @@ public final class LibraryLoader<T> {
     }
 
     @Nonnull
-    public T load(String libname) {
+    public T load(@Nullable String libname) {
         return Foreign.getDefault().load(interfaceClass, libname, loadOptionsBuilder.build());
     }
 
