@@ -57,7 +57,6 @@ do {                                                                        \
     if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
     CALLJNI(env, Throw, jo_);                                               \
     CALLJNI(env, DeleteLocalRef, jo_);                                      \
-    CALLJNI(env, DeleteLocalRef, jc_);                                      \
 } while(false)
 
 #define throwByNameString(...) throwByNameA(l, "Ljava/lang/String;", __VA_ARGS__)

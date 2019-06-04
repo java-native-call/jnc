@@ -11,5 +11,4 @@ void jnc_throw_by_name(JNIEnv *env, const char *name, const char *msg) {
     auto type = env->FindClass(name);
     if (unlikely(env->ExceptionCheck())) return;
     env->ThrowNew(type, msg);
-    env->DeleteLocalRef(type);
 }
