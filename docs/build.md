@@ -59,5 +59,5 @@ How to build this package with native binary?
 
 Cross build libs for windows on Linux, Mac OS X:
 
-[nb.xml](../jnc-runtime/src/main/native/nb.yml) shows a how to open native in NetBeans IDE,
+[nb.xml](../libjnc/nb.yml) shows a how to open native in NetBeans IDE,
 it contains scripts how to perform a cross-build.
