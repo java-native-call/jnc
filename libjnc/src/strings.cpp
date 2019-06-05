@@ -1,5 +1,24 @@
 #include "jnc.h"
 
+template<int = sizeof (size_t)>
+struct shift_selector;
+
+template<>
+struct shift_selector<4> : jnc_type_traits::integral_constant<int, 30> {
+};
+
+template<>
+struct shift_selector<8> : jnc_type_traits::integral_constant<int, 62> {
+};
+
+/* limit must not be negative, should be checked before pass to this function */
+inline bool is_unlimited(jlong limit) {
+    static_assert(sizeof(void *) == sizeof(size_t), "require pointer and size_t same size");
+    // maybe the limit here we got is calculated by minus something.
+    // treat it as unlimited if the limit is greater than a quart of the whole memory can be presented.
+    return limit >> shift_selector<>::value;
+}
+
 /*
  * Class:     jnc_foreign_internal_NativeMethods
  * Method:    putStringUTF
@@ -16,8 +35,9 @@ Java_jnc_foreign_internal_NativeMethods_putStringUTF
     if (unlikely(env->ExceptionCheck())) return;
     // It is said that some jvm implementation
     // will not got terminated character
-    paddr[utfLen] = 0;
     env->GetStringUTFRegion(value, 0, len, paddr);
+    if (unlikely(env->ExceptionCheck())) return;
+    paddr[utfLen] = 0;
 }
 
 /*
@@ -32,7 +52,8 @@ EXTERNC JNIEXPORT jint JNICALL Java_jnc_foreign_internal_NativeMethods_getString
 }
 
 static size_t get_string_length_2(const jchar * const addr, jlong limit) noexcept {
-    if (limit == -1) {
+    // limit is non negative
+    if (is_unlimited(limit)) {
 #if WCHAR_MAX == UINT16_MAX
         // on windows
         return wcslen((wchar_t*) addr);
@@ -42,10 +63,7 @@ static size_t get_string_length_2(const jchar * const addr, jlong limit) noexcep
         return p - addr;
 #endif
     } else {
-        size_t szLimit;
-        LP64_ONLY(szLimit = size_t(limit));
-        NOT_LP64(szLimit = size_t(MIN(limit, (jlong) (SIZE_MAX - 1))));
-        szLimit /= sizeof (jchar);
+        size_t szLimit = limit / sizeof (jchar);
         const jchar *p = addr;
         while (szLimit-- > 0 && *p) ++p;
         return p - addr;
@@ -63,14 +81,12 @@ Java_jnc_foreign_internal_NativeMethods_getStringUTF
     const char *const paddr = j2c(laddr, char);
     checkNullPointer(env, paddr, nullptr);
     if (limit == 0) return env->NewStringUTF("");
-    if (limit == -1) return env->NewStringUTF(paddr);
-    if (unlikely(limit < -1)) {
+    if (unlikely(limit < 0)) {
         throwByName(env, IllegalArgument, nullptr);
         return 0;
     }
-    size_t szLimit;
-    LP64_ONLY(szLimit = size_t(limit));
-    NOT_LP64(szLimit = size_t(min(limit, (jlong) (SIZE_MAX - 1))));
+    if (is_unlimited(limit)) return env->NewStringUTF(paddr);
+    size_t szLimit = limit;
     const char *p = paddr;
     for (size_t n = szLimit; n; --n) {
         if (!*p++) return env->NewStringUTF(paddr);
@@ -96,8 +112,9 @@ EXTERNC JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_putString
     checkNullPointer(env, value, /*void*/);
     jsize len = env->GetStringLength(value);
     if (unlikely(env->ExceptionCheck())) return;
-    paddr[len] = 0;
     env->GetStringRegion(value, 0, len, paddr);
+    if (unlikely(env->ExceptionCheck())) return;
+    paddr[len] = 0;
 }
 
 /*
@@ -110,7 +127,7 @@ EXTERNC JNIEXPORT jstring JNICALL Java_jnc_foreign_internal_NativeMethods_getStr
     const jchar * const paddr = j2c(laddr, jchar);
     checkNullPointer(env, paddr, nullptr);
     if (limit == 0) return env->NewStringUTF("");
-    if (unlikely(limit < -1)) {
+    if (unlikely(limit < 0)) {
         throwByName(env, IllegalArgument, nullptr);
         return nullptr;
     }
@@ -125,12 +142,10 @@ EXTERNC JNIEXPORT jstring JNICALL Java_jnc_foreign_internal_NativeMethods_getStr
 }
 
 static size_t get_string_length_1(const char *const addr, jlong limit) {
-    if (limit == -1) {
+    if (is_unlimited(limit)) {
         return strlen(addr);
     } else {
-        size_t szLimit;
-        LP64_ONLY(szLimit = size_t(limit));
-        NOT_LP64(szLimit = size_t(MIN(limit, (jlong) (SIZE_MAX - 1))));
+        size_t szLimit = limit;
         // Behavior of `memchr` is not defined if not found in searching range.
         const char *p = addr;
         while (szLimit-- > 0 && *p) ++p;
@@ -139,7 +154,7 @@ static size_t get_string_length_1(const char *const addr, jlong limit) {
 }
 
 static size_t get_string_length_4(const jint * const addr, jlong limit) {
-    if (limit == -1) {
+    if (is_unlimited(limit)) {
 #if WCHAR_MAX == UINT32_MAX
         return wcslen(reinterpret_cast<wchar_t*> (addr));
 #else
@@ -149,10 +164,7 @@ static size_t get_string_length_4(const jint * const addr, jlong limit) {
         return p - addr;
 #endif
     } else {
-        size_t szLimit;
-        LP64_ONLY(szLimit = size_t(limit));
-        NOT_LP64(szLimit = size_t(MIN(limit, (jlong) (SIZE_MAX - 1))));
-        szLimit /= sizeof (jint);
+        size_t szLimit = limit / sizeof (jint);
         const jint *p = addr;
         while (szLimit-- > 0 && *p) ++p;
         return p - addr;
@@ -168,7 +180,7 @@ EXTERNC JNIEXPORT jint JNICALL Java_jnc_foreign_internal_NativeMethods_getString
 (JNIEnv *env, jobject UNUSED(self), jlong laddr, jlong limit, jint terminatorLength) {
     const void *const paddr = j2vp(laddr);
     checkNullPointer(env, paddr, 0);
-    if (unlikely(limit < -1)) goto iae;
+    if (unlikely(limit < 0)) goto iae;
     size_t len;
     switch (terminatorLength) {
         case 1:
@@ -183,7 +195,7 @@ EXTERNC JNIEXPORT jint JNICALL Java_jnc_foreign_internal_NativeMethods_getString
         default:
             goto iae;
     }
-    if (len > INT32_MAX) return INT32_MAX;
+    if (unlikely(len > INT32_MAX)) return INT32_MAX;
     return (jint) len;
 iae:
     throwByName(env, IllegalArgument, nullptr);
