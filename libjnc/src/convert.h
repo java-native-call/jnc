@@ -9,6 +9,8 @@
         break;                                      \
     }
 
+#define NOOP(...) __VA_ARGS__
+
 #define PUT_BY_TYPE(...) PUT_BY_TYPE_E(NOOP, __VA_ARGS__)
 
 #define PUT_ALL(ptr, addr, value)                       \
@@ -64,18 +66,12 @@ switch (atype->type) {                              \
 
 #define TO_TYPE(type, x) (type)(x)
 #define TO_BOOLEAN(x)   !!(x)
-#define TO_JBYTE(x)     TO_TYPE(jbyte, x)
-#define TO_JCHAR(x)     TO_TYPE(jchar, x)
-#define TO_JSHORT(x)    TO_TYPE(jshort, x)
 #define TO_JINT(x)      TO_TYPE(jint, x)
 #define TO_JLONG(x)     TO_TYPE(jlong, x)
 #define TO_JFLOAT(x)    TO_TYPE(jfloat, x)
 #define TO_JDOUBLE(x)   TO_TYPE(jdouble, x)
 #define RET_void(...)
 #define RET_jboolean(...)   RET(TO_BOOLEAN, jboolean, __VA_ARGS__)
-#define RET_jbyte(...)      RET(TO_JBYTE, jbyte, __VA_ARGS__)
-#define RET_jchar(...)      RET(TO_JCHAR, jchar, __VA_ARGS__)
-#define RET_jshort(...)     RET(TO_JSHORT, jshort, __VA_ARGS__)
 #define RET_jint(...)       RET(TO_JINT, jint, __VA_ARGS__)
 #define RET_jlong(...)      RET(TO_JLONG, jlong, __VA_ARGS__)
 #define RET_jfloat(...)     RET(TO_JFLOAT, jfloat, __VA_ARGS__)

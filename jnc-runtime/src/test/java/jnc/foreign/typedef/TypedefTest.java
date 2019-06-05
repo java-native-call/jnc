@@ -58,14 +58,14 @@ public class TypedefTest {
                 try {
                     Class.forName(basePackage + "." + subPackage + "." + typeAlias);
                     assertThat(found.compareAndSet(null, subPackage))
-                            .withFailMessage("duplicate annotation '%s' found both in package '%s' and '%s'", typeAlias, found, subPackage)
+                            .describedAs("duplicate annotation '%s' found both in package '%s' and '%s'", typeAlias, found, subPackage)
                             .isTrue();
                 } catch (ClassNotFoundException ignored) {
                 }
             }
             String pkg = found.get();
             assertThat(pkg)
-                    .withFailMessage("alias %s not found in any packages", typeAlias)
+                    .describedAs("alias %s not found in any packages", typeAlias)
                     .isNotNull();
             map.computeIfAbsent(pkg, __ -> new ArrayList<>(16)).add(typeAlias);
         }
@@ -98,7 +98,7 @@ public class TypedefTest {
                 }
                 String msg = "alias support '%s' should %sbe supported on platform %s, but got %s";
                 assertThat(s == result)
-                        .withFailMessage(msg, typeAlias, s ? "" : "not ", os, result ? "supported" : "unsupported")
+                        .describedAs(msg, typeAlias, s ? "" : "not ", os, result ? "supported" : "unsupported")
                         .isTrue();
             }
         }

@@ -16,7 +16,6 @@
 package jnc.foreign.internal;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -34,7 +33,6 @@ final class CifCallContext implements CallContext {
     // must keep a strong reference to cif,
     // Maybe cif is gced before call finish
     // VariadicMethodInvocation.invoke won't keep a reference to CifContainer
-    @SuppressWarnings("UnusedAssignment")
     private final Struct cif;
 
     CifCallContext(int parameterSize, InternalType[] params,
@@ -77,12 +75,11 @@ final class CifCallContext implements CallContext {
         return this;
     }
 
-    public void finish() {
+    private void finish() {
         List<Runnable> finish = this.onFinish;
         if (finish != null) {
-            Collections.reverse(finish);
-            for (Runnable runnable : finish) {
-                runnable.run();
+            for (int i = finish.size() - 1; i >= 0; --i) {
+                finish.get(i).run();
             }
         }
     }

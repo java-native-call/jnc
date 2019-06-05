@@ -95,7 +95,9 @@ set(LIBFFI_BUILD_CFLAGS "${CMAKE_C_FLAGS} ${SHARED_FLAGS} ${CMAKE_C_FLAGS_${BUIL
 set(LIBFFI_BUILD_CXXFLAGS "${CMAKE_CXX_FLAGS} ${SHARED_FLAGS} ${CMAKE_CXX_FLAGS_${BUILD_TYPE_UPPER}}")
 set(LIBFFI_BUILD_LDFLAGS "${CMAKE_STATIC_LINKER_FLAGS} ${SHARED_FLAGS} ${CMAKE_STATIC_LINKER_FLAGS_${BUILD_TYPE_UPPER}}")
 
-# unused options when building libffi
+# These flags are not applied to libffi build flags.
+# With `Werror` libffi get building error
+# The other options are managed by libffi building script
 set(SHARED_FLAGS "${SHARED_FLAGS} -Werror -MMD -MP -fno-exceptions")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SHARED_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SHARED_FLAGS} ${DARWIN_CLANG_WERROR_FIX}")
@@ -114,7 +116,7 @@ ExternalProject_Add(libffi
 
 ExternalProject_Add_Step(libffi autogen
         COMMAND env NOCONFIGURE=1 ./autogen.sh
-        DEPENDEES patch DEPENDERS configure
+        DEPENDEES gitinfo.txt patch DEPENDERS configure
         WORKING_DIRECTORY <SOURCE_DIR>)
 
 if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
@@ -168,8 +170,9 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${ARCH_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ARCH_FLAGS}")
 else ()
+    set(LIBFFI_HOST_CONFIG)
     if (CMAKE_C_COMPILER_TARGET)
-        set(HOST_CONFIG "--host" "${CMAKE_C_COMPILER_TARGET}")
+        set(LIBFFI_HOST_CONFIG "--host" "${CMAKE_C_COMPILER_TARGET}")
     endif ()
     ExternalProject_Add_Step(libffi configure-impl
             COMMAND env ${LIBFFI_BUILD_ENV}
@@ -178,7 +181,7 @@ else ()
             "LDFLAGS=${LIBFFI_BUILD_LDFLAGS}"
             # use relative path, let autoconf determine style of the path
             ../libffi/configure ${LIBFFI_BUILD_CONFIG}
-            ${HOST_CONFIG} "--prefix=<INSTALL_DIR>"
+            ${LIBFFI_HOST_CONFIG} "--prefix=<INSTALL_DIR>"
             DEPENDEES autogen
             DEPENDERS configure
             WORKING_DIRECTORY <BINARY_DIR>)
@@ -189,8 +192,6 @@ else ()
             DEPENDERS build
             WORKING_DIRECTORY <BINARY_DIR>)
 endif ()
-
-ExternalProject_Get_Property(libffi BINARY_DIR)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_STRIP} ${STRIP_ARGS} "${CMAKE_BINARY_DIR}/${TARGET_FILE_NAME}")
@@ -212,12 +213,14 @@ if (DIST_DIR)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_BINARY_DIR}/${TARGET_FILE_NAME}" "${JNI_DIRECTORY}/${DIST_FILE_NAME}")
 endif ()
 
-include_directories(jni ${BINARY_DIR}/include)
-set(LIBFFI_LIBS ${BINARY_DIR}/.libs/libffi.a)
+ExternalProject_Get_Property(libffi BINARY_DIR)
+set(LIBFFI_BINARY_DIR "${BINARY_DIR}")
+include_directories(jni "${LIBFFI_BINARY_DIR}/include")
+set(LIBFFI_LIBS "${LIBFFI_BINARY_DIR}/.libs/libffi.a")
 
 target_link_libraries(${PROJECT_NAME} ${LIBFFI_LIBS})
 add_dependencies(${PROJECT_NAME} libffi)
-add_definitions(-D_JNI_IMPLEMENTATION_)
+add_definitions(-D_JNI_IMPLEMENTATION_ -DSTRICT)
 
 # force link with C instead of CXX
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE "C")

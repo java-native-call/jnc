@@ -315,7 +315,10 @@ class SizedDirectMemory extends Memory {
     @Nonnull
     @Override
     public final String getStringUTF(int offset) {
-        return getAccessor().getStringUTF(offset, size);
+        if (offset < 0 || offset > size) {
+            throw new IndexOutOfBoundsException();
+        }
+        return getAccessor().getStringUTF(offset, size - offset);
     }
 
     @Override

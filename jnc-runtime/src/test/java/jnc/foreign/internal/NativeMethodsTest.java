@@ -225,11 +225,11 @@ public class NativeMethodsTest {
     }
 
     /**
-     * Test of getFixLengthCharsetStringLength method, of class NativeMethods.
+     * Test of getStringLength method, of class NativeMethods.
      */
     @Test
     public void testGetStringLength() {
-        log.info("getFixLengthCharsetStringLength");
+        log.info("getStringLength");
         // address, limit, terminatorLength
         // terminatorLength must be 1,2,4
         assertThatThrownBy(() -> NA.getStringLength(0, 0, 1))

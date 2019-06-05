@@ -9,6 +9,7 @@ interface TypeFactory {
 
     InternalType findByNativeType(NativeType nativeType);
 
+    @SuppressWarnings("unused")
     InternalType findByPrimaryType(Class<?> type);
 
 }

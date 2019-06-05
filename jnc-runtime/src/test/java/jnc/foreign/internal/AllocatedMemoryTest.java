@@ -42,7 +42,6 @@ public class AllocatedMemoryTest {
     }
 
     @Test
-    @SuppressWarnings("SleepWhileInLoop")
     public void testDealloc() {
         Set<AllocatedMemory> set = Collections.newSetFromMap(new WeakHashMap<>());
         for (int i = 0; i < 100; ++i) {

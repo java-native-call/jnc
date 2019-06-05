@@ -22,7 +22,6 @@ import org.junit.Test;
 /**
  * @author zhanhb
  */
-@SuppressWarnings("MarkerInterface")
 public class LayoutBuilderTest {
 
     @Test

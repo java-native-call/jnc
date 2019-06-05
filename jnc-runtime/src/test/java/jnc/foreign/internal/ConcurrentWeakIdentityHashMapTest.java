@@ -36,7 +36,6 @@ public class ConcurrentWeakIdentityHashMapTest {
     }
 
     @Test
-    @SuppressWarnings("SleepWhileInLoop")
     public void testEnsureRemoved() {
         instance.putIfAbsent(new Object(), new Object());
         assertEquals(1, instance.size());

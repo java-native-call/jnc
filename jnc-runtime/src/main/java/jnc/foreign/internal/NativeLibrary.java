@@ -81,7 +81,6 @@ final class NativeLibrary implements Library {
             }
         }
 
-        @SuppressWarnings("unused")
         private volatile long address;
 
         Dlclose(@Nullable String libname, int mode) {

@@ -40,7 +40,7 @@ final class StringCoding {
         int terminatorLength = getTerminatorLength(charset);
         // all charsets with terminatorLength greater than 1 will encode
         // any supported character to multiple of the terminatorLength
-        int length = ma.getFixLengthCharsetStringLength(offset, limit, terminatorLength);
+        int length = ma.getStringLength(offset, limit, terminatorLength);
         if (length == 0) {
             return "";
         }

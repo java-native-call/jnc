@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({"UnusedReturnValue", "WeakerAccess", "unused", "SameParameterValue"})
+@SuppressWarnings({"UnusedReturnValue", "WeakerAccess", "unused"})
 public class StructTest {
 
     private static final Logger log = LoggerFactory.getLogger(StructTest.class);

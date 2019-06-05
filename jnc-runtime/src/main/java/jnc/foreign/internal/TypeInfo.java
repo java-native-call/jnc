@@ -86,7 +86,7 @@ final class TypeInfo implements InternalType {
 
     @Override
     public String toString() {
-        return "TypeInfo(" + nativeType() + ')';
+        return getClass().getSimpleName() + "(" + nativeType() + ')';
     }
 
 }
