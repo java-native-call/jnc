@@ -65,38 +65,35 @@ public class CleanerTest {
         Cleaner.Ref list = new Cleaner.Ref();
         Cleaner cleaner = new Cleaner(list);
 
+        AtomicBoolean executed = new AtomicBoolean();
         {
-            AtomicBoolean executed = new AtomicBoolean();
-            {
-                cleaner.register(new Object(), () -> executed.set(true));
-            }
-            // register new object to make sure clean action triggered
-            assertTrue(SleepUtil.sleepUntil(() -> {
-                cleaner.register(new Object(), NOOP);
-                return executed.get();
-            }));
+            cleaner.register(new Object(), () -> executed.set(true));
         }
+        // register new object to make sure clean action triggered
+        assertTrue(SleepUtil.sleepUntil(() -> {
+            cleaner.register(new Object(), NOOP);
+            return executed.get();
+        }));
     }
 
     @Test
     public void testReferenceUnreachableExceptional() {
         Cleaner.Ref list = new Cleaner.Ref();
         Cleaner cleaner = new Cleaner(list);
-        {
-            AtomicBoolean executed = new AtomicBoolean();
-            {
-                cleaner.register(new Object(), () -> {
-                    executed.set(true);
-                    throw new RuntimeException();
-                });
-            }
 
-            // register new object to make sure clean action triggered
-            assertTrue(SleepUtil.sleepUntil(() -> {
-                cleaner.register(new Object(), NOOP);
-                return executed.get();
-            }));
+        AtomicBoolean executed = new AtomicBoolean();
+        {
+            cleaner.register(new Object(), () -> {
+                executed.set(true);
+                throw new RuntimeException();
+            });
         }
+
+        // register new object to make sure clean action triggered
+        assertTrue(SleepUtil.sleepUntil(() -> {
+            cleaner.register(new Object(), NOOP);
+            return executed.get();
+        }));
     }
 
     @Test

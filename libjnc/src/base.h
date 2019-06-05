@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <wchar.h>
 
+// JNC_SYMBOL_HIDDEN
 #ifdef _WIN32
 // attribute hidden is not supported on windows
 #define JNC_SYMBOL_HIDDEN
@@ -17,6 +18,14 @@
 #else // not defined(__GNUC__) or __GNUC__ < 4
 #define JNC_SYMBOL_HIDDEN
 #endif // __GNUC__
+
+#ifdef __GNUC__
+#define UNUSED(x) UNUSED_ ## x __attribute__((unused))
+#elif defined(__LCLINT__)
+#define UNUSED(x) /*@unused@*/ x
+#else    /* !__GNUC__ && !__LCLINT__ */
+#define UNUSED(x) x
+#endif   /* !__GNUC__ && !__LCLINT__ */
 
 #ifdef __GNUC__
 #define likely(x) __builtin_expect(!!(x), 1)
@@ -38,13 +47,12 @@
 #define CALLJNI(env, action, ...) (*env)->action(env, ##__VA_ARGS__)
 #endif
 
-#ifdef __cplusplus
-
-// usually min should not be defined in C++
-#ifdef min
+// usually min is not defined in C++
+#if defined(__cplusplus) && defined(min)
 #undef min
 #endif
 
+#ifdef __cplusplus
 namespace jnc {
 
     template<class _Tp> inline jlong p2j(const _Tp * x) {
@@ -73,7 +81,6 @@ using jnc::p2j;
 #define j2vp(x) j2c(x, void)
 #define MIN(x, y) min(x, y)
 #define EXTERNC extern "C"
-#define JNC_NULLPTR nullptr
 #else
 #define p2j(x) ((jlong)(uintptr_t)(x))
 #define j2p(x, type) ((type)(uintptr_t)(x))
@@ -81,20 +88,7 @@ using jnc::p2j;
 #define j2vp(x) j2c(x, void)
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define EXTERNC extern
-#define JNC_NULLPTR NULL
 #endif
-
-#define NOOP(...) __VA_ARGS__
-
-#ifdef UNUSED
-/* nothing */
-#elif defined(__GNUC__)
-#define UNUSED(x) UNUSED_ ## x __attribute__((unused))
-#elif defined(__LCLINT__)
-#define UNUSED(x) /*@unused@*/ x
-#else    /* !__GNUC__ && !__LCLINT__ */
-#define UNUSED(x) x
-#endif   /* !__GNUC__ && !__LCLINT__ */
 
 #if SIZE_MAX == UINT64_MAX
 #define LP64_ONLY(x) x

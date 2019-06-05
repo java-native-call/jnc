@@ -29,7 +29,7 @@ import org.junit.Test;
 /**
  * @author zhanhb
  */
-@SuppressWarnings({"PackageVisibleInnerClass", "unused"})
+@SuppressWarnings("unused")
 public class InvocationLibraryTest {
 
     private static Library DUMMY_LIB;
@@ -110,7 +110,7 @@ public class InvocationLibraryTest {
         }
     }
 
-    interface NoConvention {
+    private interface NoConvention {
 
         @Stdcall
         void stdcall();
@@ -123,7 +123,7 @@ public class InvocationLibraryTest {
     }
 
     @DefaultConvention
-    interface DefaultConventionLib {
+    private interface DefaultConventionLib {
 
         @Stdcall
         void stdcall();
@@ -136,7 +136,7 @@ public class InvocationLibraryTest {
     }
 
     @Stdcall
-    interface StdcallConvention {
+    private interface StdcallConvention {
 
         @Stdcall
         void stdcall();

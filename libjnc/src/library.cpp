@@ -91,7 +91,6 @@ static void throwByLastError(JNIEnv * env, const char * type) {
 
 #include <dlfcn.h>
 
-#define JNC_RTLD(name)  jnc_foreign_internal_NativeAccessor_RTLD_##name
 #define RTLD(name)      RTLD_##name
 #define DEFAULT_RTLD    (RTLD(LAZY) | RTLD(LOCAL))
 #define JNC2RTLD(x)                             \

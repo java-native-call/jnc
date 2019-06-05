@@ -58,7 +58,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
     private final InternalType retType;
     private final InternalType[] ptypes;
     private final Class<?> methodVariadicType;
-    private final AnnotationContext variadicAnnotationContext;
+    private final AnnotationContext annotationContext;
     private final TypeFactory typeFactory;
     private final TypeHandlerFactory typeHandlerFactory;
 
@@ -79,8 +79,8 @@ final class VariadicMethodInvocation implements MethodInvocation {
         this.function = function;
         this.retType = retType;
         this.ptypes = ptypes;
-        this.methodVariadicType = methodVariadicType;
-        this.variadicAnnotationContext = variadicAnnotationContext;
+        this.methodVariadicType = methodVariadicType == Object.class ? Void.class : methodVariadicType;
+        this.annotationContext = variadicAnnotationContext;
         this.typeFactory = typeFactory;
         this.typeHandlerFactory = typeHandlerFactory;
     }
@@ -91,20 +91,16 @@ final class VariadicMethodInvocation implements MethodInvocation {
             Object value, List<Class<? extends Annotation>> annotations) {
         TypeHandlerInfo<? extends ParameterHandler<?>> parameterTypeInfo;
         if (value == null) {
-            if (methodVariadicType == Object.class) {
-                parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(Void.class);
-            } else {
-                try {
-                    parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(methodVariadicType);
-                } catch (UnsupportedOperationException ex) {
-                    throw new NullPointerException();
-                }
+            try {
+                parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(methodVariadicType);
+            } catch (UnsupportedOperationException ex) {
+                throw new NullPointerException();
             }
         } else {
             parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(value.getClass());
         }
         values[index] = value;
-        InternalType infoType = parameterTypeInfo.getType(typeFactory, AnnotationContext.newMockContext(annotations, variadicAnnotationContext));
+        InternalType infoType = parameterTypeInfo.getType(typeFactory, AnnotationContext.newMockContext(annotations, annotationContext));
         paramTypes[index] = promotions(infoType);
         h[index] = parameterTypeInfo.getHandler();
         annotations.clear();

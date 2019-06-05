@@ -42,7 +42,6 @@ final class AllocatedMemory extends SizedDirectMemory {
         private static final NativeAccessor NA = NativeLoader.getAccessor();
         private static final AtomicLongFieldUpdater<Free> UPDATER
                 = AtomicLongFieldUpdater.newUpdater(Free.class, "address");
-        @SuppressWarnings("unused")
         private volatile long address;
 
         Free(long size) {

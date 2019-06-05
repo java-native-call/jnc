@@ -215,7 +215,7 @@ final class MemoryAccessor {
         return NA.getStringChar16(address + offset, limit);
     }
 
-    int getFixLengthCharsetStringLength(int offset, long limit, int terminatorLength) {
+    int getStringLength(int offset, long limit, int terminatorLength) {
         return NA.getStringLength(address + offset, limit, terminatorLength);
     }
 

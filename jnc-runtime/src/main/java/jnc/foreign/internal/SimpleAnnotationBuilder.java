@@ -49,7 +49,7 @@ final class SimpleAnnotationBuilder<T extends Annotation> {
         this.annotationClass = annotationClass;
     }
 
-    public T build() {
+    T build() {
         final Class<T> ac = annotationClass;
         return ProxyBuilder.identifier()
                 .customize(ANNOTATION_TYPE, (key, method, args) -> ac)

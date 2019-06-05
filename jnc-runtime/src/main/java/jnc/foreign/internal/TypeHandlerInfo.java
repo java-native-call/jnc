@@ -20,62 +20,38 @@ import jnc.foreign.annotation.Typedef;
 /**
  * @author zhanhb
  */
-abstract class TypeHandlerInfo<T> {
+final class TypeHandlerInfo<T> {
 
     static <T> TypeHandlerInfo<T> typedefFirst(InternalType type, T handler) {
-        return new TypedefFirst<>(type, handler);
+        return new TypeHandlerInfo<>(type, handler, true);
     }
 
     static <T> TypeHandlerInfo<T> always(InternalType type, T invoker) {
-        return new Always<>(type, invoker);
+        return new TypeHandlerInfo<>(type, invoker, false);
     }
 
     private final InternalType type;
     private final T handler;
+    private final boolean searchAnnotation;
 
-    TypeHandlerInfo(InternalType type, T handler) {
+    private TypeHandlerInfo(InternalType type, T handler, boolean searchAnnotation) {
         this.type = type;
         this.handler = handler;
+        this.searchAnnotation = searchAnnotation;
     }
 
-    InternalType getType() {
-        return type;
-    }
-
-    public abstract InternalType getType(TypeFactory typeFactory, AnnotationContext ac);
-
-    public T getHandler() {
+    T getHandler() {
         return handler;
     }
 
-    private static final class Always<T> extends TypeHandlerInfo<T> {
-
-        private Always(InternalType type, T handler) {
-            super(type, handler);
-        }
-
-        @Override
-        public InternalType getType(TypeFactory typeFactory, AnnotationContext ac) {
-            return super.getType();
-        }
-
-    }
-
-    private static final class TypedefFirst<T> extends TypeHandlerInfo<T> {
-
-        private TypedefFirst(InternalType type, T handler) {
-            super(type, handler);
-        }
-
-        @Override
-        public InternalType getType(TypeFactory typeFactory, AnnotationContext ac) {
+    InternalType getType(TypeFactory typeFactory, AnnotationContext ac) {
+        if (searchAnnotation) {
             Typedef annotation = ac.getAnnotation(Typedef.class);
             if (annotation != null) {
                 return typeFactory.findByAlias(annotation.value());
             }
-            return super.getType();
         }
-
+        return type;
     }
 
 }

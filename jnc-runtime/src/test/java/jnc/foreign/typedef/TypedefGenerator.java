@@ -30,7 +30,6 @@ public class TypedefGenerator {
                 "int32_t",
                 "int64_t",
                 "int8_t",
-                // DEFINE(intmax_t)
                 "intptr_t",
                 "mode_t",
                 "off_t",
@@ -45,7 +44,6 @@ public class TypedefGenerator {
                 "uint32_t",
                 "uint64_t",
                 "uint8_t",
-                // DEFINE(uintmax_t)
                 "uintptr_t",
                 "useconds_t",
                 "wchar_t",
