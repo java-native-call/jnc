@@ -21,13 +21,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * In this project, all class should be final as possible. This annotation
- * indicate why the class is not final.
+ * In this project, both classes and methods should be final as possible. This
+ * annotation indicate why the class is not final.
  *
  * @author zhanhb
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface NotFinal {
 
     Reason value();
@@ -35,8 +35,7 @@ public @interface NotFinal {
     @SuppressWarnings("PublicInnerClass")
     enum Reason {
         API,
-        EXCEPTION,
-        EXTENSION_CLASS_PRESENT
+        EXTENSION_PRESENT
     }
 
 }

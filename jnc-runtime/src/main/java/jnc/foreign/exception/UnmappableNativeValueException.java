@@ -15,10 +15,13 @@
  */
 package jnc.foreign.exception;
 
+import jnc.foreign.internal.NotFinal;
+
 /**
  * @author zhanhb
  */
-public final class UnmappableNativeValueException extends IllegalArgumentException {
+@NotFinal(NotFinal.Reason.API)
+public class UnmappableNativeValueException extends IllegalArgumentException {
 
     private static final long serialVersionUID = 0L;
 
@@ -31,10 +34,12 @@ public final class UnmappableNativeValueException extends IllegalArgumentExcepti
         this.value = value;
     }
 
+    @NotFinal(NotFinal.Reason.API)
     public Class<?> getType() {
         return type;
     }
 
+    @NotFinal(NotFinal.Reason.API)
     public long getValue() {
         return value;
     }

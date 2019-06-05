@@ -20,7 +20,7 @@ import jnc.foreign.internal.NotFinal;
 /**
  * @author zhanhb
  */
-@NotFinal(NotFinal.Reason.EXCEPTION)
+@NotFinal(NotFinal.Reason.API)
 @SuppressWarnings("unused")
 public class JniLoadingException extends RuntimeException {
 
