@@ -158,7 +158,7 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
 
     @Override
     String getStringImpl(int offset, Charset charset) {
-        return StringCoding.get(getAccessor(), offset, charset, -1);
+        return StringCoding.get(getAccessor(), offset, charset, Long.MAX_VALUE);
     }
 
     @Override
@@ -239,7 +239,7 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
     @Nonnull
     @Override
     public String getStringUTF(int offset) {
-        return getAccessor().getStringUTF(offset, -1);
+        return getAccessor().getStringUTF(offset, Long.MAX_VALUE);
     }
 
     @Override
@@ -250,7 +250,7 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
     @Nonnull
     @Override
     String getString16(int offset) {
-        return getAccessor().getString16(offset, -1);
+        return getAccessor().getString16(offset, Long.MAX_VALUE);
     }
 
     /**

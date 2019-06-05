@@ -147,7 +147,7 @@ public class NativeMethodsTest {
     public void testGetStringUTFEmpty() {
         long address = NA.allocateMemory(0);
         try {
-            String string = NA.getStringUTF(address, -1);
+            String string = NA.getStringUTF(address, Long.MAX_VALUE);
             assertEquals("", string);
         } finally {
             NA.freeMemory(address);
@@ -186,14 +186,14 @@ public class NativeMethodsTest {
         memory.getCharArray(0, arr1, 0, arr1.length);
         assertArrayEquals(arr2, arr1);
 
-        assertHexEquals("aligned access", "\u0102\u0304\u0506\u0708", NA.getStringChar16(address, -1));
+        assertHexEquals("aligned access", "\u0102\u0304\u0506\u0708", NA.getStringChar16(address, Long.MAX_VALUE));
         String expect;
         if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
             expect = "\u0203\u0405\u0607\u0800\u0008\u0700";
         } else {
             expect = "\u0401\u0603\u0805\u0007\u0700\u0008";
         }
-        assertHexEquals("unaligned access", expect, NA.getStringChar16(address + 1, -1));
+        assertHexEquals("unaligned access", expect, NA.getStringChar16(address + 1, Long.MAX_VALUE));
 
         assertHexEquals("aligned access with limit", "\u0102\u0304\u0506\u0708", NA.getStringChar16(address, 8));
         assertHexEquals("aligned access with limit", "\u0102\u0304\u0506", NA.getStringChar16(address, 7));
@@ -245,7 +245,7 @@ public class NativeMethodsTest {
             assertThat(NA.getStringLength(pointer.address(), 0, terminatorLength))
                     .describedAs("terminatorLength=%s", terminatorLength)
                     .isEqualTo(0);
-            assertThat(NA.getStringLength(pointer.address(), -1, terminatorLength))
+            assertThat(NA.getStringLength(pointer.address(), Long.MAX_VALUE, terminatorLength))
                     .describedAs("terminatorLength=%s", terminatorLength)
                     .isEqualTo(8 / terminatorLength);
             assertThat(NA.getStringLength(pointer.address(), 4, terminatorLength))

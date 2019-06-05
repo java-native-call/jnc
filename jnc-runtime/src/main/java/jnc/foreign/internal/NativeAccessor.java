@@ -129,9 +129,6 @@ interface NativeAccessor {
 
     void putStringUTF(long address, String value);
 
-    /**
-     * @param limit -1 if not limited
-     */
     String getStringUTF(long address, long limit);
 
     void putStringChar16(long address, String value);

@@ -125,4 +125,16 @@ public class MemoryAccessorTest {
         testStringBase(this::testString16, 3);
     }
 
+    @Test
+    public void testLimit() {
+        Pointer pointer = AllocatedMemory.allocate(16);
+        long spaces = 0x2020202020202020L;
+        pointer.putLong(0, spaces);
+        pointer.putLong(8, spaces);
+        Pointer slice = pointer.slice(6, 9);
+        assertThat(slice.getStringUTF(1)).isEqualTo("  ");
+        assertThat(slice.getString(0, StandardCharsets.UTF_16BE)).isEqualTo("\u2020");
+        assertThat(slice.getString(0, StandardCharsets.UTF_16LE)).isEqualTo("\u2020");
+    }
+
 }

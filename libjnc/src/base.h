@@ -22,9 +22,9 @@
 #ifdef __GNUC__
 #define UNUSED(x) UNUSED_ ## x __attribute__((unused))
 #elif defined(__LCLINT__)
-#define UNUSED(x) /*@unused@*/ x
+#define UNUSED(x) /*@unused@*/ UNUSED_ ## x
 #else    /* !__GNUC__ && !__LCLINT__ */
-#define UNUSED(x) x
+#define UNUSED(x) UNUSED_ ## x
 #endif   /* !__GNUC__ && !__LCLINT__ */
 
 #ifdef __GNUC__
@@ -47,25 +47,23 @@
 #define CALLJNI(env, action, ...) (*env)->action(env, ##__VA_ARGS__)
 #endif
 
-// usually min is not defined in C++
-#if defined(__cplusplus) && defined(min)
-#undef min
-#endif
-
 #ifdef __cplusplus
+// usually min is not defined in C++
+#undef min
+
+#include "jnc_type_traits.h"
+
 namespace jnc {
 
-    template<class _Tp> inline jlong p2j(const _Tp * x) {
-        return jlong(reinterpret_cast<uintptr_t> (x));
-    }
-
-    template<class _Tp> inline jlong p2j(_Tp * x) {
+    template<class _Tp>
+    constexpr inline jlong p2j(_Tp *x) {
         return jlong(reinterpret_cast<uintptr_t> (x));
     }
 
     template<class _Tp>
-    inline _Tp j2p_impl(jlong x) {
-        return reinterpret_cast<_Tp> (uintptr_t(x));
+    constexpr inline _Tp j2p_impl(jlong x) {
+        static_assert(jnc_type_traits::is_pointer<_Tp>::value, "must be a pointer type");
+        return reinterpret_cast<_Tp>(uintptr_t(x));
     }
 
     template<class T>
@@ -88,14 +86,4 @@ using jnc::p2j;
 #define j2vp(x) j2c(x, void)
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define EXTERNC extern
-#endif
-
-#if SIZE_MAX == UINT64_MAX
-#define LP64_ONLY(x) x
-#define NOT_LP64(x)
-#elif SIZE_MAX == UINT32_MAX
-#define LP64_ONLY(x)
-#define NOT_LP64(x) x
-#else
-#error unknown type size_t
 #endif

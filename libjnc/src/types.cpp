@@ -22,26 +22,7 @@
 #include <sys/socket.h>
 #endif /* _WIN32 */
 
-namespace jnc_type_traits {
-
-    template<class _Tp, _Tp v> struct integral_constant {
-
-        enum : _Tp {
-            value = v
-        };
-    };
-
-    template<bool v> using bool_constant = integral_constant<bool, v>;
-
-    using true_type = bool_constant<true>;
-    using false_type = bool_constant<false>;
-
-    template<class> struct is_pointer : false_type {
-    };
-
-    /* just ignore const and volatile */
-    template<class T> struct is_pointer<T *> : true_type {
-    };
+using namespace jnc_type_traits;
 
 #if defined(__clang__) && defined(__has_feature)
 #define COMPILER_HAS_IS_ENUM __has_feature(is_enum)
@@ -51,55 +32,29 @@ namespace jnc_type_traits {
 
 #if COMPILER_HAS_IS_ENUM
 
-    template<class T> struct is_enum : bool_constant<__is_enum(T)> {
-    };
+template<class T> struct is_enum : bool_constant<__is_enum(T)> {
+};
 
 #else
 
-    /** It seems we only need to process type `clockid_t` on darwin,
-     * just leave false for other cases. 
-     */
-    template<class> struct is_enum : false_type {
-    };
+/** It seems we only need to process type `clockid_t` on darwin,
+ * just leave false for other cases.
+ */
+template<class> struct is_enum : false_type {
+};
 
 #endif
 
-    template<class> struct is_integral : false_type {
-    };
+/*
+ * std::is_signed is false on enum, but we should work with that.
+ * use -1<1 rather -1<0 to avoid compiler warning.
+ */
+template<class T, bool = is_enum<T>::value || is_integral<T>::value> struct is_signed;
 
-#define DEFINE_INTEGRAL(T) template<> struct is_integral<T> : true_type {}
-    DEFINE_INTEGRAL(bool);
-    DEFINE_INTEGRAL(char);
-    DEFINE_INTEGRAL(signed char);
-    DEFINE_INTEGRAL(unsigned char);
-    // DEFINE_INTEGRAL(char8_t);
-    DEFINE_INTEGRAL(char16_t);
-    DEFINE_INTEGRAL(char32_t);
-    DEFINE_INTEGRAL(wchar_t);
-    DEFINE_INTEGRAL(short);
-    DEFINE_INTEGRAL(unsigned short);
-    DEFINE_INTEGRAL(int);
-    DEFINE_INTEGRAL(unsigned);
-    DEFINE_INTEGRAL(long);
-    DEFINE_INTEGRAL(unsigned long);
-    DEFINE_INTEGRAL(long long);
-    DEFINE_INTEGRAL(unsigned long long);
-#undef DEFINE_INTEGRAL
+template<class T> struct is_signed<T, true> : bool_constant<T(-1) < T(1)> { };
 
-    /*
-     * std::is_signed is false on enum, but we should work with will test that
-     * use -1<1 rather -1<0 to avoid compiler warning.
-     */
-    template<class T, bool = is_enum<T>::value || is_integral<T>::value> struct is_signed;
-
-    template<class T> struct is_signed<T, true> : bool_constant<T(-1) < T(1)> { };
-
-    template<class T> struct is_signed<T, false> : false_type {
-    };
-
-}
-
-using namespace jnc_type_traits;
+template<class T> struct is_signed<T, false> : false_type {
+};
 
 template<size_t, size_t, bool> struct integral_matcher;
 
@@ -119,11 +74,13 @@ DEFINE_MATCHER(int64_t, SINT64);
 template<class T, bool = is_enum<T>::value || is_integral<T>::value, bool = is_pointer<T>::value>
 struct ffi_value;
 
-template<class T> struct ffi_value<T, false, true> : integral_constant<int, JNC_TYPE(POINTER)> {
+template<class T>
+struct ffi_value<T, false, true> : integral_constant<int, JNC_TYPE(POINTER)> {
 };
 
 /* integer or enum */
-template<class T> struct ffi_value<T, true, false> : integral_matcher<sizeof (T), alignof (T), is_signed<T>::value> {
+template<class T>
+struct ffi_value<T, true, false> : integral_matcher<sizeof (T), alignof (T), is_signed<T>::value> {
 };
 
 #define DEFINE(type) {#type, ffi_value<type>::value},
