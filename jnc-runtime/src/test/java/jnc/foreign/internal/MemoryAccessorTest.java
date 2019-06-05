@@ -99,7 +99,7 @@ public class MemoryAccessorTest {
 
             // TODO cast long to int
             // maybe api should add another method slice(int)
-            test.accept(memory.slice(0, (int) memory.size()), str);
+            test.accept(memory.slice(0, (int) memory.capacity()), str);
             test.accept(UnboundedDirectMemory.of(memory.address() + 1), str);
         }
     }

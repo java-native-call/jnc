@@ -44,7 +44,7 @@ public class CifContainerTest {
         b.putStringUTF(0, str);
         p.putLong(0, a.address());
         p.putLong(1, b.address());
-        p.putLong(2, b.size());
+        p.putLong(2, b.capacity());
         assertEquals("", a.getStringUTF(0));
         long addr = p.invoke(Invokers::invokeLong, function);
         assertEquals(a.address(), addr);
