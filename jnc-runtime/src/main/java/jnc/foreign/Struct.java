@@ -102,6 +102,7 @@ public class Struct {
         this.enclosing = new Enclosing(enclosing, offset);
     }
 
+    @NotFinal(NotFinal.Reason.API)
     @Override
     public String toString() {
         String name = getClass().getSimpleName();
@@ -415,11 +416,11 @@ public class Struct {
 
     }
 
-    private abstract class AbstractBoolean extends NumberField {
+    private abstract class BooleanField extends NumberField {
 
         private static final long serialVersionUID = 0L;
 
-        AbstractBoolean(NativeType type) {
+        BooleanField(NativeType type) {
             super(type);
         }
 
@@ -432,7 +433,7 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Boolean.toString(get());
         }
     }
@@ -455,7 +456,7 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Integer.toString(get());
         }
     }
@@ -478,7 +479,7 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Integer.toString(get());
         }
     }
@@ -501,7 +502,7 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Integer.toString(get());
         }
     }
@@ -538,7 +539,7 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Long.toString(get());
         }
     }
@@ -561,7 +562,7 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Integer.toString(get());
         }
     }
@@ -584,7 +585,7 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Integer.toString(get());
         }
     }
@@ -599,7 +600,7 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Long.toString(get());
         }
     }
@@ -614,13 +615,12 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Long.toUnsignedString(get());
         }
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class bool extends AbstractBoolean {
+    protected final class bool extends BooleanField {
 
         private static final long serialVersionUID = 0L;
 
@@ -630,8 +630,7 @@ public class Struct {
 
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class Address extends LongField {
+    protected final class Address extends LongField {
 
         private static final long serialVersionUID = 0L;
 
@@ -640,7 +639,7 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Long.toHexString(get());
         }
     }
@@ -664,8 +663,7 @@ public class Struct {
 
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class size_t extends LongField {
+    protected final class size_t extends LongField {
 
         private static final long serialVersionUID = 0L;
 
@@ -674,13 +672,12 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Long.toUnsignedString(get());
         }
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class uintptr_t extends LongField {
+    protected final class uintptr_t extends LongField {
 
         private static final long serialVersionUID = 0L;
 
@@ -689,13 +686,12 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Long.toUnsignedString(get());
         }
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class intptr_t extends LongField {
+    protected final class intptr_t extends LongField {
 
         private static final long serialVersionUID = 0L;
 
@@ -704,13 +700,12 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Long.toString(get());
         }
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class clong extends LongField {
+    protected final class clong extends LongField {
 
         private static final long serialVersionUID = 0L;
 
@@ -719,13 +714,12 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Long.toString(get());
         }
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class Float32 extends NumberField {
+    protected final class Float32 extends NumberField {
 
         private static final long serialVersionUID = 0L;
 
@@ -742,13 +736,12 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Float.toString(get());
         }
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class Float64 extends NumberField {
+    protected final class Float64 extends NumberField {
 
         private static final long serialVersionUID = 0L;
 
@@ -765,7 +758,7 @@ public class Struct {
         }
 
         @Override
-        public String toString() {
+        public final String toString() {
             return Double.toString(get());
         }
     }
@@ -773,8 +766,7 @@ public class Struct {
     /**
      * BYTE in windows, unsigned char
      */
-    @NotFinal(NotFinal.Reason.API)
-    protected class BYTE extends uint8_t {
+    protected final class BYTE extends uint8_t {
 
         private static final long serialVersionUID = 0L;
 
@@ -783,8 +775,7 @@ public class Struct {
 
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class WBOOL extends AbstractBoolean {
+    protected final class WBOOL extends BooleanField {
 
         private static final long serialVersionUID = 0L;
 
@@ -794,8 +785,7 @@ public class Struct {
 
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class WORD extends uint16_t {
+    protected final class WORD extends uint16_t {
 
         private static final long serialVersionUID = 0L;
 
@@ -804,8 +794,7 @@ public class Struct {
 
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class DWORD extends uint32_t {
+    protected final class DWORD extends uint32_t {
 
         private static final long serialVersionUID = 0L;
 
@@ -814,8 +803,7 @@ public class Struct {
 
     }
 
-    @NotFinal(NotFinal.Reason.API)
-    protected class DWORDLONG extends uint64_t {
+    protected final class DWORDLONG extends uint64_t {
 
         private static final long serialVersionUID = 0L;
 
@@ -851,7 +839,7 @@ public class Struct {
          * if this enum field indicate to null, return string "null"
          */
         @Override
-        public String toString() {
+        public final String toString() {
             try {
                 return String.valueOf(get());
             } catch (UnmappableNativeValueException ex) {

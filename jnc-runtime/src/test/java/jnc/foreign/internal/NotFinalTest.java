@@ -16,21 +16,29 @@
 package jnc.foreign.internal;
 
 import java.io.File;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import jnc.foreign.Struct;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author zhanhb
  */
+@RunWith(Parameterized.class)
 public class NotFinalTest {
 
     private static final Logger log = LoggerFactory.getLogger(NotFinalTest.class);
@@ -40,79 +48,112 @@ public class NotFinalTest {
         return (mod & SYNTHETIC) != 0;
     }
 
-    @Test
-    public void testValue() throws Exception {
+    private static void visitMethods(List<Object[]> list, Class<?> klass) {
+        Method[] methods = klass.getDeclaredMethods();
+        for (Method method : methods) {
+            RequireType requireType;
+            int modifiers = method.getModifiers();
+            if (isSynthetic(modifiers)) {
+                continue;
+            }
+            if (Modifier.isStatic(modifiers) || Modifier.isPrivate(modifiers)) {
+                requireType = RequireType.LOG_DEBUG;
+            } else if (Modifier.isFinal(modifiers)) {
+                requireType = RequireType.NO_ACTION;
+            } else if (Modifier.isAbstract(modifiers)) {
+                requireType = RequireType.SHOULD_NOT_HAVE;
+            } else {
+                requireType = RequireType.SHOULD_HAVE;
+            }
+            list.add(new Object[]{requireType, method});
+        }
+    }
+
+    @Parameterized.Parameters(name = "{index} {1} {0}")
+    public static List<Object[]> data() throws Exception {
         ProtectionDomain protectionDomain = Struct.class.getProtectionDomain();
         URL location = protectionDomain.getCodeSource().getLocation();
         Path directory = Paths.get(location.toURI());
-        Files.walk(directory)
+        List<Class<?>> classes = Files.walk(directory)
                 .filter(path -> path.getFileName().toString().endsWith(".class"))
                 .map(path -> directory.relativize(path).toString())
                 .map(str -> str.replaceAll("\\.class$", "").replace(File.separatorChar, '.'))
-                .forEach(this::checkClass);
-    }
+                .map(name -> {
+                    try {
+                        return Class.forName(name);
+                    } catch (ClassNotFoundException ex) {
+                        throw new NoClassDefFoundError(name);
+                    }
+                })
+                .filter(klass -> !isSynthetic(klass.getModifiers()))
+                .collect(Collectors.toList());
 
-    private void checkClass0(String className) throws Throwable {
-        Class<?> klass = Class.forName(className);
-        NotFinal annotation = klass.getAnnotation(NotFinal.class);
-        RequireType requireType;
-        int modifiers = klass.getModifiers();
-        if (isSynthetic(modifiers)) {
-            return;
-        }
-        if (klass.isEnum() || klass.isInterface()) {
-            requireType = RequireType.LOG_DEBUG;
-        } else {
-            if (Modifier.isAbstract(modifiers)) {
-                requireType = RequireType.SHOUD_NOT_HAVE;
-            } else if (Modifier.isFinal(modifiers)) {
-                requireType = RequireType.NO_ACTION;
+        List<Object[]> list = new ArrayList<>(classes.size() * 4);
+        for (Class<?> klass : classes) {
+            RequireType requireType;
+            int modifiers = klass.getModifiers();
+            if (klass.isEnum() || klass.isInterface()) {
+                requireType = RequireType.LOG_DEBUG;
             } else {
-                requireType = RequireType.SHOUD_HAVE;
+                if (Modifier.isAbstract(modifiers)) {
+                    requireType = RequireType.SHOULD_NOT_HAVE;
+                    visitMethods(list, klass);
+                } else if (Modifier.isFinal(modifiers)) {
+                    requireType = RequireType.NO_ACTION;
+                } else {
+                    requireType = RequireType.SHOULD_HAVE;
+                    visitMethods(list, klass);
+                }
             }
+            list.add(new Object[]{requireType, klass});
         }
-        requireType.check(annotation, klass);
+        return list;
     }
 
-    private void checkClass(String className) {
-        try {
-            checkClass0(className);
-        } catch (Throwable ex) {
-            throw new RuntimeException(ex);
-        }
+    private final RequireType requireType;
+    private final AnnotatedElement ae;
 
+    @SuppressWarnings("NonPublicExported")
+    public NotFinalTest(RequireType requireType, AnnotatedElement ae) {
+        this.requireType = requireType;
+        this.ae = ae;
+    }
+
+    @Test
+    public void test() {
+        requireType.check(ae);
     }
 
     private enum RequireType {
 
-        SHOUD_HAVE() {
+        SHOULD_HAVE() {
             @Override
-            void check(NotFinal annotation, Class<?> klass) {
+            void check0(NotFinal annotation, AnnotatedElement element) {
                 if (annotation == null) {
-                    throw new AssertionError(klass + " not final, and has no annotation @NotFinal");
+                    throw newAssertionError("%1$s not final, and has no annotation @NotFinal", element, null);
                 }
-                log.warn("{} {}", nonFinalToString(annotation), klass);
+                log.warn("{} {}", nonFinalToString(annotation), element);
             }
         },
-        SHOUD_NOT_HAVE() {
+        SHOULD_NOT_HAVE() {
             @Override
-            void check(NotFinal annotation, Class<?> klass) {
+            void check0(NotFinal annotation, AnnotatedElement element) {
                 if (annotation != null) {
-                    throw new AssertionError(nonFinalToString(annotation) + " " + klass + " is required to not have annotation NotFinal");
+                    throw newAssertionError("%2$s %1$s is required to not have annotation NotFinal", element, annotation);
                 }
             }
         }, LOG_DEBUG() {
             @Override
-            void check(NotFinal annotation, Class<?> klass) {
+            void check0(NotFinal annotation, AnnotatedElement element) {
                 if (annotation == null) {
-                    log.debug("{}", klass);
+                    log.debug("{}", element);
                 } else {
-                    log.debug("{} {}", nonFinalToString(annotation), klass);
+                    log.debug("{} {}", nonFinalToString(annotation), element);
                 }
             }
         }, NO_ACTION() {
             @Override
-            void check(NotFinal annotation, Class<?> klass) {
+            void check0(NotFinal annotation, AnnotatedElement element) {
             }
         };
 
@@ -120,7 +161,23 @@ public class NotFinalTest {
             return annotation.toString().replaceAll("^@" + NotFinal.class.getName().replace(".", "\\."), "@NotFinal");
         }
 
-        abstract void check(@Nullable NotFinal annotation, Class<?> klass);
+        private static AssertionError newAssertionError(String fmt, AnnotatedElement ae, NotFinal nf) {
+            String t = nf != null ? nonFinalToString(nf) : "";
+            AssertionError error = new AssertionError(String.format(fmt, ae, t));
+            if (ae instanceof Method) {
+                Method m = (Method) ae;
+                Class<?> klass = m.getDeclaringClass();
+                StackTraceElement ste = new StackTraceElement(klass.getName(), m.getName(), klass.getSimpleName().concat(".java"), -1);
+                error.setStackTrace(new StackTraceElement[]{ste});
+            }
+            throw error;
+        }
+
+        void check(AnnotatedElement element) {
+            check0(element.getAnnotation(NotFinal.class), element);
+        }
+
+        abstract void check0(@Nullable NotFinal annotation, AnnotatedElement element);
     }
 
 }

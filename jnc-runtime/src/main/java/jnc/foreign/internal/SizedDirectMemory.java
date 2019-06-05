@@ -8,7 +8,7 @@ import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 
 @ParametersAreNonnullByDefault
-@NotFinal(NotFinal.Reason.EXTENSION_CLASS_PRESENT)
+@NotFinal(NotFinal.Reason.EXTENSION_PRESENT)
 class SizedDirectMemory extends Memory {
 
     // not private
@@ -322,13 +322,13 @@ class SizedDirectMemory extends Memory {
     }
 
     @Override
-    void putStringImpl(int offset, byte[] bytes, int terminatorLength) {
+    final void putStringImpl(int offset, byte[] bytes, int terminatorLength) {
         checkPutStringCapacity(size, offset, bytes.length + terminatorLength);
         StringCoding.put(getAccessor(), offset, bytes, terminatorLength);
     }
 
     @Override
-    String getStringImpl(int offset, Charset charset) {
+    final String getStringImpl(int offset, Charset charset) {
         if (offset < 0 || offset > size) {
             throw new IndexOutOfBoundsException();
         }
@@ -350,6 +350,7 @@ class SizedDirectMemory extends Memory {
         return getAccessor().getString16(offset, size - offset);
     }
 
+    @NotFinal(NotFinal.Reason.EXTENSION_PRESENT)
     @Nonnull
     @Override
     public Slice slice(int beginIndex, int endIndex) {

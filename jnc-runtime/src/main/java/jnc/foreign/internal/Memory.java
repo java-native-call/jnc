@@ -104,7 +104,7 @@ abstract class Memory implements Pointer {
 
     @Nonnull
     @Override
-    public String getString(int offset, @Nonnull Charset charset) {
+    public final String getString(int offset, @Nonnull Charset charset) {
         Objects.requireNonNull(charset);
         if (StringCoding.isNativeUTF16(charset)) {
             return getString16(offset);
