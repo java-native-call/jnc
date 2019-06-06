@@ -18,8 +18,9 @@ import jnc.foreign.Type;
 import jnc.foreign.annotation.Continuously;
 import jnc.foreign.enums.EnumMappingErrorAction;
 import jnc.foreign.exception.UnmappableNativeValueException;
+import jnc.foreign.support.TypeHandler;
 
-final class EnumTypeHandler<E extends Enum<E>> {
+final class EnumTypeHandler<E extends Enum<E>> implements TypeHandler<E> {
 
     private static final ConcurrentWeakIdentityHashMap<Class<? extends Enum<?>>, EnumTypeHandler<?>> cache
             = new ConcurrentWeakIdentityHashMap<>(32);
@@ -89,7 +90,6 @@ final class EnumTypeHandler<E extends Enum<E>> {
     private final InternalType defaultType;
     private final long start;
     private final EnumMappingErrorAction onUnmappable;
-    private FieldAccessor fieldAccessor;
 
     private EnumTypeHandler(E[] values, Class<E> type, InternalType defaultType, long start,
             EnumMappingErrorAction onUnmappable) {
@@ -125,33 +125,20 @@ final class EnumTypeHandler<E extends Enum<E>> {
         return (long cif, long function, long base, @Nullable int[] offsets) -> mapLong(Invokers.invokeLong(cif, function, base, offsets));
     }
 
-    @Deprecated
-    FieldAccessor getFieldAccessor() {
-        FieldAccessor fa = this.fieldAccessor;
-        if (fa == null) {
-            fa = new FieldAccessor();
-            this.fieldAccessor = fa;
-        }
-        return fa;
+    @Override
+    public E get(Pointer memory, int offset) {
+        return mapLong(memory.getLong(offset, defaultType));
+    }
+
+    @Override
+    public void set(Pointer memory, int offset, @Nullable E value) {
+        memory.putLong(offset, defaultType, value != null ? start + value.ordinal() : 0);
     }
 
     @Deprecated
-    private final class FieldAccessor implements jnc.foreign.FieldAccessor<E> {
-
-        @Override
-        public Type type() {
-            return defaultType;
-        }
-
-        @Override
-        public E get(Pointer memory, int offset) {
-            return mapLong(memory.getLong(offset, defaultType));
-        }
-
-        @Override
-        public void set(Pointer memory, int offset, @Nullable E value) {
-            memory.putLong(offset, defaultType, value != null ? start + value.ordinal() : 0);
-        }
+    @Override
+    public Type type() {
+        return getDefaultType();
     }
 
 }

@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.spi.ForeignProvider;
+import jnc.foreign.support.TypeHandler;
 
 @ParametersAreNonnullByDefault
 public interface Foreign extends Closeable {
@@ -28,10 +29,8 @@ public interface Foreign extends Closeable {
     @Nonnull
     Type findType(NativeType nativeType);
 
-    // Don't use, internal support for enum type
-    @Deprecated
     @Nonnull
-    <E extends Enum<E>> FieldAccessor<E> getEnumFieldAccessor(Class<E> type);
+    <T> TypeHandler<T> getTypeHandler(Class<T> type);
 
     @Nonnull
     MemoryManager getMemoryManager();

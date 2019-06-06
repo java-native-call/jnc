@@ -17,6 +17,7 @@ package jnc.foreign.internal;
 
 import jnc.foreign.Struct;
 import jnc.foreign.enums.CallingConvention;
+import jnc.foreign.support.LayoutBuilder;
 
 /**
  * @author zhanhb

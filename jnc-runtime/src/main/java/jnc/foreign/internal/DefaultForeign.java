@@ -10,6 +10,7 @@ import jnc.foreign.MemoryManager;
 import jnc.foreign.NativeType;
 import jnc.foreign.Type;
 import jnc.foreign.enums.TypeAlias;
+import jnc.foreign.support.TypeHandler;
 
 @ParametersAreNonnullByDefault
 enum DefaultForeign implements Foreign {
@@ -81,11 +82,14 @@ enum DefaultForeign implements Foreign {
         return typeFactory.findByNativeType(nativeType);
     }
 
-    @Deprecated
     @Nonnull
     @Override
-    public <E extends Enum<E>> jnc.foreign.FieldAccessor<E> getEnumFieldAccessor(Class<E> type) {
-        return EnumTypeHandler.getInstance(type).getFieldAccessor();
+    @SuppressWarnings("unchecked")
+    public <T> TypeHandler<T> getTypeHandler(Class<T> type) {
+        if (type.isEnum()) {
+            return EnumTypeHandler.getInstance((Class) type);
+        }
+        throw new UnsupportedOperationException("no type handler present for type " + type);
     }
 
     @Override
