@@ -1,5 +1,6 @@
 package jnc.foreign.internal;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,9 +47,9 @@ final class TypeRegistry implements TypeFactory {
         return null;
     }
 
-    private final EnumMap<NativeType, TypeInfo> NATIVE_TO_TYPE;
-    private final HashMap<Class<?>, TypeInfo> PRIMITIVE_MAP;
-    private final EnumMap<TypeAlias, Alias> ALIAS_MAP;
+    private final Map<NativeType, TypeInfo> NATIVE_TO_TYPE;
+    private final Map<Class<?>, TypeInfo> PRIMITIVE_MAP;
+    private final Map<TypeAlias, Alias> ALIAS_MAP;
 
     TypeRegistry() {
         NativeAccessor accessor = NativeLoader.getAccessor();
@@ -86,9 +87,9 @@ final class TypeRegistry implements TypeFactory {
             }
         }
 
-        NATIVE_TO_TYPE = nativeToType;
-        PRIMITIVE_MAP = primitiveMap;
-        ALIAS_MAP = aliasMap;
+        NATIVE_TO_TYPE = Collections.unmodifiableMap(nativeToType);
+        PRIMITIVE_MAP = Collections.unmodifiableMap(primitiveMap);
+        ALIAS_MAP = Collections.unmodifiableMap(aliasMap);
     }
 
     @Override

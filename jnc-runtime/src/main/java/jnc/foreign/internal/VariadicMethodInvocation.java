@@ -20,6 +20,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
         add(map, long[].class, Array::getLong);
         add(map, float[].class, Array::getFloat);
         add(map, double[].class, Array::getDouble);
-        RECEIVER_MAP = map;
+        RECEIVER_MAP = Collections.unmodifiableMap(map);
     }
 
     private static void add(Map<Class<?>, Receiver> map, Class<?> klass, Receiver receiver) {
