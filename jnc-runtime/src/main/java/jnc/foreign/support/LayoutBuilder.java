@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jnc.foreign.internal;
+package jnc.foreign.support;
 
 import java.util.function.IntFunction;
 
@@ -22,6 +22,7 @@ import java.util.function.IntFunction;
  */
 public abstract class LayoutBuilder {
 
+    // Don't rely on this variable, maybe changed.
     private static final int MAX_ALIGNMENT = 16;
 
     private static int alignUp(int size, int alignment) {
@@ -39,6 +40,9 @@ public abstract class LayoutBuilder {
         return layoutType.create(checkPack(pack));
     }
 
+    /**
+     * Return a builder with maximum alignment supported by the system.
+     */
     public static LayoutBuilder withoutPack(Type layoutType) {
         return layoutType.create(MAX_ALIGNMENT);
     }

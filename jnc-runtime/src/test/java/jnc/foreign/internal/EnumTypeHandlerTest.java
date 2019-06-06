@@ -89,7 +89,7 @@ public class EnumTypeHandlerTest {
 
     @Test
     public void testSignedChange() throws Exception {
-        Type type = Foreign.getDefault().getEnumFieldAccessor(Signed1.class).type();
+        Type type = Foreign.getDefault().getTypeHandler(Signed1.class).type();
         boolean isSigned = (boolean) type.getClass().getMethod("isSigned").invoke(type);
         assertTrue(isSigned);
     }

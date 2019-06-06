@@ -7,9 +7,10 @@ import javax.annotation.Nullable;
 import jnc.foreign.annotation.Pack;
 import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.exception.UnmappableNativeValueException;
-import jnc.foreign.internal.LayoutBuilder;
 import jnc.foreign.internal.NotFinal;
 import jnc.foreign.spi.ForeignProvider;
+import jnc.foreign.support.LayoutBuilder;
+import jnc.foreign.support.TypeHandler;
 
 @NotFinal(NotFinal.Reason.API)
 @SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess", "unused"})
@@ -816,23 +817,21 @@ public class Struct {
 
         private final Class<E> type;
         @SuppressWarnings("deprecation")
-        private final FieldAccessor<E> fieldAccessor;
+        private final TypeHandler<E> typeHandler;
         private final BaseField field;
 
         EnumField(Class<E> type) {
             this.type = type;
-            @SuppressWarnings("deprecation")
-            FieldAccessor<E> fa = getForeign().getEnumFieldAccessor(type);
-            this.fieldAccessor = fa;
-            this.field = new BaseField(fa.type());
+            this.typeHandler = getForeign().getTypeHandler(type);
+            this.field = new BaseField(typeHandler.type());
         }
 
         public final E get() {
-            return fieldAccessor.get(getMemory(), field.getOffset());
+            return typeHandler.get(getMemory(), field.getOffset());
         }
 
         public final void set(E e) {
-            fieldAccessor.set(getMemory(), field.getOffset(), e);
+            typeHandler.set(getMemory(), field.getOffset(), e);
         }
 
         /**
