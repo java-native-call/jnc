@@ -28,6 +28,6 @@ interface CallContext {
 
     CallContext onFinish(Runnable r);
 
-    <T> T invoke(Invoker<T> invoker, long function);
+    <T> T invoke(InvokeHandler<T> handler, long function);
 
 }

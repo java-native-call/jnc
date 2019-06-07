@@ -26,6 +26,7 @@ import jnc.foreign.Struct;
  */
 final class CifCallContext implements CallContext {
 
+    private static final NativeAccessor NA = NativeLoader.getAccessor();
     private final AllocatedMemory parameter;
     private List<Runnable> onFinish;
     private final int[] offsets;
@@ -85,10 +86,11 @@ final class CifCallContext implements CallContext {
     }
 
     @Override
-    public <T> T invoke(Invoker<T> invoker, long function) {
-        T result = invoker.invoke(cif.getMemory().address(), function, parameter.address(), offsets);
+    public <T> T invoke(InvokeHandler<T> handler, long function) {
+        long result = NA.invoke(cif.getMemory().address(), function, parameter.address(),
+                offsets, ThreadLocalError.INSTANCE, LastErrorHandler.METHOD_ID);
         finish();
-        return result;
+        return handler.handle(result);
     }
 
 }

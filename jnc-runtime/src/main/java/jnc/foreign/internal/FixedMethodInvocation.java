@@ -23,20 +23,20 @@ final class FixedMethodInvocation implements MethodInvocation {
     private final CallingConvention convention;
     private final ParameterHandler<?>[] handlers;
     private final CifContainer container;
-    private final Invoker<?> invoker;
+    private final InvokeHandler<?> invokeHandler;
     private final long function;
 
     FixedMethodInvocation(
             ParameterHandler<?>[] handlers,
             CallingConvention convention,
-            Invoker<?> invoker,
+            InvokeHandler<?> invokeHandler,
             long function,
             InternalType retType,
             InternalType[] ptypes) {
         this.convention = convention;
         this.handlers = handlers;
         this.container = CifContainer.create(convention, retType, ptypes);
-        this.invoker = invoker;
+        this.invokeHandler = invokeHandler;
         this.function = function;
     }
 
@@ -54,7 +54,7 @@ final class FixedMethodInvocation implements MethodInvocation {
         for (int i = 0; i < length; i++) {
             h[i].handle(context, i, args[i]);
         }
-        return context.invoke(invoker, function);
+        return context.invoke(invokeHandler, function);
     }
 
 }

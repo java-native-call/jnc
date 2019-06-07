@@ -200,19 +200,7 @@ enum NativeMethods implements NativeAccessor {
     public final native void prepareInvokeVariadic(long cif, int abi, int fixedArgs, int totalArgs, long retType, long atypes);
 
     @Override
-    public final native boolean invokeBoolean(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
-
-    @Override
-    public final native int invokeInt(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
-
-    @Override
-    public final native void invokeVoid(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
-
-    @Override
-    public final native long invokeLong(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
-
-    @Override
-    public final native double invokeDouble(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
+    public final native long invoke(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
 
     @Override
     public final native void invokeStruct(long cif, long function, long base, @Nullable int[] offsets, long struct, Object obj, long methodId);

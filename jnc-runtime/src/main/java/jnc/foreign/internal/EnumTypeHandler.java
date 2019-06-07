@@ -20,7 +20,7 @@ import jnc.foreign.exception.InvalidAnnotationException;
 import jnc.foreign.exception.UnmappableNativeValueException;
 import jnc.foreign.support.TypeHandler;
 
-final class EnumTypeHandler<E extends Enum<E>> implements TypeHandler<E> {
+final class EnumTypeHandler<E extends Enum<E>> implements TypeHandler<E>, InvokeHandler<E> {
 
     private static final ConcurrentWeakIdentityHashMap<Class<? extends Enum<?>>, EnumTypeHandler<?>> cache
             = new ConcurrentWeakIdentityHashMap<>(32);
@@ -119,8 +119,9 @@ final class EnumTypeHandler<E extends Enum<E>> implements TypeHandler<E> {
         throw new UnmappableNativeValueException(type, v);
     }
 
-    Invoker<E> getInvoker() {
-        return (long cif, long function, long base, @Nullable int[] offsets) -> mapLong(Invokers.invokeLong(cif, function, base, offsets));
+    @Override
+    public E handle(long result) {
+        return mapLong(result);
     }
 
     @Override

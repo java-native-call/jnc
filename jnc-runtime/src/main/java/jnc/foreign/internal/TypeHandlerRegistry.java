@@ -52,33 +52,33 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
             }
         };
     }
-    private final TypeFactory typeFactory;
 
-    private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> exactReturnTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
-    private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> inheritedReturnTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
-    private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> exactParameterTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
-    private final ConcurrentWeakIdentityHashMap<Class<?>, TypeHandlerInfo<?>> inheritedParameterTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
+    private final ConcurrentWeakIdentityHashMap<Class<?>, InvokerHandlerInfo> exactReturnTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
+    private final ConcurrentWeakIdentityHashMap<Class<?>, InvokerHandlerInfo> inheritedReturnTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
+    private final ConcurrentWeakIdentityHashMap<Class<?>, ParameterHandlerInfo<?>> exactParameterTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
+    private final ConcurrentWeakIdentityHashMap<Class<?>, ParameterHandlerInfo<?>> inheritedParameterTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
 
     TypeHandlerRegistry(TypeFactory typeFactory) {
         InternalType pointerType = typeFactory.findByNativeType(NativeType.POINTER);
-        this.typeFactory = typeFactory;
-        addExactReturnTypeHandler(Pointer.class, TypeHandlerInfo.always(pointerType, Invokers::invokePointer));
+
+        addExactReturnTypeHandler(Pointer.class, PointerHandlerInfo.INSTANCE);
+        addInheritedReturnTypeHandler(Enum.class, EnumHandlerInfo.INSTANCE);
 
         // parameter type should not be void, maybe user want to define a pointer type.
         addExactParameterTypeHandler(Void.class, pointerType, (context, index, __) -> context.putLong(index, 0));
-        addPrimaryTypeHandler(void.class, NativeType.VOID, null, Invokers::invokeVoid);
-        addPrimaryTypeHandler(boolean.class, NativeType.UINT8, CallContext::putBoolean, Invokers::invokeBoolean);
-        addPrimaryTypeHandler(byte.class, NativeType.SINT8, CallContext::putByte, Invokers::invokeByte);
-        addPrimaryTypeHandler(char.class, NativeType.UINT16, CallContext::putChar, Invokers::invokeChar);
-        addPrimaryTypeHandler(short.class, NativeType.SINT16, CallContext::putShort, Invokers::invokeShort);
-        addPrimaryTypeHandler(int.class, NativeType.SINT32, CallContext::putInt, Invokers::invokeInt);
-        addPrimaryTypeHandler(long.class, NativeType.SINT64, CallContext::putLong, Invokers::invokeLong);
-        addPrimaryTypeHandler(float.class, NativeType.FLOAT, CallContext::putFloat, Invokers::invokeFloat);
-        addPrimaryTypeHandler(double.class, NativeType.DOUBLE, CallContext::putDouble, Invokers::invokeDouble);
+        addPrimaryTypeHandler(void.class, NativeType.VOID, null, typeFactory);
+        addPrimaryTypeHandler(boolean.class, NativeType.UINT8, CallContext::putBoolean, typeFactory);
+        addPrimaryTypeHandler(byte.class, NativeType.SINT8, CallContext::putByte, typeFactory);
+        addPrimaryTypeHandler(char.class, NativeType.UINT16, CallContext::putChar, typeFactory);
+        addPrimaryTypeHandler(short.class, NativeType.SINT16, CallContext::putShort, typeFactory);
+        addPrimaryTypeHandler(int.class, NativeType.SINT32, CallContext::putInt, typeFactory);
+        addPrimaryTypeHandler(long.class, NativeType.SINT64, CallContext::putLong, typeFactory);
+        addPrimaryTypeHandler(float.class, NativeType.FLOAT, CallContext::putFloat, typeFactory);
+        addPrimaryTypeHandler(double.class, NativeType.DOUBLE, CallContext::putDouble, typeFactory);
 
-        addInheritedParameterTypeHandler(Struct.class, TypeHandlerInfo.always(pointerType, (context, index, obj) -> context.putLong(index, obj == null ? 0 : obj.getMemory().address())));
-        addInheritedParameterTypeHandler(Pointer.class, TypeHandlerInfo.always(pointerType, (context, index, obj) -> context.putLong(index, obj == null ? 0 : obj.address())));
-        addInheritedParameterTypeHandler(ByReference.class, TypeHandlerInfo.always(pointerType, TypeHandlerRegistry::putByReference));
+        addInheritedParameterTypeHandler(Struct.class, ParameterHandlerInfo.always(pointerType, (context, index, obj) -> context.putLong(index, obj == null ? 0 : obj.getMemory().address())));
+        addInheritedParameterTypeHandler(Pointer.class, ParameterHandlerInfo.always(pointerType, (context, index, obj) -> context.putLong(index, obj == null ? 0 : obj.address())));
+        addInheritedParameterTypeHandler(ByReference.class, ParameterHandlerInfo.always(pointerType, TypeHandlerRegistry::putByReference));
 
         addPrimitiveArrayParameterTypeHandler(pointerType, byte[].class, Pointer::putBytes, Pointer::getBytes, Byte.BYTES);
         addPrimitiveArrayParameterTypeHandler(pointerType, char[].class, Pointer::putCharArray, Pointer::getCharArray, Character.BYTES);
@@ -94,69 +94,64 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
             InternalType pointerType, Class<T> primitiveArrayType,
             ArrayParameterHandler<T> toNative, ArrayParameterHandler<T> fromNative, int typeBytes) {
         ParameterHandler<T> parameterHandler = toParameterHandler(toNative, fromNative, typeBytes);
-        addExactParameterTypeHandler(primitiveArrayType, TypeHandlerInfo.always(pointerType, parameterHandler));
+        addExactParameterTypeHandler(primitiveArrayType, ParameterHandlerInfo.always(pointerType, parameterHandler));
     }
 
     private <T> void addPrimaryTypeHandler(
             Class<T> primitiveType, NativeType nativeType,
-            ParameterHandler<T> parameterHandler, Invoker<T> invoker) {
+            ParameterHandler<T> parameterHandler, TypeFactory typeFactory) {
         Class<T> wrapType = Primitives.wrap(primitiveType);
         InternalType defaultType = typeFactory.findByNativeType(nativeType);
+        InvokerHandlerInfo prthi = PrimitiveReturnTypeHandlerInfo.of(primitiveType, defaultType);
 
-        addExactReturnTypeHandler(primitiveType, defaultType, invoker);
-        addExactReturnTypeHandler(wrapType, defaultType, invoker);
+        addExactReturnTypeHandler(primitiveType, prthi);
+        addExactReturnTypeHandler(wrapType, prthi);
         if (parameterHandler != null) {
             addExactParameterTypeHandler(primitiveType, defaultType, parameterHandler);
             addExactParameterTypeHandler(wrapType, defaultType, parameterHandler);
         }
     }
 
-    private <T> void addExactReturnTypeHandler(Class<T> returnType, InternalType defaultType, Invoker<T> invoker) {
-        addExactReturnTypeHandler(returnType, TypeHandlerInfo.typedefFirst(defaultType, invoker));
+    private <T> void addExactReturnTypeHandler(Class<T> returnType, InvokerHandlerInfo info) {
+        exactReturnTypeMap.putIfAbsent(returnType, info);
     }
 
-    private <T> void addExactReturnTypeHandler(Class<T> returnType, TypeHandlerInfo<Invoker<T>> returnTypeHandlerInfo) {
-        exactReturnTypeMap.putIfAbsent(returnType, returnTypeHandlerInfo);
-    }
-
-    @SuppressWarnings("unused")
-    private <T> void addInheritedReturnTypeHandler(Class<T> returnType, InternalType defaultType, Invoker<T> invoker) {
-        addInheritedReturnTypeHandler(returnType, TypeHandlerInfo.typedefFirst(defaultType, invoker));
-    }
-
-    private <T> void addInheritedReturnTypeHandler(Class<T> returnType, TypeHandlerInfo<Invoker<T>> returnTypeHandlerInfo) {
-        inheritedReturnTypeMap.putIfAbsent(returnType, returnTypeHandlerInfo);
+    @SuppressWarnings("SameParameterValue")
+    private <T> void addInheritedReturnTypeHandler(Class<T> returnType, InvokerHandlerInfo info) {
+        inheritedReturnTypeMap.putIfAbsent(returnType, info);
     }
 
     private <T> void addExactParameterTypeHandler(Class<T> parameterType, InternalType defaultType, ParameterHandler<T> parameterHandler) {
-        addExactParameterTypeHandler(parameterType, TypeHandlerInfo.typedefFirst(defaultType, parameterHandler));
+        addExactParameterTypeHandler(parameterType, ParameterHandlerInfo.typedefFirst(defaultType, parameterHandler));
     }
 
-    private <T> void addExactParameterTypeHandler(Class<T> parameterType, TypeHandlerInfo<ParameterHandler<T>> typeHandlerInfo) {
-        exactParameterTypeMap.putIfAbsent(parameterType, typeHandlerInfo);
+    private <T> void addExactParameterTypeHandler(Class<T> parameterType, ParameterHandlerInfo<T> info) {
+        exactParameterTypeMap.putIfAbsent(parameterType, info);
     }
 
-    private <T> void addInheritedParameterTypeHandler(Class<T> parameterType, TypeHandlerInfo<ParameterHandler<T>> typeHandlerInfo) {
-        inheritedParameterTypeMap.putIfAbsent(parameterType, typeHandlerInfo);
+    private <T> void addInheritedParameterTypeHandler(Class<T> parameterType, ParameterHandlerInfo<T> info) {
+        inheritedParameterTypeMap.putIfAbsent(parameterType, info);
     }
 
     @Nullable
     @SuppressWarnings("unchecked")
     private <T> T extractFromMap(ConcurrentWeakIdentityHashMap<Class<?>, ?> exact,
             ConcurrentWeakIdentityHashMap<Class<?>, ?> inherited, Class<?> type) {
-        T result = (T) exact.get(type);
-        if (result != null) {
-            return result;
+        {
+            T result = (T) exact.get(type);
+            if (result != null) {
+                return result;
+            }
         }
         // maybe type is an interface
         for (Class<?> klass = type; klass != null && klass != Object.class; klass = klass.getSuperclass()) {
-            result = (T) inherited.get(klass);
+            T result = (T) inherited.get(klass);
             if (result != null) {
                 return result;
             }
         }
         for (Class<?> iface : type.getInterfaces()) {
-            result = (T) inherited.get(iface);
+            T result = (T) inherited.get(iface);
             if (result != null) {
                 return result;
             }
@@ -169,32 +164,25 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
     }
 
     @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public <T> TypeHandlerInfo<Invoker<T>> findReturnTypeInfo(Class<T> returnType) {
-        TypeHandlerInfo<Invoker<T>> typeHandlerInfo = extractFromMap(exactReturnTypeMap, inheritedReturnTypeMap, returnType);
+    public InvokerHandlerInfo findReturnTypeInfo(Class<?> returnType) {
+        InvokerHandlerInfo typeHandlerInfo = extractFromMap(exactReturnTypeMap, inheritedReturnTypeMap, returnType);
         if (typeHandlerInfo != null) {
             return typeHandlerInfo;
-        } else if (returnType.isEnum()) {
-            EnumTypeHandler typeHandler = EnumTypeHandler.getInstance((Class) returnType);
-            Invoker<T> invoker = typeHandler.getInvoker();
-            TypeHandlerInfo<Invoker<T>> rthi = TypeHandlerInfo.typedefFirst(typeHandler.getDefaultType(), invoker);
-            addExactReturnTypeHandler(returnType, rthi);
-            return rthi;
         }
         throw unsupportedType(returnType);
     }
 
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public <T> TypeHandlerInfo<ParameterHandler<T>> findParameterTypeInfo(Class<T> type) {
-        TypeHandlerInfo<ParameterHandler<T>> typeHandlerInfo = extractFromMap(exactParameterTypeMap, inheritedParameterTypeMap, type);
-        if (typeHandlerInfo != null) {
-            return typeHandlerInfo;
+    public <T> ParameterHandlerInfo<T> findParameterTypeInfo(Class<T> type) {
+        ParameterHandlerInfo<T> parameterHandlerInfo = extractFromMap(exactParameterTypeMap, inheritedParameterTypeMap, type);
+        if (parameterHandlerInfo != null) {
+            return parameterHandlerInfo;
         } else if (type.isEnum()) {
             EnumTypeHandler typeHandler = EnumTypeHandler.getInstance((Class) type);
             ParameterHandler<T> parameterHandler = typeHandler.getParameterHandler();
             InternalType internalType = typeHandler.getDefaultType();
-            TypeHandlerInfo<ParameterHandler<T>> phi = TypeHandlerInfo.typedefFirst(internalType, parameterHandler);
+            ParameterHandlerInfo<T> phi = ParameterHandlerInfo.typedefFirst(internalType, parameterHandler);
             addExactParameterTypeHandler(type, phi);
             return phi;
         }

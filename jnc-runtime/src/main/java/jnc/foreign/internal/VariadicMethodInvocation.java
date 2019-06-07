@@ -54,7 +54,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
 
     private final ParameterHandler<?>[] handlers;
     private final CallingConvention convention;
-    private final Invoker<?> invoker;
+    private final InvokeHandler<?> invokeHandler;
     private final long function;
     private final InternalType retType;
     private final InternalType[] ptypes;
@@ -66,7 +66,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
     VariadicMethodInvocation(
             ParameterHandler<?>[] handlers,
             CallingConvention convention,
-            Invoker<?> invoker,
+            InvokeHandler<?> invokeHandler,
             long function,
             InternalType retType,
             InternalType[] ptypes,
@@ -76,7 +76,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
             TypeHandlerFactory typeHandlerFactory) {
         this.handlers = handlers;
         this.convention = convention;
-        this.invoker = invoker;
+        this.invokeHandler = invokeHandler;
         this.function = function;
         this.retType = retType;
         this.ptypes = ptypes;
@@ -90,7 +90,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
     private void put(
             Object[] values, InternalType[] paramTypes, ParameterHandler<?>[] h, int index,
             Object value, List<Class<? extends Annotation>> annotations) {
-        TypeHandlerInfo<? extends ParameterHandler<?>> parameterTypeInfo;
+        ParameterHandlerInfo<?> parameterTypeInfo;
         if (value == null) {
             try {
                 parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(methodVariadicType);
@@ -187,7 +187,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
             ParameterHandler<Object> ph = (ParameterHandler<Object>) h[i];
             ph.handle(context, i, values[i]);
         }
-        return context.invoke(invoker, function);
+        return context.invoke(invokeHandler, function);
     }
 
     private interface Receiver {
