@@ -18,10 +18,8 @@ package jnc.foreign.internal;
 /**
  * @author zhanhb
  */
-interface TypeHandlerFactory {
+interface InvokeHandler<T> {
 
-    <T> ParameterHandlerInfo<T> findParameterTypeInfo(Class<T> type);
-
-    InvokerHandlerInfo findReturnTypeInfo(Class<?> returnType);
+    T handle(long result);
 
 }

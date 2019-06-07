@@ -20,27 +20,27 @@ import jnc.foreign.annotation.Typedef;
 /**
  * @author zhanhb
  */
-final class TypeHandlerInfo<T> {
+final class ParameterHandlerInfo<T> {
 
-    static <T> TypeHandlerInfo<T> typedefFirst(InternalType type, T handler) {
-        return new TypeHandlerInfo<>(type, handler, true);
+    static <T> ParameterHandlerInfo<T> typedefFirst(InternalType type, ParameterHandler<T> handler) {
+        return new ParameterHandlerInfo<>(type, handler, true);
     }
 
-    static <T> TypeHandlerInfo<T> always(InternalType type, T invoker) {
-        return new TypeHandlerInfo<>(type, invoker, false);
+    static <T> ParameterHandlerInfo<T> always(InternalType type, ParameterHandler<T> invoker) {
+        return new ParameterHandlerInfo<>(type, invoker, false);
     }
 
     private final InternalType type;
-    private final T handler;
+    private final ParameterHandler<T> handler;
     private final boolean searchAnnotation;
 
-    private TypeHandlerInfo(InternalType type, T handler, boolean searchAnnotation) {
+    private ParameterHandlerInfo(InternalType type, ParameterHandler<T> handler, boolean searchAnnotation) {
         this.type = type;
         this.handler = handler;
         this.searchAnnotation = searchAnnotation;
     }
 
-    T getHandler() {
+    ParameterHandler<T> getHandler() {
         return handler;
     }
 

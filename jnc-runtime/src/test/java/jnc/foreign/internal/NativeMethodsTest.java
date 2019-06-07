@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.TestLibs;
 import jnc.foreign.enums.CallingConvention;
@@ -96,7 +97,8 @@ public class NativeMethodsTest {
         CallContext context = container.newCallContext();
         int param = 'a';
         context.putInt(0, param);
-        long result = context.invoke(Invokers::invokeInt, toupper);
+        long result = context.invoke(PrimitiveConverter.INSTANCE
+                .getInvokerConvertors(long.class).apply(NativeType.SINT32), toupper);
         log.info("result = " + result);
         assertEquals('A', result);
     }

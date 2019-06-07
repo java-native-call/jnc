@@ -46,11 +46,13 @@ final class InvocationLibrary<T> {
         } else {
             name = method.getName();
         }
+
         long function = library.dlsym(name);
-        TypeHandlerInfo<? extends Invoker<?>> returnTypeInfo = typeHandlerFactory.findReturnTypeInfo(method.getReturnType());
-        InternalType retType = returnTypeInfo.getType(typeFactory, ac);
-        Invoker<?> invoker = returnTypeInfo.getHandler();
+        InvokerHandlerInfo returnTypeInfo = typeHandlerFactory.findReturnTypeInfo(method.getReturnType());
+        InternalType retType = returnTypeInfo.getType(method.getReturnType(), typeFactory, ac);
+        InvokeHandler<?> handler = returnTypeInfo.getHandler(method.getReturnType(), retType);
         Class<?>[] parameterTypes = method.getParameterTypes();
+
         int len;
         Class<?> variadicType;
         AnnotationContext[] mpacs = AnnotationContext.newMethodParameterContexts(method);
@@ -69,14 +71,14 @@ final class InvocationLibrary<T> {
         ParameterHandler<?>[] handlers = new ParameterHandler[len];
         for (int i = 0; i < len; ++i) {
             Class<?> type = parameterTypes[i];
-            TypeHandlerInfo<? extends ParameterHandler<?>> typeHandlerInfo = typeHandlerFactory.findParameterTypeInfo(type);
-            ptypes[i] = typeHandlerInfo.getType(typeFactory, mpacs[i]);
-            handlers[i] = typeHandlerInfo.getHandler();
+            ParameterHandlerInfo<?> info = typeHandlerFactory.findParameterTypeInfo(type);
+            ptypes[i] = info.getType(typeFactory, mpacs[i]);
+            handlers[i] = info.getHandler();
         }
         if (method.isVarArgs()) {
-            return new VariadicMethodInvocation(handlers, convention, invoker, function, retType, ptypes, variadicType, mpacs[len], typeFactory, typeHandlerFactory);
+            return new VariadicMethodInvocation(handlers, convention, handler, function, retType, ptypes, variadicType, mpacs[len], typeFactory, typeHandlerFactory);
         }
-        return new FixedMethodInvocation(handlers, convention, invoker, function, retType, ptypes);
+        return new FixedMethodInvocation(handlers, convention, handler, function, retType, ptypes);
     }
 
 }

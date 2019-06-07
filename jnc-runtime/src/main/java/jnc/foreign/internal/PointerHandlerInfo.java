@@ -15,13 +15,25 @@
  */
 package jnc.foreign.internal;
 
+import jnc.foreign.NativeType;
+import jnc.foreign.Pointer;
+
 /**
+ *
  * @author zhanhb
  */
-interface TypeHandlerFactory {
+enum PointerHandlerInfo implements InvokerHandlerInfo {
 
-    <T> ParameterHandlerInfo<T> findParameterTypeInfo(Class<T> type);
+    INSTANCE;
 
-    InvokerHandlerInfo findReturnTypeInfo(Class<?> returnType);
+    @Override
+    public InternalType getType(Class<?> returnType, TypeFactory typeFactory, AnnotationContext ac) {
+        return typeFactory.findByNativeType(NativeType.POINTER);
+    }
+
+    @Override
+    public InvokeHandler<Pointer> getHandler(Class<?> returnType, InternalType retType) {
+        return UnboundedDirectMemory::of;
+    }
 
 }

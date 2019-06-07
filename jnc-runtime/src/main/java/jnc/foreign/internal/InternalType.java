@@ -15,7 +15,6 @@ interface InternalType extends Type, NativeObject {
     @Override
     long address();
 
-    @VisibleForTesting
     boolean isSigned();
 
     boolean isFloatingPoint();

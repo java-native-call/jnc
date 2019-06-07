@@ -1,5 +1,6 @@
 package jnc.foreign.internal;
 
+import jnc.foreign.NativeType;
 import jnc.foreign.Platform;
 import jnc.foreign.Pointer;
 import jnc.foreign.TestLibs;
@@ -25,7 +26,8 @@ public class CifContainerTest {
         CifContainer container = CifContainer.create(CallingConvention.DEFAULT, BuiltinType.DOUBLE, BuiltinType.DOUBLE);
         CallContext ctx = container.newCallContext();
         ctx.putDouble(0, -1);
-        double result = ctx.invoke(Invokers::invokeDouble, function);
+        double result = ctx.invoke(PrimitiveConverter.INSTANCE.getInvokerConvertors(double.class)
+                .apply(NativeType.DOUBLE), function);
         assertEquals(Math.PI, result, 1e-10);
     }
 
@@ -46,7 +48,9 @@ public class CifContainerTest {
         p.putLong(1, b.address());
         p.putLong(2, b.capacity());
         assertEquals("", a.getStringUTF(0));
-        long addr = p.invoke(Invokers::invokeLong, function);
+        long addr = p.invoke(PrimitiveConverter.INSTANCE
+                .getInvokerConvertors(long.class)
+                .apply(uIntPtr.nativeType()), function);
         assertEquals(a.address(), addr);
         assertEquals(str, a.getStringUTF(0));
     }
@@ -68,7 +72,9 @@ public class CifContainerTest {
         }
         long pid = CifContainer.create(CallingConvention.DEFAULT, returnType)
                 .newCallContext()
-                .invoke(Invokers::invokeLong, function);
+                .invoke(PrimitiveConverter.INSTANCE
+                        .getInvokerConvertors(long.class)
+                        .apply(returnType.nativeType()), function);
         log.info("pid={}", pid);
     }
 

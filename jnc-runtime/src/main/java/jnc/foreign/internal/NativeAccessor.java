@@ -206,15 +206,7 @@ interface NativeAccessor {
 
     void prepareInvokeVariadic(long cif, int abi, int fixedArgs, int totalArgs, long retType, long atypes);
 
-    boolean invokeBoolean(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
-
-    int invokeInt(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
-
-    void invokeVoid(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
-
-    long invokeLong(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
-
-    double invokeDouble(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
+    long invoke(long cif, long function, long base, @Nullable int[] offsets, Object obj, long methodId);
 
     @SuppressWarnings("unused")
     void invokeStruct(long cif, long function, long base, @Nullable int[] offsets, long struct, Object obj, long methodId);
