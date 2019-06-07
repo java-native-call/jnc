@@ -66,7 +66,7 @@ final class CifContainer extends Struct {
         }
         // cif must be constructed after atypes,
         // and value setter of atypes must after all parameter constructed
-        this.cif = padding(SIZE_OF_FFI_CIF, ALIGN_OF_FFI_CIF);
+        this.cif = paddingWithAlign(SIZE_OF_FFI_CIF, ALIGN_OF_FFI_CIF);
 
         for (int i = 0; i < length; ++i) {
             atypes[i].set(params[i].address());

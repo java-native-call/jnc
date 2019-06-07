@@ -28,7 +28,7 @@ public class PaddingTest {
     private Struct withPadding(int size, int alignment) {
         return new Struct() {
             @SuppressWarnings("unused")
-            private final Struct.Padding padding = padding(size, alignment);
+            private final Struct.Padding padding = paddingWithAlign(size, alignment);
         };
     }
 
