@@ -22,6 +22,7 @@ import jnc.foreign.Platform;
 import jnc.foreign.Struct;
 import jnc.foreign.Type;
 import jnc.foreign.annotation.Continuously;
+import jnc.foreign.exception.InvalidAnnotationException;
 import jnc.foreign.exception.UnmappableNativeValueException;
 import jnc.foreign.typedef.int32_t;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,7 +62,8 @@ public class EnumTypeHandlerTest {
 
     @Test
     public void testNotAllow() {
-        assertThatThrownBy(() -> newStructWithEnumField(Test1.class)).isInstanceOf(IllegalArgumentException.class).hasMessageContaining(" allowed ");
+        assertThatThrownBy(() -> newStructWithEnumField(Test1.class))
+                .isInstanceOf(InvalidAnnotationException.class).hasMessageContaining("Only integral type allowed");
     }
 
     @Test
@@ -98,9 +100,9 @@ public class EnumTypeHandlerTest {
     public void testTooLarge() {
         newStructWithEnumField(Large1.class);
         assertThatThrownBy(() -> newStructWithEnumField(Large2.class))
-                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("too large");
+                .isInstanceOf(InvalidAnnotationException.class).hasMessageContaining("too large");
         assertThatThrownBy(() -> newStructWithEnumField(Large3.class))
-                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("too large");
+                .isInstanceOf(InvalidAnnotationException.class).hasMessageContaining("too large");
         newStructWithEnumField(Large4.class);
     }
 
