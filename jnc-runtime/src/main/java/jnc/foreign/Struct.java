@@ -247,7 +247,7 @@ public class Struct {
     }
 
     @Nonnull
-    public final Padding padding(int size, int alignment) {
+    public final Padding paddingWithAlign(int size, int alignment) {
         return inner(new Padding(size, alignment));
     }
 
