@@ -1,6 +1,5 @@
 package jnc.foreign.internal;
 
-import java.text.MessageFormat;
 import java.util.EnumMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -17,6 +16,7 @@ import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 import jnc.foreign.annotation.Continuously;
 import jnc.foreign.enums.EnumMappingErrorAction;
+import jnc.foreign.exception.InvalidAnnotationException;
 import jnc.foreign.exception.UnmappableNativeValueException;
 import jnc.foreign.support.TypeHandler;
 
@@ -70,16 +70,14 @@ final class EnumTypeHandler<E extends Enum<E>> implements TypeHandler<E> {
         NativeType mapped = (start < 0 ? TO_SIGNED_TYPE : TO_UNSIGNED_TYPE).getOrDefault(nativeType, nativeType);
         InternalType internalType = DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(mapped);
         if (!internalType.isIntegral()) {
-            throw new IllegalArgumentException("Only integral type allowed on enum, but found "
-                    + nativeType + " on " + type.getName());
+            throw new InvalidAnnotationException(annotation, type, "Only integral type allowed");
         }
         T[] values = (T[]) type.getEnumConstants();
         int size = internalType.size();
         if (size < 8) {
             long max = 1L << (size << 3) - (internalType.isSigned() ? 1 : 0);
             if (start > max - values.length) {
-                throw new IllegalArgumentException(
-                        MessageFormat.format("start too large, start={0}, max={2}, {0}+{1}>{2}", start, values.length, max));
+                throw new InvalidAnnotationException(annotation, type, "start too large");
             }
         }
         return new EnumTypeHandler(values, type, internalType, start, onUnmappable);
