@@ -46,6 +46,10 @@ interface AnnotationContext {
                 .toArray(Annotation[]::new)), previous);
     }
 
+    default boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+        return getAnnotation(annotationClass) != null;
+    }
+
     @Nullable
     <T extends Annotation> T getAnnotation(Class<T> annotationClass);
 

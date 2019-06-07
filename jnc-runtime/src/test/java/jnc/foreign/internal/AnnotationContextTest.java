@@ -23,6 +23,7 @@ import jnc.foreign.typedef.size_t;
 import jnc.foreign.typedef.uint8_t;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,8 +61,7 @@ public class AnnotationContextTest {
         assertNotNull("@Typedef not found on parameter of " + method, typedef);
         assertEquals(TypeAlias.uint8_t, typedef.value());
 
-        In in = ac.getAnnotation(In.class);
-        assertNotNull("@In not found on parameter of " + method, in);
+        assertTrue("@In not found on parameter of " + method, ac.isAnnotationPresent(In.class));
     }
 
     @SuppressWarnings({"WeakerAccess", "unused"})
