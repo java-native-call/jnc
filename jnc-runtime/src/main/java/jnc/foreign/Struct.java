@@ -321,17 +321,17 @@ public class Struct {
 
     }
 
-    private final class BaseField {
+    private final class FieldDelegate {
 
         private final int offset;
         private final Type type;
 
-        BaseField(Type type) {
+        FieldDelegate(Type type) {
             this.offset = addField(type.size(), type.alignment());
             this.type = type;
         }
 
-        BaseField(NativeType nativeType) {
+        FieldDelegate(NativeType nativeType) {
             this(getForeign().findType(nativeType));
         }
 
@@ -348,14 +348,14 @@ public class Struct {
 
         private static final long serialVersionUID = 0L;
 
-        private final BaseField base;
+        private final FieldDelegate base;
 
         NumberField(Type type) {
-            base = new BaseField(type);
+            base = new FieldDelegate(type);
         }
 
         NumberField(NativeType nativeType) {
-            base = new BaseField(nativeType);
+            base = new FieldDelegate(nativeType);
         }
 
         final void putBoolean(boolean value) {
@@ -648,10 +648,10 @@ public class Struct {
     @NotFinal(NotFinal.Reason.API)
     protected class Pointer {
 
-        private final BaseField base;
+        private final FieldDelegate base;
 
         public Pointer() {
-            base = new BaseField(NativeType.POINTER);
+            base = new FieldDelegate(NativeType.POINTER);
         }
 
         public final jnc.foreign.Pointer get() {
@@ -818,12 +818,12 @@ public class Struct {
         private final Class<E> type;
         @SuppressWarnings("deprecation")
         private final TypeHandler<E> typeHandler;
-        private final BaseField field;
+        private final FieldDelegate field;
 
         EnumField(Class<E> type) {
             this.type = type;
             this.typeHandler = getForeign().getTypeHandler(type);
-            this.field = new BaseField(typeHandler.type());
+            this.field = new FieldDelegate(typeHandler.type());
         }
 
         public final E get() {
