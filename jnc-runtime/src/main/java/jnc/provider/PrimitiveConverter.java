@@ -26,8 +26,7 @@ import jnc.foreign.NativeType;
 /**
  * @author zhanhb
  */
-enum PrimitiveConverter {
-    INSTANCE;
+final class PrimitiveConverter {
 
     private static final int NID_SINT8 = 0;
     private static final int NID_UINT8 = 1;
@@ -54,15 +53,15 @@ enum PrimitiveConverter {
 
     private static <T> void add(
             @SuppressWarnings("unused") Class<T> unused,
-            InvokeHandler<?>[] array,
+            RawConverter<?>[] array,
             int nid,
-            InvokeHandler<T> fun) {
+            RawConverter<T> fun) {
         array[nid] = fun;
     }
 
     private final Map<NativeType, Integer> nativeToId;
     private final Map<Class<?>, Integer> classToId;
-    private final InvokeHandler<?>[][] functions;
+    private final RawConverter<?>[][] functions;
 
     {
         EnumMap<NativeType, Integer> native2Id = new EnumMap<>(NativeType.class);
@@ -95,7 +94,7 @@ enum PrimitiveConverter {
 
     {
         @SuppressWarnings("rawtypes")
-        InvokeHandler<?>[][] funs = new InvokeHandler[CID_CAPACITY][NID_CAPACITY];
+        RawConverter<?>[][] funs = new RawConverter[CID_CAPACITY][NID_CAPACITY];
 
         add(boolean.class, funs[CID_BOOLEAN], NID_FLOAT, x -> !(Float.intBitsToFloat((int) x) == 0));
         add(boolean.class, funs[CID_BOOLEAN], NID_DOUBLE, x -> !(Double.longBitsToDouble(x) == 0));
@@ -126,7 +125,7 @@ enum PrimitiveConverter {
         add(float.class, funs[CID_FLOAT], NID_VOID, __ -> 0f);
 
         add(double.class, funs[CID_DOUBLE], NID_FLOAT, x -> (double) Float.intBitsToFloat((int) x));
-        add(double.class, funs[CID_DOUBLE], NID_DOUBLE, x -> (Double.longBitsToDouble(x)));
+        add(double.class, funs[CID_DOUBLE], NID_DOUBLE, Double::longBitsToDouble);
         add(double.class, funs[CID_DOUBLE], NID_VOID, __ -> 0d);
 
         for (int i = 0; i < 8; i++) {
@@ -146,7 +145,7 @@ enum PrimitiveConverter {
     // Notice: Pointer is not allowed here.
     // klass: accept both primitive types and their wrap types.
     // we only process type with actual size.
-    public <T> Function<NativeType, InvokeHandler<T>> getInvokerConvertors(Class<T> klass) {
+    <T> Function<NativeType, RawConverter<T>> getConverters(Class<T> klass) {
         Class<T> unwrap = Primitives.unwrap(klass);
         if (!unwrap.isPrimitive()) {
             throw new IllegalArgumentException();
@@ -161,22 +160,22 @@ enum PrimitiveConverter {
         // we have check primary type alreay, cid should not be null
         int cid = classToId.get(unwrap);
         @SuppressWarnings("unchecked")
-        InvokeHandler<T>[] funs = (InvokeHandler<T>[]) functions[cid];
+        RawConverter<T>[] funs = (RawConverter<T>[]) functions[cid];
         return new FunctionHolder<>(nativeToId, funs);
     }
 
-    private static final class FunctionHolder<T> implements Function<NativeType, InvokeHandler<T>> {
+    private static final class FunctionHolder<T> implements Function<NativeType, RawConverter<T>> {
 
         private final Map<NativeType, Integer> nativeToId;
-        private final InvokeHandler<T>[] functions;
+        private final RawConverter<T>[] functions;
 
-        FunctionHolder(Map<NativeType, Integer> nativeToId, InvokeHandler<T>[] functions) {
+        FunctionHolder(Map<NativeType, Integer> nativeToId, RawConverter<T>[] functions) {
             this.nativeToId = nativeToId;
             this.functions = functions;
         }
 
         @Override
-        public InvokeHandler<T> apply(NativeType type) {
+        public RawConverter<T> apply(NativeType type) {
             Objects.requireNonNull(type);
             Integer nid = nativeToId.get(type);
             if (nid == null) {

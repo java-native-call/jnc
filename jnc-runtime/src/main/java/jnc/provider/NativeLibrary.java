@@ -27,7 +27,7 @@ final class NativeLibrary implements Library {
     private static final NativeAccessor NA = NativeLoader.getAccessor();
     private static final Cleaner CLEANER = Cleaner.getInstance();
 
-    static NativeLibrary open(@Nullable String libName, int mode) {
+    static NativeLibrary open(@Nullable String libName, @SuppressWarnings("SameParameterValue") int mode) {
         Dlclose dlclose = new Dlclose(libName, mode);
         try {
             return new NativeLibrary(dlclose);

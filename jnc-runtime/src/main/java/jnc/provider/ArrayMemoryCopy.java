@@ -15,25 +15,14 @@
  */
 package jnc.provider;
 
-import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 
 /**
  *
  * @author zhanhb
  */
-enum PointerHandlerInfo implements InvokerHandlerInfo {
+interface ArrayMemoryCopy<T> {
 
-    INSTANCE;
-
-    @Override
-    public InternalType getType(Class<?> returnType, TypeFactory typeFactory, AnnotationContext ac) {
-        return typeFactory.findByNativeType(NativeType.POINTER);
-    }
-
-    @Override
-    public InvokeHandler<Pointer> getHandler(Class<?> returnType, InternalType retType) {
-        return UnboundedDirectMemory::of;
-    }
-
+    void handle(Pointer memory, int offset, T array, int off, int len);
+    
 }

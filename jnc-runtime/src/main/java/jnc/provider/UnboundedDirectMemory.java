@@ -37,11 +37,6 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
     }
 
     @Override
-    public final void putChar(int offset, char value) {
-        getAccessor().putChar(offset, value);
-    }
-
-    @Override
     public final void putShort(int offset, short value) {
         getAccessor().putShort(offset, value);
     }
@@ -77,11 +72,6 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
     }
 
     @Override
-    public final char getChar(int offset) {
-        return getAccessor().getChar(offset);
-    }
-
-    @Override
     public final int getInt(int offset) {
         return getAccessor().getInt(offset);
     }
@@ -99,11 +89,6 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
     @Override
     public final double getDouble(int offset) {
         return getAccessor().getDouble(offset);
-    }
-
-    @Override
-    void putBoolean(int offset, InternalType internalType, boolean value) {
-        getAccessor().putBoolean(offset, internalType, value);
     }
 
     @Override

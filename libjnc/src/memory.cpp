@@ -1,16 +1,5 @@
 #include "jnc.h"
-
-#define checkJlongIsSizeT(env, var, throwOnLarge, ret)  \
-do {                                                    \
-    if (unlikely(var < 0)) {                            \
-        throwByName(env, IllegalArgument, nullptr);     \
-        return ret;                                     \
-    }                                                   \
-    if (unlikely(jlong(size_t(var)) != var)) {          \
-        throwByName(env, throwOnLarge, nullptr);        \
-        return ret;                                     \
-    }                                                   \
-} while(false)
+#include "commons.h"
 
 /*
  * Class:     jnc_provider_NativeMethods
@@ -20,7 +9,14 @@ do {                                                    \
 EXTERNC JNIEXPORT jlong JNICALL
 Java_jnc_provider_NativeMethods_allocateMemory
 (JNIEnv *env, jobject UNUSED(self), jlong size) {
-    checkJlongIsSizeT(env, size, OutOfMemory, 0);
+    if (unlikely(size < 0)) {
+        throwByName(env, IllegalArgument, nullptr);
+        return 0;
+    }
+    if (unlikely(is_sizet_large_enough(size))) {
+        throwByName(env, OutOfMemory, nullptr);
+        return 0;
+    }
     // Maybe malloc(0) returns null on some platform.
     if (unlikely(size == 0)) size = 1;
     void *ret = malloc((size_t) size);
@@ -36,7 +32,14 @@ Java_jnc_provider_NativeMethods_allocateMemory
 EXTERNC JNIEXPORT void JNICALL
 Java_jnc_provider_NativeMethods_copyMemory
 (JNIEnv *env, jobject UNUSED(self), jlong ldst, jlong lsrc, jlong n) {
-    checkJlongIsSizeT(env, n, IllegalArgument, /*void*/);
+    if (unlikely(n < 0)) {
+        throwByName(env, IllegalArgument, nullptr);
+        return;
+    }
+    if (unlikely(is_sizet_large_enough(n))) {
+        throwByName(env, IllegalArgument, nullptr);
+        return;
+    }
     void *pdst = j2vp(ldst);
     void *psrc = j2vp(lsrc);
     checkNullPointer(env, pdst, /*void*/);

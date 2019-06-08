@@ -15,13 +15,30 @@
  */
 package jnc.provider;
 
+import jnc.foreign.NativeType;
+import jnc.foreign.Struct;
+
 /**
+ *
  * @author zhanhb
  */
-interface TypeHandlerFactory {
+enum StructHandler implements ParameterHandlerInfo, ParameterPutter<Struct> {
 
-    ParameterHandlerInfo findParameterTypeInfo(Class<?> type);
+    INSTANCE;
 
-    InvokerHandlerInfo findReturnTypeInfo(Class<?> returnType);
+    @Override
+    public ParameterPutter<Struct> getPutter(Class<?> type) {
+        return this;
+    }
+
+    @Override
+    public InternalType getType(Class<?> type, TypeFactory typeFactory, AnnotationContext ac) {
+        return typeFactory.findByNativeType(NativeType.POINTER);
+    }
+
+    @Override
+    public void doPut(CallContext context, int index, Struct obj) {
+        context.putLong(index, obj == null ? 0 : obj.getMemory().address());
+    }
 
 }

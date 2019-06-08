@@ -20,7 +20,7 @@ import jnc.foreign.NativeType;
 /**
  * @author zhanhb
  */
-interface BuiltinType {
+interface TypeInfo {
 
     TypeFactory typeFactory = DefaultForeign.INSTANCE.getTypeFactory();
 
@@ -33,6 +33,7 @@ interface BuiltinType {
     InternalType SINT64 = typeFactory.findByNativeType(NativeType.SINT64);
     InternalType UINT64 = typeFactory.findByNativeType(NativeType.UINT64);
 
+    InternalType FLOAT = typeFactory.findByNativeType(NativeType.FLOAT);
     InternalType DOUBLE = typeFactory.findByNativeType(NativeType.DOUBLE);
     InternalType POINTER = typeFactory.findByNativeType(NativeType.POINTER);
 }

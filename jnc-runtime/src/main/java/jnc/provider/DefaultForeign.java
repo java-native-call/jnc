@@ -39,6 +39,7 @@ enum DefaultForeign implements Foreign {
         return typeFactory;
     }
 
+    @VisibleForTesting
     TypeHandlerFactory getTypeHandlerFactory() {
         return typeHandlerFactory;
     }
@@ -94,7 +95,7 @@ enum DefaultForeign implements Foreign {
 
     @Override
     public int getLastError() {
-        return ThreadLocalError.get();
+        return DefaultLastErrorHandler.get();
     }
 
 }

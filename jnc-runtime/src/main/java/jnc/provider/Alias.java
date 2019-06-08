@@ -6,51 +6,51 @@ import jnc.foreign.enums.TypeAlias;
 final class Alias implements InternalType {
 
     private final TypeAlias typeAlias;
-    private final TypeInfo typeInfo;
+    private final InternalType delegate;
 
-    Alias(TypeAlias typeAlias, TypeInfo typeInfo) {
+    Alias(TypeAlias typeAlias, BuiltinType delegate) {
         this.typeAlias = typeAlias;
-        this.typeInfo = typeInfo;
+        this.delegate = delegate;
     }
 
     @Override
     public NativeType nativeType() {
-        return typeInfo.nativeType();
+        return delegate.nativeType();
     }
 
     @Override
     public long address() {
-        return typeInfo.address();
+        return delegate.address();
     }
 
     @Override
     public int size() {
-        return typeInfo.size();
+        return delegate.size();
     }
 
     @Override
     public int alignment() {
-        return typeInfo.alignment();
+        return delegate.alignment();
     }
 
     @Override
     public int type() {
-        return typeInfo.type();
+        return delegate.type();
     }
 
     @Override
     public boolean isFloatingPoint() {
-        return typeInfo.isFloatingPoint();
+        return delegate.isFloatingPoint();
     }
 
     @Override
     public boolean isIntegral() {
-        return typeInfo.isIntegral();
+        return delegate.isIntegral();
     }
 
     @Override
     public boolean isSigned() {
-        return typeInfo.isSigned();
+        return delegate.isSigned();
     }
 
     TypeAlias getTypeAlias() {

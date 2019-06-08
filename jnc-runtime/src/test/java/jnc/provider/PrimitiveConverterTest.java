@@ -23,6 +23,7 @@ import java.util.Set;
 import jnc.foreign.NativeType;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,12 +33,15 @@ import org.slf4j.LoggerFactory;
 /**
  * @author zhanhb
  */
+// ignore this test to show code converage
+@Ignore
 @RunWith(Parameterized.class)
 public class PrimitiveConverterTest {
 
     private static final Logger log = LoggerFactory.getLogger(PrimitiveConverterTest.class);
 
-    private static final Set<InvokeHandler<?>> handlers
+    private static final PrimitiveConverter pc = new PrimitiveConverter();
+    private static final Set<RawConverter<?>> handlers
             = Collections.newSetFromMap(new IdentityHashMap<>(44));
 
     @Parameterized.Parameters(name = "{index} {0} {1}")
@@ -68,15 +72,15 @@ public class PrimitiveConverterTest {
     }
 
     /**
-     * Test of getInvokerConvertor method, of class PrimitiveConverter.
+     * Test of getConverters method, of class PrimitiveConverter.
      */
     @Test
-    public void testGetInvokerConvertor() {
-        InvokeHandler<?> handler = PrimitiveConverter.INSTANCE.getInvokerConvertors(klass).apply(type);
+    public void testGetConverters() {
+        RawConverter<?> handler = pc.getConverters(klass).apply(type);
         assertThat(handler)
                 .describedAs("class=%s,native=%s", klass, type)
                 .isNotNull();
-        Object result = handler.handle(0);
+        Object result = handler.convertRaw(0);
         if (klass == void.class) {
             assertThat(result).isNull();
         } else {

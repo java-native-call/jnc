@@ -77,8 +77,8 @@ public class NativeMethodsTest {
         HashMap<String, Integer> map = new HashMap<>(50);
         NA.initAlias(map);
         log.info("map={}", map);
-        assertEquals(Integer.valueOf(BuiltinType.UINT8.type()), map.get("uint8_t"));
-        assertEquals(Integer.valueOf(BuiltinType.SINT32.type()), map.get("int32_t"));
+        assertEquals(Integer.valueOf(TypeInfo.UINT8.type()), map.get("uint8_t"));
+        assertEquals(Integer.valueOf(TypeInfo.SINT32.type()), map.get("int32_t"));
     }
 
     @Test
@@ -93,12 +93,12 @@ public class NativeMethodsTest {
     public void testFfi_call() {
         Library lib = NativeLibrary.open(LIBC, 0);
         long toupper = lib.dlsym("toupper");
-        CifContainer container = CifContainer.create(CallingConvention.DEFAULT, BuiltinType.SINT32, BuiltinType.SINT32);
+        CifContainer container = CifContainer.create(CallingConvention.DEFAULT, TypeInfo.SINT32, TypeInfo.SINT32);
         CallContext context = container.newCallContext();
         int param = 'a';
         context.putInt(0, param);
-        long result = context.invoke(PrimitiveConverter.INSTANCE
-                .getInvokerConvertors(long.class).apply(NativeType.SINT32), toupper);
+        long result = context.invoke(new PrimitiveConverter()
+                .getConverters(long.class).apply(NativeType.SINT32), toupper);
         log.info("result = " + result);
         assertEquals('A', result);
     }

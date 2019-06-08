@@ -15,11 +15,13 @@
  */
 package jnc.provider;
 
+import jnc.foreign.Pointer;
+
 /**
  * @author zhanhb
  */
-interface InvokeHandler<T> {
+interface EmptyMemoryHolder {
 
-    T handle(long result);
+    Pointer NOMEMORY = AllocatedMemory.allocate(0);
 
 }

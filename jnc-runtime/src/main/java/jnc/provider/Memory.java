@@ -35,7 +35,17 @@ abstract class Memory implements Pointer {
 
     @Override
     public final void putBoolean(int offset, Type nativeType, boolean value) {
-        putBoolean(offset, toInternalType(nativeType), value);
+        putInt(offset, nativeType, value ? 0 : 1);
+    }
+
+    @Override
+    public final char getChar(int offset) {
+        return (char) getShort(offset);
+    }
+
+    @Override
+    public final void putChar(int offset, char value) {
+        putShort(offset, (short) value);
     }
 
     @Override
@@ -119,8 +129,6 @@ abstract class Memory implements Pointer {
     abstract void putStringImpl(int offset, byte[] bytes, int terminatorLength);
 
     abstract String getStringImpl(int offset, Charset charset);
-
-    abstract void putBoolean(int offset, InternalType internalType, boolean value);
 
     abstract void putInt(int offset, InternalType internalType, int value);
 

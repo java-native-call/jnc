@@ -7,6 +7,7 @@ import jnc.foreign.TestLibs;
 import jnc.foreign.enums.CallingConvention;
 import jnc.foreign.enums.TypeAlias;
 import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ public class CifContainerTest {
     private static final Logger log = LoggerFactory.getLogger(CifContainerTest.class);
     private static final String LIBC = DefaultPlatform.INSTANCE.getLibcName();
     private static final String LIBM = TestLibs.getStandardMath();
+    private static final PrimitiveConverter PC = new PrimitiveConverter();
 
     @Test
     public void testAcos() {
@@ -23,12 +25,26 @@ public class CifContainerTest {
         Library libm = NativeLibrary.open(LIBM, 0);
 
         long function = libm.dlsym("acos");
-        CifContainer container = CifContainer.create(CallingConvention.DEFAULT, BuiltinType.DOUBLE, BuiltinType.DOUBLE);
+        CifContainer container = CifContainer.create(CallingConvention.DEFAULT, TypeInfo.DOUBLE, TypeInfo.DOUBLE);
         CallContext ctx = container.newCallContext();
         ctx.putDouble(0, -1);
-        double result = ctx.invoke(PrimitiveConverter.INSTANCE.getInvokerConvertors(double.class)
-                .apply(NativeType.DOUBLE), function);
-        assertEquals(Math.PI, result, 1e-10);
+        double result = ctx.invoke(PC.getConverters(double.class).apply(NativeType.DOUBLE), function);
+        assertEquals(Math.PI, result, 1e-14);
+    }
+
+    // symbol not found on windows x86
+    @Ignore
+    @Test
+    public void testAcosf() {
+        log.info("test acosf");
+        Library libm = NativeLibrary.open(LIBM, 0);
+
+        long function = libm.dlsym("acosf");
+        CifContainer container = CifContainer.create(CallingConvention.DEFAULT, TypeInfo.FLOAT, TypeInfo.FLOAT);
+        CallContext ctx = container.newCallContext();
+        ctx.putInt(0, -1);
+        float result = ctx.invoke(PC.getConverters(float.class).apply(NativeType.FLOAT), function);
+        assertEquals(Math.PI, result, 1e-6);
     }
 
     @Test
@@ -48,9 +64,7 @@ public class CifContainerTest {
         p.putLong(1, b.address());
         p.putLong(2, b.capacity());
         assertEquals("", a.getStringUTF(0));
-        long addr = p.invoke(PrimitiveConverter.INSTANCE
-                .getInvokerConvertors(long.class)
-                .apply(uIntPtr.nativeType()), function);
+        long addr = p.invoke(PC.getConverters(long.class).apply(uIntPtr.nativeType()), function);
         assertEquals(a.address(), addr);
         assertEquals(str, a.getStringUTF(0));
     }
@@ -72,9 +86,7 @@ public class CifContainerTest {
         }
         long pid = CifContainer.create(CallingConvention.DEFAULT, returnType)
                 .newCallContext()
-                .invoke(PrimitiveConverter.INSTANCE
-                        .getInvokerConvertors(long.class)
-                        .apply(returnType.nativeType()), function);
+                .invoke(PC.getConverters(long.class).apply(returnType.nativeType()), function);
         log.info("pid={}", pid);
     }
 

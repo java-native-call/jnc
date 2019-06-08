@@ -15,43 +15,14 @@
  */
 package jnc.provider;
 
-import jnc.foreign.annotation.Typedef;
-
 /**
+ *
  * @author zhanhb
  */
-final class ParameterHandlerInfo<T> {
+interface ParameterHandlerInfo {
 
-    static <T> ParameterHandlerInfo<T> typedefFirst(InternalType type, ParameterHandler<T> handler) {
-        return new ParameterHandlerInfo<>(type, handler, true);
-    }
+    ParameterPutter<?> getPutter(Class<?> type);
 
-    static <T> ParameterHandlerInfo<T> always(InternalType type, ParameterHandler<T> invoker) {
-        return new ParameterHandlerInfo<>(type, invoker, false);
-    }
-
-    private final InternalType type;
-    private final ParameterHandler<T> handler;
-    private final boolean searchAnnotation;
-
-    private ParameterHandlerInfo(InternalType type, ParameterHandler<T> handler, boolean searchAnnotation) {
-        this.type = type;
-        this.handler = handler;
-        this.searchAnnotation = searchAnnotation;
-    }
-
-    ParameterHandler<T> getHandler() {
-        return handler;
-    }
-
-    InternalType getType(TypeFactory typeFactory, AnnotationContext ac) {
-        if (searchAnnotation) {
-            Typedef annotation = ac.getAnnotation(Typedef.class);
-            if (annotation != null) {
-                return typeFactory.findByAlias(annotation.value());
-            }
-        }
-        return type;
-    }
+    InternalType getType(Class<?> type, TypeFactory typeFactory, AnnotationContext ac);
 
 }

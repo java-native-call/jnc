@@ -50,7 +50,7 @@ final class InvocationLibrary<T> {
         long function = library.dlsym(name);
         InvokerHandlerInfo returnTypeInfo = typeHandlerFactory.findReturnTypeInfo(method.getReturnType());
         InternalType retType = returnTypeInfo.getType(method.getReturnType(), typeFactory, ac);
-        InvokeHandler<?> handler = returnTypeInfo.getHandler(method.getReturnType(), retType);
+        RawConverter<?> handler = returnTypeInfo.getRawConverter(method.getReturnType(), retType);
         Class<?>[] parameterTypes = method.getParameterTypes();
 
         int len;
@@ -68,17 +68,17 @@ final class InvocationLibrary<T> {
         }
         InternalType[] ptypes = new InternalType[len];
         @SuppressWarnings("rawtypes")
-        ParameterHandler<?>[] handlers = new ParameterHandler[len];
+        ParameterPutter<?>[] putters = new ParameterPutter[len];
         for (int i = 0; i < len; ++i) {
-            Class<?> type = parameterTypes[i];
-            ParameterHandlerInfo<?> info = typeHandlerFactory.findParameterTypeInfo(type);
-            ptypes[i] = info.getType(typeFactory, mpacs[i]);
-            handlers[i] = info.getHandler();
+            Class<?> ptype = parameterTypes[i];
+            ParameterHandlerInfo info = typeHandlerFactory.findParameterTypeInfo(ptype);
+            ptypes[i] = info.getType(ptype, typeFactory, mpacs[i]);
+            putters[i] = info.getPutter(ptype);
         }
         if (method.isVarArgs()) {
-            return new VariadicMethodInvocation(handlers, convention, handler, function, retType, ptypes, variadicType, mpacs[len], typeFactory, typeHandlerFactory);
+            return new VariadicMethodInvocation(putters, convention, handler, function, retType, ptypes, variadicType, mpacs[len], typeFactory, typeHandlerFactory);
         }
-        return new FixedMethodInvocation(handlers, convention, handler, function, retType, ptypes);
+        return new FixedMethodInvocation(putters, convention, handler, function, retType, ptypes);
     }
 
 }
