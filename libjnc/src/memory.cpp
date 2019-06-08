@@ -1,10 +1,5 @@
 #include "jnc.h"
 
-/**
- * return address of this field if require malloc(0)
- */
-static jlong malloc_zero;
-
 #define checkJlongIsSizeT(env, var, throwOnLarge, ret)  \
 do {                                                    \
     if (unlikely(var < 0)) {                            \
@@ -26,7 +21,8 @@ EXTERNC JNIEXPORT jlong JNICALL
 Java_jnc_provider_NativeMethods_allocateMemory
 (JNIEnv *env, jobject UNUSED(self), jlong size) {
     checkJlongIsSizeT(env, size, OutOfMemory, 0);
-    if (unlikely(size == 0)) return p2j(&malloc_zero);
+    // Maybe malloc(0) returns null on some platform.
+    if (unlikely(size == 0)) size = 1;
     void *ret = malloc((size_t) size);
     checkOutOfMemory(env, ret, 0);
     return p2j(memset(ret, 0, (size_t) size));
@@ -58,7 +54,7 @@ Java_jnc_provider_NativeMethods_freeMemory
 (JNIEnv *UNUSED(env), jobject UNUSED(self), jlong laddr) {
     /* free(nullptr) should be noop, it's a good habbit to check null */
     void *paddr = j2vp(laddr);
-    if (likely(nullptr != paddr && paddr != &malloc_zero)) {
+    if (likely(nullptr != paddr)) {
         free(paddr);
     }
 }
