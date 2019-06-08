@@ -16,6 +16,7 @@
 package jnc.provider;
 
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -46,10 +47,15 @@ public class CharsetUtilTest {
 
                 // assume are charsets with terminator length greater than 1 can encode.
                 assertTrue(charset.name(), charset.canEncode());
-                assertIsIntegral(charset, "average bytes per char", charset.newEncoder().averageBytesPerChar() / terminatorLength);
-                assertIsIntegral(charset, "max bytes per char", charset.newEncoder().maxBytesPerChar() / terminatorLength);
+                CharsetEncoder encoder = charset.newEncoder();
+                float averageBytesPerChar = encoder.averageBytesPerChar();
+                float maxBytesPerChar = encoder.maxBytesPerChar();
+                assertIsIntegral(charset, "average bytes per char", averageBytesPerChar / terminatorLength);
+                assertIsIntegral(charset, "max bytes per char", maxBytesPerChar / terminatorLength);
+                if (averageBytesPerChar != maxBytesPerChar) {
+                    log.info("{},width={},average={},max={}", charset, terminatorLength, averageBytesPerChar, maxBytesPerChar);
+                }
             }
-            log.info("{} {}", charset, terminatorLength);
         }
     }
 

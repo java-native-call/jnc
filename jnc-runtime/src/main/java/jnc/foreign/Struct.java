@@ -842,7 +842,7 @@ public class Struct {
             try {
                 return String.valueOf(get());
             } catch (UnmappableNativeValueException ex) {
-                return type.getName() + "(unmappable)";
+                return type.getName() + "(unmappable " + ex.getValue() + ")";
             }
         }
     }

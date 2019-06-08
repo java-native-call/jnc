@@ -56,13 +56,16 @@ interface NativeAccessor {
     int TYPE_POINTER = 14;
 
     @Native
+    @SuppressWarnings("unused")
     int RTLD_LAZY = 1;
     @Native
+    @SuppressWarnings("unused")
     int RTLD_NOW = 2;
     @Native
     @SuppressWarnings("unused")
     int RTLD_LOCAL = 4;
     @Native
+    @SuppressWarnings("unused")
     int RTLD_GLOBAL = 8;
 
     @Native

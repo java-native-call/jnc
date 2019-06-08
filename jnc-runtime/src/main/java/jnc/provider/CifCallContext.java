@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import jnc.foreign.Struct;
+import jnc.foreign.Pointer;
 
 /**
  * @author zhanhb
@@ -27,18 +27,18 @@ import jnc.foreign.Struct;
 final class CifCallContext implements CallContext {
 
     private static final NativeAccessor NA = NativeLoader.getAccessor();
-    private final AllocatedMemory parameter;
+    private final Pointer parameter;
     private List<Runnable> onFinish;
     private final int[] offsets;
     private final InternalType[] params;
     // must keep a strong reference to cif,
-    // Maybe cif is gced before call finish
+    // Maybe cif is cleaned before call finish
     // VariadicMethodInvocation.invoke won't keep a reference to CifContainer
-    private final Struct cif;
+    private final Pointer cif;
 
     CifCallContext(int parameterSize, InternalType[] params,
-            @Nullable int[] offsets, Struct cif) {
-        this.parameter = AllocatedMemory.allocate(1, parameterSize);
+            @Nullable int[] offsets, Pointer cif) {
+        this.parameter = parameterSize != 0 ? AllocatedMemory.allocate(parameterSize) : EmptyMemoryHolder.NOMEMORY;
         this.offsets = offsets;
         this.params = params;
         this.cif = cif;
@@ -86,11 +86,11 @@ final class CifCallContext implements CallContext {
     }
 
     @Override
-    public <T> T invoke(InvokeHandler<T> handler, long function) {
-        long result = NA.invoke(cif.getMemory().address(), function, parameter.address(),
-                offsets, ThreadLocalError.INSTANCE, LastErrorHandler.METHOD_ID);
+    public <T> T invoke(RawConverter<T> rawConverter, long function) {
+        long result = NA.invoke(cif.address(), function, parameter.address(),
+                offsets, DefaultLastErrorHandler.INSTANCE, DefaultLastErrorHandler.METHOD_ID);
         finish();
-        return handler.handle(result);
+        return rawConverter.convertRaw(result);
     }
 
 }

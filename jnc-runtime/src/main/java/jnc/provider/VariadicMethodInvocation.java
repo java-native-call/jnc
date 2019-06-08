@@ -52,9 +52,9 @@ final class VariadicMethodInvocation implements MethodInvocation {
         map.put(klass, receiver);
     }
 
-    private final ParameterHandler<?>[] handlers;
+    private final ParameterPutter<?>[] putters;
     private final CallingConvention convention;
-    private final InvokeHandler<?> invokeHandler;
+    private final RawConverter<?> rawConverter;
     private final long function;
     private final InternalType retType;
     private final InternalType[] ptypes;
@@ -64,9 +64,9 @@ final class VariadicMethodInvocation implements MethodInvocation {
     private final TypeHandlerFactory typeHandlerFactory;
 
     VariadicMethodInvocation(
-            ParameterHandler<?>[] handlers,
+            ParameterPutter<?>[] putters,
             CallingConvention convention,
-            InvokeHandler<?> invokeHandler,
+            RawConverter<?> rawConverter,
             long function,
             InternalType retType,
             InternalType[] ptypes,
@@ -74,9 +74,9 @@ final class VariadicMethodInvocation implements MethodInvocation {
             AnnotationContext variadicAnnotationContext,
             TypeFactory typeFactory,
             TypeHandlerFactory typeHandlerFactory) {
-        this.handlers = handlers;
+        this.putters = putters;
         this.convention = convention;
-        this.invokeHandler = invokeHandler;
+        this.rawConverter = rawConverter;
         this.function = function;
         this.retType = retType;
         this.ptypes = ptypes;
@@ -88,22 +88,26 @@ final class VariadicMethodInvocation implements MethodInvocation {
 
     @SuppressWarnings("AssignmentToMethodParameter")
     private void put(
-            Object[] values, InternalType[] paramTypes, ParameterHandler<?>[] h, int index,
+            Object[] values, InternalType[] paramTypes, ParameterPutter<?>[] h, int index,
             Object value, List<Class<? extends Annotation>> annotations) {
-        ParameterHandlerInfo<?> parameterTypeInfo;
+        ParameterHandlerInfo info;
+        Class<?> type;
         if (value == null) {
             try {
-                parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(methodVariadicType);
+                type = methodVariadicType;
+                info = typeHandlerFactory.findParameterTypeInfo(type);
             } catch (UnsupportedOperationException ex) {
                 throw new NullPointerException();
             }
         } else {
-            parameterTypeInfo = typeHandlerFactory.findParameterTypeInfo(value.getClass());
+            type = value.getClass();
+            info = typeHandlerFactory.findParameterTypeInfo(type);
         }
+        AnnotationContext ac = AnnotationContext.newMockContext(annotations, annotationContext);
         values[index] = value;
-        InternalType infoType = parameterTypeInfo.getType(typeFactory, AnnotationContext.newMockContext(annotations, annotationContext));
+        InternalType infoType = info.getType(type, typeFactory, ac);
         paramTypes[index] = promotions(infoType);
-        h[index] = parameterTypeInfo.getHandler();
+        h[index] = info.getPutter(type);
         annotations.clear();
     }
 
@@ -137,20 +141,20 @@ final class VariadicMethodInvocation implements MethodInvocation {
         int variadicLen;
         int cur;
         InternalType[] paramTypes;
-        ParameterHandler<?>[] h;
+        ParameterPutter<?>[] h;
         Object[] values;
 
         if (variadics == null || (variadicLen = Array.getLength(variadics)) == 0) {
             cur = fixedArgs;
             paramTypes = ptypes;
-            h = handlers;
+            h = putters;
             values = Arrays.copyOf(args, fixedArgs);
         } else {
             final int maybeTotalLength = fixedArgs + variadicLen;
 
             cur = fixedArgs;
             paramTypes = Arrays.copyOf(ptypes, maybeTotalLength);
-            h = Arrays.copyOf(handlers, maybeTotalLength);
+            h = Arrays.copyOf(putters, maybeTotalLength);
             values = Arrays.copyOf(args, maybeTotalLength, Object[].class);
 
             final Receiver receiver = RECEIVER_MAP.getOrDefault(variadics.getClass(), Array::get);
@@ -184,10 +188,10 @@ final class VariadicMethodInvocation implements MethodInvocation {
 
         for (int i = 0; i < cur; i++) {
             @SuppressWarnings("unchecked")
-            ParameterHandler<Object> ph = (ParameterHandler<Object>) h[i];
-            ph.handle(context, i, values[i]);
+            ParameterPutter<Object> ph = (ParameterPutter<Object>) h[i];
+            ph.doPut(context, i, values[i]);
         }
-        return context.invoke(invokeHandler, function);
+        return context.invoke(rawConverter, function);
     }
 
     private interface Receiver {

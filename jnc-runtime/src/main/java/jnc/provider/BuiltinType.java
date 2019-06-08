@@ -18,10 +18,9 @@ package jnc.provider;
 import jnc.foreign.NativeType;
 
 /**
- *
  * @author zhanhb
  */
-final class TypeInfo implements InternalType {
+final class BuiltinType implements InternalType {
 
     static final int MASK_SIGNED = 1;
     static final int MASK_INTEGRAL = 2;
@@ -32,7 +31,7 @@ final class TypeInfo implements InternalType {
     private final NativeType nativeType;
     private final int attr;
 
-    TypeInfo(long address, long info, NativeType nativeType, int attr) {
+    BuiltinType(long address, long info, NativeType nativeType, int attr) {
         this.address = address;
         this.info = info;
         this.nativeType = nativeType;

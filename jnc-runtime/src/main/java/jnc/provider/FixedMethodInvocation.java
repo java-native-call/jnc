@@ -21,22 +21,22 @@ import jnc.foreign.enums.CallingConvention;
 final class FixedMethodInvocation implements MethodInvocation {
 
     private final CallingConvention convention;
-    private final ParameterHandler<?>[] handlers;
+    private final ParameterPutter<?>[] putters;
     private final CifContainer container;
-    private final InvokeHandler<?> invokeHandler;
+    private final RawConverter<?> rawConverter;
     private final long function;
 
     FixedMethodInvocation(
-            ParameterHandler<?>[] handlers,
+            ParameterPutter<?>[] putters,
             CallingConvention convention,
-            InvokeHandler<?> invokeHandler,
+            RawConverter<?> rawConverter,
             long function,
             InternalType retType,
             InternalType[] ptypes) {
         this.convention = convention;
-        this.handlers = handlers;
+        this.putters = putters;
         this.container = CifContainer.create(convention, retType, ptypes);
-        this.invokeHandler = invokeHandler;
+        this.rawConverter = rawConverter;
         this.function = function;
     }
 
@@ -48,13 +48,13 @@ final class FixedMethodInvocation implements MethodInvocation {
     @Override
     public Object invoke(Object proxy, Method m, Object[] args) {
         @SuppressWarnings(value = "unchecked")
-        ParameterHandler<Object>[] h = (ParameterHandler<Object>[]) handlers;
+        ParameterPutter<Object>[] h = (ParameterPutter<Object>[]) putters;
         int length = h.length;
         CallContext context = container.newCallContext();
         for (int i = 0; i < length; i++) {
-            h[i].handle(context, i, args[i]);
+            h[i].doPut(context, i, args[i]);
         }
-        return context.invoke(invokeHandler, function);
+        return context.invoke(rawConverter, function);
     }
 
 }

@@ -1,23 +1,5 @@
 #include "jnc.h"
-
-template<int = sizeof (size_t)>
-struct shift_selector;
-
-template<>
-struct shift_selector<4> : jnc_type_traits::integral_constant<int, 30> {
-};
-
-template<>
-struct shift_selector<8> : jnc_type_traits::integral_constant<int, 62> {
-};
-
-/* limit must not be negative, should be checked before pass to this function */
-inline bool is_unlimited(jlong limit) {
-    static_assert(sizeof(void *) == sizeof(size_t), "require pointer and size_t same size");
-    // maybe the limit here we got is calculated by minus something.
-    // treat it as unlimited if the limit is greater than a quart of the whole memory can be presented.
-    return limit >> shift_selector<>::value;
-}
+#include "commons.h"
 
 /*
  * Class:     jnc_provider_NativeMethods
@@ -53,7 +35,7 @@ EXTERNC JNIEXPORT jint JNICALL Java_jnc_provider_NativeMethods_getStringUTFLengt
 
 static size_t get_string_length_2(const jchar * const addr, jlong limit) noexcept {
     // limit is non negative
-    if (is_unlimited(limit)) {
+    if (is_sizet_large_enough(limit)) {
 #if WCHAR_MAX == UINT16_MAX
         // on windows
         return wcslen((wchar_t*) addr);
@@ -85,7 +67,7 @@ Java_jnc_provider_NativeMethods_getStringUTF
         throwByName(env, IllegalArgument, nullptr);
         return 0;
     }
-    if (is_unlimited(limit)) return env->NewStringUTF(paddr);
+    if (is_sizet_large_enough(limit)) return env->NewStringUTF(paddr);
     size_t szLimit = limit;
     const char *p = paddr;
     for (size_t n = szLimit; n; --n) {
@@ -142,7 +124,7 @@ EXTERNC JNIEXPORT jstring JNICALL Java_jnc_provider_NativeMethods_getStringChar1
 }
 
 static size_t get_string_length_1(const char *const addr, jlong limit) {
-    if (is_unlimited(limit)) {
+    if (is_sizet_large_enough(limit)) {
         return strlen(addr);
     } else {
         size_t szLimit = limit;
@@ -154,7 +136,7 @@ static size_t get_string_length_1(const char *const addr, jlong limit) {
 }
 
 static size_t get_string_length_4(const jint * const addr, jlong limit) {
-    if (is_unlimited(limit)) {
+    if (is_sizet_large_enough(limit)) {
 #if WCHAR_MAX == UINT32_MAX
         return wcslen(reinterpret_cast<wchar_t*> (addr));
 #else

@@ -105,9 +105,9 @@ public interface Pointer {
     String getString(int offset, Charset charset);
 
     /**
-     * Put the String to this pointer in specified charset. Null Terminated.
-     * If the string value has null terminated character, will be truncated when
-     * read back with {@link #getString(int, Charset) getString}
+     * Put the String to this pointer in specified charset. With null
+     * terminated. If the string value has null terminated character, will be
+     * truncated when read back with {@link #getString(int, Charset) getString}
      *
      * @param offset the offset of this pointer
      * @throws IndexOutOfBoundsException If this pointer is managed and doesn't

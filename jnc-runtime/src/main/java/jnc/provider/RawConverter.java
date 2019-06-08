@@ -18,10 +18,8 @@ package jnc.provider;
 /**
  * @author zhanhb
  */
-interface TypeHandlerFactory {
+interface RawConverter<T> {
 
-    ParameterHandlerInfo findParameterTypeInfo(Class<?> type);
-
-    InvokerHandlerInfo findReturnTypeInfo(Class<?> returnType);
+    T convertRaw(long result);
 
 }

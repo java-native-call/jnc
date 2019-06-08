@@ -15,42 +15,37 @@
  */
 package jnc.provider;
 
-import java.util.function.Function;
-import jnc.foreign.NativeType;
 import jnc.foreign.annotation.Typedef;
 
 /**
  * @author zhanhb
  */
-final class PrimitiveReturnTypeHandlerInfo<T> implements InvokerHandlerInfo {
+final class PrimitiveToNativeInfo<T> implements ParameterHandlerInfo {
 
-    static <T> PrimitiveReturnTypeHandlerInfo<T> of(Class<T> klass, InternalType defaultType) {
-        Function<NativeType, InvokeHandler<T>> functions
-                = PrimitiveConverter.INSTANCE.getInvokerConvertors(Primitives.unwrap(klass));
-        return new PrimitiveReturnTypeHandlerInfo<>(defaultType, functions);
+    static <T> PrimitiveToNativeInfo<T> of(InternalType type, ParameterPutter<T> handler) {
+        return new PrimitiveToNativeInfo<>(type, handler);
     }
 
     private final InternalType defaultType;
-    private final Function<NativeType, InvokeHandler<T>> functions;
+    private final ParameterPutter<T> putter;
 
-    private PrimitiveReturnTypeHandlerInfo(InternalType defaultType,
-            Function<NativeType, InvokeHandler<T>> functions) {
+    private PrimitiveToNativeInfo(InternalType defaultType, ParameterPutter<T> putter) {
         this.defaultType = defaultType;
-        this.functions = functions;
+        this.putter = putter;
     }
 
     @Override
-    public InternalType getType(Class<?> returnType, TypeFactory typeFactory, AnnotationContext ac) {
+    public ParameterPutter<T> getPutter(Class<?> type) {
+        return putter;
+    }
+
+    @Override
+    public InternalType getType(Class<?> type, TypeFactory typeFactory, AnnotationContext ac) {
         Typedef annotation = ac.getAnnotation(Typedef.class);
         if (annotation != null) {
             return typeFactory.findByAlias(annotation.value());
         }
         return defaultType;
-    }
-
-    @Override
-    public InvokeHandler<T> getHandler(Class<?> returnType, InternalType retType) {
-        return functions.apply(retType.nativeType());
     }
 
 }

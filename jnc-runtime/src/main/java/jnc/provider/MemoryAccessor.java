@@ -53,14 +53,6 @@ final class MemoryAccessor {
         NA.putRawShort(address + offset, value);
     }
 
-    char getChar(int offset) {
-        return (char) NA.getRawShort(address + offset);
-    }
-
-    void putChar(int offset, char value) {
-        NA.putRawShort(address + offset, (short) value);
-    }
-
     int getInt(int offset) {
         return NA.getRawInt(address + offset);
     }
@@ -99,10 +91,6 @@ final class MemoryAccessor {
 
     void putAddress(int offset, long value) {
         NA.putRawAddress(address + offset, value);
-    }
-
-    void putBoolean(int offset, InternalType internalType, boolean value) {
-        putInt(offset, internalType, value ? 0 : 1);
     }
 
     void putInt(int offset, InternalType internalType, int value) {

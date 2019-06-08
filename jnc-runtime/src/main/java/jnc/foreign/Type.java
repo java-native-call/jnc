@@ -8,9 +8,6 @@ public interface Type {
 
     int alignment();
 
-    @Override
-    String toString();
-
     @Deprecated
     void do_not_implement_this_for_its_used_internally();
 

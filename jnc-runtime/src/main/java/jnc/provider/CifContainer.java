@@ -52,7 +52,7 @@ final class CifContainer extends Struct {
     }
 
     private final InternalType[] params;
-    private final Struct cif;
+    private final jnc.foreign.Pointer cif;
     private final int[] offsets;
     private final int parameterSize;
 
@@ -66,7 +66,7 @@ final class CifContainer extends Struct {
         }
         // cif must be constructed after atypes,
         // and value setter of atypes must after all parameter constructed
-        this.cif = paddingWithAlign(SIZE_OF_FFI_CIF, ALIGN_OF_FFI_CIF);
+        this.cif = paddingWithAlign(SIZE_OF_FFI_CIF, ALIGN_OF_FFI_CIF).getMemory();
 
         for (int i = 0; i < length; ++i) {
             atypes[i].set(params[i].address());
@@ -90,14 +90,14 @@ final class CifContainer extends Struct {
     }
 
     private CifContainer prepareInvoke(CallingConvention convention, InternalType resultType) {
-        NA.prepareInvoke(cif.getMemory().address(), convention(convention),
+        NA.prepareInvoke(cif.address(), convention(convention),
                 params.length, resultType.address(), getMemory().address());
         return this;
     }
 
     private CifContainer prepareInvokeVariadic(CallingConvention convention,
             int fixedArgs, InternalType resultType) {
-        NA.prepareInvokeVariadic(cif.getMemory().address(), convention(convention),
+        NA.prepareInvokeVariadic(cif.address(), convention(convention),
                 fixedArgs, params.length, resultType.address(), getMemory().address());
         return this;
     }

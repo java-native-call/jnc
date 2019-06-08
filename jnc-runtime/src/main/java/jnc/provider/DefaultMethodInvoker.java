@@ -10,7 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * Handle handle invoke_special for interface methods default methods
+ * Handle invoke_special for interface methods default methods
  *
  * @author zhanhb
  * @see

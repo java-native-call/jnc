@@ -20,7 +20,8 @@ import jnc.foreign.exception.InvalidAnnotationException;
 import jnc.foreign.exception.UnmappableNativeValueException;
 import jnc.foreign.support.TypeHandler;
 
-final class EnumTypeHandler<E extends Enum<E>> implements TypeHandler<E>, InvokeHandler<E> {
+final class EnumTypeHandler<E extends Enum<E>> implements
+        TypeHandler<E>, RawConverter<E>, ParameterPutter<E> {
 
     private static final ConcurrentWeakIdentityHashMap<Class<? extends Enum<?>>, EnumTypeHandler<?>> cache
             = new ConcurrentWeakIdentityHashMap<>(32);
@@ -102,8 +103,9 @@ final class EnumTypeHandler<E extends Enum<E>> implements TypeHandler<E>, Invoke
         return defaultType;
     }
 
-    ParameterHandler<E> getParameterHandler() {
-        return (CallContext context, int index, E obj) -> context.putLong(index, obj != null ? start + obj.ordinal() : 0);
+    @Override
+    public void doPut(CallContext context, int index, E obj) {
+        context.putLong(index, obj != null ? start + obj.ordinal() : 0);
     }
 
     @Nullable
@@ -120,7 +122,7 @@ final class EnumTypeHandler<E extends Enum<E>> implements TypeHandler<E>, Invoke
     }
 
     @Override
-    public E handle(long result) {
+    public E convertRaw(long result) {
         return mapLong(result);
     }
 

@@ -21,13 +21,13 @@ import jnc.foreign.annotation.Typedef;
  *
  * @author zhanhb
  */
-enum EnumHandlerInfo implements InvokerHandlerInfo {
+enum EnumHandlers implements InvokerHandlerInfo, ParameterHandlerInfo {
 
     INSTANCE;
 
     @SuppressWarnings("unchecked")
-    private EnumTypeHandler<?> forHandler(Class<?> returnType) {
-        return EnumTypeHandler.getInstance((Class) returnType);
+    private EnumTypeHandler<?> forHandler(Class<?> type) {
+        return EnumTypeHandler.getInstance((Class) type);
     }
 
     @Override
@@ -40,8 +40,13 @@ enum EnumHandlerInfo implements InvokerHandlerInfo {
     }
 
     @Override
-    public InvokeHandler<?> getHandler(Class<?> returnType, InternalType retType) {
+    public RawConverter<?> getRawConverter(Class<?> returnType, InternalType retType) {
         return forHandler(returnType);
+    }
+
+    @Override
+    public ParameterPutter<?> getPutter(Class<?> type) {
+        return forHandler(type);
     }
 
 }

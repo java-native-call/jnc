@@ -89,12 +89,6 @@ class SizedDirectMemory extends Memory {
     }
 
     @Override
-    public final void putChar(int offset, char value) {
-        checkSize(capacity, offset, Character.BYTES);
-        getAccessor().putChar(offset, value);
-    }
-
-    @Override
     public final void putShort(int offset, short value) {
         checkSize(capacity, offset, Short.BYTES);
         getAccessor().putShort(offset, value);
@@ -137,12 +131,6 @@ class SizedDirectMemory extends Memory {
     }
 
     @Override
-    public final char getChar(int offset) {
-        checkSize(capacity, offset, Character.BYTES);
-        return getAccessor().getChar(offset);
-    }
-
-    @Override
     public final int getInt(int offset) {
         checkSize(capacity, offset, Integer.BYTES);
         return getAccessor().getInt(offset);
@@ -176,12 +164,6 @@ class SizedDirectMemory extends Memory {
     final void putFloat(int offset, InternalType internalType, float value) {
         checkSize(capacity, offset, internalType.size());
         getAccessor().putFloat(offset, internalType, value);
-    }
-
-    @Override
-    final void putBoolean(int offset, InternalType internalType, boolean value) {
-        checkSize(capacity, offset, internalType.size());
-        getAccessor().putBoolean(offset, internalType, value);
     }
 
     @Override

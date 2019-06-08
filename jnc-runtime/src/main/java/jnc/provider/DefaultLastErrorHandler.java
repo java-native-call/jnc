@@ -1,10 +1,13 @@
 package jnc.provider;
 
 import java.lang.reflect.Method;
+import java.util.function.IntConsumer;
 
-enum ThreadLocalError implements LastErrorHandler {
+enum DefaultLastErrorHandler implements IntConsumer {
 
     INSTANCE;
+
+    public static final long METHOD_ID = DefaultLastErrorHandler.getMethodId();
 
     /**
      * Use Integer to avoid memory leak.
@@ -16,13 +19,9 @@ enum ThreadLocalError implements LastErrorHandler {
         return i != null ? i : 0;
     }
 
-    static Object getInstance() {
-        return INSTANCE;
-    }
-
     static long getMethodId() {
         try {
-            Method method = LastErrorHandler.class.getMethod("handle", int.class);
+            Method method = IntConsumer.class.getMethod("accept", int.class);
             return NativeLoader.getAccessor().getMethodId(method);
         } catch (NoSuchMethodException ex) {
             throw new AssertionError(ex);
@@ -30,7 +29,7 @@ enum ThreadLocalError implements LastErrorHandler {
     }
 
     @Override
-    public void handle(int error) {
+    public void accept(int error) {
         if (error == 0) {
             THREAD_LOCAL.remove();
         } else {
