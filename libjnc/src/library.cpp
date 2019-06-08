@@ -122,12 +122,12 @@ do {                                        \
 #endif /* _WIN32 */
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    dlopen
  * Signature: (Ljava/lang/String;I)J
  */
 EXTERNC JNIEXPORT jlong JNICALL
-Java_jnc_foreign_internal_NativeMethods_dlopen
+Java_jnc_provider_NativeMethods_dlopen
 (JNIEnv *env, jobject UNUSED(self), jstring path, jint mode) {
     HMODULE ret = nullptr;
     if (unlikely(nullptr == path)) {
@@ -146,12 +146,12 @@ Java_jnc_foreign_internal_NativeMethods_dlopen
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    dlsym
  * Signature: (JLjava/lang/String;)J
  */
 EXTERNC JNIEXPORT jlong JNICALL
-Java_jnc_foreign_internal_NativeMethods_dlsym
+Java_jnc_provider_NativeMethods_dlsym
 (JNIEnv *env, jobject UNUSED(self), jlong lhandle, jstring symbol) {
     HMODULE hModule = j2p(lhandle, HMODULE);
     checkNullPointer(env, hModule, 0);
@@ -166,12 +166,12 @@ Java_jnc_foreign_internal_NativeMethods_dlsym
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    dlclose
  * Signature: (J)V
  */
 EXTERNC JNIEXPORT void JNICALL
-Java_jnc_foreign_internal_NativeMethods_dlclose
+Java_jnc_provider_NativeMethods_dlclose
 (JNIEnv *env, jobject UNUSED(self), jlong lhandle) {
     HMODULE hModule = j2p(lhandle, HMODULE);
     checkNullPointer(env, hModule, /*void*/);

@@ -3,7 +3,7 @@ package jnc.foreign.spi;
 import javax.annotation.Nonnull;
 import jnc.foreign.Foreign;
 import jnc.foreign.Platform;
-import jnc.foreign.internal.DefaultForeignProvider;
+import jnc.provider.DefaultForeignProvider;
 
 public interface ForeignProvider {
 

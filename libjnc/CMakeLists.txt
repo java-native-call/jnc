@@ -200,11 +200,7 @@ if (DIST_DIR)
     get_filename_component(DIST_DIR "${DIST_DIR}" ABSOLUTE)
     #ensure property DIST_DIR present when rebuild
     set(DIST_DIR "${DIST_DIR}" CACHE PATH "dist directory")
-    if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-        set(JNI_DIRECTORY_NAME win32)
-    else ()
-        string(TOLOWER "${CMAKE_SYSTEM_NAME}" JNI_DIRECTORY_NAME)
-    endif ()
+    string(TOLOWER "${CMAKE_SYSTEM_NAME}" JNI_DIRECTORY_NAME)
 
     set(JNI_DIRECTORY "${DIST_DIR}/${JNI_DIRECTORY_NAME}")
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

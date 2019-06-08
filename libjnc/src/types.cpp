@@ -93,12 +93,12 @@ struct ffi_value<T, true, false> : integral_matcher<sizeof (T), alignof (T), is_
 typedef int errno_t;
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    initAlias
  * Signature: (Ljava/util/Map;)V
  */
 EXTERNC JNIEXPORT void JNICALL
-Java_jnc_foreign_internal_NativeMethods_initAlias
+Java_jnc_provider_NativeMethods_initAlias
 (JNIEnv *env, jobject UNUSED(self), jobject obj) {
     checkNullPointer(env, obj, /*void*/);
 
@@ -223,12 +223,12 @@ Java_jnc_foreign_internal_NativeMethods_initAlias
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    getTypes
  * Signature: ()[[J
  */
 EXTERNC JNIEXPORT jobjectArray JNICALL
-Java_jnc_foreign_internal_NativeMethods_getTypes
+Java_jnc_provider_NativeMethods_getTypes
 (JNIEnv *env, jobject UNUSED(self)) {
 #define F(value) &ffi_type_##value
     ffi_type * addrs[] = {

@@ -17,7 +17,7 @@ package jnc.foreign.exception;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import jnc.foreign.internal.NotFinal;
+import jnc.provider.NotFinal;
 
 /**
  * @author zhanhb

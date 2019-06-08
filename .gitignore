@@ -4,7 +4,7 @@
 .flattened-pom.xml
 .idea/
 hs_err_pid*.log
-jnc_foreign_internal_*.h
+jnc_provider_*.h
 nb-configuration.xml
 nbproject/
 pom.xml.bak
