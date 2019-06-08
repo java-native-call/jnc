@@ -21,23 +21,23 @@ EXTERNC JNIEXPORT jint JNICALL JNI_OnLoad
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    getJniVersion
  * Signature: ()I
  */
 EXTERNC JNIEXPORT jint JNICALL
-Java_jnc_foreign_internal_NativeMethods_getJniVersion
+Java_jnc_provider_NativeMethods_getJniVersion
 (JNIEnv *env, jobject UNUSED(self)) {
     return env->GetVersion();
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    pageSize
  * Signature: ()I
  */
 EXTERNC JNIEXPORT jint JNICALL
-Java_jnc_foreign_internal_NativeMethods_pageSize
+Java_jnc_provider_NativeMethods_pageSize
 (JNIEnv *UNUSED(env), jobject UNUSED(self)) {
     return _page_size;
 }

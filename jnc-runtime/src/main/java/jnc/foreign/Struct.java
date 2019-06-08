@@ -7,10 +7,10 @@ import javax.annotation.Nullable;
 import jnc.foreign.annotation.Pack;
 import jnc.foreign.enums.TypeAlias;
 import jnc.foreign.exception.UnmappableNativeValueException;
-import jnc.foreign.internal.NotFinal;
 import jnc.foreign.spi.ForeignProvider;
 import jnc.foreign.support.LayoutBuilder;
 import jnc.foreign.support.TypeHandler;
+import jnc.provider.NotFinal;
 
 @NotFinal(NotFinal.Reason.API)
 @SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess", "unused"})

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "jnc_foreign_internal_NativeAccessor.h"
-#include "jnc_foreign_internal_NativeMethods.h"
+#include "jnc_provider_NativeAccessor.h"
+#include "jnc_provider_NativeMethods.h"
 #include <ffi.h>
 #include "exception.h"
 
-#define JNC_CALL(type) jnc_foreign_internal_NativeAccessor_CONVENTION_##type
-#define JNC_RTLD(name) jnc_foreign_internal_NativeAccessor_RTLD_##name
-#define JNC_TYPE(type) jnc_foreign_internal_NativeAccessor_TYPE_##type
+#define JNC_CALL(type) jnc_provider_NativeAccessor_CONVENTION_##type
+#define JNC_RTLD(name) jnc_provider_NativeAccessor_RTLD_##name
+#define JNC_TYPE(type) jnc_provider_NativeAccessor_TYPE_##type
 
 #define CHECK_JNC_FFI(type) (JNC_TYPE(type) == FFI_TYPE_##type)
 #if \

@@ -15,7 +15,7 @@
  */
 package jnc.foreign.exception;
 
-import jnc.foreign.internal.NotFinal;
+import jnc.provider.NotFinal;
 
 /**
  * @author zhanhb

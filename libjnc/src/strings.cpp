@@ -20,12 +20,12 @@ inline bool is_unlimited(jlong limit) {
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    putStringUTF
  * Signature: (JLjava/lang/String;)V
  */
 EXTERNC JNIEXPORT void JNICALL
-Java_jnc_foreign_internal_NativeMethods_putStringUTF
+Java_jnc_provider_NativeMethods_putStringUTF
 (JNIEnv *env, jobject UNUSED(self), jlong laddr, jstring value) {
     char *paddr = j2c(laddr, char);
     checkNullPointer(env, paddr, /*void*/);
@@ -41,11 +41,11 @@ Java_jnc_foreign_internal_NativeMethods_putStringUTF
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    getStringUTFLength
  * Signature: (Ljava/lang/String;)I
  */
-EXTERNC JNIEXPORT jint JNICALL Java_jnc_foreign_internal_NativeMethods_getStringUTFLength
+EXTERNC JNIEXPORT jint JNICALL Java_jnc_provider_NativeMethods_getStringUTFLength
 (JNIEnv *env, jobject UNUSED(self), jstring value) {
     checkNullPointer(env, value, 0);
     return env->GetStringUTFLength(value);
@@ -71,12 +71,12 @@ static size_t get_string_length_2(const jchar * const addr, jlong limit) noexcep
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    getStringUTF
  * Signature: (JJ)Ljava/lang/String;
  */
 EXTERNC JNIEXPORT jstring JNICALL
-Java_jnc_foreign_internal_NativeMethods_getStringUTF
+Java_jnc_provider_NativeMethods_getStringUTF
 (JNIEnv *env, jobject UNUSED(self), jlong laddr, jlong limit) {
     const char *const paddr = j2c(laddr, char);
     checkNullPointer(env, paddr, nullptr);
@@ -101,11 +101,11 @@ Java_jnc_foreign_internal_NativeMethods_getStringUTF
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    putStringChar16
  * Signature: (JLjava/lang/String;)V
  */
-EXTERNC JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_putStringChar16
+EXTERNC JNIEXPORT void JNICALL Java_jnc_provider_NativeMethods_putStringChar16
 (JNIEnv *env, jobject UNUSED(self), jlong laddr, jstring value) {
     jchar * const paddr = j2c(laddr, jchar);
     checkNullPointer(env, paddr, /*void*/);
@@ -118,11 +118,11 @@ EXTERNC JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_putString
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    getStringChar16
  * Signature: (JJ)Ljava/lang/String;
  */
-EXTERNC JNIEXPORT jstring JNICALL Java_jnc_foreign_internal_NativeMethods_getStringChar16
+EXTERNC JNIEXPORT jstring JNICALL Java_jnc_provider_NativeMethods_getStringChar16
 (JNIEnv *env, jobject UNUSED(self), jlong laddr, jlong limit) {
     const jchar * const paddr = j2c(laddr, jchar);
     checkNullPointer(env, paddr, nullptr);
@@ -172,11 +172,11 @@ static size_t get_string_length_4(const jint * const addr, jlong limit) {
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    getStringLength
  * Signature: (JJI)I
  */
-EXTERNC JNIEXPORT jint JNICALL Java_jnc_foreign_internal_NativeMethods_getStringLength
+EXTERNC JNIEXPORT jint JNICALL Java_jnc_provider_NativeMethods_getStringLength
 (JNIEnv *env, jobject UNUSED(self), jlong laddr, jlong limit, jint terminatorLength) {
     const void *const paddr = j2vp(laddr);
     checkNullPointer(env, paddr, 0);

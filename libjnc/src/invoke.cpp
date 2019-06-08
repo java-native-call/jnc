@@ -39,12 +39,12 @@ static void checkReturnValue(JNIEnv *env, ffi_status status) {
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    prepareInvoke
  * Signature: (JIIJJ)V
  */
 EXTERNC JNIEXPORT void JNICALL
-Java_jnc_foreign_internal_NativeMethods_prepareInvoke
+Java_jnc_provider_NativeMethods_prepareInvoke
 (JNIEnv *env, jobject UNUSED(self), jlong lcif, jint abi, jint nargs,
         jlong lrtype, jlong latype) {
     ffi_cif *pcif = j2c(lcif, ffi_cif);
@@ -57,11 +57,11 @@ Java_jnc_foreign_internal_NativeMethods_prepareInvoke
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    prepareInvokeVariadic
  * Signature: (JIIIJJ)V
  */
-EXTERNC JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_prepareInvokeVariadic
+EXTERNC JNIEXPORT void JNICALL Java_jnc_provider_NativeMethods_prepareInvokeVariadic
 (JNIEnv *env, jobject UNUSED(self), jlong lcif, jint abi, jint nfixedargs,
         jint ntotalargs, jlong lrtype, jlong latype) {
     ffi_cif *pcif = j2c(lcif, ffi_cif);
@@ -75,11 +75,11 @@ EXTERNC JNIEXPORT void JNICALL Java_jnc_foreign_internal_NativeMethods_prepareIn
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    getMethodId
  * Signature: (Ljava/lang/reflect/Method;)J
  */
-EXTERNC JNIEXPORT jlong JNICALL Java_jnc_foreign_internal_NativeMethods_getMethodId
+EXTERNC JNIEXPORT jlong JNICALL Java_jnc_provider_NativeMethods_getMethodId
 (JNIEnv *env, jobject UNUSED(self), jobject jmethod) {
     checkNullPointer(env, jmethod, 0);
     return p2j(CALLJNI(env, FromReflectedMethod, jmethod));
@@ -141,12 +141,12 @@ union result_t {
 };
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    invoke
  * Signature: (JJJ[ILjava/lang/Object;J)J
  */
 EXTERNC JNIEXPORT jlong JNICALL
-Java_jnc_foreign_internal_NativeMethods_invoke
+Java_jnc_provider_NativeMethods_invoke
 (JNIEnv * env, jobject UNUSED(self), jlong lcif, jlong jfun,
         jlong base, jintArray offsets, jobject obj,
         jlong methodId) {

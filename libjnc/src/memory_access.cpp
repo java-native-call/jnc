@@ -12,7 +12,7 @@ static bool checkNullAndRange(JNIEnv *env, jarray array, jint offset, jint size)
 
 #define ADDRESS_ARRAY_ACCESS(atype, jni, fname)             \
 EXTERNC JNIEXPORT void JNICALL                              \
-Java_jnc_foreign_internal_NativeMethods_get##fname          \
+Java_jnc_provider_NativeMethods_get##fname                  \
 (JNIEnv * env, jobject UNUSED(self), jlong laddr,           \
         atype##Array array, jint off, jint len) {           \
     atype * addr = j2c(laddr, atype);                       \
@@ -22,7 +22,7 @@ Java_jnc_foreign_internal_NativeMethods_get##fname          \
             len, addr);                                     \
 }                                                           \
 EXTERNC JNIEXPORT void JNICALL                              \
-Java_jnc_foreign_internal_NativeMethods_put##fname          \
+Java_jnc_provider_NativeMethods_put##fname                  \
 (JNIEnv * env, jobject UNUSED(self), jlong laddr,           \
         atype##Array array, jint off, jint len) {           \
     atype * addr = j2c(laddr, atype);                       \
@@ -42,7 +42,7 @@ ADDRESS_ARRAY_ACCESS(jdouble, Double, DoubleArray);
 
 #define DEFINE_PUTTER(name, jtype)                  \
 EXTERNC JNIEXPORT void JNICALL                      \
-Java_jnc_foreign_internal_NativeMethods_put##name   \
+Java_jnc_provider_NativeMethods_put##name   \
 (JNIEnv * env, jobject UNUSED(self), jlong laddr,   \
         jlong ltype, jtype value) {                 \
     void * paddr = j2vp(laddr);                     \
@@ -59,7 +59,7 @@ DEFINE_PUTTER(Double, jdouble);
 
 #define DEFINE_GETTER(name, jtype)                                  \
 EXTERNC JNIEXPORT jtype JNICALL                                     \
-Java_jnc_foreign_internal_NativeMethods_get##name                   \
+Java_jnc_provider_NativeMethods_get##name                           \
 (JNIEnv * env, jobject UNUSED(self), jlong laddr, jlong ltype) {    \
     void * paddr = j2vp(laddr);                                     \
     ffi_type * ptype = j2c(ltype, ffi_type);                        \
@@ -76,14 +76,14 @@ DEFINE_GETTER(Double, jdouble);
 
 #define ADDRESS_ACCESS_E(name, native, jtype, j2n, n2j)             \
 EXTERNC JNIEXPORT void JNICALL                                      \
-Java_jnc_foreign_internal_NativeMethods_putRaw##name                \
+Java_jnc_provider_NativeMethods_putRaw##name                        \
 (JNIEnv *env, jobject UNUSED(self), jlong address, jtype value) {   \
     native * paddr = j2c(address, native);                          \
     checkNullPointer(env, paddr, /*void*/);                         \
     *paddr = j2n(value);                                            \
 }                                                                   \
 EXTERNC JNIEXPORT jtype JNICALL                                     \
-Java_jnc_foreign_internal_NativeMethods_getRaw##name                \
+Java_jnc_provider_NativeMethods_getRaw##name                        \
 (JNIEnv *env, jobject UNUSED(self), jlong address) {                \
     native * paddr = j2c(address, native);                          \
     checkNullPointer(env, paddr, 0);                                \

@@ -11,7 +11,7 @@
     <properties>
         <jni.header.dir>${project.basedir}/../libjnc/jni</jni.header.dir>
         <module.name>com.github.zhanhb.jnc.runtime</module.name>
-        <osgi.export>!jnc.foreign.internal.*,jnc.*;-noimport:=true</osgi.export>
+        <osgi.export>!jnc.provider.*,jnc.*;-noimport:=true</osgi.export>
         <osgi.import>javax.annotation.*;resolution:=optional,*</osgi.import>
     </properties>
 
@@ -76,7 +76,7 @@ import java.nio.file.*
 import org.objectweb.asm.*
 
 try {
-    def resolve = Paths.get(project.build.outputDirectory, "jnc/foreign/internal/NotFinal.class")
+    def resolve = Paths.get(project.build.outputDirectory, "jnc/provider/NotFinal.class")
     def cw = new ClassWriter(0)
     new ClassReader(Files.readAllBytes(resolve)).accept(new ClassVisitor(Opcodes.ASM7, cw) {
         public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
@@ -163,7 +163,7 @@ try {
                                             <arg line="--target all -- -j 2" />
                                         </exec>
                                         <mkdir dir="${jni.dist.dir}" />
-                                        <copy preservelastmodified="true" todir="${project.build.outputDirectory}/jnc/foreign/internal/native">
+                                        <copy preservelastmodified="true" todir="${project.build.outputDirectory}/jnc/provider/native">
                                             <fileset dir="${jni.dist.dir}" />
                                         </copy>
                                     </target>
@@ -200,7 +200,7 @@ try {
                                         <resource>
                                             <directory>${jni.libs.dir}</directory>
                                             <filtering>false</filtering>
-                                            <targetPath>jnc/foreign/internal/native</targetPath>
+                                            <targetPath>jnc/provider/native</targetPath>
                                         </resource>
                                     </resources>
                                 </configuration>

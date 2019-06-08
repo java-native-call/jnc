@@ -18,12 +18,12 @@ do {                                                    \
 } while(false)
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    allocateMemory
  * Signature: (J)J
  */
 EXTERNC JNIEXPORT jlong JNICALL
-Java_jnc_foreign_internal_NativeMethods_allocateMemory
+Java_jnc_provider_NativeMethods_allocateMemory
 (JNIEnv *env, jobject UNUSED(self), jlong size) {
     checkJlongIsSizeT(env, size, OutOfMemory, 0);
     if (unlikely(size == 0)) return p2j(&malloc_zero);
@@ -33,12 +33,12 @@ Java_jnc_foreign_internal_NativeMethods_allocateMemory
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    copyMemory
  * Signature: (JJJ)V
  */
 EXTERNC JNIEXPORT void JNICALL
-Java_jnc_foreign_internal_NativeMethods_copyMemory
+Java_jnc_provider_NativeMethods_copyMemory
 (JNIEnv *env, jobject UNUSED(self), jlong ldst, jlong lsrc, jlong n) {
     checkJlongIsSizeT(env, n, IllegalArgument, /*void*/);
     void *pdst = j2vp(ldst);
@@ -49,12 +49,12 @@ Java_jnc_foreign_internal_NativeMethods_copyMemory
 }
 
 /*
- * Class:     jnc_foreign_internal_NativeMethods
+ * Class:     jnc_provider_NativeMethods
  * Method:    freeMemory
  * Signature: (J)V
  */
 EXTERNC JNIEXPORT void JNICALL
-Java_jnc_foreign_internal_NativeMethods_freeMemory
+Java_jnc_provider_NativeMethods_freeMemory
 (JNIEnv *UNUSED(env), jobject UNUSED(self), jlong laddr) {
     /* free(nullptr) should be noop, it's a good habbit to check null */
     void *paddr = j2vp(laddr);

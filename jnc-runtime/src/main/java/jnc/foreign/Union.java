@@ -1,6 +1,6 @@
 package jnc.foreign;
 
-import jnc.foreign.internal.NotFinal;
+import jnc.provider.NotFinal;
 
 @NotFinal(NotFinal.Reason.API)
 @SuppressWarnings("WeakerAccess")
