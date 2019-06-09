@@ -63,9 +63,14 @@ public class Struct {
         throw state.toException(advance);
     }
 
-    public final int size() {
+    final int size0() {
         advance(State.FIELDS_FINISHED);
         return layoutBuilder.size();
+    }
+
+    public final int size() {
+        advance(State.FIELDS_FINISHED);
+        return Math.max(layoutBuilder.size(), 1);
     }
 
     public final int alignment() {
@@ -115,7 +120,7 @@ public class Struct {
 
     @Nonnull
     protected final <T extends Struct> T inner(@Nonnull T struct) {
-        struct.setEnclosing(this, addField(struct.size(), struct.alignment()));
+        struct.setEnclosing(this, addField(struct.size0(), struct.alignment()));
         return struct;
     }
 
