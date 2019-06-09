@@ -13,6 +13,19 @@ public interface Pointer {
      */
     long address();
 
+    /**
+     * @see #capacity() capacity
+     * @return capacity of this pointer, {@code Integer.MAX_VALUE} if no
+     * capacity info or greater than Integer.MAX_VALUE
+     */
+    int size();
+
+    /**
+     * @throws UnsupportedOperationException if this pointer has no info about
+     * capacity.
+     */
+    long capacity() throws UnsupportedOperationException;
+
     byte getByte(int offset);
 
     char getChar(int offset);
