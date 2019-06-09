@@ -821,7 +821,6 @@ public class Struct {
     protected final class EnumField<E extends Enum<E>> {
 
         private final Class<E> type;
-        @SuppressWarnings("deprecation")
         private final TypeHandler<E> typeHandler;
         private final FieldDelegate field;
 

@@ -59,6 +59,7 @@ final class ConcurrentWeakIdentityHashMap<K, V> {
 
     @SuppressWarnings("UnusedReturnValue")
     public V putIfAbsent(K key, V value) {
+        Objects.requireNonNull(key, "key");
         purgeKeys();
         return map.putIfAbsent(new Key<>(key, queue), value);
     }
@@ -81,13 +82,18 @@ final class ConcurrentWeakIdentityHashMap<K, V> {
         private final int hash;
 
         Key(T t, ReferenceQueue<T> queue) {
-            super(Objects.requireNonNull(t), queue);
+            super(t, queue);
             hash = System.identityHashCode(t);
         }
 
         @Override
         public boolean equals(Object obj) {
-            return this == obj || obj instanceof Key && ((Key<?>) obj).get() == get();
+            if (!(obj instanceof Key)) {
+                // won't happen, just avoid IDE warning.
+                // all the objects in the delegated map are all Key
+                return false;
+            }
+            return ((Key<?>) obj).get() == get();
         }
 
         @Override

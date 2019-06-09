@@ -51,17 +51,9 @@ final class PrimitiveConverter {
     private static final int CID_CHAR = 7;
     private static final int CID_CAPACITY = CID_CHAR + 1;
 
-    private static <T> void add(
-            @SuppressWarnings("unused") Class<T> unused,
-            RawConverter<?>[] array,
-            int nid,
-            RawConverter<T> fun) {
-        array[nid] = fun;
-    }
-
     private final Map<NativeType, Integer> nativeToId;
     private final Map<Class<?>, Integer> classToId;
-    private final RawConverter<?>[][] functions;
+    private final RawConverter<?>[][] converters;
 
     {
         EnumMap<NativeType, Integer> native2Id = new EnumMap<>(NativeType.class);
@@ -94,52 +86,52 @@ final class PrimitiveConverter {
 
     {
         @SuppressWarnings("rawtypes")
-        RawConverter<?>[][] funs = new RawConverter[CID_CAPACITY][NID_CAPACITY];
+        RawConverter<?>[][] array = new RawConverter[CID_CAPACITY][NID_CAPACITY];
 
-        add(boolean.class, funs[CID_BOOLEAN], NID_FLOAT, x -> !(Float.intBitsToFloat((int) x) == 0));
-        add(boolean.class, funs[CID_BOOLEAN], NID_DOUBLE, x -> !(Double.longBitsToDouble(x) == 0));
-        add(boolean.class, funs[CID_BOOLEAN], NID_VOID, __ -> false);
+        array[CID_BOOLEAN][NID_FLOAT] = x -> !(Float.intBitsToFloat((int) x) == 0);
+        array[CID_BOOLEAN][NID_DOUBLE] = x -> !(Double.longBitsToDouble(x) == 0);
+        array[CID_BOOLEAN][NID_VOID] = __ -> false;
 
-        add(byte.class, funs[CID_BYTE], NID_FLOAT, x -> (byte) (Float.intBitsToFloat((int) x)));
-        add(byte.class, funs[CID_BYTE], NID_DOUBLE, x -> (byte) (Double.longBitsToDouble(x)));
-        add(byte.class, funs[CID_BYTE], NID_VOID, __ -> (byte) 0);
+        array[CID_BYTE][NID_FLOAT] = x -> (byte) (Float.intBitsToFloat((int) x));
+        array[CID_BYTE][NID_DOUBLE] = x -> (byte) (Double.longBitsToDouble(x));
+        array[CID_BYTE][NID_VOID] = __ -> (byte) 0;
 
-        add(short.class, funs[CID_SHORT], NID_FLOAT, x -> (short) (Float.intBitsToFloat((int) x)));
-        add(short.class, funs[CID_SHORT], NID_DOUBLE, x -> (short) (Double.longBitsToDouble(x)));
-        add(short.class, funs[CID_SHORT], NID_VOID, __ -> (short) 0);
+        array[CID_SHORT][NID_FLOAT] = x -> (short) (Float.intBitsToFloat((int) x));
+        array[CID_SHORT][NID_DOUBLE] = x -> (short) (Double.longBitsToDouble(x));
+        array[CID_SHORT][NID_VOID] = __ -> (short) 0;
 
-        add(char.class, funs[CID_CHAR], NID_FLOAT, x -> (char) (Float.intBitsToFloat((int) x)));
-        add(char.class, funs[CID_CHAR], NID_DOUBLE, x -> (char) (Double.longBitsToDouble(x)));
-        add(char.class, funs[CID_CHAR], NID_VOID, __ -> (char) 0);
+        array[CID_CHAR][NID_FLOAT] = x -> (char) (Float.intBitsToFloat((int) x));
+        array[CID_CHAR][NID_DOUBLE] = x -> (char) (Double.longBitsToDouble(x));
+        array[CID_CHAR][NID_VOID] = __ -> (char) 0;
 
-        add(int.class, funs[CID_INT], NID_FLOAT, x -> (int) (Float.intBitsToFloat((int) x)));
-        add(int.class, funs[CID_INT], NID_DOUBLE, x -> (int) (Double.longBitsToDouble(x)));
-        add(int.class, funs[CID_INT], NID_VOID, __ -> 0);
+        array[CID_INT][NID_FLOAT] = x -> (int) (Float.intBitsToFloat((int) x));
+        array[CID_INT][NID_DOUBLE] = x -> (int) (Double.longBitsToDouble(x));
+        array[CID_INT][NID_VOID] = __ -> 0;
 
-        add(long.class, funs[CID_LONG], NID_FLOAT, x -> (long) (Float.intBitsToFloat((int) x)));
-        add(long.class, funs[CID_LONG], NID_DOUBLE, x -> (long) (Double.longBitsToDouble(x)));
-        add(long.class, funs[CID_LONG], NID_VOID, __ -> 0L);
+        array[CID_LONG][NID_FLOAT] = x -> (long) (Float.intBitsToFloat((int) x));
+        array[CID_LONG][NID_DOUBLE] = x -> (long) (Double.longBitsToDouble(x));
+        array[CID_LONG][NID_VOID] = __ -> 0L;
 
-        add(float.class, funs[CID_FLOAT], NID_FLOAT, x -> (Float.intBitsToFloat((int) x)));
-        add(float.class, funs[CID_FLOAT], NID_DOUBLE, x -> (float) (Double.longBitsToDouble(x)));
-        add(float.class, funs[CID_FLOAT], NID_VOID, __ -> 0f);
+        array[CID_FLOAT][NID_FLOAT] = x -> (Float.intBitsToFloat((int) x));
+        array[CID_FLOAT][NID_DOUBLE] = x -> (float) (Double.longBitsToDouble(x));
+        array[CID_FLOAT][NID_VOID] = __ -> 0f;
 
-        add(double.class, funs[CID_DOUBLE], NID_FLOAT, x -> (double) Float.intBitsToFloat((int) x));
-        add(double.class, funs[CID_DOUBLE], NID_DOUBLE, Double::longBitsToDouble);
-        add(double.class, funs[CID_DOUBLE], NID_VOID, __ -> 0d);
+        array[CID_DOUBLE][NID_FLOAT] = x -> (double) Float.intBitsToFloat((int) x);
+        array[CID_DOUBLE][NID_DOUBLE] = Double::longBitsToDouble;
+        array[CID_DOUBLE][NID_VOID] = __ -> 0d;
 
         for (int i = 0; i < 8; i++) {
-            add(boolean.class, funs[CID_BOOLEAN], i, x -> x != 0);
-            add(byte.class, funs[CID_BYTE], i, x -> (byte) x);
-            add(short.class, funs[CID_SHORT], i, x -> (short) x);
-            add(char.class, funs[CID_CHAR], i, x -> (char) x);
-            add(int.class, funs[CID_INT], i, x -> (int) x);
-            add(long.class, funs[CID_LONG], i, x -> x);
-            add(float.class, funs[CID_FLOAT], i, x -> (float) x);
-            add(double.class, funs[CID_DOUBLE], i, x -> (double) x);
+            array[CID_BOOLEAN][i] = x -> x != 0;
+            array[CID_BYTE][i] = x -> (byte) x;
+            array[CID_SHORT][i] = x -> (short) x;
+            array[CID_CHAR][i] = x -> (char) x;
+            array[CID_INT][i] = x -> (int) x;
+            array[CID_LONG][i] = x -> x;
+            array[CID_FLOAT][i] = x -> (float) x;
+            array[CID_DOUBLE][i] = x -> (double) x;
         }
 
-        this.functions = funs;
+        this.converters = array;
     }
 
     // Notice: Pointer is not allowed here.
@@ -157,21 +149,21 @@ final class PrimitiveConverter {
                 return __ -> null;
             };
         }
-        // we have check primary type alreay, cid should not be null
+        // we have check primary type already, cid should not be null
         int cid = classToId.get(unwrap);
         @SuppressWarnings("unchecked")
-        RawConverter<T>[] funs = (RawConverter<T>[]) functions[cid];
-        return new FunctionHolder<>(nativeToId, funs);
+        RawConverter<T>[] funs = (RawConverter<T>[]) converters[cid];
+        return new ConverterHolder<>(nativeToId, funs);
     }
 
-    private static final class FunctionHolder<T> implements Function<NativeType, RawConverter<T>> {
+    private static final class ConverterHolder<T> implements Function<NativeType, RawConverter<T>> {
 
         private final Map<NativeType, Integer> nativeToId;
-        private final RawConverter<T>[] functions;
+        private final RawConverter<T>[] converters;
 
-        FunctionHolder(Map<NativeType, Integer> nativeToId, RawConverter<T>[] functions) {
+        ConverterHolder(Map<NativeType, Integer> nativeToId, RawConverter<T>[] functions) {
             this.nativeToId = nativeToId;
-            this.functions = functions;
+            this.converters = functions;
         }
 
         @Override
@@ -181,7 +173,7 @@ final class PrimitiveConverter {
             if (nid == null) {
                 throw new IllegalArgumentException();
             }
-            return functions[nid];
+            return converters[nid];
         }
 
     }

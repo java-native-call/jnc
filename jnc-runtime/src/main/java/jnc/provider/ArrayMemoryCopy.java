@@ -24,5 +24,5 @@ import jnc.foreign.Pointer;
 interface ArrayMemoryCopy<T> {
 
     void handle(Pointer memory, int offset, T array, int off, int len);
-    
+
 }

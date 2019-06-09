@@ -101,7 +101,7 @@ public class CleanerTest {
         Cleaner.Ref list = new Cleaner.Ref();
         Cleaner cleaner = new Cleaner(list);
         ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        int nTotal = 100000;
+        int nTotal = 1000000;
         AtomicInteger atomicInteger = new AtomicInteger();
         try {
             for (int i = 0; i < nTotal; ++i) {
@@ -112,7 +112,7 @@ public class CleanerTest {
         } finally {
             es.shutdown();
         }
-        es.awaitTermination(nTotal, TimeUnit.HOURS);
+        es.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
         // this method seems to be very slow
         list.cleanAll();
         assertThat(atomicInteger.get()).isEqualTo(nTotal);

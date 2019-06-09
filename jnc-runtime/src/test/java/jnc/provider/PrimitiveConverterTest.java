@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author zhanhb
  */
-// ignore this test to show code converage
+// ignore this test to show code coverage
 @Ignore
 @RunWith(Parameterized.class)
 public class PrimitiveConverterTest {
