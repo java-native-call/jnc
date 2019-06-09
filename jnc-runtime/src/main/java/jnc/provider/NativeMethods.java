@@ -11,7 +11,16 @@ enum NativeMethods implements NativeAccessor {
 
     INSTANCE;
 
-    private static final AtomicReference<Runnable> onFinalize = new AtomicReference<>();
+    private static final AtomicReference<Runnable> onFinalize;
+
+    static {
+        // Initialize Cleaner when our instance and static field onFinalize is ready.
+        // Make sure class NativeLoader is initialized.
+        // Cleaner => NativeLoader => NativeMethods
+        onFinalize = new AtomicReference<>();
+        //noinspection ResultOfMethodCallIgnored
+        NativeLoader.getAccessor();
+    }
 
     // access by native code
     @SuppressWarnings("unused")

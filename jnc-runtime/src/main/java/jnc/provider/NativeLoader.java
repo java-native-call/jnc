@@ -35,6 +35,14 @@ final class NativeLoader {
 
     private static final NativeAccessor NATIVE_ACCESSOR = init();
 
+    static {
+        // Initialize Cleaner when our instance is ready.
+        // Make sure class NativeLoader is initialized.
+        // Cleaner => NativeLoader => NativeMethods
+        //noinspection ResultOfMethodCallIgnored
+        Cleaner.getInstance();
+    }
+
     private static NativeAccessor init() {
         NativeLoader loader = new NativeLoader();
         try {
