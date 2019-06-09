@@ -170,7 +170,8 @@ final class ProxyBuilder {
         final boolean useDefaultMethod = this.useDefaultMethod;
         final Function<Method, InvocationHandler> otherwise = this.otherwise;
         final Function<Method, ? extends Throwable> orThrow = this.orThrow;
-        return (proxy, method, args) -> map.computeIfAbsent(MethodKey.of(method), __ -> {
+        final Function<MethodKey, InvocationHandler> cia = mk -> {
+            Method method = mk.getMethod();
             try {
                 if (useDefaultMethod && method.isDefault()) {
                     return DefaultMethodInvoker.getInstance(method);
@@ -184,7 +185,8 @@ final class ProxyBuilder {
                 //noinspection RedundantTypeArguments
                 throw ProxyBuilder.<RuntimeException>throwUnchecked(ex);
             }
-        }).invoke(proxy, method, args);
+        };
+        return (proxy, method, args) -> map.computeIfAbsent(MethodKey.of(method), cia).invoke(proxy, method, args);
     }
 
     public <T> T newInstance(Class<T> interfaceClass) {
@@ -208,6 +210,10 @@ final class ProxyBuilder {
             this.name = method.getName();
             this.parameterTypes = method.getParameterTypes();
             this.hash = Objects.hashCode(this.name) ^ Arrays.hashCode(this.parameterTypes);
+        }
+
+        Method getMethod() {
+            return method;
         }
 
         @Override
