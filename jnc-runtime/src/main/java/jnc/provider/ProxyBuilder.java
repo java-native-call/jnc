@@ -195,37 +195,35 @@ final class ProxyBuilder {
     private static final class MethodKey {
 
         private static MethodKey of(Method method) {
-            return new MethodKey(method.getReturnType(), method.getParameterTypes());
+            return new MethodKey(method);
         }
 
-        private final Class<?> returnType;
+        private final Method method;
+        private final String name;
         private final Class<?>[] parameterTypes;
+        private final int hash;
 
-        private MethodKey(Class<?> returnType, Class<?>[] parameterTypes) {
-            this.returnType = returnType;
-            this.parameterTypes = parameterTypes;
+        private MethodKey(Method method) {
+            this.method = method;
+            this.name = method.getName();
+            this.parameterTypes = method.getParameterTypes();
+            this.hash = Objects.hashCode(this.name) ^ Arrays.hashCode(this.parameterTypes);
         }
 
         @Override
         public int hashCode() {
-            int hash = 7;
-            hash = 97 * hash + Objects.hashCode(this.returnType);
-            hash = 97 * hash + Arrays.hashCode(this.parameterTypes);
             return hash;
         }
 
         @Override
         @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
         public boolean equals(Object obj) {
-            if (this == obj) {
+            final MethodKey other = (MethodKey) obj;
+            if (method == other.method) {
                 return true;
             }
-            if (obj != null && getClass() == obj.getClass()) {
-                final MethodKey other = (MethodKey) obj;
-                return Objects.equals(this.returnType, other.returnType)
-                        && Arrays.equals(this.parameterTypes, other.parameterTypes);
-            }
-            return false;
+            return Objects.equals(this.name, other.name)
+                    && Arrays.equals(this.parameterTypes, other.parameterTypes);
         }
 
     }

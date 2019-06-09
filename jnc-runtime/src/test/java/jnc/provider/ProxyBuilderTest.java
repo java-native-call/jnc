@@ -23,6 +23,9 @@ import java.lang.reflect.Proxy;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Iterator;
 import java.util.function.Consumer;
+import jnc.foreign.LibraryLoader;
+import jnc.foreign.Platform;
+import jnc.foreign.typedef.int32_t;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
@@ -162,6 +165,15 @@ public class ProxyBuilderTest {
         }
     }
 
+    @Test
+    public void testMethodKeyHashEquals() {
+        for (int i = 0; i < 128; ++i) {
+            assertEquals(Character.isAlphabetic(i), Libc.INSTANCE.isalpha(i));
+            assertEquals(Character.isLetterOrDigit(i), Libc.INSTANCE.isalnum(i));
+        }
+        assertThatThrownBy(Libc.INSTANCE::notexists).isInstanceOf(UnsatisfiedLinkError.class);
+    }
+
     private interface InterfaceHasObjectMethods {
 
         @Override
@@ -176,6 +188,22 @@ public class ProxyBuilderTest {
         default void defaultMethod() {
             throw new StringIndexOutOfBoundsException();
         }
+    }
+
+    private interface Libc {
+
+        Libc INSTANCE = LibraryLoader.create(Libc.class).load(Platform.getNativePlatform().getLibcName());
+
+        @int32_t
+        boolean isalpha(int ch);
+
+        @int32_t
+        boolean isalnum(int ch);
+
+        // Should be ok if some function not exists
+        @SuppressWarnings("unused")
+        void notexists();
+
     }
 
 }
