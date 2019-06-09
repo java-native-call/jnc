@@ -47,9 +47,6 @@ enum NativeMethods implements NativeAccessor {
     public final native void dlclose(long handle);
 
     @Override
-    public final native int getJniVersion();
-
-    @Override
     public final native byte getRawByte(long address);
 
     @Override
@@ -192,9 +189,6 @@ enum NativeMethods implements NativeAccessor {
 
     @Override
     public final native void freeMemory(long address);
-
-    @Override
-    public final native int pageSize();
 
     /**
      * {@inheritDoc}

@@ -1,6 +1,5 @@
 package jnc.provider;
 
-import java.lang.reflect.Field;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -12,8 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.AssumptionViolatedException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,17 +21,6 @@ public class NativeMethodsTest {
     private static final String LIBC = DefaultPlatform.INSTANCE.getLibcName();
     private static final String LIBM = TestLibs.getStandardMath();
     private static final NativeAccessor NA = NativeLoader.getAccessor();
-
-    /**
-     * Test of getJniVersion method, of class NativeMethods.
-     */
-    @Test
-    public void testGetJniVersion() {
-        log.info("getJniVersion");
-        int expResult = 0x10006;
-        int result = NA.getJniVersion();
-        assertTrue(result >= expResult);
-    }
 
     @Test
     public void testNotFound() {
@@ -123,26 +109,6 @@ public class NativeMethodsTest {
     public void testFreeMemory() {
         log.info("freeMemory");
         NA.freeMemory(0);
-    }
-
-    /**
-     * Test of pageSize method, of class NativeMethods.
-     */
-    @Test
-    @SuppressWarnings({"UseSpecificCatch", "BroadCatchBlock", "TooBroadCatch"})
-    public void testPageSize() {
-        int expResult;
-        try {
-            Field field = Class.forName("sun.misc.Unsafe").getDeclaredField("theUnsafe");
-            field.setAccessible(true);
-            Object unsafe = field.get(null);
-            expResult = ((Number) unsafe.getClass().getMethod("pageSize").invoke(unsafe)).intValue();
-        } catch (Throwable t) {
-            throw new AssumptionViolatedException("unsafe not present", t);
-        }
-        log.info("pageSize");
-        int result = NA.pageSize();
-        assertEquals(expResult, result);
     }
 
     @Test

@@ -86,8 +86,6 @@ interface NativeAccessor {
 
     void dlclose(long handle);
 
-    int getJniVersion();
-
     byte getRawByte(long address);
 
     void putRawByte(long address, byte value);
@@ -195,8 +193,6 @@ interface NativeAccessor {
     void copyMemory(long dst, long src, long n);
 
     void freeMemory(long address);
-
-    int pageSize();
 
     /*
      * align<<32|size
