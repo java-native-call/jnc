@@ -85,7 +85,7 @@ final class BuiltinType implements InternalType {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + nativeType() + ')';
+        return nativeType().name();
     }
 
 }
