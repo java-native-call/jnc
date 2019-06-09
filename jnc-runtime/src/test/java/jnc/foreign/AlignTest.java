@@ -17,16 +17,8 @@ public class AlignTest {
     public void testAlign() {
         assertSizeAndAlign(new Aligned2(), 6, 2);
         assertSizeAndAlign(new Aligned4(), 8, 4);
-    }
-
-    @Test
-    public void testAlign2() {
         assertSizeAndAlign(new Base(), 8, 4);
         assertSizeAndAlign(new my_packed_struct(), 13, 1);
-    }
-
-    @Test
-    public void testAlign0() {
         assertSizeAndAlign(new PackZero(), 8, 4);
     }
 
@@ -39,8 +31,8 @@ public class AlignTest {
 
     private static class Base2 extends Struct {
 
-        private final Struct.int32_t i = new int32_t();
-        private final Struct.int8_t c = new int8_t();
+        private final int32_t i = new int32_t();
+        private final int8_t c = new int8_t();
 
     }
 

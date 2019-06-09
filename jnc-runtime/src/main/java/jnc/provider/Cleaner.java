@@ -64,6 +64,10 @@ final class Cleaner {
 
         private final Runnable action;
         private final Ref list;
+        // volatile is not necessary
+        // all the operations are within a synchronized block,
+        // even the order or the assignment rearranged,
+        // we can also get the result as expected.
         private Ref prev, next;
 
         @SuppressWarnings("LeakingThisInConstructor")

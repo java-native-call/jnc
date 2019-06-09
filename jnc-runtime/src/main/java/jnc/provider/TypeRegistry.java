@@ -9,10 +9,10 @@ import javax.annotation.Nullable;
 import jnc.foreign.NativeType;
 import static jnc.foreign.NativeType.*;
 import jnc.foreign.enums.TypeAlias;
-import static jnc.provider.NativeAccessor.*;
 import static jnc.provider.BuiltinType.MASK_FLOATING;
 import static jnc.provider.BuiltinType.MASK_INTEGRAL;
 import static jnc.provider.BuiltinType.MASK_SIGNED;
+import static jnc.provider.NativeAccessor.*;
 
 final class TypeRegistry implements TypeFactory {
 

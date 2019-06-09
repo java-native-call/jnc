@@ -39,7 +39,7 @@ class SizedDirectMemory extends Memory {
      * check if specified {@code size} can be put in the specified
      * {@code offset}
      *
-     * @param capacity capacity capacity of the memory in bytes
+     * @param capacity capacity of the memory in bytes
      * @param offset the offset of the memory to put into
      * @param size the size of the object prepare to put
      */
