@@ -224,6 +224,8 @@ final class ProxyBuilder {
         @Override
         @SuppressWarnings("AccessingNonPublicFieldOfAnotherObject")
         public boolean equals(Object obj) {
+            // usually this won't happen, just to avoid IDE warning
+            if (!(obj instanceof MethodKey)) return false;
             final MethodKey other = (MethodKey) obj;
             if (method == other.method) {
                 return true;
