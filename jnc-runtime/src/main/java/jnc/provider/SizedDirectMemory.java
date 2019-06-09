@@ -70,6 +70,13 @@ class SizedDirectMemory extends Memory {
         return getAccessor().address();
     }
 
+    @Override
+    public final int size() {
+        long cap = capacity;
+        return cap > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) cap;
+    }
+
+    @Override
     public final long capacity() {
         return capacity;
     }

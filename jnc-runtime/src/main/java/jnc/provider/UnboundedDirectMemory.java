@@ -23,6 +23,16 @@ final class UnboundedDirectMemory extends Memory implements NativeObject, Pointe
         return getAccessor().address();
     }
 
+    @Override
+    public int size() {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public long capacity() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Do not rely on the String presentation, maybe changed in the future.
      */
