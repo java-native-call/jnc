@@ -4,12 +4,13 @@ import jnc.foreign.Foreign;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 
-public interface ByReference {
+@SuppressWarnings("ClassMayBeInterface")
+public abstract class ByReference {
 
-    void fromNative(Foreign foreign, Pointer pointer);
+    public abstract void fromNative(Foreign foreign, Pointer pointer);
 
-    void toNative(Foreign foreign, Pointer pointer);
+    public abstract void toNative(Foreign foreign, Pointer pointer);
 
-    Type componentType(Foreign foreign);
+    public abstract Type componentType(Foreign foreign);
 
 }

@@ -5,7 +5,7 @@ import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 import jnc.foreign.enums.TypeAlias;
 
-public final class AddressByReference implements ByReference {
+public final class AddressByReference extends ByReference {
 
     private long value;
 
