@@ -88,37 +88,42 @@ final class PrimitiveConverter {
         @SuppressWarnings("rawtypes")
         RawConverter<?>[][] array = new RawConverter[CID_CAPACITY][NID_CAPACITY];
 
-        array[CID_BOOLEAN][NID_FLOAT] = x -> !(Float.intBitsToFloat((int) x) == 0);
-        array[CID_BOOLEAN][NID_DOUBLE] = x -> !(Double.longBitsToDouble(x) == 0);
-        array[CID_BOOLEAN][NID_VOID] = __ -> false;
-
-        array[CID_BYTE][NID_FLOAT] = x -> (byte) (Float.intBitsToFloat((int) x));
-        array[CID_BYTE][NID_DOUBLE] = x -> (byte) (Double.longBitsToDouble(x));
-        array[CID_BYTE][NID_VOID] = __ -> (byte) 0;
-
-        array[CID_SHORT][NID_FLOAT] = x -> (short) (Float.intBitsToFloat((int) x));
-        array[CID_SHORT][NID_DOUBLE] = x -> (short) (Double.longBitsToDouble(x));
-        array[CID_SHORT][NID_VOID] = __ -> (short) 0;
-
-        array[CID_CHAR][NID_FLOAT] = x -> (char) (Float.intBitsToFloat((int) x));
-        array[CID_CHAR][NID_DOUBLE] = x -> (char) (Double.longBitsToDouble(x));
-        array[CID_CHAR][NID_VOID] = __ -> (char) 0;
-
-        array[CID_INT][NID_FLOAT] = x -> (int) (Float.intBitsToFloat((int) x));
-        array[CID_INT][NID_DOUBLE] = x -> (int) (Double.longBitsToDouble(x));
-        array[CID_INT][NID_VOID] = __ -> 0;
-
-        array[CID_LONG][NID_FLOAT] = x -> (long) (Float.intBitsToFloat((int) x));
-        array[CID_LONG][NID_DOUBLE] = x -> (long) (Double.longBitsToDouble(x));
-        array[CID_LONG][NID_VOID] = __ -> 0L;
+        // There is no conversion needed from floating pointer type or void now.
+        // If a method is annotated with @Typedef, then it's a integral type
+        // uncomment these if actually needed.
+        // Like floating alias or user customize conversion.
+        // After comment these, the test case for this class will fail.
+        //array[CID_BOOLEAN][NID_FLOAT] = x -> !(Float.intBitsToFloat((int) x) == 0);
+        //array[CID_BOOLEAN][NID_DOUBLE] = x -> !(Double.longBitsToDouble(x) == 0);
+        //array[CID_BOOLEAN][NID_VOID] = __ -> false;
+        //
+        //array[CID_BYTE][NID_FLOAT] = x -> (byte) (Float.intBitsToFloat((int) x));
+        //array[CID_BYTE][NID_DOUBLE] = x -> (byte) (Double.longBitsToDouble(x));
+        //array[CID_BYTE][NID_VOID] = __ -> (byte) 0;
+        //
+        //array[CID_SHORT][NID_FLOAT] = x -> (short) (Float.intBitsToFloat((int) x));
+        //array[CID_SHORT][NID_DOUBLE] = x -> (short) (Double.longBitsToDouble(x));
+        //array[CID_SHORT][NID_VOID] = __ -> (short) 0;
+        //
+        //array[CID_CHAR][NID_FLOAT] = x -> (char) (Float.intBitsToFloat((int) x));
+        //array[CID_CHAR][NID_DOUBLE] = x -> (char) (Double.longBitsToDouble(x));
+        //array[CID_CHAR][NID_VOID] = __ -> (char) 0;
+        //
+        //array[CID_INT][NID_FLOAT] = x -> (int) (Float.intBitsToFloat((int) x));
+        //array[CID_INT][NID_DOUBLE] = x -> (int) (Double.longBitsToDouble(x));
+        //array[CID_INT][NID_VOID] = __ -> 0;
+        //
+        //array[CID_LONG][NID_FLOAT] = x -> (long) (Float.intBitsToFloat((int) x));
+        //array[CID_LONG][NID_DOUBLE] = x -> (long) (Double.longBitsToDouble(x));
+        //array[CID_LONG][NID_VOID] = __ -> 0L;
 
         array[CID_FLOAT][NID_FLOAT] = x -> (Float.intBitsToFloat((int) x));
-        array[CID_FLOAT][NID_DOUBLE] = x -> (float) (Double.longBitsToDouble(x));
-        array[CID_FLOAT][NID_VOID] = __ -> 0f;
+        //array[CID_FLOAT][NID_DOUBLE] = x -> (float) (Double.longBitsToDouble(x));
+        //array[CID_FLOAT][NID_VOID] = __ -> 0f;
 
-        array[CID_DOUBLE][NID_FLOAT] = x -> (double) Float.intBitsToFloat((int) x);
+        //array[CID_DOUBLE][NID_FLOAT] = x -> (double) Float.intBitsToFloat((int) x);
         array[CID_DOUBLE][NID_DOUBLE] = Double::longBitsToDouble;
-        array[CID_DOUBLE][NID_VOID] = __ -> 0d;
+        //array[CID_DOUBLE][NID_VOID] = __ -> 0d;
 
         for (int i = 0; i < 8; i++) {
             array[CID_BOOLEAN][i] = x -> x != 0;
