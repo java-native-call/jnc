@@ -5,6 +5,7 @@
 #include <ffi.h>
 #include "exception.h"
 
+#define ON_UNLOAD_CLASS "jnc/provider/NativeMethods"
 #define JNC_CALL(type) jnc_provider_NativeAccessor_CONVENTION_##type
 #define JNC_RTLD(name) jnc_provider_NativeAccessor_RTLD_##name
 #define JNC_TYPE(type) jnc_provider_NativeAccessor_TYPE_##type
