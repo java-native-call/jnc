@@ -49,7 +49,8 @@ final class PrimitiveConverter {
     private static final int CID_DOUBLE = 5;
     private static final int CID_BOOLEAN = 6;
     private static final int CID_CHAR = 7;
-    private static final int CID_CAPACITY = CID_CHAR + 1;
+    private static final int CID_VOID = 8;
+    private static final int CID_CAPACITY = CID_VOID + 1;
 
     private final Map<NativeType, Integer> nativeToId;
     private final Map<Class<?>, Integer> classToId;
@@ -73,6 +74,7 @@ final class PrimitiveConverter {
 
     {
         Map<Class<?>, Integer> class2Id = new HashMap<>(16);
+        class2Id.put(void.class, CID_VOID);
         class2Id.put(boolean.class, CID_BOOLEAN);
         class2Id.put(byte.class, CID_BYTE);
         class2Id.put(short.class, CID_SHORT);
@@ -87,6 +89,10 @@ final class PrimitiveConverter {
     {
         @SuppressWarnings("rawtypes")
         RawConverter<?>[][] array = new RawConverter[CID_CAPACITY][NID_CAPACITY];
+
+        for (int i = 0; i < NID_CAPACITY; i++) {
+            array[CID_VOID][i] = __ -> null;
+        }
 
         // There is no conversion needed from floating pointer type or void now.
         // If a method is annotated with @Typedef, then it's a integral type
@@ -146,13 +152,6 @@ final class PrimitiveConverter {
         Class<T> unwrap = Primitives.unwrap(klass);
         if (!unwrap.isPrimitive()) {
             throw new IllegalArgumentException();
-        }
-        if (unwrap == void.class) {
-            return type -> {
-                // make it same behaviour as others.
-                Objects.requireNonNull(type);
-                return __ -> null;
-            };
         }
         // we have check primary type already, cid should not be null
         int cid = classToId.get(unwrap);
