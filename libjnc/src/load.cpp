@@ -9,7 +9,7 @@ EXTERNC JNIEXPORT void JNICALL JNI_OnUnload
 (JavaVM *vm, void *UNUSED(reserved)) {
     JNIEnv *env;
     if (likely(vm->GetEnv((void **) &env, JNI_VERSION_1_6) == JNI_OK)) {
-        jclass type = env->FindClass("jnc/foreign/internal/NativeMethods");
+        jclass type = env->FindClass("jnc/provider/NativeMethods");
         if (unlikely(type == nullptr)) {
             env->ExceptionClear();
             return;
