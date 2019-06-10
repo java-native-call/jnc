@@ -7,6 +7,20 @@
 #define GetLastError() errno
 #endif
 
+/*
+ * Class:     jnc_provider_NativeMethods
+ * Method:    getCifInfo
+ * Signature: ()J
+ */
+EXTERNC JNIEXPORT jlong JNICALL
+Java_jnc_provider_NativeMethods_getCifInfo
+        (JNIEnv *UNUSED(env), jobject UNUSED(self)) {
+    auto size = sizeof(ffi_cif);
+    auto align = alignof(ffi_cif);
+
+    return (uint64_t(uint32_t(align)) << 32) | uint32_t(size);
+}
+
 static void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int error) {
     jmethodID method = j2p(methodId, jmethodID);
     if (likely(obj != nullptr && method != nullptr)) {
@@ -96,10 +110,10 @@ inline Dest bit_cast(const Source& source) {
 }
 
 template<class _Tp, bool = jnc_type_traits::is_integral<_Tp>::value>
-struct convertor;
+struct converter;
 
 template<class _Tp>
-struct convertor<_Tp, true> {
+struct converter<_Tp, true> {
     // use reference to avoid type conversion mismatch
 
     jlong operator()(_Tp &value) const {
@@ -109,16 +123,7 @@ struct convertor<_Tp, true> {
 };
 
 template<>
-struct convertor<void, false> {
-
-    jlong operator()() const {
-        return 0;
-    }
-
-};
-
-template<>
-struct convertor<float, false> {
+struct converter<float, false> {
 
     jlong operator()(float& value) const {
         return bit_cast<jint>(value);
@@ -127,7 +132,7 @@ struct convertor<float, false> {
 };
 
 template<>
-struct convertor<double, false> {
+struct converter<double, false> {
 
     jlong operator()(double& value) const {
         return bit_cast<jlong>(value);
@@ -197,17 +202,17 @@ Java_jnc_provider_NativeMethods_invoke
         ffi_call(pcif, pfunction, retAddr, pavalues);
         saveLastError(env, obj, methodId, GetLastError());
         switch (rtypetype) {
-            case JNC_TYPE(VOID): return convertor<void>()();
-            case JNC_TYPE(FLOAT): return convertor<float>()(*reinterpret_cast<float*> (retAddr));
-            case JNC_TYPE(DOUBLE): return convertor<double>()(*reinterpret_cast<double*> (retAddr));
-            case JNC_TYPE(UINT8): return convertor<uint8_t>()(*reinterpret_cast<uint8_t*> (retAddr));
-            case JNC_TYPE(SINT8): return convertor<int8_t>()(*reinterpret_cast<int8_t*> (retAddr));
-            case JNC_TYPE(UINT16): return convertor<uint16_t>()(*reinterpret_cast<uint16_t*> (retAddr));
-            case JNC_TYPE(SINT16): return convertor<int16_t>()(*reinterpret_cast<int16_t*> (retAddr));
-            case JNC_TYPE(UINT32): return convertor<uint32_t>()(*reinterpret_cast<uint32_t*> (retAddr));
-            case JNC_TYPE(SINT32): return convertor<int32_t>()(*reinterpret_cast<int32_t*> (retAddr));
-            case JNC_TYPE(UINT64): return convertor<uint64_t>()(*reinterpret_cast<uint64_t*> (retAddr));
-            case JNC_TYPE(SINT64): return convertor<int64_t>()(*reinterpret_cast<int64_t*> (retAddr));
+            case JNC_TYPE(VOID): return 0;
+            case JNC_TYPE(FLOAT): return converter<float>()(*reinterpret_cast<float*> (retAddr));
+            case JNC_TYPE(DOUBLE): return converter<double>()(*reinterpret_cast<double*> (retAddr));
+            case JNC_TYPE(UINT8): return converter<uint8_t>()(*reinterpret_cast<uint8_t*> (retAddr));
+            case JNC_TYPE(SINT8): return converter<int8_t>()(*reinterpret_cast<int8_t*> (retAddr));
+            case JNC_TYPE(UINT16): return converter<uint16_t>()(*reinterpret_cast<uint16_t*> (retAddr));
+            case JNC_TYPE(SINT16): return converter<int16_t>()(*reinterpret_cast<int16_t*> (retAddr));
+            case JNC_TYPE(UINT32): return converter<uint32_t>()(*reinterpret_cast<uint32_t*> (retAddr));
+            case JNC_TYPE(SINT32): return converter<int32_t>()(*reinterpret_cast<int32_t*> (retAddr));
+            case JNC_TYPE(UINT64): return converter<uint64_t>()(*reinterpret_cast<uint64_t*> (retAddr));
+            case JNC_TYPE(SINT64): return converter<int64_t>()(*reinterpret_cast<int64_t*> (retAddr));
             case JNC_TYPE(POINTER): return p2j(*reinterpret_cast<void**> (retAddr));
             default:
                 // fall through
