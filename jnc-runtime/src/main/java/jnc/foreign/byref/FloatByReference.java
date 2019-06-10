@@ -5,7 +5,7 @@ import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.Type;
 
-public final class FloatByReference implements ByReference {
+public final class FloatByReference extends ByReference {
 
     private float value;
 
