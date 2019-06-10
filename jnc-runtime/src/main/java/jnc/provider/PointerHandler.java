@@ -15,20 +15,23 @@
  */
 package jnc.provider;
 
-import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 
 /**
  * @author zhanhb
  */
-enum PointerHandler implements InvokerHandlerInfo, ParameterHandlerInfo,
+final class PointerHandler implements InvokerHandlerInfo, ParameterHandlerInfo,
         RawConverter<Pointer>, ParameterPutter<Pointer> {
 
-    INSTANCE;
+    private final InternalType pointerType;
+
+    PointerHandler(InternalType pointerType) {
+        this.pointerType = pointerType;
+    }
 
     @Override
     public InternalType getType(Class<?> returnType, TypeFactory typeFactory, AnnotationContext ac) {
-        return typeFactory.findByNativeType(NativeType.POINTER);
+        return pointerType;
     }
 
     @Override

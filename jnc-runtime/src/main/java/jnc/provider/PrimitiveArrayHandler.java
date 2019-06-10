@@ -16,7 +16,6 @@
 package jnc.provider;
 
 import java.lang.reflect.Array;
-import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 
 /**
@@ -25,18 +24,28 @@ import jnc.foreign.Pointer;
  */
 final class PrimitiveArrayHandler<T> implements ParameterHandlerInfo, ParameterPutter<T> {
 
-    static <T> PrimitiveArrayHandler<T> of(ArrayMemoryCopy<T> toNative, ArrayMemoryCopy<T> fromNative, int unit) {
-        return new PrimitiveArrayHandler<>(toNative, fromNative, unit);
+    static <T> PrimitiveArrayHandler<T> of(
+            ArrayMemoryCopy<T> toNative,
+            ArrayMemoryCopy<T> fromNative,
+            int unit,
+            InternalType pointerType) {
+        return new PrimitiveArrayHandler<>(toNative, fromNative, unit, pointerType);
     }
 
     private final ArrayMemoryCopy<T> toNative;
     private final ArrayMemoryCopy<T> fromNative;
     private final int unit;
+    private final InternalType pointerType;
 
-    private PrimitiveArrayHandler(ArrayMemoryCopy<T> toNative, ArrayMemoryCopy<T> fromNative, int unit) {
+    private PrimitiveArrayHandler(
+            ArrayMemoryCopy<T> toNative,
+            ArrayMemoryCopy<T> fromNative,
+            int unit,
+            InternalType pointerType) {
         this.toNative = toNative;
         this.fromNative = fromNative;
         this.unit = unit;
+        this.pointerType = pointerType;
     }
 
     @Override
@@ -46,7 +55,7 @@ final class PrimitiveArrayHandler<T> implements ParameterHandlerInfo, ParameterP
 
     @Override
     public InternalType getType(Class<?> type, TypeFactory typeFactory, AnnotationContext ac) {
-        return typeFactory.findByNativeType(NativeType.POINTER);
+        return pointerType;
     }
 
     @Override
