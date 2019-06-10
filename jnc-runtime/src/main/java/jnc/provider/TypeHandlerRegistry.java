@@ -32,7 +32,7 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
         // parameter type should not be void, maybe user want to define a pointer type.
         addExactParameterTypeHandler(Void.class, PointerHandler.INSTANCE);
         addPrimaryTypeHandler(void.class, NativeType.VOID, null, typeFactory, pc);
-        addPrimaryTypeHandler(boolean.class, NativeType.UINT8, CallContext::putBoolean, typeFactory, pc);
+        addPrimaryTypeHandler(boolean.class, NativeType.UINT32, CallContext::putBoolean, typeFactory, pc);
         addPrimaryTypeHandler(byte.class, NativeType.SINT8, CallContext::putByte, typeFactory, pc);
         addPrimaryTypeHandler(char.class, NativeType.UINT16, CallContext::putChar, typeFactory, pc);
         addPrimaryTypeHandler(short.class, NativeType.SINT16, CallContext::putShort, typeFactory, pc);
