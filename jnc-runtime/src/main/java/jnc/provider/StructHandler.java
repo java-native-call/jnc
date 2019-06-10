@@ -15,16 +15,19 @@
  */
 package jnc.provider;
 
-import jnc.foreign.NativeType;
 import jnc.foreign.Struct;
 
 /**
  *
  * @author zhanhb
  */
-enum StructHandler implements ParameterHandlerInfo, ParameterPutter<Struct> {
+final class StructHandler implements ParameterHandlerInfo, ParameterPutter<Struct> {
 
-    INSTANCE;
+    private final InternalType pointerType;
+
+    StructHandler(InternalType pointerType) {
+        this.pointerType = pointerType;
+    }
 
     @Override
     public ParameterPutter<Struct> getPutter(Class<?> type) {
@@ -33,7 +36,7 @@ enum StructHandler implements ParameterHandlerInfo, ParameterPutter<Struct> {
 
     @Override
     public InternalType getType(Class<?> type, TypeFactory typeFactory, AnnotationContext ac) {
-        return typeFactory.findByNativeType(NativeType.POINTER);
+        return pointerType;
     }
 
     @Override

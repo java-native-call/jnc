@@ -25,12 +25,14 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
     private final ConcurrentWeakIdentityHashMap<Class<?>, ParameterHandlerInfo> inheritedParameterTypeMap = new ConcurrentWeakIdentityHashMap<>(16);
 
     TypeHandlerRegistry(TypeFactory typeFactory) {
-        addExactReturnTypeHandler(Pointer.class, PointerHandler.INSTANCE);
+        InternalType pointerType = typeFactory.findByNativeType(NativeType.POINTER);
+        PointerHandler pointerHandler = new PointerHandler(pointerType);
+        addExactReturnTypeHandler(Pointer.class, pointerHandler);
         addInheritedReturnTypeHandler(Enum.class, EnumHandlers.INSTANCE);
         PrimitiveConverter pc = new PrimitiveConverter();
 
         // parameter type should not be void, maybe user want to define a pointer type.
-        addExactParameterTypeHandler(Void.class, PointerHandler.INSTANCE);
+        addExactParameterTypeHandler(Void.class, pointerHandler);
         addPrimaryTypeHandler(void.class, NativeType.VOID, null, typeFactory, pc);
         addPrimaryTypeHandler(boolean.class, NativeType.UINT32, CallContext::putBoolean, typeFactory, pc);
         addPrimaryTypeHandler(byte.class, NativeType.SINT8, CallContext::putByte, typeFactory, pc);
@@ -41,24 +43,24 @@ final class TypeHandlerRegistry implements TypeHandlerFactory {
         addPrimaryTypeHandler(float.class, NativeType.FLOAT, CallContext::putFloat, typeFactory, pc);
         addPrimaryTypeHandler(double.class, NativeType.DOUBLE, CallContext::putDouble, typeFactory, pc);
 
-        addInheritedParameterTypeHandler(Struct.class, StructHandler.INSTANCE);
-        addInheritedParameterTypeHandler(Pointer.class, PointerHandler.INSTANCE);
-        addInheritedParameterTypeHandler(ByReference.class, ByReferenceHandler.INSTANCE);
+        addInheritedParameterTypeHandler(Struct.class, new StructHandler(pointerType));
+        addInheritedParameterTypeHandler(Pointer.class, pointerHandler);
+        addInheritedParameterTypeHandler(ByReference.class, new ByReferenceHandler(pointerType));
         addInheritedParameterTypeHandler(Enum.class, EnumHandlers.INSTANCE);
 
-        addPrimitiveArrayParameterTypeHandler(byte[].class, Pointer::putBytes, Pointer::getBytes, Byte.BYTES);
-        addPrimitiveArrayParameterTypeHandler(char[].class, Pointer::putCharArray, Pointer::getCharArray, Character.BYTES);
-        addPrimitiveArrayParameterTypeHandler(short[].class, Pointer::putShortArray, Pointer::getShortArray, Short.BYTES);
-        addPrimitiveArrayParameterTypeHandler(int[].class, Pointer::putIntArray, Pointer::getIntArray, Integer.BYTES);
-        addPrimitiveArrayParameterTypeHandler(long[].class, Pointer::putLongArray, Pointer::getLongArray, Long.BYTES);
-        addPrimitiveArrayParameterTypeHandler(float[].class, Pointer::putFloatArray, Pointer::getFloatArray, Float.BYTES);
-        addPrimitiveArrayParameterTypeHandler(double[].class, Pointer::putDoubleArray, Pointer::getDoubleArray, Double.BYTES);
-        addPrimitiveArrayParameterTypeHandler(boolean[].class, TypeHandlerRegistry::putBooleanArray, TypeHandlerRegistry::getBooleanArray, Byte.BYTES);
+        addPrimitiveArrayParameterTypeHandler(byte[].class, Pointer::putBytes, Pointer::getBytes, Byte.BYTES, pointerType);
+        addPrimitiveArrayParameterTypeHandler(char[].class, Pointer::putCharArray, Pointer::getCharArray, Character.BYTES, pointerType);
+        addPrimitiveArrayParameterTypeHandler(short[].class, Pointer::putShortArray, Pointer::getShortArray, Short.BYTES, pointerType);
+        addPrimitiveArrayParameterTypeHandler(int[].class, Pointer::putIntArray, Pointer::getIntArray, Integer.BYTES, pointerType);
+        addPrimitiveArrayParameterTypeHandler(long[].class, Pointer::putLongArray, Pointer::getLongArray, Long.BYTES, pointerType);
+        addPrimitiveArrayParameterTypeHandler(float[].class, Pointer::putFloatArray, Pointer::getFloatArray, Float.BYTES, pointerType);
+        addPrimitiveArrayParameterTypeHandler(double[].class, Pointer::putDoubleArray, Pointer::getDoubleArray, Double.BYTES, pointerType);
+        addPrimitiveArrayParameterTypeHandler(boolean[].class, TypeHandlerRegistry::putBooleanArray, TypeHandlerRegistry::getBooleanArray, Byte.BYTES, pointerType);
     }
 
     private <T> void addPrimitiveArrayParameterTypeHandler(
-            Class<T> type, ArrayMemoryCopy<T> toNative, ArrayMemoryCopy<T> fromNative, int unit) {
-        addExactParameterTypeHandler(type, PrimitiveArrayHandler.of(toNative, fromNative, unit));
+            Class<T> type, ArrayMemoryCopy<T> toNative, ArrayMemoryCopy<T> fromNative, int unit, InternalType pointerType) {
+        addExactParameterTypeHandler(type, PrimitiveArrayHandler.of(toNative, fromNative, unit, pointerType));
     }
 
     private <T> void addPrimaryTypeHandler(

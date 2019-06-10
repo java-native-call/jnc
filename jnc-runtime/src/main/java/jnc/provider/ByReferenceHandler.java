@@ -16,7 +16,6 @@
 package jnc.provider;
 
 import jnc.foreign.Foreign;
-import jnc.foreign.NativeType;
 import jnc.foreign.Pointer;
 import jnc.foreign.byref.ByReference;
 import jnc.foreign.spi.ForeignProvider;
@@ -25,9 +24,13 @@ import jnc.foreign.spi.ForeignProvider;
  *
  * @author zhanhb
  */
-enum ByReferenceHandler implements ParameterHandlerInfo, ParameterPutter<ByReference> {
+final class ByReferenceHandler implements ParameterHandlerInfo, ParameterPutter<ByReference> {
 
-    INSTANCE;
+    private final InternalType pointerType;
+
+    ByReferenceHandler(InternalType pointerType) {
+        this.pointerType = pointerType;
+    }
 
     @Override
     public void doPut(CallContext context, int index, ByReference obj) {
@@ -48,7 +51,7 @@ enum ByReferenceHandler implements ParameterHandlerInfo, ParameterPutter<ByRefer
 
     @Override
     public InternalType getType(Class<?> type, TypeFactory typeFactory, AnnotationContext ac) {
-        return typeFactory.findByNativeType(NativeType.POINTER);
+        return pointerType;
     }
 
 }
