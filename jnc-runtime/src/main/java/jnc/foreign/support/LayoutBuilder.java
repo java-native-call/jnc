@@ -76,11 +76,17 @@ public abstract class LayoutBuilder {
         return alignmentImpl();
     }
 
+    public final int offset() {
+        return offsetImpl();
+    }
+
     abstract int sizeImpl();
 
     abstract int alignmentImpl();
 
     abstract int addFieldImpl(int size, int alignment);
+
+    abstract int offsetImpl();
 
     private static final class OfStruct extends LayoutBuilder {
 
@@ -113,6 +119,11 @@ public abstract class LayoutBuilder {
             return alignment;
         }
 
+        @Override
+        int offsetImpl() {
+            return offset;
+        }
+
     }
 
     private static final class OfUnion extends LayoutBuilder {
@@ -141,6 +152,11 @@ public abstract class LayoutBuilder {
             int value = Math.max(this.alignment, Math.min(alignment, pack));
             this.alignment = value;
             this.size = alignUp(Math.max(this.size, size), value);
+            return 0;
+        }
+
+        @Override
+        int offsetImpl() {
             return 0;
         }
 
