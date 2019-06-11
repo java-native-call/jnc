@@ -30,7 +30,7 @@ public class Struct {
     private final LayoutBuilder layoutBuilder;
     private jnc.foreign.Pointer memory;
     private Enclosing enclosing;
-    private State state = State.INITIAL;
+    private State state = State.newState();
 
     public Struct() {
         this.layoutBuilder = getLayoutBuilder(LayoutBuilder.Type.STRUCT, getClass());
@@ -45,36 +45,25 @@ public class Struct {
      * @return offset of the field
      */
     final int addField(int size, int alignment) {
-        checkState(Struct.State.FIELDS_ADDING, Struct.State.FIELDS_ADDING);
+        state.checkAddField(this);
         return layoutBuilder.newField(size, alignment);
     }
 
-    private void advance(State to) {
-        if (state.ordinal() < to.ordinal()) {
-            state = to;
-        }
-    }
-
-    private void checkState(State check, State advance) {
-        if (state.ordinal() <= check.ordinal()) {
-            advance(advance);
-            return;
-        }
-        throw state.toException(advance);
-    }
-
     final int size0() {
-        advance(State.FIELDS_FINISHED);
         return layoutBuilder.size();
     }
 
+    public final int nextOffset() {
+        state.checkGetBuildingOffset(this);
+        return layoutBuilder.offset();
+    }
+
     public final int size() {
-        advance(State.FIELDS_FINISHED);
+        state.finishBySize();
         return Math.max(layoutBuilder.size(), 1);
     }
 
     public final int alignment() {
-        advance(State.FIELDS_FINISHED);
         return layoutBuilder.alignment();
     }
 
@@ -83,7 +72,6 @@ public class Struct {
     }
 
     public final jnc.foreign.Pointer getMemory() {
-        advance(State.MEMORY_ALLOCATED);
         jnc.foreign.Pointer m = memory;
         if (m == null) {
             Enclosing enclose = enclosing;
@@ -92,6 +80,7 @@ public class Struct {
             } else {
                 m = getForeign().getMemoryManager().allocateWithAlign(size(), alignment());
             }
+            state.memoryAllocated();
             memory = m;
         }
         return m;
@@ -99,28 +88,33 @@ public class Struct {
 
     @Nullable
     public final Enclosing getEnclosing() {
-        advance(State.FIELDS_FINISHED);
+        state.finishByGetEnclosing();
         return enclosing;
     }
 
-    final void setEnclosing(Struct enclosing, int offset) {
-        checkState(State.FIELDS_FINISHED, State.ENCLOSING_ASSIGNED);
-        this.enclosing = new Enclosing(enclosing, offset);
+    final Struct checkSetEnclosing() {
+        state.checkAndAssignEnclosing(this);
+        return this;
+    }
+
+    final void setEnclosing(Enclosing enclosing) {
+        this.enclosing = enclosing;
     }
 
     @NotFinal(NotFinal.Reason.API)
     @Override
     public String toString() {
-        String name = getClass().getSimpleName();
         if (memory != null) {
-            return name + "[" + memory + "]";
+            return getClass().getSimpleName() + "[" + memory + "]";
+        } else {
+            return super.toString();
         }
-        return name;
     }
 
     @Nonnull
     protected final <T extends Struct> T inner(@Nonnull T struct) {
-        struct.setEnclosing(this, addField(struct.size0(), struct.alignment()));
+        struct.checkSetEnclosing();
+        struct.setEnclosing(new Enclosing(this, addField(struct.size0(), struct.alignment())));
         return struct;
     }
 
@@ -308,20 +302,6 @@ public class Struct {
                 throw new IllegalArgumentException("Illegal padding size " + size);
             }
             addField(size, alignment);
-        }
-
-    }
-
-    private enum State {
-
-        INITIAL,
-        FIELDS_ADDING,
-        FIELDS_FINISHED,
-        ENCLOSING_ASSIGNED,
-        MEMORY_ALLOCATED;
-
-        IllegalStateException toException(State advance) {
-            return new IllegalStateException("status of struct: " + this + ", can't advance to " + advance);
         }
 
     }
