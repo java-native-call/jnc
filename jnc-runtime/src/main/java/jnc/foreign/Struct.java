@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import jnc.foreign.annotation.Pack;
 import jnc.foreign.enums.TypeAlias;
+import jnc.foreign.exception.InvalidAnnotationException;
 import jnc.foreign.exception.UnmappableNativeValueException;
 import jnc.foreign.spi.ForeignProvider;
 import jnc.foreign.support.LayoutBuilder;
@@ -21,7 +22,11 @@ public class Struct {
         if (pack != null) {
             int value = pack.value();
             if (value != 0) {
-                return LayoutBuilder.withPack(layoutType, value);
+                try {
+                    return LayoutBuilder.withPack(layoutType, value);
+                } catch (IllegalArgumentException ex) {
+                    throw new InvalidAnnotationException(pack, klass, ex.getMessage());
+                }
             }
         }
         return LayoutBuilder.withoutPack(layoutType);
