@@ -216,7 +216,7 @@ set(LIBFFI_LIBS "${LIBFFI_BINARY_DIR}/.libs/libffi.a")
 
 target_link_libraries(${PROJECT_NAME} ${LIBFFI_LIBS})
 add_dependencies(${PROJECT_NAME} libffi)
-add_definitions(-D_JNI_IMPLEMENTATION_ -DSTRICT)
+add_definitions(-DSTRICT)
 
 # force link with C instead of CXX
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE "C")
