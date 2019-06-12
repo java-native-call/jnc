@@ -46,7 +46,7 @@ typedef __int64 jlong;
 #define JNIEXPORT
 #endif /* !__GNUC__ && !defined(__has_attribute) */
 
-#define JNIIMPORT
+#define JNIIMPORT JNIEXPORT
 #define JNICALL
 
 typedef int jint;
