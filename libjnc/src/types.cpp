@@ -49,17 +49,17 @@ template<class> struct is_enum : false_type {
  * std::is_signed is false on enum, but we should work with that.
  * use -1<1 rather -1<0 to avoid compiler warning.
  */
-template<class T, bool = is_enum<T>::value || is_integral<T>::value> struct is_signed;
+template<class T, bool = is_enum<T>::value || is_integral<T>::value> struct jnc_is_signed;
 
-template<class T> struct is_signed<T, true> : bool_constant<T(-1) < T(1)> { };
+template<class T> struct jnc_is_signed<T, true> : integral_constant<bool, T(-1) < T(1)> { };
 
-template<class T> struct is_signed<T, false> : false_type {
+template<class T> struct jnc_is_signed<T, false> : false_type {
 };
 
 template<size_t, size_t, bool> struct integral_matcher;
 
 #define DEFINE_MATCHER(T, v) template<> \
-struct integral_matcher<sizeof(T), alignof(T), is_signed<T>::value> : \
+struct integral_matcher<sizeof(T), alignof(T), jnc_is_signed<T>::value> : \
         integral_constant<int, JNC_TYPE(v)> {}
 DEFINE_MATCHER(uint8_t, UINT8);
 DEFINE_MATCHER(int8_t, SINT8);
@@ -80,7 +80,7 @@ struct ffi_value<T, false, true> : integral_constant<int, JNC_TYPE(POINTER)> {
 
 /* integer or enum */
 template<class T>
-struct ffi_value<T, true, false> : integral_matcher<sizeof (T), alignof (T), is_signed<T>::value> {
+struct ffi_value<T, true, false> : integral_matcher<sizeof (T), alignof (T), jnc_is_signed<T>::value> {
 };
 
 #define DEFINE(type) {#type, ffi_value<type>::value},
