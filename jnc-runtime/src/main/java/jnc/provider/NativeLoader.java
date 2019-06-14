@@ -37,7 +37,7 @@ final class NativeLoader {
 
     static {
         // Initialize Cleaner when our instance is ready.
-        // Make sure class NativeLoader is initialized.
+        // Make sure class Cleaner is initialized.
         // Cleaner => NativeLoader => NativeMethods
         //noinspection ResultOfMethodCallIgnored
         Cleaner.getInstance();

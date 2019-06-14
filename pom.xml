@@ -280,6 +280,9 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <flattenMode>ossrh</flattenMode>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>
