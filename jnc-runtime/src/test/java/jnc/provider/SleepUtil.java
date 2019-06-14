@@ -25,28 +25,32 @@ import java.util.function.BooleanSupplier;
 public interface SleepUtil {
 
     static boolean sleepWhile(BooleanSupplier condition) {
-        Objects.requireNonNull(condition);
-        System.gc();
-        boolean interrupted = false;
-        try {
+        if (condition.getAsBoolean()) {
+            int k = 0;
             long sleep = 1;
-            for (int i = 0; i < 12 && condition.getAsBoolean(); ++i) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(sleep);
-                } catch (InterruptedException ex) {
-                    interrupted = true;
-                }
-                sleep <<= 1;
-                if (i > 8) {
+            boolean interrupted = false;
+            try {
+                do {
                     System.gc();
+                    System.runFinalization();
+                    if (!condition.getAsBoolean()) {
+                        return false;
+                    }
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(sleep);
+                    } catch (InterruptedException ex) {
+                        interrupted = true;
+                    }
+                    ++k;
+                    sleep <<= 1;
+                } while (k < 12);
+            } finally {
+                if (interrupted) {
+                    Thread.currentThread().interrupt();
                 }
-            }
-        } finally {
-            if (interrupted) {
-                Thread.currentThread().interrupt();
             }
         }
-        return condition.getAsBoolean();
+        return true;
     }
 
     // simple usage assertTrue(() -> sleepUntil(...))
