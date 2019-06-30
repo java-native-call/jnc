@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.zhanhb</groupId>
+        <groupId>com.github.java-native-call</groupId>
         <artifactId>jnc-parent</artifactId>
         <version>${revision}</version>
     </parent>
@@ -10,7 +10,7 @@
 
     <properties>
         <jni.header.dir>${project.basedir}/../libjnc/jni</jni.header.dir>
-        <module.name>com.github.zhanhb.jnc.runtime</module.name>
+        <module.name>com.github.jnc.runtime</module.name>
         <osgi.export>!jnc.provider.*,jnc.*;-noimport:=true</osgi.export>
         <osgi.import>javax.annotation.*;resolution:=optional,*</osgi.import>
     </properties>
