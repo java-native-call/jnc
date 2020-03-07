@@ -4,7 +4,7 @@
 # 1. Click File -> Net Project -> C/C++ -> C/C++ Project with Existing Sources.
 # 2. Enter the location of current project, set Configuration mode to Custom, and click Next.
 # 3. Change values as mention in section init, replace ${source-dir} with current directory.
-# 4. Right click the opened project -> Properties -> General -> Manage configuration
+# 4. Right-click the opened project -> Properties -> General -> Manage configuration
 # 5. Change values as method in section profiles.
 
 init:

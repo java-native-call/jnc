@@ -38,7 +38,6 @@ endif ()
 file(GLOB SOURCES jni/*.h src/*.h src/*.c src/*.cpp)
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
-include(ExternalProject)
 set(DARWIN_CLANG_WERROR_FIX)
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -107,6 +106,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static -static-libgcc")
 endif ()
 
+include(ExternalProject)
 ExternalProject_Add(libffi
         GIT_REPOSITORY https://github.com/libffi/libffi.git GIT_TAG 80d07104c33045ea34a4d5185600495dc7461a12
         CONFIGURE_COMMAND true
@@ -196,7 +196,7 @@ endif ()
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_STRIP} ${STRIP_ARGS} "${CMAKE_BINARY_DIR}/${TARGET_FILE_NAME}")
 if (DIST_DIR)
-    # chanage backslash to slash on windows
+    # change backslash to slash on windows
     get_filename_component(DIST_DIR "${DIST_DIR}" ABSOLUTE)
     #ensure property DIST_DIR present when rebuild
     set(DIST_DIR "${DIST_DIR}" CACHE PATH "dist directory")
