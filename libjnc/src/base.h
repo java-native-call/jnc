@@ -55,15 +55,15 @@
 
 namespace jnc {
 
-    template<class _Tp>
-    constexpr inline jlong p2j(_Tp *x) {
+    template<class Tp>
+    constexpr inline jlong p2j(Tp *x) {
         return jlong(reinterpret_cast<uintptr_t> (x));
     }
 
-    template<class _Tp>
-    constexpr inline _Tp j2p_impl(jlong x) {
-        static_assert(jnc_type_traits::is_pointer<_Tp>::value, "must be a pointer type");
-        return reinterpret_cast<_Tp>(uintptr_t(x));
+    template<class Tp>
+    constexpr inline Tp j2p_impl(jlong x) {
+        static_assert(jnc_type_traits::is_pointer<Tp>::value, "must be a pointer type");
+        return reinterpret_cast<Tp>(uintptr_t(x));
     }
 
     template<class T>

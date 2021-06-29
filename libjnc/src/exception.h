@@ -29,7 +29,7 @@ JNC_SYMBOL_HIDDEN void jnc_throw_by_name(JNIEnv *, const char *, const char *);
 
 #define checkError(type, env, name, ret)    \
 do {                                        \
-    if (unlikely(NULL == name)) {           \
+    if (unlikely(NULL == (name))) {         \
         throwByName(env, type, NULL);       \
         return ret;                         \
     }                                       \
