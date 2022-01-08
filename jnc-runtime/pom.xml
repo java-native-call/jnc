@@ -11,8 +11,8 @@
     <properties>
         <jni.header.dir>${project.basedir}/../libjnc/jni</jni.header.dir>
         <module.name>com.github.jnc.runtime</module.name>
-        <osgi.export>!jnc.provider.*,jnc.*;-noimport:=true</osgi.export>
-        <osgi.import>javax.annotation.*;resolution:=optional,*</osgi.import>
+        <osgi.export>!jnc.provider.*,*;-noimport:=true</osgi.export>
+        <osgi.import>javax.annotation.*;resolution:=optional;version=!,*</osgi.import>
     </properties>
 
     <dependencies>

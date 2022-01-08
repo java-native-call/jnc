@@ -75,7 +75,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <module.name>com.github.jnc</module.name>
         <osgi.dynamicImport/>
-        <osgi.export>${project.groupId}.*;version=${project.version};-noimport:=true</osgi.export>
+        <osgi.export>*;-noimport:=true</osgi.export>
         <osgi.import>*</osgi.import>
         <osgi.private/>
         <osgi.symbolicName>${project.groupId}.${project.artifactId}</osgi.symbolicName>
@@ -155,7 +155,6 @@
                     <artifactId>maven-bundle-plugin</artifactId>
                     <version>${maven-bundle-plugin.version}</version>
                     <configuration>
-                        <excludeDependencies>true</excludeDependencies>
                         <manifestLocation>${project.build.directory}/osgi</manifestLocation>
                         <supportedProjectTypes>
                             <supportedProjectType>jar</supportedProjectType>
@@ -164,9 +163,9 @@
                             <supportedProjectType>maven-plugin</supportedProjectType>
                         </supportedProjectTypes>
                         <instructions>
+                            <_exportcontents>${osgi.export}</_exportcontents>
                             <_nouses>true</_nouses>
                             <Bundle-SymbolicName>${osgi.symbolicName}</Bundle-SymbolicName>
-                            <Export-Package>${osgi.export}</Export-Package>
                             <Private-Package>${osgi.private}</Private-Package>
                             <Import-Package>${osgi.import}</Import-Package>
                             <DynamicImport-Package>${osgi.dynamicImport}</DynamicImport-Package>
