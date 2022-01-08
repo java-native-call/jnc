@@ -48,39 +48,41 @@
     </distributionManagement>
 
     <properties>
-        <argLine />
-        <assertj.version>3.12.2</assertj.version>
-        <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
+        <argLine/>
+        <asm.version>9.2</asm.version>
+        <assertj.version>3.22.0</assertj.version>
+        <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
         <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
-        <flatten-maven-plugin.version>1.1.0</flatten-maven-plugin.version>
-        <gmavenplus-plugin.version>1.7.0</gmavenplus-plugin.version>
-        <hamcrest.version>2.1</hamcrest.version>
-        <jacoco-maven-plugin.version>0.8.3</jacoco-maven-plugin.version>
+        <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
+        <gmavenplus-plugin.version>1.13.1</gmavenplus-plugin.version>
+        <groovy.version>3.0.9</groovy.version>
+        <hamcrest.version>2.2</hamcrest.version>
+        <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <jacoco.propertyName>argLine</jacoco.propertyName>
         <java.version>1.8</java.version>
-        <junit.version>4.12</junit.version>
-        <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
-        <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
-        <maven-bundle-plugin.version>4.2.0</maven-bundle-plugin.version>
+        <junit.version>4.13.2</junit.version>
+        <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
+        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+        <maven-bundle-plugin.version>5.1.4</maven-bundle-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
-        <maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
+        <maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
+        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-        <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <module.name>com.github.jnc</module.name>
-        <osgi.dynamicImport />
+        <osgi.dynamicImport/>
         <osgi.export>${project.groupId}.*;version=${project.version};-noimport:=true</osgi.export>
         <osgi.import>*</osgi.import>
-        <osgi.private />
+        <osgi.private/>
         <osgi.symbolicName>${project.groupId}.${project.artifactId}</osgi.symbolicName>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <revision>0.1.BUILD-SNAPSHOT</revision>
-        <slf4j.version>1.7.26</slf4j.version>
-        <sortpom-maven-plugin.version>2.10.0</sortpom-maven-plugin.version>
+        <slf4j.version>1.7.32</slf4j.version>
+        <sortpom-maven-plugin.version>3.0.1</sortpom-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -96,8 +98,8 @@
                 <version>${junit.version}</version>
                 <exclusions>
                     <exclusion>
-                        <artifactId>hamcrest-core</artifactId>
                         <groupId>org.hamcrest</groupId>
+                        <artifactId>hamcrest-core</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -131,14 +133,6 @@
                     <groupId>com.github.ekryd.sortpom</groupId>
                     <artifactId>sortpom-maven-plugin</artifactId>
                     <version>${sortpom-maven-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sort</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                     <configuration>
                         <sortProperties>true</sortProperties>
                         <nrOfIndentSpace>4</nrOfIndentSpace>
@@ -147,20 +141,19 @@
                         <keepBlankLines>true</keepBlankLines>
                         <expandEmptyElements>false</expandEmptyElements>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>sort</goal>
+                            </goals>
+                            <phase>verify</phase>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
                     <version>${maven-bundle-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>bundle-manifest</id>
-                            <phase>process-classes</phase>
-                            <goals>
-                                <goal>manifest</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                     <configuration>
                         <excludeDependencies>true</excludeDependencies>
                         <manifestLocation>${project.build.directory}/osgi</manifestLocation>
@@ -180,6 +173,15 @@
                             <Bundle-DocURL>${project.url}</Bundle-DocURL>
                         </instructions>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>bundle-manifest</id>
+                            <goals>
+                                <goal>manifest</goal>
+                            </goals>
+                            <phase>process-classes</phase>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -271,18 +273,18 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>flatten-maven-plugin</artifactId>
                     <version>${flatten-maven-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>flatten</id>
-                            <phase>process-resources</phase>
-                            <goals>
-                                <goal>flatten</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                     <configuration>
                         <flattenMode>ossrh</flattenMode>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>flatten</id>
+                            <goals>
+                                <goal>flatten</goal>
+                            </goals>
+                            <phase>process-resources</phase>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.jacoco</groupId>
@@ -292,12 +294,6 @@
                         <execution>
                             <goals>
                                 <goal>prepare-agent</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>report</id>
-                            <phase>prepare-package</phase>
-                            <goals>
                                 <goal>report</goal>
                             </goals>
                         </execution>

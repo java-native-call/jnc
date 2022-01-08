@@ -32,6 +32,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>${groovy.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
             <scope>test</scope>
@@ -65,49 +71,20 @@
                 <executions>
                     <execution>
                         <id>hide-annotation</id>
-                        <phase>prepare-package</phase>
                         <goals>
                             <goal>execute</goal>
                         </goals>
+                        <phase>prepare-package</phase>
                         <configuration>
                             <scripts>
-                                <script><![CDATA[import java.lang.reflect.Modifier
-import java.nio.file.*
-import org.objectweb.asm.*
-
-try {
-    def resolve = Paths.get(project.build.outputDirectory, "jnc/provider/NotFinal.class")
-    def cw = new ClassWriter(0)
-    new ClassReader(Files.readAllBytes(resolve)).accept(new ClassVisitor(Opcodes.ASM7, cw) {
-        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-            super.visit(version, access & ~Modifier.PUBLIC, name, signature, superName, interfaces)
-        }
-    }, 0)
-    Files.write(resolve, cw.toByteArray())
-} catch (Throwable t) {
-  log.error(t); throw t
-}]]></script>
+                                <script>${project.basedir}/src/test/groovy/hide-annotation.groovy</script>
                             </scripts>
                             <properties>
-                                <ant>null</ant>
+                                <ant/>
                             </properties>
                         </configuration>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.groovy</groupId>
-                        <artifactId>groovy</artifactId>
-                        <version>2.5.7</version>
-                        <scope>runtime</scope>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.ow2.asm</groupId>
-                        <artifactId>asm</artifactId>
-                        <version>7.1</version>
-                        <scope>runtime</scope>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -123,6 +100,9 @@ try {
     <profiles>
         <profile>
             <id>native</id>
+            <properties>
+                <jni.dist.dir>${project.build.directory}/dist</jni.dist.dir>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -130,41 +110,17 @@ try {
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <phase>process-classes</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
+                                <phase>process-classes</phase>
                                 <configuration>
                                     <target>
-                                        <condition property="build.arch" value="x86_64">
-                                            <matches pattern="^(?i)(?:x(86[_-])?64|amd64|em64t)$" string="${os.arch}" />
-                                        </condition>
-                                        <condition property="build.arch" value="i386">
-                                            <matches pattern="^(?i)(?:i[3-6]86|x86|pentium)$" string="${os.arch}" />
-                                        </condition>
-                                        <property name="build.arch" value="${os.arch}" />
-                                        <condition property="cmake.build.dir.name" value="cmake-build-universal">
-                                            <os family="mac" />
-                                        </condition>
-                                        <property name="cmake.build.dir.name" value="cmake-build-${build.arch}" />
-                                        <property name="cmake.build.dir" value="${project.basedir}/../libjnc/${cmake.build.dir.name}" />
-                                        <mkdir dir="${cmake.build.dir}" />
-                                        <exec dir="${cmake.build.dir}" executable="cmake" failonerror="true">
-                                            <arg line="-G" />
-                                            <arg line="&quot;Unix Makefiles&quot;" />
-                                            <arg line="-DCMAKE_BUILD_TYPE=MinSizeRel" />
-                                            <arg line="-DSYSTEM_PROCESSOR=${build.arch}" />
-                                            <arg line="&quot;-DDIST_DIR=${jni.dist.dir}&quot;" />
-                                            <arg line=".." />
-                                        </exec>
-                                        <exec executable="cmake" failonerror="true">
-                                            <arg line="--build" />
-                                            <arg line="&quot;${cmake.build.dir}&quot;" />
-                                            <arg line="--target all -- -j 2" />
-                                        </exec>
-                                        <mkdir dir="${jni.dist.dir}" />
+                                        <property name="cmake.build.srcdir" value="${project.basedir}/../libjnc"/>
+                                        <ant antfile="${project.basedir}/src/main/scripts/ant.xml"/>
+                                        <mkdir dir="${jni.dist.dir}"/>
                                         <copy preservelastmodified="true" todir="${project.build.outputDirectory}/jnc/provider/native">
-                                            <fileset dir="${jni.dist.dir}" />
+                                            <fileset dir="${jni.dist.dir}"/>
                                         </copy>
                                     </target>
                                 </configuration>
@@ -173,15 +129,15 @@ try {
                     </plugin>
                 </plugins>
             </build>
-            <properties>
-                <jni.dist.dir>${project.build.directory}/dist</jni.dist.dir>
-            </properties>
         </profile>
         <profile>
             <id>built-lib</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <jni.libs.dir>${basedir}/../lib</jni.libs.dir>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -190,10 +146,10 @@ try {
                         <executions>
                             <execution>
                                 <id>copy-native-binary</id>
-                                <phase>generate-resources</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
+                                <phase>generate-resources</phase>
                                 <configuration>
                                     <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                                     <resources>
@@ -209,9 +165,6 @@ try {
                     </plugin>
                 </plugins>
             </build>
-            <properties>
-                <jni.libs.dir>${basedir}/../lib</jni.libs.dir>
-            </properties>
         </profile>
     </profiles>
 </project>

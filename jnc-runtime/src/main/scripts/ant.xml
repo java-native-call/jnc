@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project>
+    <condition property="build.arch" value="x86_64">
+        <matches pattern="^(?i)(?:x(86[_-])?64|amd64|em64t)$" string="${os.arch}"/>
+    </condition>
+    <condition property="build.arch" value="i386">
+        <matches pattern="^(?i)(?:i[3-6]86|x86|pentium)$" string="${os.arch}"/>
+    </condition>
+    <property name="build.arch" value="${os.arch}"/>
+    <condition property="cmake.build.dir.name" value="cmake-build-universal">
+        <os family="mac"/>
+    </condition>
+    <property name="cmake.build.dir.name" value="cmake-build-${build.arch}"/>
+    <property name="cmake.build.dir" value="${cmake.build.srcdir}/${cmake.build.dir.name}"/>
+    <mkdir dir="${cmake.build.dir}"/>
+    <exec dir="${cmake.build.dir}" executable="cmake" failonerror="true">
+        <arg line="-G"/>
+        <arg line='"Unix Makefiles"'/>
+        <arg line="-DCMAKE_BUILD_TYPE=MinSizeRel"/>
+        <arg line="-DSYSTEM_PROCESSOR=${build.arch}"/>
+        <arg line='"-DDIST_DIR=${jni.dist.dir}"'/>
+        <arg line=".."/>
+    </exec>
+    <exec executable="cmake" failonerror="true">
+        <arg line="--build"/>
+        <arg line='"${cmake.build.dir}"'/>
+        <arg line="--target all -- -j 2"/>
+    </exec>
+</project>
