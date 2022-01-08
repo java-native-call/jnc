@@ -4,8 +4,8 @@
 
 #define PUT_BY_TYPE_E(j2n, addr, name, type, value) \
     case JNC_TYPE(name): {                          \
-        type _tmp = (type) j2n(value);              \
-        memcpy(addr, &_tmp, sizeof _tmp);           \
+        type tmp_ = (type) j2n(value);              \
+        memcpy(addr, &tmp_, sizeof tmp_);           \
         break;                                      \
     }
 
@@ -36,9 +36,9 @@ switch (ptr->type) {                                    \
 
 #define RET_BY_TYPE_E(n2j, cast, name, ctype, addr) \
     case JNC_TYPE(name): {                          \
-        ctype _t = 0;                               \
-        memcpy(&_t, addr, sizeof _t);               \
-        return cast(n2j(_t));                       \
+        ctype t_ = 0;                               \
+        memcpy(&t_, addr, sizeof t_);               \
+        return cast(n2j(t_));                       \
     }
 #define RET_BY_TYPE(...) RET_BY_TYPE_E(NOOP, __VA_ARGS__)
 

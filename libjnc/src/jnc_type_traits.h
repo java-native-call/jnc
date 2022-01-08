@@ -5,43 +5,43 @@
 
 namespace jnc_type_traits {
 
-    template<class _Tp>
+    template<class Tp>
     struct remove_const {
-        using type = _Tp;
+        using type = Tp;
     };
 
-    template<class _Tp>
-    struct remove_const<const _Tp> {
-        using type = _Tp;
+    template<class Tp>
+    struct remove_const<const Tp> {
+        using type = Tp;
     };
 
-    template<class _Tp>
+    template<class Tp>
     struct remove_volatile {
-        using type = _Tp;
+        using type = Tp;
     };
 
-    template<class _Tp>
-    struct remove_volatile<volatile _Tp> {
-        using type = _Tp;
+    template<class Tp>
+    struct remove_volatile<volatile Tp> {
+        using type = Tp;
     };
 
-    template<class _Tp>
+    template<class Tp>
     struct remove_cv {
-        using type = typename remove_volatile<typename remove_const<_Tp>::type>::type;
+        using type = typename remove_volatile<typename remove_const<Tp>::type>::type;
     };
 
-    template<class _Tp, _Tp _v>
+    template<class Tp, Tp val>
     struct integral_constant {
         using type = integral_constant; // using injected-class-name
-        using value_type = _Tp;
+        using value_type = Tp;
         // work with enum, avoid compiler generate actual static value for this struct
-        enum : _Tp {
-            value = _v
+        enum : Tp {
+            value = val
         };
     };
 
     // feature of c++14
-    template<bool _v> using bool_constant = integral_constant<bool, _v>;
+    template<bool val> using bool_constant = integral_constant<bool, val>;
 
     using true_type = bool_constant<true>;
     using false_type = bool_constant<false>;
@@ -52,13 +52,22 @@ namespace jnc_type_traits {
         struct is_pointer_impl : false_type {
         };
 
-        template<class _Tp>
-        struct is_pointer_impl<_Tp *> : true_type {
+        template<class Tp>
+        struct is_pointer_impl<Tp *> : true_type {
         };
     }
 
-    template<class _Tp>
-    struct is_pointer : impl::is_pointer_impl<typename remove_cv<_Tp>::type>::type {
+    template<bool, class = void>
+    struct enable_if {
+    };
+
+    template<class Tp>
+    struct enable_if<true, Tp> {
+        typedef Tp type;
+    };
+
+    template<class Tp>
+    struct is_pointer : impl::is_pointer_impl<typename remove_cv<Tp>::type>::type {
     };
 
     namespace impl {
@@ -90,8 +99,8 @@ namespace jnc_type_traits {
 
     }
 
-    template<class _Tp>
-    struct is_integral : impl::is_integral_impl<typename remove_cv<_Tp>::type>::type {
+    template<class Tp>
+    struct is_integral : impl::is_integral_impl<typename remove_cv<Tp>::type>::type {
     };
 
 }

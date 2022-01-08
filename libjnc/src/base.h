@@ -17,7 +17,7 @@
 #define JNC_SYMBOL_HIDDEN __attribute__ ((visibility ("hidden")))
 #else // not defined(__GNUC__) or __GNUC__ < 4
 #define JNC_SYMBOL_HIDDEN
-#endif // __GNUC__
+#endif // _WIN32, __GNUC__
 
 #ifdef __GNUC__
 #define UNUSED(x) UNUSED_ ## x __attribute__((unused))
@@ -55,34 +55,33 @@
 
 namespace jnc {
 
-    template<class _Tp>
-    constexpr inline jlong p2j(_Tp *x) {
+    template<class Tp>
+    constexpr jlong p2j(Tp *x) {
         return jlong(reinterpret_cast<uintptr_t> (x));
     }
 
-    template<class _Tp>
-    constexpr inline _Tp j2p_impl(jlong x) {
-        static_assert(jnc_type_traits::is_pointer<_Tp>::value, "must be a pointer type");
-        return reinterpret_cast<_Tp>(uintptr_t(x));
+    template<class Tp>
+    constexpr typename jnc_type_traits::enable_if<jnc_type_traits::is_pointer<Tp>::value, Tp>::type
+    j2p_impl(jlong x) {
+        return reinterpret_cast<Tp>(uintptr_t(x));
     }
 
-    template<class T>
-    constexpr const inline T &min(const T &a, const T &b) {
+    template<class Tp>
+    constexpr const Tp &min(const Tp &a, const Tp &b) {
         return a < b ? a : b;
     }
 }
 
-using jnc::min;
 using jnc::p2j;
 #define j2p(x, type) jnc::j2p_impl<type>(x)
-#define j2c(x, type) j2p(x, type*)
+#define j2c(x, type) jnc::j2p_impl<type*>(x)
 #define j2vp(x) j2c(x, void)
-#define MIN(x, y) min(x, y)
+#define MIN(x, y) jnc::min(x, y)
 #define EXTERNC extern "C"
 #else
 #define p2j(x) ((jlong)(uintptr_t)(x))
 #define j2p(x, type) ((type)(uintptr_t)(x))
-#define j2c(x, type) j2p(x, type*)
+#define j2c(x, type) ((type*)(uintptr_t)(x))
 #define j2vp(x) j2c(x, void)
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define EXTERNC extern

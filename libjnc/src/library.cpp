@@ -12,7 +12,7 @@ do {                                                                  \
     name[length] = 0;                                                 \
     stat;                                                             \
     free(name);                                                       \
-} while(false)
+} while (false)
 
 #define DO_WITH_STRING_UTF(env, jstring, name, length, stat, ret) \
 do {                                                              \
@@ -26,7 +26,7 @@ do {                                                              \
     name[length] = 0;                                             \
     stat;                                                         \
     free(name);                                                   \
-} while(false)
+} while (false)
 
 #ifdef _WIN32
 #include <windows.h>
@@ -48,16 +48,16 @@ do {                                                              \
 do {                                                                        \
     jclass jc_ = CALLJNI(env, FindClass, name);                             \
     if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
-    jmethodID _jm = CALLJNI(env, GetMethodID, jc_, "<init>", "(" sig ")V"); \
+    jmethodID jm_ = CALLJNI(env, GetMethodID, jc_, "<init>", "(" sig ")V"); \
     if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
     jvalue jv_;                                                             \
     jv_.key = value;                                                        \
     auto jo_ = reinterpret_cast<jthrowable>                                 \
-        (CALLJNI(env, NewObjectA, jc_, _jm, &jv_));                         \
+        (CALLJNI(env, NewObjectA, jc_, jm_, &jv_));                         \
     if (unlikely(CALLJNI(env, ExceptionCheck))) break;                      \
     CALLJNI(env, Throw, jo_);                                               \
     CALLJNI(env, DeleteLocalRef, jo_);                                      \
-} while(false)
+} while (false)
 
 #define throwByNameString(...) throwByNameA(l, "Ljava/lang/String;", __VA_ARGS__)
 
@@ -106,10 +106,10 @@ static void throwByLastError(JNIEnv * env, const char * type) {
 #define DLOPEN_PARAM_TYPE char*
 #define throwByLastError(env, type)         \
 do {                                        \
-    const char * _msg = dlerror();          \
-    if (!_msg) _msg = "unknown dl-error";   \
-    throwByName(env, type, _msg);           \
-} while(false)
+    const char * msg_ = dlerror();          \
+    if (!msg_) msg_ = "unknown dl-error";   \
+    throwByName(env, type, msg_);           \
+} while (false)
 
 #ifndef RTLD_NOW
 #define RTLD_NOW 0

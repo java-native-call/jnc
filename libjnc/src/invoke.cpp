@@ -109,14 +109,14 @@ inline Dest bit_cast(const Source& source) {
     return dest;
 }
 
-template<class _Tp, bool = jnc_type_traits::is_integral<_Tp>::value>
+template<class Tp, bool = jnc_type_traits::is_integral<Tp>::value>
 struct converter;
 
-template<class _Tp>
-struct converter<_Tp, true> {
+template<class Tp>
+struct converter<Tp, true> {
     // use reference to avoid type conversion mismatch
 
-    jlong operator()(_Tp &value) const {
+    jlong operator()(Tp &value) const {
         return value;
     }
 
