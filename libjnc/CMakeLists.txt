@@ -50,7 +50,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif ()
 
 set(SHARED_FLAGS "-Wall -Wextra -fPIC -fomit-frame-pointer -fno-ident")
-set(LIBFFI_BUILD_CONFIG --enable-structs --enable-raw-api --enable-static --disable-shared --with-pic=yes)
+set(LIBFFI_BUILD_CONFIG --enable-structs --enable-raw-api --enable-static --disable-shared --with-pic=yes enable_multi_os_directory=no)
 set(LIBFFI_BUILD_ENV
         "CC=${CMAKE_C_COMPILER}"
         "CXX=${CMAKE_CXX_COMPILER}"
@@ -125,7 +125,7 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
     set(ARCH_FLAGS)
     set(LIBFFI_TARGET <BINARY_DIR>/.libs/libffi.a)
 
-    foreach (arch i386 x86_64)
+    foreach (arch x86_64 arm64)
         ExternalProject_Add_Step(libffi configure-${arch}
                 COMMAND ${CMAKE_COMMAND} -E make_directory <BINARY_DIR>-${arch}
                 COMMAND ${CMAKE_COMMAND} -E chdir <BINARY_DIR>-${arch} env
@@ -154,6 +154,8 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL Darwin)
         ExternalProject_Add_Step(libffi generate-${name}
                 COMMAND ${CMAKE_COMMAND} -E echo "#if defined(__x86_64__)" > "<BINARY_DIR>/include/${name}"
                 COMMAND ${CMAKE_COMMAND} -E echo "#include \"../../libffi-build-x86_64/include/${name}\"" >> "<BINARY_DIR>/include/${name}"
+                COMMAND ${CMAKE_COMMAND} -E echo "#elif defined(__aarch64__)" >> "<BINARY_DIR>/include/${name}"
+                COMMAND ${CMAKE_COMMAND} -E echo "#include \"../../libffi-build-arm64/include/${name}\"" >> "<BINARY_DIR>/include/${name}"
                 COMMAND ${CMAKE_COMMAND} -E echo "#elif defined(__i386__)" >> "<BINARY_DIR>/include/${name}"
                 COMMAND ${CMAKE_COMMAND} -E echo "#include \"../../libffi-build-i386/include/${name}\"" >> "<BINARY_DIR>/include/${name}"
                 COMMAND ${CMAKE_COMMAND} -E echo "#endif" >> "<BINARY_DIR>/include/${name}"
