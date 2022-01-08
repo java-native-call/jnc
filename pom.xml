@@ -171,6 +171,15 @@
                             <DynamicImport-Package>${osgi.dynamicImport}</DynamicImport-Package>
                             <Bundle-DocURL>${project.url}</Bundle-DocURL>
                         </instructions>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
+                            </manifestEntries>
+                        </archive>
                     </configuration>
                     <executions>
                         <execution>
@@ -209,14 +218,6 @@
                     <configuration>
                         <archive>
                             <manifestFile>${project.build.directory}/osgi/MANIFEST.MF</manifestFile>
-                            <manifestEntries>
-                                <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
-                                <Built-By>zhanhb</Built-By>
-                            </manifestEntries>
-                            <manifest>
-                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                            </manifest>
                         </archive>
                     </configuration>
                 </plugin>
