@@ -1,8 +1,8 @@
-*.bat           text    eol=lf
+*.bat           text    eol=crlf
 *.c             text    eol=lf
 *.cc            text    eol=lf
 *.cmake         text    eol=lf
-*.cmd           text    eol=lf
+*.cmd           text    eol=crlf
 *.cpp           text    eol=lf
 *.h             text    eol=lf
 *.java          text    eol=lf
