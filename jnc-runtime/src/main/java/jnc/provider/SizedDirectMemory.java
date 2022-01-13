@@ -67,7 +67,7 @@ class SizedDirectMemory extends Memory {
 
     @Override
     public final long address() {
-        return getAccessor().address();
+        return accessor().address();
     }
 
     @Override
@@ -92,211 +92,211 @@ class SizedDirectMemory extends Memory {
     @Override
     public final void putByte(int offset, byte value) {
         checkSize(capacity, offset, Byte.BYTES);
-        getAccessor().putByte(offset, value);
+        accessor().putByte(offset, value);
     }
 
     @Override
     public final void putShort(int offset, short value) {
         checkSize(capacity, offset, Short.BYTES);
-        getAccessor().putShort(offset, value);
+        accessor().putShort(offset, value);
     }
 
     @Override
     public final void putInt(int offset, int value) {
         checkSize(capacity, offset, Integer.BYTES);
-        getAccessor().putInt(offset, value);
+        accessor().putInt(offset, value);
     }
 
     @Override
     public final void putLong(int offset, long value) {
         checkSize(capacity, offset, Long.BYTES);
-        getAccessor().putLong(offset, value);
+        accessor().putLong(offset, value);
     }
 
     @Override
     public final void putFloat(int offset, float value) {
         checkSize(capacity, offset, Float.BYTES);
-        getAccessor().putFloat(offset, value);
+        accessor().putFloat(offset, value);
     }
 
     @Override
     public final void putDouble(int offset, double value) {
         checkSize(capacity, offset, Double.BYTES);
-        getAccessor().putDouble(offset, value);
+        accessor().putDouble(offset, value);
     }
 
     @Override
     public final byte getByte(int offset) {
         checkSize(capacity, offset, Byte.BYTES);
-        return getAccessor().getByte(offset);
+        return accessor().getByte(offset);
     }
 
     @Override
     public final short getShort(int offset) {
         checkSize(capacity, offset, Short.BYTES);
-        return getAccessor().getShort(offset);
+        return accessor().getShort(offset);
     }
 
     @Override
     public final int getInt(int offset) {
         checkSize(capacity, offset, Integer.BYTES);
-        return getAccessor().getInt(offset);
+        return accessor().getInt(offset);
     }
 
     @Override
     public final long getLong(int offset) {
         checkSize(capacity, offset, Long.BYTES);
-        return getAccessor().getLong(offset);
+        return accessor().getLong(offset);
     }
 
     @Override
     public final float getFloat(int offset) {
         checkSize(capacity, offset, Float.BYTES);
-        return getAccessor().getFloat(offset);
+        return accessor().getFloat(offset);
     }
 
     @Override
     public final double getDouble(int offset) {
         checkSize(capacity, offset, Double.BYTES);
-        return getAccessor().getDouble(offset);
+        return accessor().getDouble(offset);
     }
 
     @Override
     final void putDouble(int offset, InternalType internalType, double value) {
         checkSize(capacity, offset, internalType.size());
-        getAccessor().putDouble(offset, internalType, value);
+        accessor().putDouble(offset, internalType, value);
     }
 
     @Override
     final void putFloat(int offset, InternalType internalType, float value) {
         checkSize(capacity, offset, internalType.size());
-        getAccessor().putFloat(offset, internalType, value);
+        accessor().putFloat(offset, internalType, value);
     }
 
     @Override
     final void putInt(int offset, InternalType internalType, int value) {
         checkSize(capacity, offset, internalType.size());
-        getAccessor().putInt(offset, internalType, value);
+        accessor().putInt(offset, internalType, value);
     }
 
     @Override
     final void putLong(int offset, InternalType internalType, long value) {
         checkSize(capacity, offset, internalType.size());
-        getAccessor().putLong(offset, internalType, value);
+        accessor().putLong(offset, internalType, value);
     }
 
     @Override
     final double getDouble(int offset, InternalType internalType) {
         checkSize(capacity, offset, internalType.size());
-        return getAccessor().getDouble(offset, internalType);
+        return accessor().getDouble(offset, internalType);
     }
 
     @Override
     final float getFloat(int offset, InternalType internalType) {
         checkSize(capacity, offset, internalType.size());
-        return getAccessor().getFloat(offset, internalType);
+        return accessor().getFloat(offset, internalType);
     }
 
     @Override
     final long getLong(int offset, InternalType internalType) {
         checkSize(capacity, offset, internalType.size());
-        return getAccessor().getLong(offset, internalType);
+        return accessor().getLong(offset, internalType);
     }
 
     @Override
     final int getInt(int offset, InternalType internalType) {
         checkSize(capacity, offset, internalType.size());
-        return getAccessor().getInt(offset, internalType);
+        return accessor().getInt(offset, internalType);
     }
 
     @Override
     final boolean getBoolean(int offset, InternalType internalType) {
         checkSize(capacity, offset, internalType.size());
-        return getAccessor().getBoolean(offset, internalType);
+        return accessor().getBoolean(offset, internalType);
     }
 
     @Override
     public final void putBytes(int offset, byte[] bytes, int off, int len) {
         checkArrayIndex(capacity, offset, len, Byte.BYTES, "byte");
-        getAccessor().putBytes(offset, bytes, off, len);
+        accessor().putBytes(offset, bytes, off, len);
     }
 
     @Override
     public final void getBytes(int offset, byte[] bytes, int off, int len) {
         checkArrayIndex(capacity, offset, len, Byte.BYTES, "byte");
-        getAccessor().getBytes(offset, bytes, off, len);
+        accessor().getBytes(offset, bytes, off, len);
     }
 
     @Override
     public final void getShortArray(int offset, short[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Short.BYTES, "short");
-        getAccessor().getShortArray(offset, array, off, len);
+        accessor().getShortArray(offset, array, off, len);
     }
 
     @Override
     public final void putShortArray(int offset, short[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Short.BYTES, "short");
-        getAccessor().putShortArray(offset, array, off, len);
+        accessor().putShortArray(offset, array, off, len);
     }
 
     @Override
     public final void putCharArray(int offset, char[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Character.BYTES, "char");
-        getAccessor().putCharArray(offset, array, off, len);
+        accessor().putCharArray(offset, array, off, len);
     }
 
     @Override
     public final void getCharArray(int offset, char[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Character.BYTES, "char");
-        getAccessor().getCharArray(offset, array, off, len);
+        accessor().getCharArray(offset, array, off, len);
     }
 
     @Override
     public final void putIntArray(int offset, int[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Integer.BYTES, "int");
-        getAccessor().putIntArray(offset, array, off, len);
+        accessor().putIntArray(offset, array, off, len);
     }
 
     @Override
     public final void getIntArray(int offset, int[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Integer.BYTES, "int");
-        getAccessor().getIntArray(offset, array, off, len);
+        accessor().getIntArray(offset, array, off, len);
     }
 
     @Override
     public final void putLongArray(int offset, long[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Long.BYTES, "long");
-        getAccessor().putLongArray(offset, array, off, len);
+        accessor().putLongArray(offset, array, off, len);
     }
 
     @Override
     public final void getLongArray(int offset, long[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Long.BYTES, "long");
-        getAccessor().getLongArray(offset, array, off, len);
+        accessor().getLongArray(offset, array, off, len);
     }
 
     @Override
     public final void putFloatArray(int offset, float[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Float.BYTES, "float");
-        getAccessor().putFloatArray(offset, array, off, len);
+        accessor().putFloatArray(offset, array, off, len);
     }
 
     @Override
     public final void getFloatArray(int offset, float[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Float.BYTES, "float");
-        getAccessor().getFloatArray(offset, array, off, len);
+        accessor().getFloatArray(offset, array, off, len);
     }
 
     @Override
     public final void putDoubleArray(int offset, double[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Double.BYTES, "double");
-        getAccessor().putDoubleArray(offset, array, off, len);
+        accessor().putDoubleArray(offset, array, off, len);
     }
 
     @Override
     public final void getDoubleArray(int offset, double[] array, int off, int len) {
         checkArrayIndex(capacity, offset, len, Double.BYTES, "double");
-        getAccessor().getDoubleArray(offset, array, off, len);
+        accessor().getDoubleArray(offset, array, off, len);
     }
 
     private void checkPutStringCapacity(long limit, int offset, int require) {
@@ -313,7 +313,7 @@ class SizedDirectMemory extends Memory {
         //  maybe we should cache the length
         int utfLength = NativeLoader.getAccessor().getStringUTFLength(value);
         checkPutStringCapacity(capacity, offset, utfLength + 1);
-        getAccessor().putStringUTF(offset, value);
+        accessor().putStringUTF(offset, value);
     }
 
     @Nonnull
@@ -322,13 +322,13 @@ class SizedDirectMemory extends Memory {
         if (offset < 0 || offset > capacity) {
             throw new IndexOutOfBoundsException();
         }
-        return getAccessor().getStringUTF(offset, capacity - offset);
+        return accessor().getStringUTF(offset, capacity - offset);
     }
 
     @Override
     final void putStringImpl(int offset, byte[] bytes, int terminatorLength) {
         checkPutStringCapacity(capacity, offset, bytes.length + terminatorLength);
-        StringCoding.put(getAccessor(), offset, bytes, terminatorLength);
+        StringCoding.put(accessor(), offset, bytes, terminatorLength);
     }
 
     @Override
@@ -336,13 +336,13 @@ class SizedDirectMemory extends Memory {
         if (offset < 0 || offset > capacity) {
             throw new IndexOutOfBoundsException();
         }
-        return StringCoding.get(getAccessor(), offset, charset, capacity - offset);
+        return StringCoding.get(accessor(), offset, charset, capacity - offset);
     }
 
     @Override
     final void putString16(int offset, @Nonnull String value) {
         checkPutStringCapacity(capacity, offset, (value.length() + 1) * Character.BYTES);
-        getAccessor().putString16(offset, value);
+        accessor().putString16(offset, value);
     }
 
     @Nonnull
@@ -351,7 +351,7 @@ class SizedDirectMemory extends Memory {
         if (offset < 0 || offset > capacity) {
             throw new IndexOutOfBoundsException();
         }
-        return getAccessor().getString16(offset, capacity - offset);
+        return accessor().getString16(offset, capacity - offset);
     }
 
     @NotFinal(NotFinal.Reason.EXTENSION_PRESENT)
@@ -366,13 +366,13 @@ class SizedDirectMemory extends Memory {
     @Override
     public final Pointer getPointer(int offset) {
         checkSize(capacity, offset, DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.POINTER).size());
-        return UnboundedDirectMemory.of(getAccessor().getAddress(offset));
+        return UnboundedDirectMemory.of(accessor().getAddress(offset));
     }
 
     @Override
     public final void putPointer(int offset, @Nullable Pointer pointer) {
         checkSize(capacity, offset, DefaultForeign.INSTANCE.getTypeFactory().findByNativeType(NativeType.POINTER).size());
-        getAccessor().putAddress(offset, pointer != null ? pointer.address() : 0);
+        accessor().putAddress(offset, pointer != null ? pointer.address() : 0);
     }
 
 }

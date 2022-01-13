@@ -63,7 +63,7 @@ public class StringCodingTest {
         log.info("put");
         Memory memory = AllocatedMemory.allocate(8);
         memory.putLong(0, 0x2020202020202020L);
-        MemoryAccessor accessor = memory.getAccessor();
+        MemoryAccessor accessor = memory.accessor();
         //noinspection ConstantConditions
         assertThatThrownBy(() -> StringCoding.put(accessor, 0, null, 1))
                 .isInstanceOf(NullPointerException.class);

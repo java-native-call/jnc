@@ -16,7 +16,7 @@ abstract class Memory implements Pointer {
         this.ma = Objects.requireNonNull(ma);
     }
 
-    final MemoryAccessor getAccessor() {
+    final MemoryAccessor accessor() {
         return ma;
     }
 
