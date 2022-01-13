@@ -104,7 +104,7 @@ Java_jnc_provider_NativeMethods_initAlias
 
     const struct {
         const char *name;
-        int8_t v;
+        uint8_t v;
     } tuples[] = {
         /* on some platform sizeof(int) = 2 */
         DEFINE(int)
@@ -244,7 +244,7 @@ Java_jnc_provider_NativeMethods_getTypes
 
     for (auto &&p : addrs) {
         unsigned short type = p->type;
-        jlong info = (uint64_t(p->size) << 32) | (p->alignment << 16) | type;
+        auto info = (jlong) ((uint64_t(p->size) << 32) | (p->alignment << 16) | type);
         jlongArray arr = env->NewLongArray(2);
         if (unlikely(env->ExceptionCheck())) return nullptr;
         jlong region[2] = {p2j(p), info};

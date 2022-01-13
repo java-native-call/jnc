@@ -18,7 +18,7 @@ Java_jnc_provider_NativeMethods_getCifInfo
     auto size = sizeof(ffi_cif);
     auto align = alignof(ffi_cif);
 
-    return (uint64_t(uint32_t(align)) << 32) | uint32_t(size);
+    return (jlong)((uint64_t(uint32_t(align)) << 32) | uint32_t(size));
 }
 
 static void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int error) {
@@ -33,7 +33,7 @@ static void saveLastError(JNIEnv *env, jobject obj, jlong methodId, int error) {
 #if defined(_WIN32) && !defined(_WIN64)
 #define GET_ABI(x) ((x == JNC_CALL(STDCALL)) ? FFI_STDCALL : FFI_DEFAULT_ABI)
 #else
-#define GET_ABI(x) ((x & 0) | FFI_DEFAULT_ABI)
+#define GET_ABI(x) (((x) & 0) | FFI_DEFAULT_ABI)
 #endif
 
 static void checkReturnValue(JNIEnv *env, ffi_status status) {
