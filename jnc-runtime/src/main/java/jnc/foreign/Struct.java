@@ -14,7 +14,7 @@ import jnc.foreign.support.TypeHandler;
 import jnc.provider.NotFinal;
 
 @NotFinal(NotFinal.Reason.API)
-@SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "WeakerAccess", "unused"})
+@SuppressWarnings({"PublicInnerClass", "ProtectedInnerClass", "PublicConstructorInNonPublicClass", "unused", "FinalMethod", "FinalClass"})
 public class Struct {
 
     private static LayoutBuilder getLayoutBuilder(LayoutBuilder.Type layoutType, Class<?> klass) {
