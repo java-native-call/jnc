@@ -17,7 +17,6 @@ package jnc.provider;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -133,7 +132,7 @@ final class VariadicMethodInvocation implements MethodInvocation {
 
     @Override
     @SuppressWarnings("NestedAssignment")
-    public Object invoke(Object proxy, Method method, Object[] args) {
+    public Object invoke(Object proxy, Object[] args) {
         // length > 2 is assumed
         final int fixedArgs = args.length - 1;
         final Object variadics = args[fixedArgs];

@@ -15,7 +15,6 @@
  */
 package jnc.provider;
 
-import java.lang.reflect.Method;
 import jnc.foreign.enums.CallingConvention;
 
 final class FixedMethodInvocation implements MethodInvocation {
@@ -46,7 +45,7 @@ final class FixedMethodInvocation implements MethodInvocation {
     }
 
     @Override
-    public Object invoke(Object proxy, Method m, Object[] args) {
+    public Object invoke(Object proxy, Object[] args) {
         @SuppressWarnings(value = "unchecked")
         ParameterPutter<Object>[] h = (ParameterPutter<Object>[]) putters;
         int length = h.length;

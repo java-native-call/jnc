@@ -37,13 +37,13 @@ final class ProxyBuilder {
     private static final Method OBJECT_EQUALS;
     private static final Method OBJECT_HASH_CODE;
 
-    private static final InvocationHandler objectToString = (proxy, __, args) -> proxy.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(proxy));
-    private static final InvocationHandler objectHashCode = (proxy, __, args) -> System.identityHashCode(proxy);
-    private static final InvocationHandler objectEquals = (proxy, __, args) -> proxy == args[0];
+    private static final MethodHandler objectToString = (proxy, args) -> proxy.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(proxy));
+    private static final MethodHandler objectHashCode = (proxy, args) -> System.identityHashCode(proxy);
+    private static final MethodHandler objectEquals = (proxy, args) -> proxy == args[0];
 
-    private static final InvocationHandler proxyToString = (proxy, __, args) -> proxy.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(Proxy.getInvocationHandler(proxy)));
-    private static final InvocationHandler proxyHashCode = (proxy, __, args) -> System.identityHashCode(Proxy.getInvocationHandler(proxy));
-    private static final InvocationHandler proxySame = (proxy, __, args) -> {
+    private static final MethodHandler proxyToString = (proxy, args) -> proxy.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(Proxy.getInvocationHandler(proxy)));
+    private static final MethodHandler proxyHashCode = (proxy, args) -> System.identityHashCode(Proxy.getInvocationHandler(proxy));
+    private static final MethodHandler proxySame = (proxy, args) -> {
         Object another = args[0];
         return proxy == another || another != null
                 && Proxy.isProxyClass(another.getClass())
@@ -77,38 +77,33 @@ final class ProxyBuilder {
         throw (T) throwable;
     }
 
-    private final Map<MethodKey, InvocationHandler> map = new HashMap<>(4);
+    private final Map<MethodKey, MethodHandler> map = new HashMap<>(4);
     private boolean useDefaultMethod;
-    private Function<Method, InvocationHandler> otherwise;
+    private Function<Method, MethodHandler> otherwise;
     private Function<Method, ? extends Throwable> orThrow = method -> new AbstractMethodError(method.getName());
 
     private ProxyBuilder() {
     }
 
-    public ProxyBuilder customize(Method method, InvocationHandler handler) {
+    public ProxyBuilder customize(Method method, MethodHandler handler) {
         map.put(MethodKey.of(requireNonNull(method)), requireNonNull(handler));
         return this;
     }
 
-    public ProxyBuilder otherwise(Function<Method, InvocationHandler> otherwise) {
+    public ProxyBuilder otherwise(Function<Method, MethodHandler> otherwise) {
         this.otherwise = requireNonNull(otherwise);
         return this;
     }
 
-    public ProxyBuilder otherwise(InvocationHandler otherwise) {
-        requireNonNull(otherwise);
-        return otherwise(__ -> otherwise);
-    }
-
-    public ProxyBuilder toStringWith(InvocationHandler handler) {
+    public ProxyBuilder toStringWith(MethodHandler handler) {
         return customize(OBJECT_TO_STRING, handler);
     }
 
-    public ProxyBuilder equalsWith(InvocationHandler handler) {
+    public ProxyBuilder equalsWith(MethodHandler handler) {
         return customize(OBJECT_EQUALS, handler);
     }
 
-    public ProxyBuilder hashCodeWith(InvocationHandler handler) {
+    public ProxyBuilder hashCodeWith(MethodHandler handler) {
         return customize(OBJECT_HASH_CODE, handler);
     }
 
@@ -166,17 +161,17 @@ final class ProxyBuilder {
     }
 
     public InvocationHandler toInvocationHandler() {
-        final ConcurrentMap<MethodKey, InvocationHandler> map = new ConcurrentHashMap<>(this.map);
+        final ConcurrentMap<MethodKey, MethodHandler> map = new ConcurrentHashMap<>(this.map);
         final boolean useDefaultMethod = this.useDefaultMethod;
-        final Function<Method, InvocationHandler> otherwise = this.otherwise;
+        final Function<Method, MethodHandler> otherwise = this.otherwise;
         final Function<Method, ? extends Throwable> orThrow = this.orThrow;
-        final Function<MethodKey, InvocationHandler> cia = mk -> {
+        final Function<MethodKey, MethodHandler> cia = mk -> {
             Method method = mk.getMethod();
             try {
                 if (useDefaultMethod && method.isDefault()) {
                     return DefaultMethodInvoker.getInstance(method);
                 }
-                final InvocationHandler handler = otherwise != null ? otherwise.apply(method) : null;
+                final MethodHandler handler = otherwise != null ? otherwise.apply(method) : null;
                 if (handler == null) {
                     throw orThrow.apply(method);
                 }
@@ -186,7 +181,7 @@ final class ProxyBuilder {
                 throw ProxyBuilder.<RuntimeException>throwUnchecked(ex);
             }
         };
-        return (proxy, method, args) -> map.computeIfAbsent(MethodKey.of(method), cia).invoke(proxy, method, args);
+        return (proxy, method, args) -> map.computeIfAbsent(MethodKey.of(method), cia).invoke(proxy, args);
     }
 
     public <T> T newInstance(Class<T> interfaceClass) {

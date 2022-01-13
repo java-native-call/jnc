@@ -16,7 +16,6 @@
 package jnc.provider;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
 import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -41,11 +40,11 @@ public class DefaultMethodInvokerTest {
         // here use null to test it
         DefaultMethodInvoker.getInstance(TestInterface.class.getMethod("defaultMethod", AtomicInteger.class))
                 .invoke(new TestInterfaceImpl(),
-                        null, new Object[]{integer});
+                        new Object[]{integer});
         assertThat(integer.get()).isEqualTo(1);
 
-        InvocationHandler ih = DefaultMethodInvoker.getInstance(Throw.class.getMethod("defaultMethod"));
-        assertThatThrownBy(() -> ih.invoke(new ThrowImpl(), null, new Object[]{}))
+        MethodHandler mh = DefaultMethodInvoker.getInstance(Throw.class.getMethod("defaultMethod"));
+        assertThatThrownBy(() -> mh.invoke(new ThrowImpl(), new Object[]{}))
                 .isExactlyInstanceOf(IOException.class);
     }
 

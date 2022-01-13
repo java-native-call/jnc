@@ -5,7 +5,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -76,9 +75,9 @@ final class DefaultMethodInvoker {
         return method -> doLookup(method, MethodHandles.lookup());
     }
 
-    static InvocationHandler getInstance(Method method) throws Throwable {
+    static MethodHandler getInstance(Method method) throws Throwable {
         MethodHandle handle = unreflector.unreflectSpecial(method);
-        return (proxy, __, args) -> handle.bindTo(proxy).invokeWithArguments(args);
+        return (proxy, args) -> handle.bindTo(proxy).invokeWithArguments(args);
     }
 
     private interface IMethod<T> {

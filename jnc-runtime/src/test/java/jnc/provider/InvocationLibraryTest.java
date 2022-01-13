@@ -40,7 +40,7 @@ public class InvocationLibraryTest {
     public static void setUpClass() throws NoSuchMethodException {
         Method dlsym = Library.class.getMethod("dlsym", String.class);
         ProxyBuilder builder = ProxyBuilder.builder();
-        DUMMY_LIB = builder.customize(dlsym, (proxy, method, args) -> 0L)
+        DUMMY_LIB = builder.customize(dlsym, (proxy, args) -> 0L)
                 .newInstance(Library.class);
         typeFactory = DefaultForeign.INSTANCE.getTypeFactory();
         THR = DefaultForeign.INSTANCE.getTypeHandlerFactory();

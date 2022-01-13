@@ -15,13 +15,12 @@
  */
 package jnc.provider;
 
-import java.lang.reflect.InvocationHandler;
 import jnc.foreign.enums.CallingConvention;
 
 /**
  * @author zhanhb
  */
-interface MethodInvocation extends InvocationHandler {
+interface MethodInvocation extends MethodHandler {
 
     @VisibleForTesting
     CallingConvention getCallingConvention();

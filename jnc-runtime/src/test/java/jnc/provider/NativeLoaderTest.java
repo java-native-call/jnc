@@ -76,8 +76,8 @@ public class NativeLoaderTest {
         ProxyBuilder builder = ProxyBuilder.identifier();
         for (Platform.OS os : Platform.OS.values()) {
             for (Platform.Arch arch : Platform.Arch.values()) {
-                Platform platform = builder.customize(OS_GETTER, (a, b, c) -> os)
-                        .customize(ARCH_GETTER, (a, b, c) -> arch)
+                Platform platform = builder.customize(OS_GETTER, (obj, args) -> os)
+                        .customize(ARCH_GETTER, (obj, args) -> arch)
                         .newInstance(Platform.class);
                 if (os != Platform.OS.UNKNOWN && arch != Platform.Arch.UNKNOWN || os == Platform.OS.DARWIN) {
                     // when profile native is active, maven won't copy lib, thus lib doesn't exist
