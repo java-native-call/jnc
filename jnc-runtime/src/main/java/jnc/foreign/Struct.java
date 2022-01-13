@@ -35,7 +35,7 @@ public class Struct {
     private final LayoutBuilder layoutBuilder;
     private jnc.foreign.Pointer memory;
     private Enclosing enclosing;
-    private State state = State.newState();
+    private final State state = State.newState();
 
     public Struct() {
         this.layoutBuilder = getLayoutBuilder(LayoutBuilder.Type.STRUCT, getClass());
@@ -97,9 +97,8 @@ public class Struct {
         return enclosing;
     }
 
-    final Struct checkSetEnclosing() {
+    final void checkSetEnclosing() {
         state.checkAndAssignEnclosing(this);
-        return this;
     }
 
     final void setEnclosing(Enclosing enclosing) {
@@ -282,15 +281,15 @@ public class Struct {
             this.offset = offset;
         }
 
-        public final Struct getStruct() {
+        public Struct getStruct() {
             return struct;
         }
 
-        public final int getOffset() {
+        public int getOffset() {
             return offset;
         }
 
-        final jnc.foreign.Pointer getMemory(int size) {
+        jnc.foreign.Pointer getMemory(int size) {
             return struct.getMemory().slice(offset, offset + size);
         }
     }
@@ -325,11 +324,11 @@ public class Struct {
             this(getForeign().findType(nativeType));
         }
 
-        final int getOffset() {
+        int getOffset() {
             return offset;
         }
 
-        final Type getType() {
+        Type getType() {
             return type;
         }
     }
@@ -630,7 +629,7 @@ public class Struct {
         }
 
         @Override
-        public final String toString() {
+        public String toString() {
             return Long.toHexString(get());
         }
     }
@@ -663,7 +662,7 @@ public class Struct {
         }
 
         @Override
-        public final String toString() {
+        public String toString() {
             return Long.toUnsignedString(get());
         }
     }
@@ -677,7 +676,7 @@ public class Struct {
         }
 
         @Override
-        public final String toString() {
+        public String toString() {
             return Long.toUnsignedString(get());
         }
     }
@@ -691,7 +690,7 @@ public class Struct {
         }
 
         @Override
-        public final String toString() {
+        public String toString() {
             return Long.toString(get());
         }
     }
@@ -705,7 +704,7 @@ public class Struct {
         }
 
         @Override
-        public final String toString() {
+        public String toString() {
             return Long.toString(get());
         }
     }
@@ -718,16 +717,16 @@ public class Struct {
             super(NativeType.FLOAT);
         }
 
-        public final float get() {
+        public float get() {
             return floatValue();
         }
 
-        public final void set(float value) {
+        public void set(float value) {
             putFloat(value);
         }
 
         @Override
-        public final String toString() {
+        public String toString() {
             return Float.toString(get());
         }
     }
@@ -740,16 +739,16 @@ public class Struct {
             super(NativeType.DOUBLE);
         }
 
-        public final double get() {
+        public double get() {
             return doubleValue();
         }
 
-        public final void set(double value) {
+        public void set(double value) {
             putDouble(value);
         }
 
         @Override
-        public final String toString() {
+        public String toString() {
             return Double.toString(get());
         }
     }
@@ -815,11 +814,11 @@ public class Struct {
             this.field = new FieldDelegate(typeHandler.type());
         }
 
-        public final E get() {
+        public E get() {
             return typeHandler.get(getMemory(), field.getOffset());
         }
 
-        public final void set(E e) {
+        public void set(E e) {
             typeHandler.set(getMemory(), field.getOffset(), e);
         }
 
@@ -827,7 +826,7 @@ public class Struct {
          * if this enum field indicate to null, return string "null"
          */
         @Override
-        public final String toString() {
+        public String toString() {
             try {
                 return String.valueOf(get());
             } catch (UnmappableNativeValueException ex) {
