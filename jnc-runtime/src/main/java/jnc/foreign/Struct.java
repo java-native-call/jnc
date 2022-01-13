@@ -544,7 +544,7 @@ public class Struct {
         }
 
         public final short get() {
-            return byteValue();
+            return shortValue();
         }
 
         public final void set(short value) {

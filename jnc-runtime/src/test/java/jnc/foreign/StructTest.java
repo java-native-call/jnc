@@ -76,10 +76,19 @@ public class StructTest {
     }
 
     @Test
+    public void testUint8() {
+        Uint8Struct struct = new Uint8Struct();
+        for (int i = -128; i < 128; ++i) {
+            struct.setValue(i);
+            assertEquals(i & 0xFF, struct.getValue());
+        }
+    }
+
+    @Test
     public void testUint64() {
         Uint64Struct uint64Struct = new Uint64Struct();
         uint64Struct.setValue(-1);
-        // double has only have 52 bit fraction, so the result is 2^64
+        // double has only 52 bit fraction, so the result is 2^64
         assertEquals(0x1.0p64, uint64Struct.doubleValue(), -1);
     }
 
@@ -187,6 +196,20 @@ public class StructTest {
 
         private void setValue(long l) {
             value.set(l);
+        }
+
+    }
+
+    private static class Uint8Struct extends Struct {
+
+        private final uint8_t value = new uint8_t();
+
+        public long getValue() {
+            return value.get();
+        }
+
+        private void setValue(long value) {
+            this.value.set((byte) value);
         }
 
     }
