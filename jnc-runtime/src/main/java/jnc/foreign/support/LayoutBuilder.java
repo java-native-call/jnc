@@ -20,6 +20,7 @@ import java.util.function.IntFunction;
 /**
  * @author zhanhb
  */
+@SuppressWarnings({"FinalMethod", "FinalClass"})
 public abstract class LayoutBuilder {
 
     // Don't rely on this variable, maybe changed.
@@ -55,7 +56,7 @@ public abstract class LayoutBuilder {
         if (alignment <= 0 || (alignment & (alignment - 1)) != 0) {
             throw new IllegalArgumentException("Illegal alignment " + alignment);
         }
-        if ((size & ~-alignment) != 0) {
+        if ((size & (alignment - 1)) != 0) {
             throw new IllegalArgumentException("Illegal combination of size and alignment. size="
                     + size + ", alignment=" + alignment);
         }
@@ -100,13 +101,13 @@ public abstract class LayoutBuilder {
 
         @Override
         int addFieldImpl(int size, int alignment) {
-            final int thisOffset = this.offset;
-            checkSizeAndAlignment(size, alignment, thisOffset);
+            final int originalOffset = this.offset;
+            checkSizeAndAlignment(size, alignment, originalOffset);
             final int actualAlignment = Math.min(pack, alignment);
-            final int offset = alignUp(thisOffset, actualAlignment);
-            this.offset = offset + size;
+            final int actualOffset = alignUp(originalOffset, actualAlignment);
+            this.offset = actualOffset + size;
             this.alignment = Math.max(this.alignment, actualAlignment);
-            return offset;
+            return actualOffset;
         }
 
         @Override
