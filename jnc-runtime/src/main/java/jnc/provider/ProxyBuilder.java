@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import static java.util.Objects.requireNonNull;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
@@ -77,6 +76,30 @@ final class ProxyBuilder {
         throw (T) throwable;
     }
 
+    private static InvocationHandler toInvocationHandler(
+            ConcurrentMap<MethodKey, MethodHandler> map,
+            boolean useDefaultMethod,
+            Function<Method, MethodHandler> otherwise,
+            Function<Method, ? extends Throwable> orThrow) {
+        final Function<MethodKey, MethodHandler> cia = mk -> {
+            Method method = mk.getMethod();
+            try {
+                if (useDefaultMethod && method.isDefault()) {
+                    return DefaultMethodInvoker.getInstance(method);
+                }
+                final MethodHandler handler = otherwise != null ? otherwise.apply(method) : null;
+                if (handler == null) {
+                    throw orThrow.apply(method);
+                }
+                return handler;
+            } catch (Throwable ex) {
+                //noinspection RedundantTypeArguments
+                throw ProxyBuilder.<RuntimeException>throwUnchecked(ex);
+            }
+        };
+        return (proxy, method, args) -> map.computeIfAbsent(MethodKey.of(method), cia).invoke(proxy, args);
+    }
+
     private final Map<MethodKey, MethodHandler> map = new HashMap<>(4);
     private boolean useDefaultMethod;
     private Function<Method, MethodHandler> otherwise;
@@ -86,12 +109,12 @@ final class ProxyBuilder {
     }
 
     public ProxyBuilder customize(Method method, MethodHandler handler) {
-        map.put(MethodKey.of(requireNonNull(method)), requireNonNull(handler));
+        map.put(MethodKey.of(Objects.requireNonNull(method)), Objects.requireNonNull(handler));
         return this;
     }
 
     public ProxyBuilder otherwise(Function<Method, MethodHandler> otherwise) {
-        this.otherwise = requireNonNull(otherwise);
+        this.otherwise = Objects.requireNonNull(otherwise);
         return this;
     }
 
@@ -149,39 +172,19 @@ final class ProxyBuilder {
     }
 
     public ProxyBuilder orThrow(Function<Method, ? extends Throwable> orThrow) {
-        this.orThrow = requireNonNull(orThrow);
+        this.orThrow = Objects.requireNonNull(orThrow);
         return this;
     }
 
     @SuppressWarnings("ThrowableResultIgnored")
     public ProxyBuilder orThrow(Throwable orThrow) {
-        requireNonNull(orThrow);
+        Objects.requireNonNull(orThrow);
         this.orThrow = __ -> orThrow;
         return this;
     }
 
     public InvocationHandler toInvocationHandler() {
-        final ConcurrentMap<MethodKey, MethodHandler> map = new ConcurrentHashMap<>(this.map);
-        final boolean useDefaultMethod = this.useDefaultMethod;
-        final Function<Method, MethodHandler> otherwise = this.otherwise;
-        final Function<Method, ? extends Throwable> orThrow = this.orThrow;
-        final Function<MethodKey, MethodHandler> cia = mk -> {
-            Method method = mk.getMethod();
-            try {
-                if (useDefaultMethod && method.isDefault()) {
-                    return DefaultMethodInvoker.getInstance(method);
-                }
-                final MethodHandler handler = otherwise != null ? otherwise.apply(method) : null;
-                if (handler == null) {
-                    throw orThrow.apply(method);
-                }
-                return handler;
-            } catch (Throwable ex) {
-                //noinspection RedundantTypeArguments
-                throw ProxyBuilder.<RuntimeException>throwUnchecked(ex);
-            }
-        };
-        return (proxy, method, args) -> map.computeIfAbsent(MethodKey.of(method), cia).invoke(proxy, args);
+        return toInvocationHandler(new ConcurrentHashMap<>(map), useDefaultMethod, otherwise, orThrow);
     }
 
     public <T> T newInstance(Class<T> interfaceClass) {
@@ -224,10 +227,7 @@ final class ProxyBuilder {
                 return false;
             }
             final MethodKey other = (MethodKey) obj;
-            if (method == other.method) {
-                return true;
-            }
-            return Objects.equals(this.name, other.name)
+            return Objects.equals(method, other.method) || Objects.equals(this.name, other.name)
                     && Arrays.equals(this.parameterTypes, other.parameterTypes);
         }
 
