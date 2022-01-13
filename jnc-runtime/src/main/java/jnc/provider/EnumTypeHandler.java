@@ -20,6 +20,7 @@ import jnc.foreign.exception.InvalidAnnotationException;
 import jnc.foreign.exception.UnmappableNativeValueException;
 import jnc.foreign.support.TypeHandler;
 
+@SuppressWarnings("FinalClass")
 final class EnumTypeHandler<E extends Enum<E>> implements
         TypeHandler<E>, RawConverter<E>, ParameterPutter<E> {
 
@@ -51,7 +52,7 @@ final class EnumTypeHandler<E extends Enum<E>> implements
         backward.put(value, key);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     public static <T extends Enum<T>> EnumTypeHandler<T> getInstance(Class<T> type) {
         // isEnum will check if the class is enum and not java.lang.Enum itself
         if (!type.isEnum()) {
@@ -60,7 +61,7 @@ final class EnumTypeHandler<E extends Enum<E>> implements
         return (EnumTypeHandler<T>) cache.computeIfAbsent(type, EnumTypeHandler::newInstance);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     private static <T extends Enum<T>> EnumTypeHandler<T> newInstance(Class<?> type) {
         @Nullable
         Continuously annotation = type.getAnnotation(Continuously.class);
@@ -81,7 +82,7 @@ final class EnumTypeHandler<E extends Enum<E>> implements
                 throw new InvalidAnnotationException(annotation, type, "start too large");
             }
         }
-        return new EnumTypeHandler(values, type, internalType, start, onUnmappable);
+        return new EnumTypeHandler<>(values, (Class<T>) type, internalType, start, onUnmappable);
     }
 
     private final E[] values;
