@@ -24,7 +24,7 @@ final class MemoryAccessor {
 
     private static final NativeAccessor NA = NativeLoader.getAccessor();
 
-    private long address;
+    private final long address;
 
     MemoryAccessor(long address) {
         if (address == 0) {
