@@ -49,7 +49,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(DARWIN_CLANG_WERROR_FIX "${DARWIN_CLANG_WERROR_FIX} -Wno-unused-command-line-argument")
 endif ()
 
-set(SHARED_FLAGS "-Wall -Wextra -fPIC -fomit-frame-pointer -fno-ident")
+set(SHARED_FLAGS "-Wall -Wextra -fomit-frame-pointer -fno-ident")
 set(LIBFFI_BUILD_CONFIG --enable-structs --enable-raw-api --enable-static --disable-shared --with-pic=yes enable_multi_os_directory=no)
 set(LIBFFI_BUILD_ENV
         "CC=${CMAKE_C_COMPILER}"
@@ -102,8 +102,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SHARED_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SHARED_FLAGS} ${DARWIN_CLANG_WERROR_FIX}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_FLAGS} ${DARWIN_CLANG_WERROR_FIX}")
 
-if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static -static-libgcc")
+if (CMAKE_COMPILER_IS_GNUCC)
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc")
 endif ()
 
 include(ExternalProject)

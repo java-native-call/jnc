@@ -1,6 +1,5 @@
 # Java Native Call
-[![Build Status](https://travis-ci.org/java-native-call/jnc.svg?branch=master)](https://travis-ci.org/java-native-call/jnc)
-[![Build status](https://ci.appveyor.com/api/projects/status/github/java-native-call/jnc?svg=true)](https://ci.appveyor.com/project/zhanhb/jnc)
+[![Build Status](/../../actions/workflows/build.yml/badge.svg?event=push&branch=master)](/../../actions/workflows/build.yml?query=event%3Apush%20branch%3Amaster)
 
 Original design of this project is for the [online judge system](https://github.com/zjnu-acm/judge), whose kernel requires native support.
 

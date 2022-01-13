@@ -1,0 +1,122 @@
+name: build
+
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      upload-native:
+        type: boolean
+        required: false
+        description: commit built native libraries
+        default: 'false'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+        java-version:
+          - 8
+        arch:
+          - x64
+          - x86
+        native:
+          - ""
+          - 1
+        include:
+          - os: ubuntu-latest
+            java-version: 11
+          - os: macos-latest
+          - os: macos-latest
+            native: 1
+    name: test with jdk ${{ matrix.java-version || 8 }} on ${{ matrix.os }} ${{ matrix.arch }} ${{ matrix.native }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Setup mingw-w64-x86_64-gcc
+        if: startsWith(matrix.os, 'windows') && matrix.native && matrix.arch == 'x64'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw64
+          update: true
+          install: |
+            autoconf
+            automake
+            mingw-w64-x86_64-gcc
+            libtool
+            texinfo
+          location: D:\
+      - name: Setup mingw-w64-i686-gcc
+        if: startsWith(matrix.os, 'windows') && matrix.native && matrix.arch == 'x86'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw32
+          update: true
+          install: |
+            autoconf
+            automake
+            mingw-w64-i686-gcc
+            libtool
+            texinfo
+          location: D:\
+      - name: export msys to PATH
+        if: startsWith(matrix.os, 'windows') && matrix.native
+        shell: bash
+        run: |
+          cp -f /etc/nsswitch.conf /D/msys64/etc/nsswitch.conf
+          cat <<EOF >>"$GITHUB_PATH"
+          D:\msys64\bin
+          D:\msys64\usr\bin
+          D:\msys64\mingw64\bin
+          D:\msys64\mingw32\bin
+          EOF
+      - name: setup sdk root on macos
+        if: startsWith(matrix.os, 'macos') && matrix.native
+        run: |
+          sudo xcode-select -s /Library/Developer/CommandLineTools
+          SDKROOT="$(cd /Library/Developer/CommandLineTools/SDKs/MacOSX11.sdk && pwd -P)"
+          echo "SDKROOT=$SDKROOT" >>"$GITHUB_ENV"
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: liberica
+          java-version: ${{ matrix.java-version || 8 }}
+          architecture: ${{ matrix.arch || 'x64' }}
+      - uses: actions/cache@v2
+        env:
+          cache-name: maven-dependencies
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.cache-name }}-${{ github.workflow }}-${{ hashFiles('.github/**', '**/pom.xml') }}
+          restore-keys: |
+            ${{ env.cache-name }}-${{ github.workflow }}-
+            ${{ env.cache-name }}-
+      - env:
+          ARCH: ${{ matrix.arch }}
+          BUILD_NATIVE: ${{ matrix.native }}
+        shell: bash
+        run: .github/functions.sh init_env dependency
+      - env:
+          ARCH: ${{ matrix.arch }}
+          BUILD_NATIVE: ${{ matrix.native }}
+        shell: bash
+        run: .github/functions.sh init_env mvnw --color=always install
+      - name: upload native library
+        if: github.ref_type == 'branch' && matrix.native && github.event.inputs.upload-native == 'true'
+        shell: bash
+        env:
+          ARCH: ${{ matrix.arch }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: .github/functions.sh git_config commit_native push
+      - name: Codecov
+        shell: bash
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: bash <(curl -s https://codecov.io/bash)
+      - name: Before Cache
+        shell: bash
+        run: |
+          ./mvnw -B --color=always build-helper:remove-project-artifact || :
+          find ~/.m2/repository -type d -name '*-SNAPSHOT' \( -exec rm -rf '{}' \; -prune \)
