@@ -27,13 +27,13 @@ JNC_SYMBOL_HIDDEN void jnc_throw_by_name(JNIEnv *, const char *, const char *);
 
 #define throwByName(...) jnc_throw_by_name(__VA_ARGS__)
 
-#define checkError(type, env, name, ret)    \
-do {                                        \
-    if (unlikely(NULL == name)) {           \
-        throwByName(env, type, NULL);       \
-        return ret;                         \
-    }                                       \
-} while(false)
+#if __cplusplus >= 201103L
+#define checkError(type, env, name, ret) \
+do { if (unlikely(nullptr == (name))) { throwByName(env, type, nullptr); return ret; } } while (false)
+#else
+#define checkError(type, env, name, ret) \
+do { if (unlikely(NULL == (name))) { throwByName(env, type, NULL); return ret; } } while (false)
+#endif
 
 #define checkNullPointer(...)   checkError(NullPointer, __VA_ARGS__)
 #define checkOutOfMemory(...)   checkError(OutOfMemory, __VA_ARGS__)
