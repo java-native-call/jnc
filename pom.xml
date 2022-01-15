@@ -73,6 +73,7 @@
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.deploy.skip>true</maven.deploy.skip>
         <module.name>com.github.jnc</module.name>
         <osgi.dynamicImport/>
         <osgi.export>*;-noimport:=true</osgi.export>

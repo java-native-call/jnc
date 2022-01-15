@@ -10,6 +10,7 @@
 
     <properties>
         <jni.header.dir>${project.basedir}/../libjnc/jni</jni.header.dir>
+        <maven.deploy.skip>false</maven.deploy.skip>
         <module.name>com.github.jnc.runtime</module.name>
         <osgi.export>!jnc.provider.*,*;-noimport:=true</osgi.export>
         <osgi.import>javax.annotation.*;resolution:=optional;version=!,*</osgi.import>
