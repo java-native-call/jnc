@@ -1,25 +1,16 @@
 #include "jnc.h"
-#include <float.h>
-#include <math.h>
 #include <time.h>
 #include <wctype.h>
 
 // https://sourceforge.net/p/predef/wiki/Architectures/
 // https://sourceforge.net/p/predef/wiki/OperatingSystems
-#include <sys/fcntl.h>
 #include <sys/param.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/unistd.h>
 
 #ifdef _WIN32
 #include <ws2tcpip.h>
-#include <windows.h>
 #else /* _WIN32 */
 #include <netinet/in.h>
 #include <sys/resource.h>
-#include <sys/signal.h>
 #include <sys/socket.h>
 #endif /* _WIN32 */
 
