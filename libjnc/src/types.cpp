@@ -4,7 +4,8 @@
 #include <time.h>
 #include <wctype.h>
 
-// see http://nadeausoftware.com/articles/2012/01/c_c_tip_how_use_compiler_predefined_macros_detect_operating_system
+// https://sourceforge.net/p/predef/wiki/Architectures/
+// https://sourceforge.net/p/predef/wiki/OperatingSystems
 #include <sys/fcntl.h>
 #include <sys/param.h>
 #include <sys/stat.h>
