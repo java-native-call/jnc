@@ -17,14 +17,14 @@ profiles:
   win-x86:
     build:
       pre-build:
-        working-directory: cmake-build-win-i386
+        working-directory: cmake-build-win-x86
         command-line: '${CMAKE} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=windows.cmake -DSYSTEM_PROCESSOR=x86 -DDIST_DIR=../../lib ..'
       make:
-        working-directory: cmake-build-win-i386
+        working-directory: cmake-build-win-x86
   win-x64:
     build:
       pre-build:
-        working-directory: cmake-build-win-x86_64
+        working-directory: cmake-build-win-x64
         command-line: '${CMAKE} -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_TOOLCHAIN_FILE=windows.cmake -DSYSTEM_PROCESSOR=x64 -DDIST_DIR=../../lib ..'
       make:
-        working-directory: cmake-build-win-x86_64
+        working-directory: cmake-build-win-x64
