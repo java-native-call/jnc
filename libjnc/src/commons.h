@@ -2,7 +2,7 @@
 #define JNC_COMMONS_H
 
 #include <jni.h>
-#include <stdint.h>
+#include <stdint.h> // NOLINT(modernize-deprecated-headers)
 #include "jnc_type_traits.h"
 
 // limit should not be negative

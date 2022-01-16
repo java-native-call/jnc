@@ -1,6 +1,6 @@
 #include "jnc.h"
-#include <time.h>
-#include <wctype.h>
+#include <time.h> // NOLINT(modernize-deprecated-headers)
+#include <wctype.h> // NOLINT(modernize-deprecated-headers)
 
 // https://sourceforge.net/p/predef/wiki/Architectures/
 // https://sourceforge.net/p/predef/wiki/OperatingSystems

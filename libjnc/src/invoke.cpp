@@ -3,7 +3,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #else
-#include <errno.h>
+#include <errno.h> // NOLINT(modernize-deprecated-headers)
 #define GetLastError() errno
 #endif
 

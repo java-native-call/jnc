@@ -1,12 +1,11 @@
 #pragma once
 
 #include <jni.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
-#include <wchar.h>
+#include <stdint.h> // NOLINT(modernize-deprecated-headers)
+#include <stddef.h> // NOLINT(modernize-deprecated-headers)
+#include <string.h> // NOLINT(modernize-deprecated-headers)
+#include <stdlib.h> // NOLINT(modernize-deprecated-headers)
+#include <wchar.h> // NOLINT(modernize-deprecated-headers)
 
 // JNC_SYMBOL_HIDDEN
 #ifdef _WIN32
