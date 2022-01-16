@@ -22,56 +22,7 @@
 /* jni_md.h contains the machine-dependent typedefs for jbyte, jint
    and jlong */
 
-#ifndef _JAVASOFT_JNI_MD_H_
-#define _JAVASOFT_JNI_MD_H_
-
-#ifdef _WIN32
-#define JNIEXPORT __declspec(dllexport)
-#define JNIIMPORT __declspec(dllimport)
-#define JNICALL __stdcall
-
-typedef long jint;
-typedef __int64 jlong;
-#else /* _WIN32 */
-
-#if defined(__GNUC__) && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ > 2)
-#define JNIEXPORT __attribute__((visibility("default")))
-#elif defined(__has_attribute) /* !__GNUC__ || __GNUC__ <= 4.2 */
-#if __has_attribute(visibility)
-#define JNIEXPORT __attribute__((visibility("default")))
-#else /* __has_attribute(visibility) */
-#define JNIEXPORT
-#endif /* __has_attribute(visibility) */
-#else /* !__GNUC__ && !defined(__has_attribute) */
-#define JNIEXPORT
-#endif /* !__GNUC__ && !defined(__has_attribute) */
-
-#define JNIIMPORT JNIEXPORT
-#define JNICALL
-
-typedef int jint;
-#if defined(__LP64__) && __LP64__ /* for -Wundef */
-typedef long jlong;
-#else
-typedef long long jlong;
-#endif
-
-#endif /* _WIN32 */
-
-#if !defined(JNI_FORCEINLINE)
-#  if defined(_MSC_VER)
-#    define JNI_FORCEINLINE __forceinline
-#  elif defined(__GNUC__) && __GNUC__ > 3
-/* Clang also defines __GNUC__ (as 4) */
-#    define JNI_FORCEINLINE inline __attribute__ ((__always_inline__))
-#  else
-#    define JNI_FORCEINLINE inline
-#  endif
-#endif
-
-typedef signed char jbyte;
-
-#endif /* _JAVASOFT_JNI_MD_H_ */
+#include "jni_md.h"
 
 #ifdef __cplusplus
 extern "C" {
