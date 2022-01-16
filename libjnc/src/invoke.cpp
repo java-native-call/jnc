@@ -195,7 +195,7 @@ Java_jnc_provider_NativeMethods_invoke
     } else {
         pavalues = nullptr;
     }
-    result_t result;
+    result_t result = {};
     // typeof pcif->rtype->size is size_t, no need to check not less than 0
     if (likely(rtypesize <= sizeof (result))) {
         void * retAddr = &result;
