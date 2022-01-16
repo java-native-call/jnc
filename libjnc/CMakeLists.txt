@@ -221,4 +221,7 @@ add_dependencies(${PROJECT_NAME} libffi)
 add_definitions(-DSTRICT)
 
 # force link with C instead of CXX
+# https://stackoverflow.com/a/29204610
+set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "")
+set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "")
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE "C")
