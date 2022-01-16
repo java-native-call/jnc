@@ -10,15 +10,11 @@ EXTERNC JNIEXPORT void JNICALL JNI_OnUnload
     JNIEnv *env;
     if (likely(vm->GetEnv((void **) &env, JNI_VERSION_1_6) == JNI_OK)) {
         jclass type = env->FindClass(ON_UNLOAD_CLASS);
-        if (unlikely(type == nullptr)) {
-            env->ExceptionClear();
-            return;
+        if (type != nullptr) {
+            jmethodID methodId = env->GetStaticMethodID(type, "onUnload", "()V");
+            if (methodId != nullptr) {
+                env->CallStaticVoidMethodA(type, methodId, nullptr);
+            }
         }
-        jmethodID methodId = env->GetStaticMethodID(type, "onUnload", "()V");
-        if (unlikely(methodId == nullptr)) {
-            env->ExceptionClear();
-            return;
-        }
-        env->CallStaticVoidMethodA(type, methodId, nullptr);
     }
 }
