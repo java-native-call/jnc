@@ -42,15 +42,16 @@ public interface SleepUtil {
                         interrupted = true;
                     }
                     ++k;
-                    sleep <<= 1;
-                } while (k < 12);
+                    sleep = Math.min(sleep << 1, 1000);
+                } while (k < 120);
+                return true;
             } finally {
                 if (interrupted) {
                     Thread.currentThread().interrupt();
                 }
             }
         }
-        return true;
+        return false;
     }
 
     // simple usage assertTrue(() -> sleepUntil(...))
